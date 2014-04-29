@@ -1,0 +1,1 @@
+GAER10R,AAA       Add CS Account Transfer            E12F List Input (SFL)    E12FMD    AAAE12FMR    002,

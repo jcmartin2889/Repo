@@ -1,0 +1,217 @@
+/*
+ * This sample code is provided by Misys for illustrative purposes only.
+ * 
+ * These examples have not been thoroughly tested under all conditions.
+ * 
+ * Misys, therefore, cannot guarantee or imply reliability, serviceability, or function of these programs.
+ * 
+ * All programs contained herein are provided to you "AS IS" without any warranties of any kind. The implied warranties of
+ * non-infringement, merchantability and fitness for a particular purpose are expressly disclaimed.
+ */
+package com.misys.equation.common.test.xapi.standard;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.TestEnvironment;
+import com.misys.equation.common.utilities.Toolbox;
+
+// *************************************************************************************************
+/**
+ * 
+ * 
+ */
+// *************************************************************************************************
+public class AOP_AOC
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/*
+	 * Work fields used to populate the payment
+	 */
+	String decode = "O";
+	String externalPaymentReference = "";
+	String inputBrnmStr = "0543";
+	String paymentType = "KBC";
+	String receiveCurrency = "GBP";
+	String payCurrency = "USD";
+	String remitterId = "FREDDY";
+	String totalReceiveAmount = "500000";
+	String receiveNostro = "GBP R";
+	String payNostro = "USD P";
+	String sender = "s";
+	String beneficiaryAccountLine = "/1234567890";
+	String beneficiaryName = "Chris Weddell";
+	String accountWithBranch = "//CN123456";
+	String accountwithBICBank = "CNAB";
+	String accountwithBICCountry = "CN";
+	String accountwithBICLocation = "22";
+	String accountwithBICSuffix = "XXX";
+	String bankOpCode = "CRED";
+	String chargesFor = "OUR";
+
+	// TODO: You will need to enter a new payment reference each time you want to run this test...
+	String paymentReference = "MYREF00000000012";
+
+	// A Handle to a job you should be able to see the job details in debug if you hover over "session"...
+	EquationStandardSession session;
+	long startTime = System.currentTimeMillis();
+	long currentTime = startTime;
+	// *********************************************************************************************
+	/**
+	 * 
+	 */
+	// *********************************************************************************************
+	private AOP_AOC()
+	{
+		try
+		{
+			session = TestEnvironment.getTestEnvironment().getStandardSession();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+	public static void main(String[] inputParameters)
+	{
+		AOP_AOC test = new AOP_AOC();
+		test.test();
+	}
+	// *********************************************************************************************
+	/**
+	 * 
+	 */
+	// *********************************************************************************************
+	public void test()
+	{
+		try
+		{
+			// **********************************************
+			// ADD THE PAYMENT
+			// **********************************************
+
+			// Get a new transaction for Clean Payment
+			EquationStandardTransaction addOutwardCleanPayment = new EquationStandardTransaction("K61ARRAOP", session);
+
+			// Set the fields required for the retrieval call
+			addOutwardCleanPayment.setFieldValue("GZREF", paymentReference);
+			addOutwardCleanPayment.setFieldValue("GZUSNL", session.getUserId());
+			addOutwardCleanPayment.setFieldValue("GZAPP", "CP");
+			addOutwardCleanPayment.setFieldValue("GZIAB", inputBrnmStr);
+			addOutwardCleanPayment.setFieldValue("GZPYT", paymentType);
+			addOutwardCleanPayment.setFieldValue("GZNST1", receiveNostro);
+			addOutwardCleanPayment.setFieldValue("GZRCCY", receiveCurrency);
+			addOutwardCleanPayment.setFieldValue("GZPCCY", payCurrency);
+			addOutwardCleanPayment.setFieldValue("GZRAMT", totalReceiveAmount);
+			addOutwardCleanPayment.setFieldValue("GZAMTE", "1");
+
+			// Do the retrieve invocation
+			addOutwardCleanPayment.setMode("R");
+			addOutwardCleanPayment.setByteCP("H");
+			session.retrieveEquationTransaction(addOutwardCleanPayment);
+			Toolbox.printMessages(addOutwardCleanPayment.getErrorList());
+			Toolbox.printMessages(addOutwardCleanPayment.getWarningList());
+
+			// Set the fields required for the validate call
+			addOutwardCleanPayment.setFieldValue("GZRMTR", sender);
+			addOutwardCleanPayment.setFieldValue("GZSAD1", sender);
+			addOutwardCleanPayment.setFieldValue("GZNST2", payNostro);
+			addOutwardCleanPayment.setFieldValue("GZOAN1", beneficiaryAccountLine);
+			addOutwardCleanPayment.setFieldValue("GZBAD1", beneficiaryName);
+			addOutwardCleanPayment.setFieldValue("GZOAN2", accountWithBranch);
+			addOutwardCleanPayment.setFieldValue("GZSWB3", accountwithBICBank);
+			addOutwardCleanPayment.setFieldValue("GZCNA3", accountwithBICCountry);
+			addOutwardCleanPayment.setFieldValue("GZSWL3", accountwithBICLocation);
+			addOutwardCleanPayment.setFieldValue("GZSWR3", accountwithBICSuffix);
+			addOutwardCleanPayment.setFieldValue("GZBOPC", bankOpCode);
+			addOutwardCleanPayment.setFieldValue("GZCHRG", chargesFor);
+			addOutwardCleanPayment.setFieldValue("GZSAV", "N");
+
+			// Do the validate invocation
+			addOutwardCleanPayment.setMode("A");
+			addOutwardCleanPayment.setByteCP("H");
+			session.addEquationTransaction(addOutwardCleanPayment);
+			session.applyTransactions();
+			Toolbox.printMessages(addOutwardCleanPayment.getErrorList());
+			Toolbox.printMessages(addOutwardCleanPayment.getWarningList());
+
+			// Do the update invocation
+			addOutwardCleanPayment.setMode("A");
+			addOutwardCleanPayment.setByteCP("Z");
+			session.addEquationTransaction(addOutwardCleanPayment);
+			session.applyTransactions();
+			Toolbox.printMessages(addOutwardCleanPayment.getErrorList());
+			Toolbox.printMessages(addOutwardCleanPayment.getWarningList());
+
+			// **********************************************
+			// REVIEW THE PAYMENT
+			// **********************************************
+
+			EquationStandardTransaction reviewOutwardCleanPayment = new EquationStandardTransaction("K61MRRROP", session);
+
+			// Set the key fields
+			reviewOutwardCleanPayment.setFieldValue("GZREF", paymentReference);
+			reviewOutwardCleanPayment.setFieldValue("GZPYT", paymentType);
+			reviewOutwardCleanPayment.setFieldValue("GZUSNR", session.getUserId());
+			reviewOutwardCleanPayment.setFieldValue("GZAPP", "CP");
+
+			// Do the retrieve invocation
+			reviewOutwardCleanPayment.setByteCP("H");
+			session.retrieveEquationTransaction(reviewOutwardCleanPayment);
+
+			// Do the validate invocation
+			reviewOutwardCleanPayment.setMode("M");
+			reviewOutwardCleanPayment.setByteCP("H");
+			session.addEquationTransaction(reviewOutwardCleanPayment);
+			session.applyTransactions();
+			Toolbox.printMessages(reviewOutwardCleanPayment.getErrorList());
+			Toolbox.printMessages(reviewOutwardCleanPayment.getWarningList());
+
+			// Do the update invocation
+			reviewOutwardCleanPayment.setMode("M");
+			reviewOutwardCleanPayment.setByteCP("Z");
+			session.addEquationTransaction(reviewOutwardCleanPayment);
+			session.applyTransactions();
+			session.commitTransactions();
+			Toolbox.printMessages(reviewOutwardCleanPayment.getErrorList());
+			Toolbox.printMessages(reviewOutwardCleanPayment.getWarningList());
+
+			// **********************************************
+			// AUTHORISE THE PAYMENT
+			// **********************************************
+
+			// Get a new transaction for Clean Payment
+			EquationStandardTransaction authoriseOutwardCleanPayment = new EquationStandardTransaction("K62MRRAOC", session);
+
+			// Set the key fields
+			authoriseOutwardCleanPayment.setFieldValue("GZDECD", decode); // Decode; O/I=Auth,P/J=Susp,C=Conf,L=Coll (1A)
+			authoriseOutwardCleanPayment.setFieldValue("GZREF", paymentReference); // Payment reference (16A)
+			authoriseOutwardCleanPayment.setFieldValue("GZXREF", externalPaymentReference); // External payment reference (16A)
+			authoriseOutwardCleanPayment.setFieldValue("GZUSID", session.getUserId()); // Authorised by (4A)
+
+			// Do the authorise invocation
+			authoriseOutwardCleanPayment.setMode("M");
+			session.addEquationTransaction(authoriseOutwardCleanPayment);
+
+			// Pop a break point on the following line (session.applyTransactions()) Then...
+			// 1. go to a green screen and enter AOC for the payment just added and reviewed, and page through all of the screens
+			// 2. restart this program
+			// 3. QUICKLY (<30 seconds!) authorise the payment on the green screen (press F18)
+			// 4. You should see this program to continue and execute an additional AOC
+			// 5. look at the GYPF you should see 2 AOCs for the payment just added
+			session.applyTransactions();
+			Toolbox.printMessages(authoriseOutwardCleanPayment.getErrorList());
+			Toolbox.printMessages(authoriseOutwardCleanPayment.getWarningList());
+
+			// Commit and Finish
+			session.commitTransactions();
+			System.out.println("finished!");
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.toString());
+		}
+	}
+}

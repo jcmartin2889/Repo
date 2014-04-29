@@ -1,0 +1,504 @@
+package com.misys.equation.common.globalprocessing.audit;
+
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+
+import com.ibm.as400.access.AS400DataType;
+import com.ibm.as400.access.ExtendedIllegalArgumentException;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationUnit;
+import com.misys.equation.common.dao.DaoFactory;
+import com.misys.equation.common.dao.IMPMRecordDao;
+import com.misys.equation.common.dao.beans.APJRecordDataModel;
+import com.misys.equation.common.dao.beans.APVRecordDataModel;
+import com.misys.equation.common.dao.beans.GAERecordDataModel;
+import com.misys.equation.common.dao.beans.MPMRecordDataModel;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.SQLToolbox;
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * a class that can be used for performing CCSID conversion and character mapping.
+ * <p>
+ * This utility stateful, hence, is NOT thread safe.
+ * 
+ * @author berzosa
+ */
+public class DSAIMUtil
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: DSAIMUtil.java 10420 2011-02-03 12:22:26Z MACDONP1 $";
+
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(DSAIMUtil.class);
+
+	/** flag that gets set / reset whenever either the GZ or GS conversion methods are called */
+	private boolean withCCSIDErrors;
+
+	/** The substitution character to use when CCSID conversion errors occur (we actually support multi-char text) */
+	private final String substitutionChar;
+
+	/** The character used by Java to indicate if a character could not be converted to the target CCSID */
+	private static final String INCONVERTIBLE1 = Character.toString((char) 26);
+
+	/** Another character also used by Java to indicate if a character could not be converted to the target CCSID */
+	private static final String INCONVERTIBLE2 = Character.toString((char) 65533);
+
+	/**
+	 * Constructs a {@link DSAIMUtil} class that can be used for performing CCSID conversion and character mapping.
+	 * <p>
+	 * This utility stateful, hence, is NOT thread safe.
+	 * <p>
+	 * If the 'substitutionChar' is not specified (i.e., null), then the conversion methods will throw a
+	 * {@link CharacterSubstitutionRequiredException} exception.
+	 * 
+	 * @param substitutionChar
+	 *            The substitution character to use for character substitution. If null, then a
+	 *            {@link CharacterSubstitutionRequiredException} will be thrown if character substitution is required.
+	 */
+	public DSAIMUtil(String substitutionChar)
+	{
+		this.substitutionChar = substitutionChar;
+	}
+
+	public HashMap<String, byte[]> splitImages(EquationUnit unit, byte[] dsaim, int gzlenb, APVRecordDataModel apv,
+					List<APJRecordDataModel> apiFields) throws Exception
+	{
+		// First step: split the DSAIM into component GZ and GS parts
+		final boolean hasGSFields = hasGSFields(apiFields);
+		final byte[] gzPart;
+		final byte[] gsPart;
+		if (hasGSFields)
+		{
+			// must split DSAIM into GZ / GS data; NOTE: gsOffset is 1-index based!
+			final int gsOffset = getGSOffset(unit, apv, apiFields);
+			if (gsOffset < gzlenb)
+			{
+				// DSAIM contains both GZ / GS data
+				gzPart = new byte[gsOffset - 1];
+				gsPart = new byte[gzlenb - (gsOffset - 1)];
+
+				// copy DSAIM parts
+				System.arraycopy(dsaim, 0, gzPart, 0, gsOffset - 1);
+				System.arraycopy(dsaim, gsOffset - 1, gsPart, 0, gzlenb - (gsOffset - 1));
+			}
+			else
+			{
+				// DSAIM only contains GZ part!
+				gzPart = dsaim;
+				gsPart = null;
+			}
+		}
+		else
+		{
+			// no GS part!
+			gzPart = dsaim;
+			gsPart = null;
+		}
+
+		HashMap<String, byte[]> images = new HashMap<String, byte[]>();
+		images.put("GZImage", gzPart);
+		images.put("GSImage", gsPart);
+		return images;
+
+		// third step: do parameter mapping
+	}
+
+	/**
+	 * Determines the GS offset for the given APJ definition by looking up the GAE record from by the program root. NOTE: If no
+	 * corresponding record is found in GAEPF, then this method simply returns the GZ length plus 1.
+	 * 
+	 * @return the offset of the GS record for this APJ
+	 */
+	public int getGSOffset(EquationUnit unit, APVRecordDataModel apv, List<APJRecordDataModel> apiFields) throws EQException
+	{
+		// this APJ contains GS fields, now we need to determine the size offset of the GS
+		final String programRoot = apv.getProgramRoot();
+
+		// lookup the GAERecordDataModel from the program root
+		final GAERecordDataModel gae = unit.getRecords().getGAERecordByProgramRoot(programRoot);
+		if (gae == null || gae.getRepeatingDataOffset() == 0)
+		{
+			// no valid GAE record, so just return GZ Length + 1 (i.e., GS immediately follows GZ)
+			return APVCacheUtil.getGZLength(apv, apiFields) + 1;
+		}
+
+		// found the GS offset!
+		return gae.getRepeatingDataOffset();
+	}
+
+	/**
+	 * Convert the CCSID from the source CCSID to the target CCSID for the GZ image.
+	 */
+	public byte[] convertGZCCSID(byte[] gzImg, APVRecordDataModel apv, List<APJRecordDataModel> apiFields, int fromCCSID,
+					int toCCSID) throws EQException
+	{
+		// prepare a converted 'target' image, initially with the same content as the source image
+		final byte[] converted = new byte[gzImg.length];
+		System.arraycopy(gzImg, 0, converted, 0, gzImg.length);
+
+		if (fromCCSID == toCCSID)
+		{
+			// no conversion necessary!
+			return converted;
+		}
+
+		// reset the 'ccsid errors' state falg
+		this.withCCSIDErrors = false;
+
+		// search for all 'alpha' fields and convert them one-by-one
+		for (APJRecordDataModel apiField : apiFields)
+		{
+			if (Integer.parseInt(apiField.getApiFieldSequence()) <= 5)
+			{
+				// ignore first 5 API fields (GY header info)
+				continue;
+			}
+
+			// only alpha characters should be converted
+			if ("A".equals(apiField.getApiFieldType())
+							&& (apiField.getApiFieldName().startsWith("GZ") || apiField.getApiFieldName().startsWith("VF"))
+							&& (Integer.parseInt(apiField.getApiFieldEnd()) - 1) < gzImg.length)
+			{
+				// convert this field in place: This method will set the 'withCCSIDErrors' flag if CCSID substitution occurs
+				convertField(converted, 0, apiField, fromCCSID, toCCSID);
+			}
+		}
+
+		// return the converted field (NOTE: the 'withCCSIDErrors' will have been set at this point if there were conversion errors)
+		return converted;
+	}
+
+	/**
+	 * Convert the CCSID from the source CCSID to the target CCSID for the GS image.
+	 */
+	public byte[] convertGSCCSID(byte[] gsImg, APVRecordDataModel apv, List<APJRecordDataModel> apiFields, int fromCCSID,
+					int toCCSID) throws EQException
+	{
+		// prepare a converted 'target' image, initially with the same content as the source image
+		final byte[] converted = new byte[gsImg.length];
+		System.arraycopy(gsImg, 0, converted, 0, gsImg.length);
+
+		if (fromCCSID == toCCSID)
+		{
+			// no conversion necessary!
+			return converted;
+		}
+
+		// repeat conversion for every repeating record
+		for (int gsOffset = 0; gsOffset < gsImg.length;)
+		{
+			// we need to find out what to increment gsOffset by
+			int lastGSFieldEnd = 0;
+
+			// search for all 'alpha' fields and convert them one-by-one
+			for (APJRecordDataModel apiField : apiFields)
+			{
+				if (apiField.getApiFieldName().startsWith("GS")
+								&& (Integer.parseInt(apiField.getApiFieldEnd()) + gsOffset - 1) < gsImg.length)
+				{
+					// only alpha characters should be converted
+					if ("A".equals(apiField.getApiFieldType()))
+					{
+						// convert this field in place: This method will set the 'withCCSIDErrors' flag if CCSID substitution occurs
+						convertField(converted, gsOffset, apiField, fromCCSID, toCCSID);
+					}
+
+					// mark the last GS field end position so that we know what to increment the 'gsOffset' by...
+					lastGSFieldEnd = Integer.parseInt(apiField.getApiFieldEnd());
+				}
+			}
+
+			if (lastGSFieldEnd == 0)
+			{
+				throw new EQException("No GS fields found!");
+			}
+
+			// point 'gsOffset' to next record...
+			gsOffset += lastGSFieldEnd;
+		}
+
+		// return the converted field (NOTE: the 'withCCSIDErrors' will have been set at this point if there were conversion errors)
+		return converted;
+	}
+
+	/**
+	 * Performs an in-place mapping for all of the 'mapped' fields in the given GZImage. NOTE: GS fields are not mapped!
+	 * 
+	 * @param gzImg
+	 *            The GZ Image (taken from DSAIM)
+	 * @param session
+	 *            A session on the unit to do the mapping for.
+	 * @param apv
+	 *            The {@link APVRecordDataModel} for the APJ this GZ Image represents
+	 * @param apiFields
+	 *            List of {@link APJRecordDataModel} for this APJ export type
+	 * @param ccsid
+	 *            The CCSID encoding of the GZ Image (i.e., unit's CCSID)
+	 * @param toMaster
+	 *            if set, will map from the unit's value to the 'master value, otherwise, will map from the master value to the
+	 *            unit's value.
+	 * @throws EQException
+	 *             If any errors occur while performing the mapping.
+	 */
+	public void mapGZParameters(byte[] gzImg, EquationStandardSession session, APVRecordDataModel apv,
+					List<APJRecordDataModel> apiFields, int ccsid, boolean toMaster) throws EQException
+	{
+		// get the system and unit mnemonics for looking up in MPM
+		final String systemId = session.getSystemId();
+		final String unitId = session.getUnitId();
+
+		// get a reference to the mapping DAO
+		final IMPMRecordDao mpmDAO = new DaoFactory().getMPMRecordDao(session, new MPMRecordDataModel());
+
+		// search for all 'alpha' fields and map them one-by-one
+		for (APJRecordDataModel apiField : apiFields)
+		{
+			if (Integer.parseInt(apiField.getApiFieldSequence()) <= 5)
+			{
+				// ignore first 5 API fields (GY header info)
+				continue;
+			}
+
+			// only alpha characters are mappable
+			final String apiFieldName = StringUtils.trim(apiField.getApiFieldName());
+			final String apiFieldEnd = apiField.getApiFieldEnd();
+			if (StringUtils.isNotEmpty(apiField.getMapParameter()) && "A".equals(apiField.getApiFieldType())
+							&& (apiFieldName.startsWith("GZ") || apiFieldName.startsWith("VF")) && apiFieldEnd != null
+							&& (Integer.parseInt(apiFieldEnd) - 1) < gzImg.length)
+			{
+				// get value from GZ:
+				final String value = readAlphaField(gzImg, 0, apiField, ccsid);
+
+				// determine the 'mapped' value
+				final String mappedValue;
+				if (toMaster)
+				{
+					// mapping is from "Unit Value" to "Master Value"
+					final List<MPMRecordDataModel> records = coerce(mpmDAO.getRecordBy(" MPMCOD = '" + apiField.getMapParameter()
+									+ "' AND MPMUNT = '" + unitId + "' AND MPMSRV = '" + systemId + "' AND MPMUVL = '"
+									+ SQLToolbox.replaceSingleQuote(value) + "'"));
+
+					if (records.size() == 1)
+					{
+						mappedValue = records.get(0).getMasterValue();
+					}
+					else if (records.size() > 1)
+					{
+						LOG.warn(String.format("Multiple mapped values for unit [%s/%s]: code file: '%s', unit value: '%s'",
+										systemId, unitId, apiField.getMapParameter(), value));
+
+						// don't map for fear of integrity issues!
+						mappedValue = value;
+					}
+					else
+					{
+						LOG.warn(String.format("No mapping for unit [%s/%s]: code file: '%s', unit value: '%s'", systemId, unitId,
+										apiField.getMapParameter(), value));
+
+						// no mapping found!
+						mappedValue = value;
+					}
+				}
+				else
+				{
+					// mapping is from "Master Value" to "Unit Value"
+					final List<MPMRecordDataModel> records = coerce(mpmDAO.getRecordBy(" MPMCOD = '" + apiField.getMapParameter()
+									+ "' AND MPMUNT = '" + unitId + "' AND MPMSRV = '" + systemId + "' AND MPMMVL = '"
+									+ SQLToolbox.replaceSingleQuote(value) + "'"));
+
+					if (records.size() == 1)
+					{
+						mappedValue = records.get(0).getUnitValue();
+					}
+					else if (records.size() > 1)
+					{
+						LOG.warn(String.format("Multiple mapping for unit [%s/%s]: code file: '%s', master value: '%s'", systemId,
+										unitId, apiField.getMapParameter(), value));
+
+						// don't map for fear of integrity issues!
+						mappedValue = value;
+					}
+					else
+					{
+						LOG.warn(String.format("No mapping for unit [%s/%s]: code file: '%s', master value: '%s'", systemId,
+										unitId, apiField.getMapParameter(), value));
+
+						// no mapping found!
+						mappedValue = value;
+					}
+				}
+
+				// store mapped value back into GZ
+				if (mappedValue != null && !mappedValue.equals(value))
+				{
+					// Store the field back into the GZImg
+					storeAlphaField(mappedValue, gzImg, 0, apiField, ccsid);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Returns whether the given APJ contains GS fields. It is assumed that the APJ fields are already sorted by sequence!
+	 * 
+	 * @param apiFields
+	 *            The APJ Fields for this APJ
+	 * @return true if the APJ contain GS (repeating) fields, false otherwise.
+	 */
+	protected boolean hasGSFields(List<APJRecordDataModel> apiFields)
+	{
+		// GS records always appear at end of list, so we can simply get the last fields and check if the APJ field starts with 'GS'
+		if (!apiFields.isEmpty())
+		{
+			return apiFields.get(apiFields.size() - 1).getApiFieldName().startsWith("GS");
+		}
+		else
+		{
+			// no APJ fields?!?
+			return false;
+		}
+	}
+
+	/**
+	 * Converts the range of bytes specified in {@link APJRecordDataModel} in place. If the converted value does not fit into the
+	 * original byte[] array, the text will be truncated until it does.
+	 * <p>
+	 * Characters which cannot be converted to the target CCSID will be substituted with the substitution character.
+	 * 
+	 * @param image
+	 *            The AS400 text encoded in the source CCSID as a byte array
+	 * @param offset
+	 *            An offset from the API FieldStart position to use (useful if converting repeating data)
+	 * @param apiField
+	 *            Details of the alpha field to convert
+	 */
+	public void convertField(byte[] image, int offset, APJRecordDataModel apiField, int sourceCCSID, int targetCCSID)
+					throws CharacterSubstitutionRequiredException
+	{
+		// convert field data to a String for conversion to target CCSID as a Unicode Java String
+		final String fieldInUnicode = readAlphaField(image, offset, apiField, sourceCCSID);
+
+		// Store the field back into the same image, but in the target CCSID
+		storeAlphaField(fieldInUnicode, image, offset, apiField, targetCCSID);
+	}
+
+	public void replaceWithCustomerField(byte[] image, int offset, APJRecordDataModel apiField, int targetCCSID,
+					Object targetCustomerField) throws CharacterSubstitutionRequiredException
+	{
+		// replace the field with the current customer detail
+		storeAlphaField(targetCustomerField.toString(), image, offset, apiField, targetCCSID);
+	}
+
+	/**
+	 * Reads the alpha field from the given image given the offset and field information.
+	 * 
+	 * @param image
+	 *            The field bytes (could be DSAIM, GZIMG, or GSIMG)
+	 * @param offset
+	 *            The offset from the field start value in apiField
+	 * @param apiField
+	 *            The field definition
+	 * @param sourceCCSID
+	 *            The CCSID of the byte[] data
+	 * @return Java Unicode String value of the field
+	 */
+	private String readAlphaField(byte[] image, int offset, APJRecordDataModel apiField, int sourceCCSID)
+	{
+		// copy the range of bytes specified by the field details
+		final byte[] fieldData = new byte[Integer.parseInt(apiField.getApiFieldLength())];
+		System.arraycopy(image, Integer.parseInt(apiField.getApiFieldStart()) - 1 + offset, fieldData, 0, fieldData.length);
+
+		// convert field data to a String for conversion to target CCSID as a Unicode Java String
+		return Toolbox.convertAS400TextIntoCCSID(fieldData, fieldData.length, sourceCCSID);
+	}
+
+	/**
+	 * Stores the Java Unicode string into the image with the given the offset and field information.
+	 * 
+	 * @param value
+	 *            The Java Unicode String to store into the field
+	 * @param image
+	 *            The field bytes (could be DSAIM, GZIMG, or GSIMG) to store the data into
+	 * @param offset
+	 *            The offset from the field start value in apiField
+	 * @param apiField
+	 *            The field definition
+	 * @param targetCCSID
+	 *            The CCSID of the byte[] data
+	 * @return true if there were CCSID conversion errors, false otherwise
+	 */
+	private void storeAlphaField(String value, byte[] image, int offset, APJRecordDataModel apiField, int targetCCSID)
+					throws CharacterSubstitutionRequiredException
+	{
+		// get the exact field length to store into the image
+		final int fieldLength = Integer.parseInt(apiField.getApiFieldLength());
+
+		// convert until the result fits into the same byte[] array
+		byte[] convertedField;
+		while (true)
+		{
+			try
+			{
+				// this will contain the byte[] array of target CCSID converted data
+				convertedField = Toolbox.convertTextIntoAS400BytesCCSID(value, fieldLength, targetCCSID, AS400DataType.TYPE_TEXT);
+
+				// convert text to target CCSID to check for CCSID conversion problems
+				String convertedFieldInUnicode = Toolbox.convertAS400TextIntoCCSID(convertedField, fieldLength, targetCCSID);
+				if (convertedFieldInUnicode.indexOf(INCONVERTIBLE1) > -1 || convertedFieldInUnicode.indexOf(INCONVERTIBLE2) > -1)
+				{
+					if (substitutionChar == null)
+					{
+						throw new CharacterSubstitutionRequiredException(
+										"Some chars could not be converted but no substitution character was specified.");
+					}
+
+					// string contains inconvertible characters!
+					withCCSIDErrors = true;
+
+					// replace them with 'substitution' character
+					convertedFieldInUnicode = convertedFieldInUnicode.replace(INCONVERTIBLE1, substitutionChar);
+					convertedFieldInUnicode = convertedFieldInUnicode.replace(INCONVERTIBLE2, substitutionChar);
+
+					// do another conversion, but this time with the string containing substituted characters
+					convertedField = Toolbox.convertTextIntoAS400BytesCCSID(convertedFieldInUnicode, fieldLength, targetCCSID,
+									AS400DataType.TYPE_TEXT);
+				}
+
+				// success!
+				break;
+			}
+			catch (ExtendedIllegalArgumentException ex)
+			{
+				// field doesn't fit! truncate it...
+				value = value.substring(0, value.length() - 1);
+
+				// ...and try again
+				continue;
+			}
+		}
+
+		// finally (since we are converting in-place), we now have to over-write the original array with the target data
+		System.arraycopy(convertedField, 0, image, Integer.parseInt(apiField.getApiFieldStart()) - 1 + offset,
+						convertedField.length);
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T> List<T> coerce(List general)
+	{
+		return general;
+	}
+
+	/**
+	 * Returns whether the last call to either the GZ or GS conversion methods incurred CCID conversion errors.
+	 * 
+	 * @return true if the last call to either the GZ or GS conversion methods incurred CCID conversion errors.
+	 */
+	public boolean isWithCCSIDErrors()
+	{
+		return withCCSIDErrors;
+	}
+}

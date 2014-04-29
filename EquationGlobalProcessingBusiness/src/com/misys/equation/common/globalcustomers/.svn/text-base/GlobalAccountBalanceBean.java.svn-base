@@ -1,0 +1,205 @@
+package com.misys.equation.common.globalcustomers;
+
+import java.io.Serializable;
+import java.util.Comparator;
+
+public class GlobalAccountBalanceBean extends GlobalBean
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private String globalUserId;
+	private String system;
+	private String unit;
+	private String account;
+	private String accountShortName;
+	private String accountType;
+	private String currency;
+	private String equivalentCurrency;
+	private String statusBalance;
+	private String statusBalanceCurrency;
+	private String branchNumber;
+	private String iban = "";
+	private String externalAccountNumber = "";
+	private String application;
+	private String accountClosing;
+	private String accountBlocked;
+	private String jointAccount;
+	private String liableToTax;
+
+	public String getIban()
+	{
+		return iban;
+	}
+	public void setIban(String iban)
+	{
+		this.iban = iban;
+	}
+	public String getExternalAccountNumber()
+	{
+		return externalAccountNumber;
+	}
+	public void setExternalAccountNumber(String externalAccountNumber)
+	{
+		this.externalAccountNumber = externalAccountNumber;
+	}
+	public String getBranchNumber()
+	{
+		return branchNumber;
+	}
+	public void setBranchNumber(String branchNumber)
+	{
+		this.branchNumber = branchNumber;
+	}
+	public String getGlobalUserId()
+	{
+		return globalUserId;
+	}
+	public void setGlobalUserId(String globalUserId)
+	{
+		this.globalUserId = globalUserId;
+	}
+	public String getUnit()
+	{
+		return unit;
+	}
+	public void setUnit(String unit)
+	{
+		this.unit = unit;
+	}
+	public String getAccount()
+	{
+		return account;
+	}
+	public void setAccount(String account)
+	{
+		this.account = account;
+	}
+	public String getAccountShortName()
+	{
+		return accountShortName;
+	}
+	public void setAccountShortName(String accountShortName)
+	{
+		this.accountShortName = accountShortName;
+	}
+	public String getAccountType()
+	{
+		return accountType;
+	}
+	public void setAccountType(String accountType)
+	{
+		this.accountType = accountType;
+	}
+	public String getStatusBalance()
+	{
+		return statusBalance;
+	}
+	public void setStatusBalance(String statusBalance)
+	{
+		this.statusBalance = statusBalance;
+	}
+	public String getStatusBalanceCurrency()
+	{
+		return statusBalanceCurrency;
+	}
+	public void setStatusBalanceCurrency(String statusBalanceCurrency)
+	{
+		this.statusBalanceCurrency = statusBalanceCurrency;
+	}
+	public String getCurrency()
+	{
+		return currency;
+	}
+	public void setCurrency(String currency)
+	{
+		this.currency = currency;
+	}
+	public String getEquivalentCurrency()
+	{
+		return equivalentCurrency;
+	}
+	public void setEquivalentCurrency(String equivalentCurrency)
+	{
+		this.equivalentCurrency = equivalentCurrency;
+	}
+	public String getSystem()
+	{
+		return system;
+	}
+	public void setSystem(String system)
+	{
+		this.system = system;
+	}
+	public String getApplication()
+	{
+		return application;
+	}
+	public void setApplication(String application)
+	{
+		this.application = application;
+	}
+	public String getAccountClosing()
+	{
+		return accountClosing;
+	}
+	public void setAccountClosing(String accountClosing)
+	{
+		this.accountClosing = accountClosing;
+	}
+	public String getAccountBlocked()
+	{
+		return accountBlocked;
+	}
+	public void setAccountBlocked(String accountBlocked)
+	{
+		this.accountBlocked = accountBlocked;
+	}
+	public String getJointAccount()
+	{
+		return jointAccount;
+	}
+	public void setJointAccount(String jointAccount)
+	{
+		this.jointAccount = jointAccount;
+	}
+	public String getLiableToTax()
+	{
+		return liableToTax;
+	}
+	public void setLiableToTax(String liableToTax)
+	{
+		this.liableToTax = liableToTax;
+	}
+
+	public String getGasId()
+	{
+		StringBuilder gasId = new StringBuilder(getSystem().trim());
+		gasId.append("-");
+		gasId.append(getUnit());
+		gasId.append("-");
+		gasId.append(getBranchNumber());
+
+		return gasId.toString();
+	}
+
+	/**
+	 * This inner class is used to compare instances of <code>GlobalAccountBalanceBean</code>
+	 */
+	public static class GlobalAccountBalanceBeanComparator implements Comparator<GlobalAccountBalanceBean>, Serializable
+	{
+		/** Serial UID */
+		private static final long serialVersionUID = -7913382621412375588L;
+
+		public int compare(GlobalAccountBalanceBean model1, GlobalAccountBalanceBean model2)
+		{
+			if (Integer.parseInt(model1.getBranchNumber()) > Integer.parseInt(model2.getBranchNumber()))
+			{
+				return 1;
+			}
+			else
+			{
+				return -1;
+			}
+		}
+	}
+}

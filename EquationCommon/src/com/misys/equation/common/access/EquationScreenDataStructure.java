@@ -1,0 +1,208 @@
+package com.misys.equation.common.access;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.ibm.as400.access.Record;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * This class represents an Equation screen data structure and is used by the RPG Validation Java User Exit processing.
+ * 
+ * The User Exit WebService will be passed the screen data structure, and will use this class to access the individual field values.
+ * 
+ * The set of screen fields in this data structure are loaded during initialisation
+ * 
+ */
+public class EquationScreenDataStructure
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EquationScreenDataStructure.java 8910 2010-08-26 15:25:20Z MACDONP1 $";
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(EquationScreenDataStructure.class);
+
+	/**
+	 * Inner class to hold information for the data structure fields
+	 */
+	private static class Field
+	{
+		public int offset;
+		public int length;
+		public String type; // Not currently used
+
+		protected Field(String offsetString, String lengthString, String type)
+		{
+			offset = Integer.parseInt(offsetString.trim());
+			length = Integer.parseInt(lengthString.trim());
+			this.type = type.trim();
+		}
+		/**
+		 * toString implementation
+		 * 
+		 * @return a String representation of the Field
+		 */
+		@Override
+		public String toString()
+		{
+			return "offset = [" + offset + "], length = [" + length + "], type = [" + type + "]";
+		}
+	}
+
+	/** Program name */
+	private String userExitName = "";
+
+	/** Set of fields in this data structure */
+	private final Map<String, Field> fields = new HashMap<String, Field>();
+
+	/** The underlying buffer object */
+	private StringBuffer buffer;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param userExitName
+	 *            The name of the RPG program
+	 * @param session
+	 *            An EquationStandardSession
+	 * 
+	 * @throws EQException
+	 */
+	public EquationScreenDataStructure(String userExitName, EquationStandardSession session) throws EQException
+	{
+		if (LOG.isDebugEnabled())
+		{
+			LOG.debug("EquationScreenDataStructure() - for program [" + userExitName + "]");
+		}
+
+		this.userExitName = userExitName;
+		initialiseUserExit(session);
+	}
+
+	/**
+	 * Loads the set of data-structure fields from Equation
+	 * 
+	 * @param session
+	 * @throws EQException
+	 */
+	private void initialiseUserExit(EquationStandardSession session) throws EQException
+	{
+		// retrieve the API fields for this user exit program
+		EquationStandardListEnquiry enhancedAPIMetaDataEnquiry = new EquationStandardListEnquiry("T69DER", session);
+		enhancedAPIMetaDataEnquiry.setFieldValue("HZDOC", "N"); // Retrieve documentation (1A)
+		String functionRoot = Toolbox.trim(userExitName, 4); // First 4 characters is enough (e.g. "H15A")
+		enhancedAPIMetaDataEnquiry.setFieldValue("HZROOT", functionRoot); // Function root (5A)
+		session.executeListEnquiry(enhancedAPIMetaDataEnquiry);
+
+		List<Record> enhancedAPIMetaDatas = enhancedAPIMetaDataEnquiry.getHzListRcds();
+
+		int totalLength = 0;
+		for (int i = 0; i < enhancedAPIMetaDatas.size(); i++)
+		{
+			String fieldName = enhancedAPIMetaDataEnquiry.getListField("HZFLDNAM", i).trim();
+			String fieldSize = enhancedAPIMetaDataEnquiry.getListField("HZSIZE", i).trim();
+			String fieldType = enhancedAPIMetaDataEnquiry.getListField("HZFLDTYP", i).trim();
+			String fieldOffs = enhancedAPIMetaDataEnquiry.getListField("HZOFSET", i).trim();
+
+			Field field = new Field(fieldOffs, fieldSize, fieldType);
+			totalLength += field.length;
+			fields.put(fieldName, field);
+
+			if (LOG.isDebugEnabled())
+			{
+				LOG.debug("initialiseUserExit - adding field [" + fieldName + "], " + field.toString());
+			}
+		}
+
+		// Initialise the buffer now we know the length
+		buffer = new StringBuffer();
+		buffer.setLength(totalLength);
+		// As the length of the buffer never changes, buffer.length() can be used
+		// in to determine the total length of the buffer.
+
+		// Note that the buffer is not padded at this point. The setSerialisation method
+		// must always be called to set the buffer before passing this object to the
+		// User exit code
+	}
+
+	/**
+	 * Sets the value of a field within the data-structure
+	 * 
+	 * @param fieldName
+	 *            The name of the field
+	 * @param fieldValue
+	 *            The new value of the field
+	 */
+	public void setField(String fieldName, String fieldValue)
+	{
+		Field field = fields.get(fieldName);
+		if (field != null)
+		{
+			int offset = field.offset - 1;
+			StringBuffer fieldValueBuffer = new StringBuffer(fieldValue);
+			fieldValueBuffer.setLength(field.length);
+			// 'pad out' the field value if required:
+			for (int index = fieldValue.length(); index < field.length; index++)
+			{
+				fieldValueBuffer.setCharAt(index, ' ');
+			}
+			buffer.replace(offset, offset + field.length, fieldValueBuffer.toString());
+		}
+	}
+
+	/**
+	 * Gets the field value from the data-structure buffer
+	 * 
+	 * @param fieldName
+	 *            name of the field
+	 * @return a String containing the value of the field
+	 */
+	public String getField(String fieldName)
+	{
+		String fieldValue = "";
+		Field field = fields.get(fieldName);
+		if (field != null)
+		{
+			int offset = field.offset - 1;
+			fieldValue = buffer.substring(offset, offset + field.length);
+		}
+		return fieldValue;
+	}
+
+	/**
+	 * @return a String containing the name of the user exit
+	 */
+	public String getUserExitName()
+	{
+		return userExitName;
+	}
+
+	/**
+	 * 
+	 * @return A String containing the serialisation buffer
+	 */
+	public String getSerialisation()
+	{
+		return buffer.toString();
+	}
+
+	/**
+	 * Sets a new value of the buffer
+	 * 
+	 * @param serialisation
+	 *            A String containing data. If shorter than the actual length of the buffer, the remainder of the buffer will be set
+	 *            to blanks. If longer than the actual length of the buffer, the extra data will be ignored.
+	 */
+	public void setSerialisation(String serialisation)
+	{
+		int length = buffer.length() < serialisation.length() ? buffer.length() : serialisation.length();
+		buffer.replace(0, length, serialisation);
+		// Now ensure that the rest of the buffer is blanked out
+		for (int index = serialisation.length(); index < buffer.length(); index++)
+		{
+			buffer.setCharAt(index, ' ');
+		}
+	}
+}

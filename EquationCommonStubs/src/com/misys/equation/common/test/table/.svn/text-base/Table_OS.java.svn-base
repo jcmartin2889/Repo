@@ -1,0 +1,65 @@
+/*
+ * This sample code is provided by Misys for illustrative purposes only.
+ * 
+ * These examples have not been thoroughly tested under all conditions.
+ * 
+ * Misys, therefore, cannot guarantee or imply reliability, serviceability, or function of these programs.
+ * 
+ * All programs contained herein are provided to you "AS IS" without any warranties of any kind. The implied warranties of
+ * non-infringement, merchantability and fitness for a particular purpose are expressly disclaimed.
+ */
+package com.misys.equation.common.test.table;
+
+import com.misys.equation.common.access.EquationStandardTable;
+import com.misys.equation.common.test.EquationTestCase;
+import com.misys.equation.common.utilities.Toolbox;
+
+// *************************************************************************************************
+/**
+ * 
+ * 
+ */
+// *************************************************************************************************
+public class Table_OS extends EquationTestCase
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	// *********************************************************************************************
+	/**
+	 * 
+	 */
+	// *********************************************************************************************
+	public void test()
+	{
+		// Have a bash...
+		try
+		{
+			EquationStandardTable table = new EquationStandardTable("OS10LF", "indexid", "OSBRNM:OSDLP:OSDLR", session);
+
+			// Set the transaction type
+			table.setMode("A");
+			table.setFieldValue("OSBRNM", "STUB");
+			table.setFieldValue("OSDLP", "STB");
+			table.setFieldValue("OSDLR", "STUB");
+
+			// add the transaction into the session, this won't do anything on the as400
+			session.applyEquationTable(table);
+
+			// OK, so now we should have entered the sundry items. Perhaps pop a break point
+			// on the next line and have a look at the iSeries job and see the commitment status. You should see the sudry item
+			// records pending.
+			session.rollbackTransactions();
+
+			// note you could have issued session.rollbacktransactions to roll back the updates as oppose to committing them.
+			Toolbox.printMessages(table.getErrorList());
+
+			// finish
+			System.out.println("finished!");
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.toString());
+			// Rollback any transactions for the unit
+		}
+	}
+}

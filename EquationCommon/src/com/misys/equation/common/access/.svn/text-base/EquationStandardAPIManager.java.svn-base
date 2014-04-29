@@ -1,0 +1,247 @@
+package com.misys.equation.common.access;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EquationLogger;
+
+/**
+ * This is a class which provides facilities for APIS execution and other uses.
+ * 
+ * @author deroset
+ * 
+ */
+public class EquationStandardAPIManager
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private EquationStandardSession currentSession;
+	private EquationStandardListEnquiry equationStandardListEnquiry;
+	private EquationStandardTransaction equationStandardTransaction;
+	private Map<String, String> apiFields;
+	private String apiName;
+	private String errorMessage = null;
+	private boolean haveTheFieldsBeenSet;
+	private final String mode;
+	private boolean initialised;
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(EquationStandardAPIManager.class);
+
+	public EquationStandardAPIManager(EquationStandardSession currentSession, String apiName, String mode)
+	{
+		this.currentSession = currentSession;
+		this.apiName = apiName;
+		apiFields = new HashMap<String, String>();
+		this.mode = mode;
+		initialisation(currentSession, apiName);
+	}
+
+	/**
+	 * This method will initialise all necessary resources.
+	 */
+	private void initialisation(EquationStandardSession currentSession, String apiName)
+	{
+		try
+		{
+			if (IEquationStandardObject.FCT_RTV.equals(mode))
+			{
+				equationStandardTransaction = new EquationStandardTransaction(apiName, currentSession);
+			}
+			else
+			{
+				equationStandardListEnquiry = new EquationStandardListEnquiry(apiName, currentSession);
+			}
+
+			// initialised successfully
+			initialised = true;
+		}
+		catch (EQException eQException)
+		{
+			if (LOG.isErrorEnabled())
+			{
+				StringBuilder message = new StringBuilder("There is a problem trying to initialise EquationStandardListEnquiry ");
+				LOG.error(message.toString(), eQException);
+			}
+		}
+	}
+
+	/**
+	 * This method will set all fields in the current <code>EquationStandardListEnquiry</code> instance.
+	 */
+	private void setApiFieldsInEquationStandardListEnquiry()
+	{
+		Iterator<String> iterator = apiFields.keySet().iterator();
+		String fieldName = null;
+		String value = null;
+
+		while (iterator.hasNext())
+		{
+			fieldName = iterator.next();
+			value = apiFields.get(fieldName);
+
+			if (IEquationStandardObject.FCT_RTV.equals(mode))
+			{
+				// Set up the key fields required for the enquiry
+				equationStandardTransaction.setFieldValue(fieldName, value);
+
+			}
+			else
+			{
+				// Set up the key fields required for the enquiry
+				equationStandardListEnquiry.setFieldValue(fieldName, value);
+
+			}
+		}
+		haveTheFieldsBeenSet = true;
+	}
+
+	/**
+	 * This method will execute the API. if there any error it will be set in the error attribute.
+	 */
+	public IEquationStandardObject executeAPI()
+	{
+		if (!haveTheFieldsBeenSet)
+		{
+			setApiFieldsInEquationStandardListEnquiry();
+		}
+
+		if (IEquationStandardObject.FCT_RTV.equals(mode))
+		{
+			return executeRetrieveAPI();
+		}
+		else
+		{
+			return executeStandardAPI();
+		}
+	}
+
+	/**
+	 * This method will execute an equation standard API
+	 * 
+	 * @return an <code>IEquationStandardObject</code> with the result.
+	 */
+	private IEquationStandardObject executeStandardAPI()
+	{
+		EquationStandardListEnquiry equationStandardListEnquiryResult = null;
+		StringBuilder errorMessage = null;
+
+		try
+		{
+			equationStandardListEnquiryResult = currentSession.executeListEnquiry(equationStandardListEnquiry);
+		}
+		catch (EQException eQException)
+		{
+			if (LOG.isErrorEnabled())
+			{
+
+				StringBuilder message = new StringBuilder("There is a problem trying to initialise EquationStandardListEnquiry ");
+				LOG.error(message.toString(), eQException);
+
+				errorMessage = new StringBuilder(1024);
+				// Null pointer access: The variable equationStandardListEnquiryResult can only be null at this location
+				// errorMessage.append("\r\n").append("Error code: ").append(equationStandardListEnquiryResult.getErcod()).append(
+				// "\r\n Error parm: ").append(equationStandardListEnquiryResult.getErprm()).append("\r\n");
+				errorMessage.append("\r\n").append("Error msg: ").append(eQException.getMessage()).append("\r\n");
+			}
+		}
+
+		if (equationStandardListEnquiryResult != null && !equationStandardListEnquiryResult.getValid())
+		{
+			errorMessage = new StringBuilder(1024);
+			errorMessage.append("\r\n").append("Error code: ").append(equationStandardListEnquiryResult.getErcod())
+							.append("\r\n Error parm: ").append(equationStandardListEnquiryResult.getErprm()).append("\r\n");
+		}
+
+		if (errorMessage != null)
+		{
+			this.errorMessage = errorMessage.toString();
+		}
+
+		return equationStandardListEnquiryResult;
+
+	}
+
+	/**
+	 * This method will execute an equation transaction API
+	 * 
+	 * @return an <code>IEquationStandardObject</code> with the result.
+	 */
+	private IEquationStandardObject executeRetrieveAPI()
+	{
+		equationStandardTransaction.setMode(IEquationStandardObject.FCT_RTV);
+		try
+		{
+			// Apply the transaction
+			currentSession.retrieveEquationTransaction(equationStandardTransaction);
+		}
+		catch (EQException eQException)
+		{
+			if (LOG.isErrorEnabled())
+			{
+				StringBuilder message = new StringBuilder("There is a problem trying to initialise EquationStandardListEnquiry ");
+				LOG.error(message.toString(), eQException);
+			}
+		}
+		return equationStandardTransaction;
+	}
+
+	/** getters and setters ***/
+
+	/**
+	 * This method will set pair ( field name and field value).
+	 * 
+	 * @param fieldName
+	 *            this is the name of the field.
+	 * @param value
+	 *            this is the field value.
+	 */
+	public void setApiField(String fieldName, String value)
+	{
+		if (!this.apiFields.containsKey(fieldName))
+		{
+			apiFields.put(fieldName, value);
+		}
+	}
+
+	public String getApiName()
+	{
+		return apiName;
+	}
+
+	public void setApiName(String apiName)
+	{
+		this.apiName = apiName;
+	}
+
+	public Map<String, String> getApiFields()
+	{
+		return apiFields;
+	}
+
+	public void setApiFields(Map<String, String> apiFields)
+	{
+		this.apiFields = apiFields;
+	}
+
+	public void setCurrentSession(EquationStandardSession currentSession)
+	{
+		this.currentSession = currentSession;
+	}
+
+	public boolean isHaveTheFieldsBeenSet()
+	{
+		return haveTheFieldsBeenSet;
+	}
+
+	public String getErrorMessage()
+	{
+		return errorMessage;
+	}
+
+	public boolean isInitialised()
+	{
+		return initialised;
+	}
+}

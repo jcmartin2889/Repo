@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/repos/bfeq_src/!svn/ver/17624/branches/BFEQ_Branch_3-1/EquationCommonStubs/resources
+END
+sampleConfiguration.properties
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/repos/bfeq_src/!svn/ver/17624/branches/BFEQ_Branch_3-1/EquationCommonStubs/resources/sampleConfiguration.properties
+END
+applicationContext.xml
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/resources/applicationContext.xml
+END
+commonStubsContext.xml
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/resources/commonStubsContext.xml
+END
+log4j.xml
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/resources/log4j.xml
+END

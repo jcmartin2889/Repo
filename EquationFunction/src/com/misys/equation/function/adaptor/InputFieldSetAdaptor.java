@@ -1,0 +1,292 @@
+package com.misys.equation.function.adaptor;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.FunctionClassLoader;
+import com.misys.equation.function.beans.InputFieldSet;
+import com.misys.equation.function.runtime.UserModifyData;
+import com.misys.equation.function.tools.AdaptorToolbox;
+
+/**
+ * This class manages the runtime retrieval of values that might depend on Java user exit code for an InputFieldSet
+ * <p>
+ * 
+ * @see IInputFieldSetAdaptor
+ * @see AbstractInputFieldSetAdaptor
+ */
+public class InputFieldSetAdaptor extends Adaptor
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: InputFieldSetAdaptor.java 16593 2013-06-24 15:32:19Z perkinj1 $";
+
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(InputFieldSetAdaptor.class);
+
+	private IFunctionAdaptor functionAdaptorImpl;
+
+	private Class<IInputFieldSetAdaptor> inputFieldSetAdaptorClass;
+	private IInputFieldSetAdaptor inputFieldSetAdaptorImpl;
+
+	private List<InputFieldSetAdaptor> secondaryInputFieldSetAdaptors;
+
+	/**
+	 * Construct an InputFieldSet Adaptor
+	 * 
+	 * @param session
+	 *            - the Equation standard session
+	 * @param classLoader
+	 *            - the Function class loader
+	 * @param functionAdaptorImpl
+	 *            - an instance of the Equation service
+	 * @param optionId
+	 *            id - the option id of the Equation service
+	 * @param fieldSet
+	 *            - the Input Field Set
+	 */
+	public InputFieldSetAdaptor(EquationStandardSession session, FunctionClassLoader classLoader,
+					IFunctionAdaptor functionAdaptorImpl, String optionId, InputFieldSet fieldSet) throws EQException
+	{
+		{
+			this.functionAdaptorImpl = functionAdaptorImpl;
+
+			AdaptorKeyFields keyFields = AdaptorToolbox.getGAZKeyFields(fieldSet);
+
+			if (functionAdaptorImpl != null)
+			{
+				this.inputFieldSetAdaptorClass = getClass(session, classLoader, optionId, keyFields.getGazfld(), keyFields
+								.getGazpvn(), keyFields.getGaztyp());
+			}
+
+			if (this.inputFieldSetAdaptorClass != null)
+			{
+				this.inputFieldSetAdaptorImpl = getInstance(functionAdaptorImpl, inputFieldSetAdaptorClass);
+			}
+		}
+	}
+
+	/**
+	 * Return the function adaptor implementation
+	 * 
+	 * @return the function adaptor implementation
+	 */
+	public IFunctionAdaptor getFunctionAdaptorImpl()
+	{
+		return functionAdaptorImpl;
+	}
+
+	/**
+	 * Return the input field set adaptor class
+	 * 
+	 * @return the input field set adaptor class
+	 */
+	public Class<IInputFieldSetAdaptor> getInputFieldSetAdaptorClass()
+	{
+		return inputFieldSetAdaptorClass;
+	}
+
+	/**
+	 * Return the inputfieldset adaptor implementation
+	 * 
+	 * @return the inputfieldset adaptor implementation
+	 */
+	public IInputFieldSetAdaptor getInputFieldSetAdaptorImpl()
+	{
+		return inputFieldSetAdaptorImpl;
+	}
+
+	/**
+	 * Return the (inner) class definition of the outer class
+	 * <p>
+	 * This method ensures that the returned class definition is an instance of <code>IInputFieldSetAdaptor</code>
+	 * 
+	 * @param session
+	 *            The <code>EquationStandardSession</code> passed to the constructor
+	 * @param classLoader
+	 *            The <code>FunctionClassLoader</code> passed to the constructor
+	 * @param fieldId
+	 *            The field name
+	 * @param pvName
+	 *            the PV name
+	 * @param type
+	 *            the specific GAZTYP type for this class
+	 * 
+	 * @return the class definition for the option
+	 */
+	@SuppressWarnings("unchecked")
+	private Class<IInputFieldSetAdaptor> getClass(EquationStandardSession session, FunctionClassLoader classLoader,
+					String optionId, String fieldId, String pvName, String type) throws EQException
+	{
+		if (LOG.isInfoEnabled())
+		{
+			LOG.debug("getInstance - loading definition of class for option [" + optionId + "], field [" + fieldId + "]");
+		}
+		Class<IInputFieldSetAdaptor> c = classLoader.loadClass(session, optionId, fieldId, pvName, type);
+		return c;
+	}
+
+	/**
+	 * Return an instance of the specified inner class of an outer class
+	 * 
+	 * @param functionAdaptor
+	 *            - the Function adaptor implementation
+	 * @param fieldClass
+	 *            - the fieldset adaptor implementation class
+	 * 
+	 * @return an instance of the class
+	 */
+	public IInputFieldSetAdaptor getInstance(IFunctionAdaptor functionAdaptor, Class<IInputFieldSetAdaptor> fieldClass)
+	{
+		try
+		{
+			if (LOG.isDebugEnabled())
+			{
+				LOG.debug("getInstance - creating a new instance of field inner class [" + fieldClass.getName() + "]");
+			}
+			Constructor<IInputFieldSetAdaptor> constructor = fieldClass.getConstructor(functionAdaptor.getClass());
+			IInputFieldSetAdaptor instance = constructor.newInstance(functionAdaptor);
+			return instance;
+		}
+		catch (NoSuchMethodException e)
+		{
+			return null;
+		}
+		catch (InvocationTargetException e)
+		{
+			return null;
+		}
+		catch (InstantiationException e)
+		{
+			return null;
+		}
+		catch (IllegalAccessException e)
+		{
+			return null;
+		}
+	}
+
+	/**
+	 * Call the user exit procedure to perform InputFieldSet's initialisation of values
+	 * 
+	 */
+	public void initialiseMode()
+	{
+		// user exit of the service
+		if (inputFieldSetAdaptorImpl != null)
+		{
+			UserModifyData userModifyData = getUserModifyData();
+			inputFieldSetAdaptorImpl.initialiseMode(userModifyData);
+		}
+
+		// secondary input field set adaptors?
+		if (secondaryInputFieldSetAdaptors != null)
+		{
+			for (InputFieldSetAdaptor inputFieldSetAdaptor : secondaryInputFieldSetAdaptors)
+			{
+				inputFieldSetAdaptor.initialiseMode();
+			}
+		}
+	}
+
+	/**
+	 * Call the user exit procedure to perform InputFieldSet's default mode
+	 * 
+	 * @return true if data has been changed
+	 */
+	public boolean defaultMode()
+	{
+		// assume no change
+		boolean changed = false;
+
+		// user exit of the service
+		if (inputFieldSetAdaptorImpl != null)
+		{
+			UserModifyData userModifyData = getUserModifyData();
+			inputFieldSetAdaptorImpl.defaultMode(userModifyData);
+			changed = userModifyData.isChanged();
+		}
+
+		// secondary input field set adaptors?
+		if (secondaryInputFieldSetAdaptors != null)
+		{
+			for (InputFieldSetAdaptor inputFieldSetAdaptor : secondaryInputFieldSetAdaptors)
+			{
+				boolean changed2 = inputFieldSetAdaptor.defaultMode();
+				changed = changed || changed2;
+			}
+		}
+
+		return changed;
+	}
+
+	/**
+	 * Call the user exit procedure to perform InputFieldSet's validate mode
+	 * 
+	 * @return true if data has been changed
+	 */
+	public boolean validateMode()
+	{
+		// assume no change
+		boolean changed = false;
+
+		// user exit of the service
+		if (inputFieldSetAdaptorImpl != null)
+		{
+			functionAdaptorImpl.clearMessages();
+			UserModifyData userModifyData = getUserModifyData();
+			functionAdaptorImpl.getReturnMessages().setFunctionData(functionData);
+			inputFieldSetAdaptorImpl.validateMode(userModifyData);
+			changed = userModifyData.isChanged();
+		}
+
+		// secondary input field set adaptors?
+		if (secondaryInputFieldSetAdaptors != null)
+		{
+			for (InputFieldSetAdaptor inputFieldSetAdaptor : secondaryInputFieldSetAdaptors)
+			{
+				boolean changed2 = inputFieldSetAdaptor.validateMode();
+				functionAdaptorImpl.getReturnMessages().addMessages(
+								inputFieldSetAdaptor.getFunctionAdaptorImpl().getReturnMessages().getReturnMessages());
+				changed = changed || changed2;
+			}
+		}
+
+		return changed;
+	}
+
+	/**
+	 * Set the secondary id
+	 * 
+	 * @param session
+	 *            - the Equation session
+	 * @param secondaryFunctionAdaptors
+	 *            - the secondary function adaptors
+	 * @param inputFieldSet
+	 *            - the input field set
+	 */
+	public void setSecondaryFunctionIds(EquationStandardSession session, List<FunctionAdaptor> secondaryFunctionAdaptors,
+					InputFieldSet inputFieldSet) throws EQException
+	{
+		secondaryInputFieldSetAdaptors = new ArrayList<InputFieldSetAdaptor>();
+		for (FunctionAdaptor secondaryFunctionAdaptor : secondaryFunctionAdaptors)
+		{
+			InputFieldSetAdaptor inputFieldSetAdaptor = secondaryFunctionAdaptor.getInputFieldSetAdaptor(session, inputFieldSet);
+			secondaryInputFieldSetAdaptors.add(inputFieldSetAdaptor);
+		}
+
+		// if the main service is not implemented, then create a dummy one
+		if (inputFieldSetAdaptorImpl == null)
+		{
+			// instantiate an abstract class
+			inputFieldSetAdaptorImpl = new AbstractInputFieldSetAdaptor()
+			{
+			};
+		}
+	}
+
+}

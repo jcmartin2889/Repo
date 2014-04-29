@@ -1,0 +1,107 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseFullyAdd;
+
+/**
+ * Equation test cases for Maintain Account Types
+ */
+public class AddTest_MAT extends EquationTestCaseFullyAdd
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	String programName = "I09FRR";
+	String optionId = "MAT";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZATP", "JA"); // Account type
+		transaction.setFieldValue("GZAPP", "MS"); // Application code; FX, MM, " ", SW, CL, MS, CP, IR,
+		transaction.setFieldValue("GZACS", "M"); // Account structure
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	@Override
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZATP", "JA"); // Account type
+		transaction.setFieldValue("GZAPP", "MS"); // Application code; FX, MM, " ", SW, CL, MS, CP, IR,
+		transaction.setFieldValue("GZACS", "M"); // Account structure
+		transaction.setFieldValue("GZATD", "Equation 4.0"); // Account type description
+		transaction.setFieldValue("GZII0A", "N"); // Interest bearing account type?
+
+		transaction.setFieldValue("GZHBN", "99"); // To range
+		transaction.setFieldValue("GZHVS", "999"); // Highest valid suffix for account type
+		transaction.setFieldValue("GZICI", "N"); // Ignore currency overrides for credit interest?
+
+		transaction.setFieldValue("GZIDI", "N"); // Ignore currency overrides for debit interest?
+		transaction.setFieldValue("GZLBN", "00"); // From range
+		transaction.setFieldValue("GZLVS", "000"); // Lowest valid suffix for account type
+
+		transaction.setFieldValue("GZPMIC", "N"); // Post minimum interest - credit?
+		transaction.setFieldValue("GZPMID", "N"); // Post minimum interest - debit?
+
+		transaction.setFieldValue("GZAPRC", "N"); // Calculate credit interest APR rate
+		transaction.setFieldValue("GZAPRD", "N"); // Calculate debit interest APR rate
+		transaction.setFieldValue("GZIN10", "N"); // Funding/Repayment (1A)
+
+		transaction.setFieldValue("GZII0A", "Y"); // Interest bearing account type?
+		transaction.setFieldValue("GZIIFD", "N"); // Include interest frequency date ?
+		transaction.setFieldValue("GZIBFD", "N"); // Post interest before frequency date?
+		transaction.setFieldValue("GZVAFD", "N"); // Interest value dated before frequency date?
+		transaction.setFieldValue("GZIBAN", "Y"); // IBAN generation required?
+		transaction.setFieldValue("GZILS", "001Y"); // Interval since last statement
+
+		transaction.setFieldValue("GZCIBP", "N"); // Capitalise int before paying?
+		transaction.setFieldValue("GZEXTP", "N"); // Allow external int pay?
+		transaction.setFieldValue("GZCXM", "Y"); // Charge from transfer method?
+		transaction.setFieldValue("GZCRM", "Y"); // Deduct charge from remittance?
+		transaction.setFieldValue("GZACT", "3"); // Action if no avail balance
+		transaction.setFieldValue("GZSCM", "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNY"); // Special condition maintained?
+	}
+
+}

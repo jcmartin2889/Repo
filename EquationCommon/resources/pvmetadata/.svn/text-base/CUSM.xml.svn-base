@@ -1,0 +1,53 @@
+<EquationPVMetaData PFile="GF01LF" description="CUSM" id="CUSM" globalConsolidatedPrompt="true" globalLibraryPrompt="false"  label="CUSM" packageName="com.misys.pvs">
+  <databaseXref/>
+  <decodeMetaData>
+    <decodeMetaData decode=" " description="Default Decode" index="0" length="40" pFile="GF01LF" sqlFrom="GF01LF">
+      <keyFields>
+        <keyField>GFCUS</keyField>
+        <keyField>GFCLC</keyField>
+      </keyFields>
+      <pvFields>
+        <pvField>GFCUS</pvField>
+        <pvField>GFCLC</pvField>
+      </pvFields>
+    </decodeMetaData>
+  </decodeMetaData>
+  <fieldMetaData>
+    <fieldMetaData alpha="false" composite="false" decimal="0" description="System" header="System" id="SYSTEM" index="0" key="false" length="8" numericField="false" packed="false" usage="B" zoned="false"/>
+    <fieldMetaData alpha="false" composite="false" decimal="0" description="Unit" header="Unit" id="UNIT" index="8" key="false" length="3" numericField="false" packed="false" usage="B" zoned="false"/>
+    <fieldMetaData alpha="false" composite="false" decimal="0" description="Unit Description" header="Unit Description" id="UNITDESC" index="11" key="false" length="20" numericField="false" packed="false" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="GFCUS" decimal="0" description="Customer mnemonic" header="Customer mnemonic" id="GFCUS" index="31" key="false" length="6" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="GFCLC" decimal="0" description="Customer location" header="Customer location" id="GFCLC" index="37" key="false" length="3" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="GFCPNC" decimal="0" description="Customer&apos;s basic number" header="Customer&apos;s basic number" id="GFCPNC" index="40" key="true" length="6" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="GFCUN" decimal="0" description="Customer full name" header="Customer full name" id="GFCUN" index="46" key="false" length="35" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="GFBRNM" decimal="0" description="Branch mnemonic" header="Branch mnemonic" id="GFBRNM" index="81" key="false" length="4" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+  </fieldMetaData>
+  <hdrNames>
+  	<hdrName>SYSTEM</hdrName>
+    <hdrName>UNIT</hdrName>
+    <hdrName>UNITDESC</hdrName>    
+    <hdrName>GFCUS</hdrName>
+    <hdrName>GFCLC</hdrName>
+    <hdrName>GFCPNC</hdrName>
+    <hdrName>GFCUN</hdrName>
+    <hdrName>GFBRNM</hdrName>
+  </hdrNames>
+  <hdrPositions>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+  </hdrPositions>
+  <pvDvals>
+    <pvDval>GFCUS</pvDval>
+    <pvDval>GFCLC</pvDval>
+  </pvDvals>
+  <pvOvals>
+    <pvOval>GFCUS</pvOval>
+    <pvOval>GFCLC</pvOval>
+  </pvOvals>
+</EquationPVMetaData>

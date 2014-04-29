@@ -1,0 +1,114 @@
+package com.misys.equation.common.utilities;
+
+import java.util.Enumeration;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationUnit;
+import com.misys.equation.common.access.EquationUser;
+
+public class EquationAPICacheUpdater
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(EquationAPICacheUpdater.class);
+
+	/** A Timer for scheduling synchronisation of BankFusion user */
+	private final Timer timer;
+
+	/** A Thread for performing the update */
+	private static Thread workerThread;
+
+	/** A flag to determine to force the update to stop running */
+	private boolean stopRunning;
+
+	/** A flag to determine that the thread is running */
+	private boolean running;
+
+	/**
+	 * Creates and 'starts' a new EquationPVResultUpdater with the specified Timer details
+	 * 
+	 * @param delay
+	 *            delay in milliseconds before task is to be executed
+	 * @param period
+	 *            time in milliseconds between successive task executions.
+	 */
+	public EquationAPICacheUpdater(long delay, long period)
+	{
+		timer = new Timer(true);
+		timer.schedule(new UserSynch(), delay, period);
+	}
+
+	/**
+	 * Called to cancel the timer processing.
+	 */
+	public void cancel()
+	{
+		LOG.info("EquationPVResultUpdater: cancel method called");
+		timer.cancel();
+		stopRunning = true;
+	}
+
+	/**
+	 * TimerTask class that is invoked periodically.
+	 */
+	private class UserSynch extends TimerTask
+	{
+		@Override
+		public void run()
+		{
+			LOG.info("EquationPVResultUpdater: Updater is being run ");
+
+			if (running && workerThread != null && workerThread.isAlive())
+			{
+				LOG.info("EquationPVResultUpdater: Updater currently in progress");
+			}
+			else
+			{
+				running = true;
+				LOG.info("EquationPVResultUpdater: Creating the thread to run");
+				workerThread = new SynchThread();
+				workerThread.start();
+			}
+
+		}
+	}
+
+	/**
+	 * A Thread class that updates all the PV cache of all the units
+	 * 
+	 */
+	private class SynchThread extends Thread
+	{
+		@Override
+		public void run()
+		{
+			LOG.info("EquationPVResultUpdater: Running");
+
+			EquationCommonContext equationCommonContext = EquationCommonContext.getContext();
+			Enumeration<String> sessionIds = equationCommonContext.getSessionIdentifiers();
+			try
+			{
+				while (sessionIds.hasMoreElements() && !stopRunning)
+				{
+					String sessionIdentifier = sessionIds.nextElement();
+					EquationUser equationUser = equationCommonContext.getEquationUser(sessionIdentifier);
+					EquationUnit equationUnit = equationUser.getEquationUnit();
+					equationUnit.getApiCacheHandler().updateAll(equationUser.getSessionForNonUpdate());
+				}
+			}
+			catch (Exception e)
+			{
+			}
+			finally
+			{
+				LOG.info("EquationPVResultUpdater: End");
+				running = false;
+			}
+		}
+	}
+
+}

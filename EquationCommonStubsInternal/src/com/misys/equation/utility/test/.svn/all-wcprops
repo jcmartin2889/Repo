@@ -1,0 +1,107 @@
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/repos/bfeq_src/!svn/ver/17328/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/utility/test
+END
+_CIUtilityTests.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/utility/test/_CIUtilityTests.java
+END
+TestCharacterConversion.java
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/utility/test/TestCharacterConversion.java
+END
+EqDataToolboxStub.java
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/utility/test/EqDataToolboxStub.java
+END
+LanguageTests.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/utility/test/LanguageTests.java
+END
+EquationStandardSQLPagingListTestStub.java
+K 25
+svn:wc:ra_dav:version-url
+V 166
+/svn/repos/bfeq_src/!svn/ver/17328/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/utility/test/EquationStandardSQLPagingListTestStub.java
+END
+C8Test.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/utility/test/C8Test.java
+END
+JournalHeaderStub.java
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/utility/test/JournalHeaderStub.java
+END
+Widget.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/utility/test/Widget.java
+END
+SortMapTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/utility/test/SortMapTest.java
+END
+GHUpdate_SGH02R.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/utility/test/GHUpdate_SGH02R.java
+END
+Dajobctle.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/utility/test/Dajobctle.java
+END
+SupervisorPassword_UTW21R.java
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/utility/test/SupervisorPassword_UTW21R.java
+END
+StringTests.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/utility/test/StringTests.java
+END
+ConversionRoundTrip.java
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/utility/test/ConversionRoundTrip.java
+END
+SimpleMail.java
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/utility/test/SimpleMail.java
+END
+KeyedArrayListTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/utility/test/KeyedArrayListTest.java
+END
+TestEqDBAccess.java
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/utility/test/TestEqDBAccess.java
+END

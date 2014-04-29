@@ -1,0 +1,445 @@
+package com.misys.equation.function.beans;
+
+import java.util.List;
+
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.function.runtime.FunctionMessages;
+
+public class PVFieldSet extends FieldSet
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	// This determine the type of transaction (see IEquationStandardObject)
+	private String type;
+
+	// These are PV specific details
+	private String decode;
+	private boolean blankAllowed;
+	private String security;
+
+	// This determines whether the key details must exists (N), must not exists (Y) or either (blank)
+	private String newField;
+	private String relatedFields;
+	// This contain the list of keys (mandatory for a table)
+	private String keyFields;
+
+	// This determines the program root (e.g. H15A, OSPF)
+	// Note: The option id or the logical file are stored in the label property similiar to an APIFieldSet
+	private String root;
+
+	// This determine the level of message to be ignored
+	private int ignoreMessages;
+
+	// This determined whether to cache the result
+	private boolean cache;
+
+	// Global Library PV?
+	private boolean globalTable;
+
+	// Consolidated Global PV
+	private boolean consolidatedGlobalPV;
+
+	/**
+	 * Default constructor for a PVFieldSet
+	 */
+	public PVFieldSet()
+	{
+		super();
+		commonInitialisation();
+	}
+
+	/**
+	 * Construct a PVFieldSet using a Field Set
+	 */
+	public PVFieldSet(FieldSet fieldSet)
+	{
+		super(fieldSet);
+		commonInitialisation();
+	}
+
+	/**
+	 * Construct a PVFieldSet using a PV module
+	 * 
+	 * @param id
+	 *            - the PV name
+	 * @param description
+	 *            - the PV description
+	 * @param decode
+	 *            - the decode
+	 * @param newField
+	 *            - whether the field should exists (N), not exists(Y), either(blank)
+	 * @param blankAllowed
+	 *            - blank allowed (true)?
+	 */
+	public PVFieldSet(String id, String description, String decode, String newField, boolean blankAllowed)
+	{
+		super(id, "", description);
+		commonInitialisation();
+		this.decode = decode;
+		this.newField = newField;
+		this.blankAllowed = blankAllowed;
+	}
+
+	/**
+	 * Construct a PVFieldSet using non-PV module
+	 * 
+	 * @param id
+	 *            - the field set id
+	 * @param label
+	 *            - the option id or the logical file
+	 * @param description
+	 *            - the field set description
+	 * @param root
+	 *            - the program root or the physical file
+	 * @param newField
+	 *            - whether the field should exists (N), not exists(Y), either(blank)
+	 * @param blankAllowed
+	 *            - blank allowed (true)?
+	 */
+	public PVFieldSet(String id, String label, String description, String root, String newField, boolean blankAllowed)
+	{
+		super(id, label, description);
+		commonInitialisation();
+		this.root = root;
+		this.newField = newField;
+		this.blankAllowed = blankAllowed;
+	}
+
+	/**
+	 * Common initialisation
+	 */
+	private void commonInitialisation()
+	{
+		this.decode = "";
+		this.newField = "";
+		this.blankAllowed = false;
+		this.security = "";
+		this.ignoreMessages = FunctionMessages.MSG_NONE;
+		this.type = "";
+		this.root = "";
+		this.keyFields = "";
+		this.cache = false;
+		this.globalTable = false;
+		this.consolidatedGlobalPV = false;
+	}
+
+	/**
+	 * Copy constructor for a PVFieldSet
+	 * <p>
+	 * This will also create copies of any fields in the PVFieldSet, updating their parent to <code>this</code>
+	 * 
+	 * @param pvfs
+	 *            - the PV fieldset to copy from
+	 */
+	public PVFieldSet(PVFieldSet pvfs)
+	{
+		super(pvfs);
+		this.decode = pvfs.decode;
+		this.newField = pvfs.newField;
+		this.blankAllowed = pvfs.blankAllowed;
+		this.security = pvfs.security;
+		this.ignoreMessages = pvfs.ignoreMessages;
+		this.type = pvfs.type;
+		this.root = pvfs.root;
+		this.keyFields = pvfs.keyFields;
+		this.cache = pvfs.cache;
+		this.globalTable = pvfs.globalTable;
+		this.consolidatedGlobalPV = pvfs.isConsolidatedGlobalPV();
+
+		// copy the fields
+		for (PVField existingField : pvfs.getPVFields())
+		{
+			PVField newField = new PVField(existingField);
+			newField.setParent(this);
+			try
+			{
+				addPVField(newField);
+			}
+			catch (EQException e)
+			{
+				throw new RuntimeException(e);
+			}
+		}
+	}
+
+	/**
+	 * Get the decode for the prompt/validate module of the field TODO: 2 decodes, one for prompt and one for validate
+	 * 
+	 * @return the decode of the prompt/validate module of the field
+	 */
+	public String getDecode()
+	{
+		return decode;
+	}
+
+	/**
+	 * Set the decode for the prompt/validate module of the field
+	 * 
+	 * @param decode
+	 *            - decode for the prompt/validate module of the field
+	 */
+	public void setDecode(String decode)
+	{
+		this.decode = decode;
+	}
+
+	/**
+	 * Determine if the key field must be existing (N) or not existing (Y) or dont care (blank)
+	 * 
+	 * @return the new field flag
+	 */
+	public String getNewField()
+	{
+		return newField;
+	}
+
+	/**
+	 * Set if the key field must be existing (N) or not existing (Y) or dont care (blank)
+	 * 
+	 * @param newField
+	 *            - the new field flag
+	 */
+	public void setNewField(String newField)
+	{
+		this.newField = newField;
+	}
+
+	/**
+	 * Returns whether blank is allowed for this PV or not
+	 * 
+	 * @return true if blank is allowed, otherwise false
+	 */
+	public boolean isBlankAllowed()
+	{
+		return blankAllowed;
+	}
+
+	/**
+	 * Set whether blank is allowed for this PV
+	 * 
+	 * @param blankAllowed
+	 */
+	public void setBlankAllowed(boolean blankAllowed)
+	{
+		this.blankAllowed = blankAllowed;
+	}
+
+	/**
+	 * Returns a <code>List<PVField></code> containing the PVFields
+	 */
+	@SuppressWarnings("unchecked")
+	public List<PVField> getPVFields()
+	{
+		return super.getFields();
+	}
+
+	/**
+	 * Add a PVField to this PVFieldSet
+	 * 
+	 * @param field
+	 *            - The Field to be added
+	 * @throws EQException
+	 *             if the PVField already exists on the PVFieldSet
+	 */
+	public void addPVField(PVField field) throws EQException
+	{
+		super.addField(field);
+	}
+
+	/**
+	 * Get a PVField given a String key.
+	 * 
+	 * @param key
+	 * @return the PVField
+	 * @throws EQException
+	 *             if the key does not exist on the PVFieldSet
+	 */
+	public PVField getPVField(String key) throws EQException
+	{
+		return (PVField) super.getField(key);
+	}
+
+	/**
+	 * Return the security mode
+	 * 
+	 * @return the security move
+	 */
+	public String getSecurity()
+	{
+		return security;
+	}
+
+	/**
+	 * Set the security mode
+	 * 
+	 * @param security
+	 *            - the security mode
+	 */
+	public void setSecurity(String security)
+	{
+		this.security = security;
+	}
+
+	/**
+	 * Return the message severity to ignore
+	 * 
+	 * @return the message severity to ignore
+	 */
+	public int getIgnoreMessages()
+	{
+		return ignoreMessages;
+	}
+
+	/**
+	 * Set the message severity to ignore
+	 * 
+	 * @param ignoreMessages
+	 *            - the message severity to ignore
+	 */
+	public void setIgnoreMessages(int ignoreMessages)
+	{
+		this.ignoreMessages = ignoreMessages;
+	}
+
+	/**
+	 * Return the transaction type
+	 * 
+	 * @return the transaction type
+	 */
+	public String getType()
+	{
+		return type;
+	}
+
+	/**
+	 * Set the transaction type
+	 * 
+	 * @param type
+	 *            - the transaction type
+	 */
+	public void setType(String type)
+	{
+		this.type = type;
+	}
+
+	/**
+	 * Return the program root/database name
+	 * 
+	 * @return the program root/database name
+	 */
+	public String getRoot()
+	{
+		return root;
+	}
+
+	/**
+	 * Set the program root/database name
+	 * 
+	 * @param root
+	 *            - the program root/database name
+	 */
+	public void setRoot(String root)
+	{
+		this.root = root;
+	}
+
+	/**
+	 * Return the list of key fields
+	 * 
+	 * @return the list of key fields
+	 */
+	public String getKeyFields()
+	{
+		return keyFields;
+	}
+
+	/**
+	 * Set the key fields
+	 * 
+	 * @param keyFields
+	 *            - the key fields
+	 */
+	public void setKeyFields(String keyFields)
+	{
+		this.keyFields = keyFields;
+	}
+
+	/**
+	 * Determine whether the pv is cache or not
+	 * 
+	 * @return true if pv is cache
+	 */
+	public boolean isCache()
+	{
+		return cache;
+	}
+
+	/**
+	 * Set whether the pv is cache or not
+	 * 
+	 * @param cache
+	 *            - true if pv is cache
+	 */
+	public void setCache(boolean cache)
+	{
+		this.cache = cache;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean isGlobalTable()
+	{
+		return globalTable;
+	}
+
+	/**
+	 * 
+	 * @param globalTable
+	 */
+	public void setGlobalTable(boolean globalTable)
+	{
+		this.globalTable = globalTable;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean isConsolidatedGlobalPV()
+	{
+		return consolidatedGlobalPV;
+	}
+
+	/**
+	 * 
+	 * @param consolidatedGlobalPV
+	 */
+	public void setConsolidatedGlobalPV(boolean consolidatedGlobalPV)
+	{
+		this.consolidatedGlobalPV = consolidatedGlobalPV;
+	}
+
+	/**
+	 * Getter method of relatedField
+	 * 
+	 * @return String
+	 */
+	public String getRelatedFields()
+	{
+		return relatedFields;
+	}
+
+	/**
+	 * Setter method of relatedField
+	 * 
+	 * @param relatedFields
+	 */
+	public void setRelatedFields(String relatedFields)
+	{
+		this.relatedFields = relatedFields;
+	}
+
+}

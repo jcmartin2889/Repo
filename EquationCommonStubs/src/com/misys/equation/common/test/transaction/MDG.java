@@ -1,0 +1,88 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseFully;
+
+/**
+ * Equation test cases for Add/Maintain Check Digit Codes
+ */
+public class MDG extends EquationTestCaseFully
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: MDG.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	String programName = "B05FRR";
+	String optionId = "MDG";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		retrieveBeforeCancel = false;
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZSPN", "018"); // Check digit code (3A)
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	@Override
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZFMA", "A"); // Check digit formula (1A)
+		transaction.setFieldValue("GZFMN", "EQ4 test"); // Formula description (30A)
+		transaction.setFieldValue("GZCDD", "1"); // Check digit divisor (3P,0)
+		transaction.setFieldValue("GZCDS", "CA"); // Start a/c type range (2A)
+		transaction.setFieldValue("GZCDE", "CB"); // End a/c type range (2A)
+		transaction.setFieldValue("GZCDXS", "01"); // Start position for check digits in a/c number (2P,0)
+		transaction.setFieldValue("GZCDXE", "05"); // End position for check digit in a/c number (2P,0)
+	}
+
+	/**
+	 * Setup the mandatory fields (maintain mode)
+	 */
+	@Override
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZFMN", "EQ4 test 1"); // Formula description (30A)
+	}
+
+}

@@ -1,0 +1,382 @@
+package com.misys.equation.common.internal.dao;
+
+import java.util.Hashtable;
+import java.util.List;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+
+import com.misys.equation.common.dao.IHBXRecordDao;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.dao.beans.GAXRecordDataModel;
+import com.misys.equation.common.dao.beans.HBXRecordDataModel;
+import com.misys.equation.common.internal.dao.mappers.HBXRecordRowMapper;
+import com.misys.equation.common.internal.dao.mappers.HBXRecordRowMapperKey;
+
+/**
+ * This the HBX-Record Dao implementation. <br>
+ * This class is going to provide all back-end services for HBX-Record.
+ * 
+ * @author gumtanr1
+ */
+public class HBXRecordDao extends AbsEquationDao implements IHBXRecordDao
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: HBXRecordDao.java 11229 2011-06-17 12:11:19Z rpatrici $";
+
+	public HBXRecordDao()
+	{
+		super();
+	}
+
+	/**
+	 * This method will check if the current record was already set in the database. <br>
+	 * The Sql <code>SELECT COUNT(*)</code> query will be executed.
+	 * 
+	 * @param sqlWhereStatement
+	 *            - the WHERE clause of the SQL statement
+	 * 
+	 * @return true if the SQL statement returns a count >= 1
+	 */
+	public boolean checkIfThisHBXRecordIsInTheDB(String sqlWhereStatement)
+	{
+
+		return checkIfThisRecordIsInTheDB(sqlWhereStatement);
+	}
+
+	/**
+	 * This method will check if the current record was already set in the database. <br>
+	 * The Sql <code>SELECT COUNT(*)</code> query will be executed.
+	 * 
+	 * @return true if the SQL statement returns a count >= 1
+	 */
+	public boolean checkIfThisHBXRecordIsInTheDB()
+	{
+		return checkIfThisRecordIsInTheDB();
+		// return checkIfThisRecordIsInTheDB(getWhereConditionBaseOnIdRecord());
+	}
+
+	/**
+	 * This method will return an instance of the preset data model.
+	 * 
+	 * @return an instance of the preset data model.
+	 */
+	public HBXRecordDataModel getMyDataModel()
+	{
+		HBXRecordDataModel HBXRecordDataModel = null;
+		AbsRecord record = getRecord();
+
+		if (record instanceof HBXRecordDataModel)
+		{
+			HBXRecordDataModel = (HBXRecordDataModel) getRecord();
+
+		}
+		return HBXRecordDataModel;
+	}
+
+	/**
+	 * This method will return a <code>String</code> which represents and sql where condition base on the record id.<br>
+	 * For example <code>id = getDataModel.getId()</code>
+	 * 
+	 * @return a <code>String</code> which represents and sql filter.
+	 */
+	@Override
+	protected String getWhereConditionBaseOnIdRecord()
+	{
+		StringBuilder whereCondition = new StringBuilder("HBXLNM='");
+		whereCondition.append(getMyDataModel().getLanguageCode());
+		whereCondition.append("' and HBXOWN='");
+		whereCondition.append(getMyDataModel().getOwner());
+		whereCondition.append("' and HBXTYP='");
+		whereCondition.append(getMyDataModel().getType());
+		whereCondition.append("' and HBXKEY='");
+		whereCondition.append(getMyDataModel().getKey());
+		whereCondition.append("' ");
+		return whereCondition.toString();
+	}
+
+	/**
+	 * This method will check if the current record was already set in the database. <br>
+	 * 
+	 * 
+	 * @param sqlWhereStatement
+	 *            - the WHERE clause of the SQL statement
+	 * 
+	 * @return true if the SQL statement returns a count >= 1
+	 */
+	public boolean checkIfThisRecordIsInTheDB()
+	{
+		boolean result;
+		List<AbsRecord> results = getRecordBy(getWhereConditionBaseOnIdRecord(), new HBXRecordRowMapper());
+
+		result = results.isEmpty();
+		return !result;
+	}
+
+	/**
+	 * Returns a list of name and ? pairs in the format of:
+	 * <p>
+	 * field1=?, field2=?, field3=?, ...
+	 * 
+	 * @return a list of name and ? pairs
+	 */
+	@Override
+	protected String getParameterizedFields()
+	{
+		String fields = " HBXOWN=?, HBXLNM=?, HBXTYP=?, HBXKEY=?, HBXTIM=?, HBXTXT=? ";
+		return fields;
+	}
+
+	/**
+	 * Returns a list of the field's name
+	 * 
+	 * @return a list of the field's name
+	 */
+	@Override
+	protected String getFields()
+	{
+		String fields = " HBXOWN, HBXLNM, HBXTYP, HBXKEY, HBXTIM, HBXTXT ";
+		return fields;
+	}
+
+	/**
+	 * Returns a list of the field's parameters
+	 * 
+	 * @return the list of the field's parameters
+	 */
+	@Override
+	protected String getParameters()
+	{
+		String fields = " ?, ?, ?, ?, ?, ? ";
+		return fields;
+	}
+
+	/**
+	 * This method create an array that contains the fields values and its types. <br>
+	 * It will be used by jdbc <code>PreparedStatement</code>
+	 * 
+	 * @return An array that contains the fields values and its types.
+	 */
+	@Override
+	public Object[] getParameterizedFieldsValues()
+	{
+		HBXRecordDataModel dataModel = getMyDataModel();
+
+		Object[] object = new Object[] { dataModel.getOwner(), dataModel.getLanguageCode(), dataModel.getType(),
+						dataModel.getKey(), dataModel.getTimestamp(), dataModel.getText() };
+
+		return object;
+	}
+
+	/**
+	 * This method is going execute a Sql query using the filter criteria.
+	 * 
+	 * @param whereClause
+	 *            this is the <code>String</code> that represent the sql filter.
+	 * @return a <code>List</code> which contains a records
+	 */
+	public List<AbsRecord> getRecordBy(String whereClause)
+	{
+		return getRecordBy(whereClause, new HBXRecordRowMapper());
+	}
+
+	/**
+	 * This method is going to get all records.
+	 * 
+	 * @return a <code>List</code> which contains a records
+	 */
+	public List<AbsRecord> getRecords()
+	{
+		return getRecordBy(null, new HBXRecordRowMapper());
+	}
+
+	/**
+	 * This method is going to return a <code>HBRecordDataModel</code>
+	 * 
+	 * @return a <code>HBRecordDataModel</code>
+	 */
+	public HBXRecordDataModel getHBXRecord()
+	{
+		HBXRecordDataModel HBXRecordDataModel = null;
+
+		StringBuilder whereCondition = new StringBuilder(getWhereConditionBaseOnIdRecord());
+		whereCondition.append(" order by HBXOWN asc, HBXLNM asc, HBXTYP asc, HBXKEY asc ");
+
+		List<AbsRecord> results = getRecordBy(whereCondition.toString(), new HBXRecordRowMapper());
+
+		if (!results.isEmpty())
+		{
+
+			HBXRecordDataModel = (HBXRecordDataModel) results.get(0);
+		}
+
+		return HBXRecordDataModel;
+	}
+
+	/**
+	 * Attempts to load a XML definition record where the Timestamp is greater than that supplied.<br>
+	 * This method will return a <code>HBXRecordDataModel</code>.
+	 * 
+	 * @param code
+	 *            This the code that will used as a filter. Then it will be set in the returned <code>HBXRecordDataModel</code>.
+	 * @param key
+	 *            This the key that will used as a filter. Then it will be set in the returned <code>HBXRecordDataModel</code>.
+	 * @param timestamp
+	 *            the Timestamp already loaded (or null if not loaded)
+	 * @return return a <code>HBXRecordDataModel</code> if the record in the table has a later Timestamp, otherwise null.
+	 */
+	@SuppressWarnings("unchecked")
+	public HBXRecordDataModel findWithLaterTimestamp(final String owner, final String languageCode, final String type,
+					final String key, String timestamp)
+	{
+		StringBuilder sqlBuilder = new StringBuilder(1024);
+		List<HBXRecordDataModel> dataModels = null;
+		HBXRecordDataModel hBXRecordDataModel = null;
+
+		// "SELECT HBXOWN, HBXLNM, HBXTYP, HBXKEY, HBXTIM, HBXTXT FROM HBXPF WHERE HBXOWN = ? AND HBXLNM = ? AND HBXTYP = ? AND HBXKEY = ? AND HBXTIM > ? ORDER BY HBXOWN ASC, HBXLNM ASC, HBXTYP ASC, HBXKEY ASC"
+		if (timestamp == null)
+		{
+			timestamp = "";
+		}
+
+		sqlBuilder.append("SELECT ");
+		sqlBuilder.append(getFields());
+		sqlBuilder.append(" FROM ");
+		sqlBuilder.append(getTableName());
+		sqlBuilder.append(" WHERE HBXOWN ='");
+		sqlBuilder.append(owner);
+		sqlBuilder.append(" WHERE HBXLNM ='");
+		sqlBuilder.append(languageCode);
+		sqlBuilder.append(" WHERE HBXTYP ='");
+		sqlBuilder.append(type);
+		sqlBuilder.append(" WHERE HBXKEY ='");
+		sqlBuilder.append(key);
+		sqlBuilder.append("' AND HBXTIM >'");
+		sqlBuilder.append(timestamp.trim());
+		sqlBuilder.append("' ORDER BY HBXOWN ASC, HBXLNM ASC, HBXTYP ASC, HBXKEY ASC ");
+
+		JdbcTemplate select = getJdbcTemplate();
+
+		if (LOG.isDebugEnabled())
+		{
+			LOG.debug(new StringBuilder("The executed sql is: ").append(sqlBuilder.toString()).toString());
+		}
+
+		dataModels = select.query(sqlBuilder.toString(), new HBXRecordRowMapper());
+
+		if (!dataModels.isEmpty())
+		{
+			hBXRecordDataModel = dataModels.get(0);
+		}
+
+		return hBXRecordDataModel;
+	}
+
+	/**
+	 * This method will return the HBX record with timestamp greater than the timestamp supplied
+	 * 
+	 * @param owner
+	 *            - owner
+	 * @param timestamp
+	 *            - timestamp
+	 * @return a <code>HBRecordDataModel</code>
+	 */
+	@SuppressWarnings("unchecked")
+	public HBXRecordDataModel findWithLaterTimestamp(final String owner, String timestamp)
+	{
+		StringBuilder sqlBuilder = new StringBuilder(1024);
+		List<HBXRecordDataModel> dataModels = null;
+		HBXRecordDataModel hBXRecordDataModel = null;
+
+		if (timestamp == null)
+		{
+			timestamp = "";
+		}
+
+		sqlBuilder.append("SELECT ");
+		sqlBuilder.append(getFields());
+		sqlBuilder.append(" FROM ");
+		sqlBuilder.append(getTableName());
+		sqlBuilder.append(" WHERE HBXOWN ='");
+		sqlBuilder.append(owner);
+		sqlBuilder.append("' AND HBXTIM >'");
+		sqlBuilder.append(timestamp.trim());
+		sqlBuilder.append("' ORDER BY HBXTIM DESC ");
+
+		JdbcTemplate select = getJdbcTemplate();
+
+		if (LOG.isDebugEnabled())
+		{
+			LOG.debug(new StringBuilder("The executed sql is: ").append(sqlBuilder.toString()).toString());
+		}
+
+		dataModels = select.query(sqlBuilder.toString(), new HBXRecordRowMapper());
+
+		if (!dataModels.isEmpty())
+		{
+			hBXRecordDataModel = dataModels.get(0);
+		}
+
+		return hBXRecordDataModel;
+	}
+
+	@Override
+	protected Hashtable<String, AbsRecord> createHashtableRecordModel(List<AbsRecord> records)
+	{
+		Hashtable<String, AbsRecord> results = null;
+
+		HBXRecordDataModel hbxRecordDataModel;
+
+		if (!records.isEmpty())
+		{
+
+			results = new Hashtable<String, AbsRecord>();
+		}
+		else
+		{
+
+			return null;
+		}
+
+		for (AbsRecord absRecord : records)
+		{
+			hbxRecordDataModel = (HBXRecordDataModel) absRecord;
+
+			// search argument for this table is comprised of owner, language, type and key
+			results.put(hbxRecordDataModel.getOwner() + hbxRecordDataModel.getLanguageCode() + hbxRecordDataModel.getType()
+							+ hbxRecordDataModel.getKey(), hbxRecordDataModel);
+		}
+
+		return results;
+	}
+
+	/**
+	 * Returns a list of keys (service option Ids) for the given code type
+	 * <p>
+	 * 
+	 * @param code
+	 *            The GAXCOD value (either {@link GAXRecordDataModel#SERVICE_CODE} or {@link GAXRecordDataModel#LAYOUT_CODE}
+	 * @return The <code>List</code> of Strings in ascending order
+	 */
+	@SuppressWarnings("unchecked")
+	public List<String> getKeysBy(String languageCode)
+	{
+		StringBuilder sqlBuilder = new StringBuilder(1024);
+		List<String> dataModels = null;
+
+		sqlBuilder.append("SELECT HBXKEY FROM ");
+		sqlBuilder.append(getTableName());
+		sqlBuilder.append(" WHERE HBXLNM = '");
+		sqlBuilder.append(languageCode);
+		sqlBuilder.append("' ORDER BY HBXKEY ASC");
+
+		if (LOG.isDebugEnabled())
+		{
+			LOG.debug(new StringBuilder("The executed sql is: ").append(sqlBuilder.toString()).toString());
+		}
+
+		JdbcTemplate select = getJdbcTemplate();
+		dataModels = select.query(sqlBuilder.toString(), new HBXRecordRowMapperKey());
+		return dataModels;
+	}
+}

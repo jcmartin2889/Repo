@@ -1,0 +1,484 @@
+package com.misys.equation.common.dao.beans;
+
+import com.misys.equation.common.utilities.Toolbox;
+
+public class AAIRecordDataModel extends AbsRecord
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: AAIRecordDataModel.java 10646 2011-03-18 05:38:23Z capilid1 $";
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private final static String RECORD_NAME = "AAIPF";
+	private String event = ""; // AAIEVNT
+	private String description = ""; // AAIEVDS
+	private String type = ""; // AAIEVTP
+	private String app = ""; // AAIAPP
+	private String reference = ""; // AAIADC
+	private String tranType = ""; // AAITTP
+	private String userDefined = ""; // AAIUSRD
+	private String tranAmount = ""; // AAITATP
+	private String dispTranRef = ""; // AAIDTRF
+	private String dispCreditAc = ""; // AAIDCRA
+	private String dispTranDate = ""; // AAIDDTE
+	private String dispAddRef = ""; // AAIDARF
+	private String dispSqn = ""; // AAIDSQN
+	private String supTQ = ""; // AAITQ
+	private String supFE = ""; // AAIFE
+	private String chargeEvent = ""; // AAICHG
+	private String supEFC = ""; // AAIEFE
+	private String supTranAudTrail = ""; // AAITAT
+
+	/** Event type field value indicating a WMENU1 option */
+	public final static String EVENT_TYPE_WMENU1 = "M";
+
+	/** Entity type (Account/Deal/Commitment) field value indicating an Account transaction */
+	public final static String ENTITY_TYPE_ACCOUNT = "A";
+	/** Entity type (Account/Deal/Commitment) field value indicating a Deal transaction */
+	public final static String ENTITY_TYPE_DEAL = "D";
+	/** Entity type (Account/Deal/Commitment) field value indicating a Commitment transaction */
+	public final static String ENTITY_TYPE_COMMITMENT = "C";
+
+	/** Transaction type field value indicating an add transaction */
+	public final static String TRANSACTION_TYPE_ADD = "A";
+	/** Transaction type field value indicating an maintain transaction */
+	public final static String TRANSACTION_TYPE_MAINTAIN = "M";
+	/** Transaction type field value indicating an cancel transaction */
+	public final static String TRANSACTION_TYPE_CANCEL = "C";
+	/**
+	 * Transaction type field value indicating an fully functional transaction. This is used for any function which supports two or
+	 * more modes
+	 */
+	public final static String TRANSACTION_TYPE_FULLY_FUNCTIONAL = "F";
+
+	/**
+	 * Construct an empty file
+	 * 
+	 */
+	public AAIRecordDataModel()
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+	}
+
+	/**
+	 * Construct a AAI record key
+	 * 
+	 * @param optionId
+	 *            - option id
+	 */
+	public AAIRecordDataModel(String event)
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+		setEvent(event);
+	}
+
+	/**
+	 * Return the event
+	 * 
+	 * @return the event
+	 */
+	public String getEvent()
+	{
+		return event;
+	}
+
+	/**
+	 * Set the event
+	 * 
+	 * @param event
+	 *            - the event
+	 */
+	public void setEvent(String event)
+	{
+		this.event = Toolbox.trim(event, 6);
+	}
+
+	/**
+	 * Return the event description
+	 * 
+	 * @return the event description
+	 */
+	public String getDescription()
+	{
+		return description;
+	}
+
+	/**
+	 * Set the event description
+	 * 
+	 * @param description
+	 *            - the event description
+	 */
+	public void setDescription(String description)
+	{
+		this.description = Toolbox.trim(description, 30);
+	}
+
+	/**
+	 * Return the event type
+	 * 
+	 * @return the event type
+	 */
+	public String getType()
+	{
+		return type;
+	}
+
+	/**
+	 * Set the event type
+	 * 
+	 * @param type
+	 *            - the event type
+	 */
+	public void setType(String type)
+	{
+		this.type = Toolbox.trim(type, 1);
+	}
+
+	/**
+	 * Return the application
+	 * 
+	 * @return the application
+	 */
+	public String getApp()
+	{
+		return app;
+	}
+
+	/**
+	 * Set the application
+	 * 
+	 * @param app
+	 *            - the application
+	 */
+	public void setApp(String app)
+	{
+		this.app = Toolbox.trim(app, 2);
+	}
+	/**
+	 * Return the transaction reference
+	 * 
+	 * @return the transaction reference
+	 */
+	public String getReference()
+	{
+		return reference;
+	}
+
+	/**
+	 * Set the transaction reference
+	 * 
+	 * @param reference
+	 *            - the transaction reference
+	 */
+	public void setReference(String reference)
+	{
+		this.reference = Toolbox.trim(reference, 1);
+	}
+
+	/**
+	 * Return the transaction type
+	 * 
+	 * @return the transaction type
+	 */
+	public String getTranType()
+	{
+		return tranType;
+	}
+
+	/**
+	 * Set the transaction type
+	 * 
+	 * @param tranType
+	 *            - the transaction type
+	 */
+	public void setTranType(String tranType)
+	{
+		this.tranType = Toolbox.trim(tranType, 1);
+	}
+
+	/**
+	 * Return the user defined flag
+	 * 
+	 * @return the user defined flag
+	 */
+	public String getUserDefined()
+	{
+		return userDefined;
+	}
+
+	/**
+	 * Set the user defined flag
+	 * 
+	 * @param userDefined
+	 *            - the user defined flag
+	 */
+	public void setUserDefined(String userDefined)
+	{
+		this.userDefined = Toolbox.trim(userDefined, 1);
+	}
+
+	/**
+	 * Return the transaction amount
+	 * 
+	 * @return the transaction amount
+	 */
+	public String getTranAmount()
+	{
+		return tranAmount;
+	}
+
+	/**
+	 * Set the transaction amount
+	 * 
+	 * @param tranAmount
+	 *            - the transaction amount
+	 */
+	public void setTranAmount(String tranAmount)
+	{
+		this.tranAmount = Toolbox.trim(tranAmount, 1);
+	}
+
+	/**
+	 * Return the display transaction reference flag
+	 * 
+	 * @return the display transaction reference flag
+	 */
+	public String getDispTranRef()
+	{
+		return dispTranRef;
+	}
+
+	/**
+	 * Set the display transaction reference flag
+	 * 
+	 * @param dispTranRef
+	 *            - the display transaction reference flag
+	 */
+	public void setDispTranRef(String dispTranRef)
+	{
+		this.dispTranRef = Toolbox.trim(dispTranRef, 1);
+	}
+
+	/**
+	 * Return the display credit account flag
+	 * 
+	 * @return the display credit account flag
+	 */
+	public String getDispCreditAc()
+	{
+		return dispCreditAc;
+	}
+
+	/**
+	 * Set the display credit account flag
+	 * 
+	 * @param dispCreditAc
+	 *            - the display credit account flag
+	 */
+	public void setDispCreditAc(String dispCreditAc)
+	{
+		this.dispCreditAc = Toolbox.trim(dispCreditAc, 1);
+	}
+
+	/**
+	 * Return the display transaction date flag
+	 * 
+	 * @return the display transaction date flag
+	 */
+	public String getDispTranDate()
+	{
+		return dispTranDate;
+	}
+
+	/**
+	 * Set the display transaction date flag
+	 * 
+	 * @param dispTranDate
+	 *            - the display transaction date flag
+	 */
+	public void setDispTranDate(String dispTranDate)
+	{
+		this.dispTranDate = Toolbox.trim(dispTranDate, 1);
+	}
+
+	/**
+	 * Return the display additional reference flag
+	 * 
+	 * @return the display additional reference flag
+	 */
+	public String getDispAddRef()
+	{
+		return dispAddRef;
+	}
+
+	/**
+	 * Set the display additional reference flag
+	 * 
+	 * @param dispAddRef
+	 *            - the display additional reference flag
+	 */
+	public void setDispAddRef(String dispAddRef)
+	{
+		this.dispAddRef = Toolbox.trim(dispAddRef, 1);
+	}
+
+	/**
+	 * Return the display sequence number flag
+	 * 
+	 * @return the display sequence number flag
+	 */
+	public String getDispSqn()
+	{
+		return dispSqn;
+	}
+
+	/**
+	 * Set the display sequence number flag
+	 * 
+	 * @param dispSqn
+	 *            - the display sequence number flag
+	 */
+	public void setDispSqn(String dispSqn)
+	{
+		this.dispSqn = Toolbox.trim(dispSqn, 1);
+	}
+
+	/**
+	 * Return the support for transaction queuing flag
+	 * 
+	 * @return the support for transaction queuing flag
+	 */
+	public String getSupTQ()
+	{
+		return supTQ;
+	}
+
+	/**
+	 * Set the support for transaction queuing flag
+	 * 
+	 * @param supTQ
+	 *            - the support for transaction queuing flag
+	 */
+	public void setSupTQ(String supTQ)
+	{
+		this.supTQ = Toolbox.trim(supTQ, 1);
+	}
+
+	/**
+	 * Return the support for four eyes flag
+	 * 
+	 * @return the support for four eyes flag
+	 */
+	public String getSupFE()
+	{
+		return supFE;
+	}
+
+	/**
+	 * Set the support for four eyes flag
+	 * 
+	 * @param supFE
+	 *            - the support for four eyes flag
+	 */
+	public void setSupFE(String supFE)
+	{
+		this.supFE = Toolbox.trim(supFE, 1);
+	}
+
+	/**
+	 * Return the charge event flag
+	 * 
+	 * @return the charge event flag
+	 */
+	public String getChargeEvent()
+	{
+		return chargeEvent;
+	}
+
+	/**
+	 * Set the charge event flag
+	 * 
+	 * @param chargeEvent
+	 *            - the charge event flag
+	 */
+	public void setChargeEvent(String chargeEvent)
+	{
+		this.chargeEvent = Toolbox.trim(chargeEvent, 1);
+	}
+
+	/**
+	 * Return the support for Enhanced Fees and Charges flag
+	 * 
+	 * @return the support for Enhanced Fees and Charges flag
+	 */
+	public String getSupEFC()
+	{
+		return supEFC;
+	}
+
+	/**
+	 * Set the support for Enhanced Fees and Charges flag
+	 * 
+	 * @param supEFC
+	 *            - the support for Enhanced Fees and Charges flag
+	 */
+	public void setSupEFC(String supEFC)
+	{
+		this.supEFC = Toolbox.trim(supEFC, 1);
+	}
+
+	/**
+	 * Return the support for Transaction Audit Trail flag
+	 * 
+	 * @return the support for Transaction Audit Trail flag
+	 */
+	public String getSupTranAudTrail()
+	{
+		return supTranAudTrail;
+	}
+
+	/**
+	 * Set the support for Transaction Audit Trail flag
+	 * 
+	 * @param supTranAudTrail
+	 *            - the support for Transaction Audit Trail flag
+	 */
+	public void setSupTranAudTrail(String supTranAudTrail)
+	{
+		this.supTranAudTrail = Toolbox.trim(supTranAudTrail, 1);
+	}
+
+	/**
+	 * Reload AAI details
+	 * 
+	 * @param aaiRecord
+	 *            - AAI record details
+	 */
+	public void updateWithThisRecord(AAIRecordDataModel aaiRecord)
+	{
+		this.setEvent(aaiRecord.getEvent());
+		this.setDescription(aaiRecord.getDescription());
+		this.setType(aaiRecord.getType());
+		this.setApp(aaiRecord.getApp());
+		this.setReference(aaiRecord.getReference());
+		this.setTranType(aaiRecord.getTranType());
+		this.setUserDefined(aaiRecord.getUserDefined());
+		this.setTranAmount(aaiRecord.getTranAmount());
+		this.setDispTranRef(aaiRecord.getDispTranRef());
+		this.setDispCreditAc(aaiRecord.getDispCreditAc());
+		this.setDispTranDate(aaiRecord.getDispTranDate());
+		this.setDispAddRef(aaiRecord.getDispAddRef());
+		this.setDispSqn(aaiRecord.getDispSqn());
+		this.setSupTQ(aaiRecord.getSupTQ());
+		this.setSupFE(aaiRecord.getSupFE());
+		this.setChargeEvent(aaiRecord.getChargeEvent());
+		this.setSupEFC(aaiRecord.getSupEFC());
+		this.setSupTranAudTrail(aaiRecord.getSupTranAudTrail());
+	}
+}

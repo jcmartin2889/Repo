@@ -1,0 +1,103 @@
+package com.misys.equation.common.internal.dao;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.List;
+
+import org.springframework.jdbc.core.RowMapper;
+
+import com.misys.equation.common.dao.IFPGRecordDao;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.dao.beans.FPGDataModel;
+
+public class FPGRecordDao extends AbsEquationDao implements IFPGRecordDao
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: FPGRecordDao.java 10565 2011-02-25 15:00:56Z WRIGHTP1 $";
+
+	@Override
+	protected Hashtable<String, AbsRecord> createHashtableRecordModel(List<AbsRecord> records)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected String getFields()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected String getParameterizedFields()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected Object[] getParameterizedFieldsValues()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected String getParameters()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected String getWhereConditionBaseOnIdRecord()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<AbsRecord> getRecordBy(String whereClause)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<AbsRecord> getRecords()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public Collection<FPGDataModel> getFxTotal(final String system, final String unit, final String enqCurrency,
+					final String enqDate)
+	{
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT OMBRNM, SUM(OMNWP) AS TOTWP, SUM(OMNWR) AS TOTWR, (SUM(OMNWR)-SUM(OMNWP)) AS FXNET ");
+		sql.append("FROM OM40LF WHERE OMCCY ='" + enqCurrency + "' ");
+		sql.append("AND OMDTE = '" + enqDate + "' ");
+		sql.append("AND OMARC <> 'A' AND (OMMVTS = 'P' OR OMMVTS = 'S' OR OMMVT = 'U')");
+		sql.append("GROUP BY OMBRNM");
+
+		Collection<FPGDataModel> totals = getJdbcTemplate().query(sql.toString(), new RowMapper()
+		{
+			public Object mapRow(ResultSet rs, int rowNum) throws SQLException
+			{
+				FPGDataModel fxTotal = new FPGDataModel();
+				fxTotal.setFxSystem(system);
+				fxTotal.setUnitMnem(unit);
+				fxTotal.setBranchMnem(rs.getString(1));
+				fxTotal.setFxPayTotal(rs.getLong(2));
+				fxTotal.setFxReceiveTotal(rs.getLong(3));
+				fxTotal.setFxSumTotal(rs.getLong(4));
+				return fxTotal;
+			}
+		});
+
+		return totals;
+	}
+}

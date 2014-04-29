@@ -1,0 +1,151 @@
+/*
+ * This sample code is provided by Misys for illustrative purposes only.
+ * 
+ * These examples have not been thoroughly tested under all conditions.
+ * 
+ * Misys, therefore, cannot guarantee or imply reliability, serviceability, or function of these programs.
+ * 
+ * All programs contained herein are provided to you "AS IS" without any warranties of any kind. The implied warranties of
+ * non-infringement, merchantability and fitness for a particular purpose are expressly disclaimed.
+ */
+package com.misys.equation.common.test.xapi.standard;
+
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.sql.Types;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.test.TestEnvironment;
+
+// *************************************************************************************************
+/**
+ * 
+ * 
+ */
+// *************************************************************************************************
+public class SSC02R
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	EquationStandardSession session;
+	// Input branch mnemonic
+	String service = "SSC02R";
+	String sab = "0000";
+	String san = "      ";
+	String sas = "   ";
+	String sccy = "CNY";
+	String sdhp = "SP250";
+	String fshn = "               ";
+	String sccys = "   ";
+	String dsepms = "                                   ";
+	String inputBrnmStr = "0000";
+	// *********************************************************************************************
+	/**
+	 * 
+	 */
+	// *********************************************************************************************
+	private SSC02R()
+	{
+		try
+		{
+			session = TestEnvironment.getTestEnvironment().getStandardSession();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+	public static void main(String[] inputParameters)
+	{
+		SSC02R test = new SSC02R();
+		test.test();
+	}
+	// *********************************************************************************************
+	/**
+	 * 
+	 */
+	// *********************************************************************************************
+	public void test()
+	{
+		// Have a bash...
+		try
+		{
+			// make sure we have the procedure for calling PVs...
+			String dataItemFunctionSqlString = "SELECT COUNT(*) FROM QSYS2/SYSPROCS WHERE SPECIFIC_SCHEMA = ? AND SPECIFIC_NAME = '"
+							+ service + "PRC'";
+			PreparedStatement dataItemFunctionStatement = session.getConnection().prepareStatement(dataItemFunctionSqlString,
+							ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			dataItemFunctionStatement.setString(1, session.getUnit().getKLIBLibrary());
+			ResultSet dataItemFunctionRS = dataItemFunctionStatement.executeQuery();
+			// ...
+			if (dataItemFunctionRS.next())
+			{
+				if (dataItemFunctionRS.getInt(1) == 0)
+				{
+					// Create the required SQL procedures
+					String createProcedure = "CREATE PROCEDURE KLIB" + session.getUnitId() + "/" + service + "PRC " + "( "
+									+ "INOUT SAB CHAR(4) , " + "INOUT SAN CHAR(6) , " + "INOUT SAS CHAR(3) , "
+									+ "INOUT SCCY CHAR(3) , " + "INOUT SDHP CHAR(6) , " + "INOUT SFSHN CHAR(15) , "
+									+ "INOUT SCCYS CHAR(3) , " + "INOUT DSEPMS CHAR(37)" + ") " + "LANGUAGE RPGLE "
+									+ "NOT DETERMINISTIC " + "NO SQL " + "EXTERNAL NAME " + service + " "
+									+ "PARAMETER STYLE GENERAL";
+					try
+					{
+						Statement createProcedureStatement = session.getConnection().createStatement(ResultSet.TYPE_FORWARD_ONLY,
+										ResultSet.CONCUR_READ_ONLY);
+						createProcedureStatement.execute(createProcedure);
+						createProcedureStatement.close();
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+						System.out.println("Failed to create PV Procedure");
+					}
+				}
+			}
+			// Clear the decks so we are ready to start with XA
+			session.connectionCommit();
+			// Set the parameter variables in the SQL procedure
+			CallableStatement equationCaller = session.getConnection().prepareCall(
+							"{ CALL " + service + "PRC (?, ?, ?, ?, ?, ?, ?, ?) }");
+			// Register the output
+			equationCaller.registerOutParameter(1, Types.CHAR);
+			equationCaller.registerOutParameter(2, Types.CHAR);
+			equationCaller.registerOutParameter(3, Types.CHAR);
+			equationCaller.registerOutParameter(4, Types.CHAR);
+			equationCaller.registerOutParameter(5, Types.CHAR);
+			equationCaller.registerOutParameter(6, Types.CHAR);
+			equationCaller.registerOutParameter(7, Types.CHAR);
+			equationCaller.registerOutParameter(8, Types.CHAR);
+			equationCaller.setString(1, sab);
+			equationCaller.setString(2, san);
+			equationCaller.setString(3, sas);
+			equationCaller.setString(4, sccy);
+			equationCaller.setString(5, sdhp);
+			equationCaller.setString(6, fshn);
+			equationCaller.setString(7, sccys);
+			equationCaller.setString(8, dsepms);
+			// Execute the call
+			equationCaller.execute();
+			// Get the returned value
+			sab = equationCaller.getString(1);
+			san = equationCaller.getString(2);
+			sas = equationCaller.getString(3);
+			sccy = equationCaller.getString(4);
+			sdhp = equationCaller.getString(5);
+			fshn = equationCaller.getString(6);
+			sccys = equationCaller.getString(7);
+			dsepms = equationCaller.getString(8);
+			// Close the statement abd connie
+			equationCaller.close();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.toString());
+			// Rollback any transactions for the unit
+		}
+	}
+}

@@ -1,0 +1,277 @@
+package com.misys.equation.common.dao.beans;
+
+/**
+ * GYWPF Data model
+ * 
+ */
+public class GYWRecordDataModel extends AbsRecord
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	private static final long serialVersionUID = 1L;
+	public final static String RECORD_NAME = "GYWPF";
+
+	private String workstationId; // GYWWSD
+	private int date; // GYWDIM
+	private int time; // GYWTIM
+	private int sequence; // GYWSEQ
+	private String jtt; // GYWJTT
+	private String programRoot; // GYWFRO
+	private String userClassName; // GYWCLS
+	private byte[] userData; // GYWDTA
+	private String misysClassName; // GYWMLS
+	private byte[] misysData; // GYWMTA
+
+	/**
+	 * Default constructor
+	 */
+	public GYWRecordDataModel()
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+
+	}
+
+	/**
+	 * Construct a new GYW record key
+	 * 
+	 * @param workstationId
+	 *            - workstation id
+	 * @param date
+	 *            - journal date
+	 * @param time
+	 *            - journal time
+	 * @param sequence
+	 *            - journal sequence number
+	 * @param jtt
+	 *            - journal transaction type
+	 * @param programRoot
+	 *            - journal type
+	 */
+	public GYWRecordDataModel(String workstationId, int date, int time, int sequence, String jtt, String programRoot)
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+
+		setWorkstationId(workstationId);
+		setDate(date);
+		setTime(time);
+		setSequence(sequence);
+		setJtt(jtt);
+		setProgramRoot(programRoot);
+	}
+
+	// ---getters and setters----//
+
+	/**
+	 * Return the workstation id
+	 * 
+	 * @return the workstation id
+	 */
+	public String getWorkstationId()
+	{
+		return workstationId;
+	}
+
+	/**
+	 * Set the workstation id
+	 * 
+	 * @param workstationId
+	 *            - the workstation id
+	 */
+	public void setWorkstationId(String workstationId)
+	{
+		this.workstationId = workstationId;
+	}
+
+	/**
+	 * Return the journal date
+	 * 
+	 * @return the journal date
+	 */
+	public int getDate()
+	{
+		return date;
+	}
+
+	/**
+	 * Set the journal date
+	 * 
+	 * @param date
+	 *            - the journal date
+	 */
+	public void setDate(int date)
+	{
+		this.date = date;
+	}
+
+	/**
+	 * Return the journal time
+	 * 
+	 * @return the journal time
+	 */
+	public int getTime()
+	{
+		return time;
+	}
+
+	/**
+	 * Set the journal time
+	 * 
+	 * @param time
+	 *            - the journal time
+	 */
+	public void setTime(int time)
+	{
+		this.time = time;
+	}
+
+	/**
+	 * Return the journal sequence
+	 * 
+	 * @return the journal sequence
+	 */
+	public int getSequence()
+	{
+		return sequence;
+	}
+
+	/**
+	 * Set the journal sequence
+	 * 
+	 * @param sequence
+	 *            - the journal sequence
+	 */
+	public void setSequence(int sequence)
+	{
+		this.sequence = sequence;
+	}
+
+	/**
+	 * Return the journal transaction type
+	 * 
+	 * @return the journal transaction type
+	 */
+	public String getJtt()
+	{
+		return jtt;
+	}
+
+	/**
+	 * Set the journal transaction type
+	 * 
+	 * @param jtt
+	 *            - the journal transaction type
+	 */
+	public void setJtt(String jtt)
+	{
+		this.jtt = jtt;
+	}
+
+	/**
+	 * Return the journal program root
+	 * 
+	 * @return the journal program root
+	 */
+	public String getProgramRoot()
+	{
+		return programRoot;
+	}
+
+	/**
+	 * Set the journal program root
+	 * 
+	 * @param programRoot
+	 *            - the journal program root
+	 */
+	public void setProgramRoot(String programRoot)
+	{
+		this.programRoot = programRoot;
+	}
+
+	/**
+	 * Return the class name of the user data
+	 * 
+	 * @return the class name of the user data
+	 */
+	public String getUserClassName()
+	{
+		return userClassName;
+	}
+
+	/**
+	 * Set the class name of the user data
+	 * 
+	 * @param className
+	 *            - the class name of the user data
+	 */
+	public void setUserClassName(String userClassName)
+	{
+		this.userClassName = userClassName;
+	}
+
+	/**
+	 * Return the user data
+	 * 
+	 * @return the user data
+	 */
+	public byte[] getUserData()
+	{
+		return userData;
+	}
+
+	/**
+	 * Set the user data
+	 * 
+	 * @param userData
+	 *            - the user data
+	 */
+	public void setUserData(byte[] userData)
+	{
+		this.userData = userData;
+	}
+
+	/**
+	 * Return the class name of the Misys data
+	 * 
+	 * @return the class name of the Misys data
+	 */
+	public String getMisysClassName()
+	{
+		return misysClassName;
+	}
+
+	/**
+	 * Set the class name of the Misys data
+	 * 
+	 * @param className
+	 *            - the class name of the Misys data
+	 */
+	public void setMisysClassName(String misysClassName)
+	{
+		this.misysClassName = misysClassName;
+	}
+
+	/**
+	 * Return the Misys data
+	 * 
+	 * @return the Misys data
+	 */
+	public byte[] getMisysData()
+	{
+		return misysData;
+	}
+
+	/**
+	 * Set the Misys data
+	 * 
+	 * @param misysData
+	 *            - the Misys data
+	 */
+	public void setMisysData(byte[] misysData)
+	{
+		this.misysData = misysData;
+	}
+
+}

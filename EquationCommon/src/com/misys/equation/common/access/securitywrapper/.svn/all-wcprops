@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/securitywrapper
+END
+SecurityMappingInfo.java
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/securitywrapper/SecurityMappingInfo.java
+END
+SecurityWrapperFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/securitywrapper/SecurityWrapperFactory.java
+END
+AccountSecurityWrapper.java
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/securitywrapper/AccountSecurityWrapper.java
+END
+BranchSecurityWrapper.java
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/securitywrapper/BranchSecurityWrapper.java
+END
+SecurityWrapper.java
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/securitywrapper/SecurityWrapper.java
+END

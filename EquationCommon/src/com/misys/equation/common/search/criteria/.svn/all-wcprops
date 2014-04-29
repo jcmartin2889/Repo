@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/search/criteria
+END
+ISearchCriteria.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/search/criteria/ISearchCriteria.java
+END
+OptionSearchCriteria.java
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/search/criteria/OptionSearchCriteria.java
+END
+AccountSearchCriteria.java
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/search/criteria/AccountSearchCriteria.java
+END
+BranchSearchCriteria.java
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/search/criteria/BranchSearchCriteria.java
+END
+CustomerSearchCriteria.java
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/search/criteria/CustomerSearchCriteria.java
+END
+DealSearchCriteria.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/search/criteria/DealSearchCriteria.java
+END

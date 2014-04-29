@@ -1,0 +1,75 @@
+package com.misys.equation.common.globalprocessing;
+
+/**
+ * This class will execute the task that monitors the systems.
+ * 
+ * @author DeRoset
+ */
+public class SystemStatusManagerMonitor
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	private final SystemStatusManagerThread systemStatusManagerThread;
+	private static SystemStatusManagerMonitor currentInstance;
+
+	/**
+	 * this is the default constructor.
+	 */
+	private SystemStatusManagerMonitor()
+	{
+		systemStatusManagerThread = new SystemStatusManagerThread();
+	}
+
+	/**
+	 * parameterised constructor for 3rd party calls
+	 */
+	private SystemStatusManagerMonitor(String[] unitIds, String[] systemIds, String[] userNames, String[] passwords, int sleepTime)
+	{
+		systemStatusManagerThread = new SystemStatusManagerThread(unitIds, systemIds, userNames, passwords, sleepTime);
+	}
+	/**
+	 * This method will return the only instance of <code>SystemStatusManagerMonitor</code>
+	 * 
+	 * @return this is the only instance of <code>SystemStatusManagerMonitor</code>.
+	 */
+	public static SystemStatusManagerMonitor getInstance()
+	{
+		synchronized (SystemStatusManager.class)
+		{
+			if (currentInstance == null)
+			{
+				currentInstance = new SystemStatusManagerMonitor();
+			}
+		}
+		return currentInstance;
+	}
+	/**
+	 * This method will return the only instance of <code>SystemStatusManagerMonitor</code>
+	 * 
+	 * @return this is the only instance of <code>SystemStatusManagerMonitor</code>.
+	 */
+	public static SystemStatusManagerMonitor getInstance(String[] unitIds, String[] systemIds, String[] userNames,
+					String[] passwords, int sleepTime)
+	{
+		synchronized (SystemStatusManager.class)
+		{
+			if (currentInstance == null)
+			{
+				currentInstance = new SystemStatusManagerMonitor(unitIds, systemIds, userNames, passwords, sleepTime);
+			}
+		}
+		return currentInstance;
+	}
+	/**
+	 * This method will execute the monitoring mechanism.
+	 */
+	public void monitorSystems()
+	{
+		Thread damonThread = new Thread(systemStatusManagerThread);
+
+		systemStatusManagerThread.runFirst();
+		damonThread.setDaemon(true);
+		damonThread.start();
+	}
+}

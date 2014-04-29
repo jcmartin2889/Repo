@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+     This file has all needed tasks to build ExternalJars.   
+     ====================================================================== -->
+<project name="ExternalJars" default="package" basedir=".">
+
+	<description>
+		
+		These are the main projects tasks.
+		build:
+		1)Build: 
+		2)clean
+
+    </description>
+
+	<!--************************* Properties *************************************-->
+
+	<!--Sets the properties values using the predefined build.properties. -->
+	<property file="build.properties" />	
+	<property name="equation.desktop.webinf.libs" location="${EQUATION_DESKTOP}/WebContent/WEB-INF/lib" />
+	<property name="equation.function.wizard.libs" location="${EQUATION_FUNCTION_WIZARD}/lib" />
+	<property name="equation.function.wizard.resources" location="${EQUATION_FUNCTION_WIZARD}/resources" />
+	<property name="equation.common.stubs.libs" location="${EQUATION_COMMON_STUBS}/lib" />
+	<property name="equation.was.config.libs" location="${EQUATION_WAS_CONFIG}/lib" />
+
+	
+	<!-- *************************** TARGETS ******************************* -->
+
+	<!-- =================================================================== -->
+	<!-- target: package                                                     -->
+	<!-- =================================================================== -->
+
+	<target name="package" depends="clean" 
+		
+		description="This target copies all  jar files to EQUATION_DESKTOP/WebContent/WEB-INF/lib and EQUATION_FUNCTION_WIZARD/lib">
+		
+		<copy todir="${equation.desktop.webinf.libs}">
+			<fileset dir="./lib" includes="${EQUATION_DESKTOP_JARS}" />
+		</copy>
+		
+		<copy todir="${equation.function.wizard.libs}">
+			<fileset dir="./lib" includes="${EQUATION_FUNCTION_WIZARD_JARS}" />
+		</copy>
+		
+		<copy todir="${equation.common.stubs.libs}">
+			<fileset dir="./lib" includes="${EQUATION_COMMON_STUBS_JARS}" />
+		</copy>
+		
+		<copy todir="${equation.was.config.libs}">
+			<fileset dir="./lib" includes="${EQUATION_WAS_CONFIG_JARS}" />
+		</copy>
+
+		<copy file="./lib/BankFusionClient.jar" todir="${equation.function.wizard.resources}"/>
+		<copy file="./lib/BankFusionDeviceService.jar" todir="${equation.function.wizard.resources}"/>
+		
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: clean                                                       -->
+	<!-- =================================================================== -->
+
+	<!-- This task is going to clean the current project.. -->
+	<target name="clean" 
+		description="This target is going to clean EQUATION_DESKTOP/WebContent/WEB-INF/lib and EQUATION_FUNCTION_WIZARD/lib.">
+
+		<delete>
+			<fileset dir="${equation.desktop.webinf.libs}" includes="**/*.jar" />
+		</delete>
+		
+		<delete>
+			<fileset dir="${equation.function.wizard.libs}" includes="**/*.jar" />
+		</delete>
+		
+		<delete>
+			<fileset dir="${equation.common.stubs.libs}" includes="**/*.jar" />
+		</delete>
+	</target>
+</project>

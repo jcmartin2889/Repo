@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ======================================================================
+     This file has all needed tasks to build Equation application.
+     This ant project will include workerBuild.xml which provides some 
+     facilities such as creating jars, creating  java-docs, copying files 
+     and others.
+     
+     inheritall="true"  inheritRefs="true" attributes are used to pass 
+     properties values to the included projects. 
+     ====================================================================== -->
+<project name="Equation Builder" basedir=".">
+
+	<description>
+		These are the main projects tasks.
+		
+		package_equation:
+		This is task will build the whole equation application.
+		
+		package:
+		1)Add the version attribute 
+		2)Compile 
+		3)Build the jar 
+		4)Deploy it 
+		5)Generate Java-docs 
+
+		build:
+		1)Build the jar 
+		2)Deploy it
+		
+		The default ant task  will be used by eclipse to build the current project.
+
+    </description>
+
+	<!--************************* Properties *************************************-->
+
+	<!--Sets the properties values using the predefined build.properties. -->
+	<property file="build.properties" />
+
+	<!--project info -->
+	<property name="project.name" location="${PROJECT_NAME}" />
+	<property name="user.name" location="${USER_NAME}"/>
+
+	<!--project directories and files-->
+	<property name="jar.name" value="${JAR_NAME}-${VERSION}.jar" />
+	<property name="class.dir" location="${CLASSES}" />
+	<property name="src.dir" location="${SRC}" />
+	<property name="src.resources" location="${RESOURCES}" />
+
+	<!--Deploy dirs -->
+	<property name="deploy.dir" location="${DEPLOY_DIR}" />
+
+	<!-- Dist properties -->
+	<property name="dist.dir" value="${DIST}" />
+	<property name="dist.target" location="${dist.dir}/${TARGET}" />
+
+	<property name="dist.lib" location="${dist.target}/lib" />
+	<property name="dist.readme" location="${dist.target}" />
+	<property name="jar.path" value="${dist.lib}/${jar.name}" />
+	<property name="docs.dir" location="${dist.target}/${JAVA_DOCS_NAME}" />
+
+	<!--Classpath-jars -->
+	<property name="classpath.dir" location="${CLASSPATH}/lib" />
+
+
+	<!--- Build project references. -->
+	<property name="build.project.dir" location="${EQUATION_BUILDER}"/>
+	<property name="docs.templates" location="docs_templates" />
+
+	
+	<!--It defines the builder temp directory. -->
+	<property name="temp.dir" location="${BUILDER_TEMP}"/>
+	
+	<!--It defines the deliverable directory. -->
+	<property name="deliverable.dir" location="${EQUATION_BUILDER}/${DELIVERABLE_DIR}"/>
+	
+	<!--This is the tomcat home lib -->
+	<property name="tomcat.home.lib.path" value=""/>
+
+	<!-- This is the path  of eclipse plug-in lib -->
+	<property name="eclipse.plugins.lib.path" value=""/>
+
+
+	<!-- *************************** TARGETS ******************************* -->
+
+	<!-- =================================================================== -->
+	<!-- target: init                                                        -->
+	<!-- =================================================================== -->
+
+	<!-- This task will build the classpath for the dependencies. -->
+	<target name="init" depends="clean" description="This task will build the classpath for the dependencies.">
+		<tstamp>
+			<format property="init_time" pattern="yyyy.MMM.dd ':' HH:mm:ss z" locale="en"/>
+		</tstamp>
+		 <echo> Time now is ${init_time}</echo>
+
+		<mkdir dir="${dist.dir}" />
+		<ant  target="check_builder_initialisation" inheritall="true"  inheritRefs="true" />
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: check_builder_initialisation                                -->
+	<!-- =================================================================== -->
+
+	<!-- target: This target will check if the builder has been initialisated. -->
+	<target name="check_builder_initialisation" description="This target will check if the builder has been initialisated.">
+		<condition property="isbuilderInitialisated">
+			<not>
+				<available file="${temp.dir}\${jar.name}"  property="check.builder.initialisation"/>
+			</not>
+		</condition>
+		<echo message="${isbuilderInitialisated}"/>
+		<antcall target="initialise_build_base_on_condition"/>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: initialise_build_base_on_condition                          -->
+	<!-- =================================================================== -->
+
+	<!--  target: This target will initialise the builer base on condition. if ${isbuilderInitialisated}==true.  -->
+	<target name="initialise_build_base_on_condition" if="isbuilderInitialisated" description="This target will initialise the builer base on condition.">
+		<ant target="build_eqBuilder_ant_tasks" inheritall="true" inheritRefs="true" />
+	</target>
+	
+	<!-- =================================================================== -->
+	<!-- target: initialise_build                                            -->
+	<!-- =================================================================== -->
+
+	<!-- target: This target will initialise the builer. -->
+	<target name="initialise_build" description="This target will initialise the builer.">
+		<ant target="build_eqBuilder_ant_tasks" inheritall="true" inheritRefs="true" />
+	</target>
+	
+	<!-- =================================================================== -->
+	<!-- target: build_eqBuilder_ant_tasks                                   -->
+	<!-- =================================================================== -->
+
+	<!-- target: This target will build the custom builder tasks. -->
+	<target name="build_eqBuilder_ant_tasks" description="This target will build the custom builder tasks.">
+		<echo level="info" message="Equation builder:  building the project." />
+		<mkdir dir="${temp.dir}" />
+		<ant target="compile" inheritall="true" inheritRefs="true" />
+		<ant target="create_jar" inheritall="true" inheritRefs="true" />
+		<ant antfile="${build.project.dir}/workerBuild.xml" target="copy_to_runtime_temp" inheritall="true" inheritRefs="true" />
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: clean                                                       -->
+	<!-- =================================================================== -->
+
+	<!-- This task is going to clean the current project.. -->
+	<target name="clean" unless="no.clean" description="This task is going to clean the current project.">
+		<delete verbose="true" failonerror="false">
+			<fileset dir="${temp.dir}"  >
+			<exclude name=".svn" />
+			</fileset>
+		</delete>
+		<delete verbose="true" failonerror="false">
+			<fileset dir="${dist.dir}"  >
+			<exclude name=".svn" />
+			</fileset>
+		</delete>
+		<delete verbose="true" failonerror="false">
+			<fileset dir="${deliverable.dir}"  >
+			<exclude name=".svn" />
+			</fileset>
+		</delete> 
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: package_equation                                            -->
+	<!-- =================================================================== -->
+
+	<target name="package_equation" depends="init"  description="This  task will build the whole equation application.">
+		
+		<ant antfile="packageBuilder.xml" target="package" inheritall="true"  inheritRefs="true">
+		</ant>
+		
+		<ant antfile="packageBuilder.xml" target="deleteOldDeliverables" inheritall="true"  inheritRefs="true">
+		</ant>
+		<ant antfile="packageBuilder.xml" target="createDeliverable" inheritall="true"  inheritRefs="true">
+		</ant>
+		
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: clean_all                                                   -->
+	<!-- =================================================================== -->
+
+		<target name="clean_all" description="This task will clean the whole equation application.">
+
+		<ant antfile="packageBuilder.xml" target="clean_all" inheritall="true" inheritRefs="true">
+		</ant>
+		<ant  target="clean" inheritall="true"  inheritRefs="true" />
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: build                                                       -->
+	<!-- =================================================================== -->
+
+	<target name="build" depends="init" description="This task will create a jar a deploy it.">
+
+		<echo level="info" message="Equation builder:  building the project."/>
+		<ant  target="create_jar" inheritall="true"  inheritRefs="true" />
+		<!--
+		<ant  target="deploy" inheritall="true"  inheritRefs="true" />
+		-->
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: package                                                     -->
+	<!-- =================================================================== -->
+
+	<target name="package" depends="init" description="This task will package the project, Add the version attribute, Compile, Build the jar, Deploy it and Generate Java-docs.">
+
+		<echo level="info" message="Equation builder:  building all. "/>
+		<ant  target="cvs_version" inheritall="true"  inheritRefs="true" />
+		<ant  target="compile" inheritall="true"  inheritRefs="true" />
+		<ant  target="build" inheritall="true"  inheritRefs="true" />
+		<ant  target="javadoc" inheritall="true"  inheritRefs="true" />
+		<!-- Not implemented yet.
+		<ant  target="move_readme_docs" inheritall="true" />
+		-->	
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: compile                                                     -->
+	<!-- =================================================================== -->
+
+	<target name="compile" depends="depends" description="This task will complile the current project.">
+
+		<ant antfile="${build.project.dir}/workerBuild.xml" target="compile_src_resources" inheritall="true" inheritRefs="true">
+			<property name="src.dir" location="${src.dir}" />
+			<property name="src.resources" location="${src.resources}" />
+		</ant>
+		<echo level="info" message="Equation builder: The ${jar.name} was created. " />
+
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: create_jar                                                  -->
+	<!-- =================================================================== -->
+
+	<target name="create_jar" depends="depends" description="This target creates the project’s jar.">
+
+		<echo level="info" message="Equation equation builder: The ${jar.name} in going to be created ."/>
+
+		<ant antfile="workerBuild.xml" target="create_jar" inheritall="true"  inheritRefs="true">
+			<property name="user.name" location="${user.name}"/>
+		</ant>
+
+		<echo level="info" message="Equation equation builder: The ${jar.name} was created. "/>
+
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: javadoc                                                     -->
+	<!-- =================================================================== -->
+
+	<target name="javadoc" description="This target creates the javadocs for this project.">
+
+		<echo level="info" message="Equation equation builder: The java docs are going to be  generated."/>
+
+		<ant antfile="workerBuild.xml" target="javadoc" inheritall="true"  inheritRefs="true">
+			<property name="src.dir" location="${src.dir}"/>
+		</ant>
+
+		<echo level="info" message="Equation equation builder: The Java doc generation has finished."/>
+
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: deploy                                                      -->
+	<!-- =================================================================== -->
+
+	<target name="deploy" description="This task will deploy the  created jar.">
+
+		<ant antfile="workerBuild.xml" target="deploy_jar" inheritall="true"  inheritRefs="true">
+			<property name="to.dir" location="${deploy.dir}"/>
+		</ant>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: move_readme_docs                                            -->
+	<!-- =================================================================== -->
+
+	<target name="move_readme_docs" description="This task will move the read me files.">
+
+		<ant antfile="workerBuild.xml" target="move_readme_docs" inheritall="true"  inheritRefs="true">
+		</ant>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: cvs_version                                                 -->
+	<!-- =================================================================== -->
+
+	<target name="cvs_version" description="This task will add the cvs version attribute to all classes.">
+
+		<ant antfile="workerBuild.xml" target="cvs_version" inheritall="true"  inheritRefs="true">
+			<property name="src.dir" location="${src.dir}"/>
+		</ant>
+	</target>
+	
+	<!-- =================================================================== -->
+	<!-- target: equationVersionNumber                                       -->
+	<!-- =================================================================== -->
+
+	<target name="equationVersionNumber" depends="init" description="This task will increment the plugin release version number for all projects.">
+
+		<!-- Backup disabled since SVN provides the means to revert to the previous versions
+		<ant antfile="workerBuild.xml" target="eclipseConfiguationFileBackupTag" inheritall="true"  inheritRefs="true">			
+		</ant>
+		-->
+				
+		<ant antfile="workerBuild.xml" target="equationVersionNumber" inheritall="true"  inheritRefs="true">			
+		</ant>
+	</target>
+		
+	<!-- =================================================================== -->
+	<!-- target: eclipseConfigurationFilesRestoreTag                                       -->
+	<!-- =================================================================== -->
+
+	<target name="eclipseConfigurationFilesRestoreTag" depends="init" description="This task will restore the eclipse coonfigaration files.">
+		
+		<ant antfile="workerBuild.xml" target="eclipseConfigurationFilesRestoreTag" inheritall="true"  inheritRefs="true">			
+		</ant>
+	</target>
+
+	
+	<!-- =================================================================== -->
+	<!-- target: generatePluginUpdateSite                                       -->
+	<!-- =================================================================== -->
+
+	<target name="generatePluginUpdateSite" description="This task will generate the plugin update site.">
+
+		<ant antfile="workerBuild.xml" target="generatePluginUpdateSite" inheritall="true"  inheritRefs="true">			
+			</ant>
+	</target>
+	
+	<!-- =================================================================== -->
+	<!-- target: instrumentPlugin                                            -->
+	<!-- =================================================================== -->
+
+	<target name="instrument" description="Adds coverage instrumentation">
+
+		<ant antfile="workerBuild.xml" target="instrument" inheritall="true"  inheritRefs="true">			
+			</ant>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: depends                                                     -->
+	<!-- =================================================================== -->
+
+	<target name="depends">
+	</target>
+</project>

@@ -1,0 +1,45 @@
+package com.misys.equation.common.cluster;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.utilities.EquationLogger;
+
+/**
+ * A remove unit command for cluster support
+ * 
+ * This replicates the Equation Desktop suspend unit option to the other nodes in the cluster
+ */
+public class RemoveUnitCommand extends AbstractServerCommand
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: RemoveUnitCommand.java 17823 2014-01-30 09:23:00Z perkinj1 $";
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(RemoveUnitCommand.class);
+
+	/**
+	 * Remove the unit locally, and then distribute if clustered
+	 * 
+	 * @param system
+	 * @param unit
+	 */
+	public void perform(String system, String unit)
+	{
+		CommandData replicatedCmd = new CommandData();
+		replicatedCmd.setCommandId(CommandData.COMMAND_TYPE_REMOVE_UNIT);
+		replicatedCmd.getData().put(PARAM_SYSTEM, system);
+		replicatedCmd.getData().put(PARAM_UNIT, unit);
+		perform(replicatedCmd);
+		distribute(replicatedCmd);
+	}
+
+	/**
+	 * Called on a destination node to apply a command from another node.
+	 */
+	public void perform(CommandData commandData)
+	{
+		String systemId = commandData.getData().get(PARAM_SYSTEM);
+		String unitId = commandData.getData().get(PARAM_UNIT);
+		// Remove the unit. This will call back to the function
+		// layer to clean up those sessions
+		EquationCommonContext.getContext().removeEquationUnit(systemId, unitId);
+	}
+}

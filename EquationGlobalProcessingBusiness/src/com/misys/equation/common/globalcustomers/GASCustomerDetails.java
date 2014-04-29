@@ -1,0 +1,473 @@
+package com.misys.equation.common.globalcustomers;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.GlobalProcessingApiExecuter;
+import com.misys.equation.common.access.IEquationStandardObject;
+import com.misys.equation.common.dao.DaoFactory;
+import com.misys.equation.common.dao.ICLDRecordDaoImp;
+import com.misys.equation.common.dao.IGFRecordDao;
+import com.misys.equation.common.dao.beans.CLDRecordDataModel;
+import com.misys.equation.common.dao.beans.GFRecordDataModel;
+import com.misys.equation.common.globalcustomers.CustomerDetailsBean.CustomerDetailsBeanComparator;
+import com.misys.equation.common.utilities.EquationLogger;
+
+public class GASCustomerDetails
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: GASCustomerDetails.java 13731 2012-07-02 10:03:58Z whittap1 $";
+	// This is the API name which will query for customer balances.
+	private final static String apiName = "G01MRRMCD";
+	private List<EquationStandardSession> equationStandardSessions = null;
+	private EquationStandardSession session;
+	private String globalCustomerNumberID;
+	private GlobalProcessingApiExecuter globalProcessingApiExecuter;
+	private List<CustomerDetailsBean> gASCustomerDetailsBeans;
+	private DaoFactory daoFactory;
+	private static final EquationLogger LOG = new EquationLogger(GASCustomerDetails.class);
+
+	// These are the customer details for one particular unit.
+	private String customerNumber;
+	private String currentUnit;
+	private String definedSystem;
+
+	/**
+	 * This is the class constructor.
+	 * 
+	 * @param session
+	 *            this is the current session.
+	 */
+	public GASCustomerDetails(EquationStandardSession session)
+	{
+		this(session, null);
+	}
+
+	/**
+	 * This is the class constructor.
+	 * 
+	 * @param session
+	 *            this is the current session.
+	 * @param globalCustomerNumberID
+	 *            this is the universal customer id.
+	 */
+	public GASCustomerDetails(EquationStandardSession session, String globalCustomerNumberID)
+	{
+		if (session != null)
+		{
+			this.session = session;
+			this.globalCustomerNumberID = globalCustomerNumberID;
+		}
+		else
+		{
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error("The session cannot be null.");
+			}
+		}
+		initialisation();
+	}
+
+	/**
+	 * This method will initialise all resources.
+	 */
+	private void initialisation()
+	{
+		daoFactory = new DaoFactory();
+		gASCustomerDetailsBeans = new ArrayList<CustomerDetailsBean>();
+		try
+		{
+			equationStandardSessions = EquationCommonContext.getContext().getGlobalProcessingEquationStandardSessions(
+							session.getSessionIdentifier());
+		}
+		catch (Exception eQException)
+		{
+			if (LOG.isErrorEnabled())
+			{
+				StringBuilder message = new StringBuilder("There is a problem creating Global processing the sessions");
+				LOG.error(message.toString(), eQException);
+			}
+		}
+	}
+
+	/**
+	 * This method will get all customer information (Unit and local customer number) across units.
+	 * 
+	 * @param globalCustomerNumber
+	 *            this the universal customer id.
+	 * @return the <code> List </code> of customer of information.
+	 */
+	public List<Map<String, Object>> getCustomerNumberAcrossAllUnits()
+	{
+		List<Map<String, Object>> customerNumberAcrossUnits = null;
+		ICLDRecordDaoImp cldRecordDao;
+		cldRecordDao = daoFactory.getCLDRecordDao(session, new CLDRecordDataModel());
+
+		customerNumberAcrossUnits = cldRecordDao.getCustomerInformationAcrossAllUnits(globalCustomerNumberID);
+
+		return customerNumberAcrossUnits;
+	}
+
+	/**
+	 * This method will return a global customer id base on the passed customer number
+	 * 
+	 * @param this is the customer number used to get the global customer id.
+	 * @return the global customer id.
+	 */
+	public void setGlobalCustomerIDBaseOnCustomerNumber(String customernumber)
+	{
+		List<Map<String, Object>> globalCustomerIds = null;
+		String globalCustomerId = "";
+		ICLDRecordDaoImp cldRecordDao;
+		cldRecordDao = daoFactory.getCLDRecordDao(session, new CLDRecordDataModel());
+		globalCustomerIds = cldRecordDao.getGlobalCustomerIDBaseOnCustomerNumber(customernumber);
+
+		for (Map<String, Object> listOrderedMap : globalCustomerIds)
+		{
+			globalCustomerId = (String) listOrderedMap.get("CLDGCID");
+		}
+
+		globalCustomerNumberID = globalCustomerId.trim();
+	}
+
+	/**
+	 * This method will get all customer details from the CDL file and the GF file.<br>
+	 * It will only query using the defined units in CLD file. this information is passed in the list of customerNumberAcrossUnits.
+	 * 
+	 * @param customerNumberAcrossUnits
+	 *            this is a list that contains all local customer numbers and their units.
+	 * @return get all customer details from the CDL file and the GF file.<br>
+	 */
+	public List<UniversalCustomerBasicInformationBean> getCustomerMnemonicAndLoctionAcrossAllUnits(
+					List<Map<String, Object>> customerNumberAcrossUnits)
+	{
+		List<UniversalCustomerBasicInformationBean> customerBasicInformatioLists = new ArrayList<UniversalCustomerBasicInformationBean>();
+		UniversalCustomerBasicInformationBean currentCustomerBasicInformationBean = null;
+		IGFRecordDao icldRecordDao;
+		EquationStandardSession currentSession = null;
+		List<Map<String, Object>> result = null;
+
+		String masterFlag = null;
+		String customerNumber = null;
+		String currentUnit = null;
+		String currentSystem = null;
+
+		for (int currentIndex = 0; currentIndex < equationStandardSessions.size(); currentIndex++)
+		{
+			for (Map<String, Object> listOrderedMap : customerNumberAcrossUnits)
+			{
+				customerNumber = (String) listOrderedMap.get("CLDCNO");
+				currentUnit = (String) listOrderedMap.get("CLDCOUN");
+				masterFlag = (String) listOrderedMap.get("CLDMFLG");
+				currentSystem = (String) listOrderedMap.get("CLDSYS");
+
+				// TODO there should be any facility which let me retrive a session by UNIT !!!! REFACTOR IN EquationCommonContext.
+				currentSession = equationStandardSessions.get(currentIndex);
+
+				// it is only going to query using the System and unit defined in CLD table.
+				if (currentSession.getSystemId().trim().equals(currentSystem.trim())
+								&& currentSession.getUnit().getUnitId().trim().equals(currentUnit.trim()))
+				{
+
+					icldRecordDao = daoFactory.getGFRecordDao(currentSession, new GFRecordDataModel());
+					result = icldRecordDao.getCustomerLocationAndMnemonic(customerNumber);
+					// if it is true, it means that there is not any customer defined in that unit which correspond to the passed
+					// customer number.
+					if (result.isEmpty())
+					{
+						continue;
+					}
+
+					currentCustomerBasicInformationBean = new UniversalCustomerBasicInformationBean();
+					currentCustomerBasicInformationBean.setGlobalUserId(globalCustomerNumberID);
+					currentCustomerBasicInformationBean.setSystem(currentSystem);
+					currentCustomerBasicInformationBean.setUnit(currentUnit);
+					currentCustomerBasicInformationBean.setCustomerNumber(customerNumber);
+					currentCustomerBasicInformationBean.setMasterFlag(masterFlag);
+					addRecords(currentCustomerBasicInformationBean, result);
+					customerBasicInformatioLists.add(currentCustomerBasicInformationBean);
+				}
+			}
+		}
+
+		return customerBasicInformatioLists;
+	}
+
+	/***
+	 * This method will get a list of customer details from the GF file.<br>
+	 * It will only query using the passed unit.
+	 * 
+	 * @return a list of customer details from the GF file.<br>
+	 */
+	public List<UniversalCustomerBasicInformationBean> getCustomerMnemonicAndLoctionInASpecificUnit()
+	{
+		IGFRecordDao icldRecordDao;
+		EquationStandardSession currentSession = null;
+		List<UniversalCustomerBasicInformationBean> customerBasicInformatioLists = new ArrayList<UniversalCustomerBasicInformationBean>();
+		UniversalCustomerBasicInformationBean currentCustomerBasicInformationBean = null;
+		List<Map<String, Object>> result = null;
+
+		for (int currentIndex = 0; currentIndex < equationStandardSessions.size(); currentIndex++)
+		{
+			currentSession = equationStandardSessions.get(currentIndex);
+
+			// it is only going to query using the System and unit defined in CLD table.
+			if (currentSession.getSystemId().trim().equals(definedSystem.trim())
+							&& currentSession.getUnit().getUnitId().trim().equals(currentUnit.trim()))
+			{
+
+				icldRecordDao = daoFactory.getGFRecordDao(currentSession, new GFRecordDataModel());
+				result = icldRecordDao.getCustomerLocationAndMnemonic(customerNumber);
+				// if it is true, it means that there is not any customer defined in that unit which correspond to the passed
+				// customer number.
+				if (!result.isEmpty())
+				{
+					break;
+				}
+			}
+		}
+
+		currentCustomerBasicInformationBean = new UniversalCustomerBasicInformationBean();
+		currentCustomerBasicInformationBean.setGlobalUserId(globalCustomerNumberID);
+		currentCustomerBasicInformationBean.setSystem(definedSystem);
+		currentCustomerBasicInformationBean.setUnit(currentUnit);
+		currentCustomerBasicInformationBean.setCustomerNumber(customerNumber);
+		currentCustomerBasicInformationBean.setMasterFlag("-");
+		addRecords(currentCustomerBasicInformationBean, result);
+		customerBasicInformatioLists.add(currentCustomerBasicInformationBean);
+
+		return customerBasicInformatioLists;
+	}
+
+	private void addRecords(UniversalCustomerBasicInformationBean currentCustomerBasicInformationBean,
+					List<Map<String, Object>> result)
+	{
+		for (Map<String, Object> currentResult : result)
+		{
+			currentCustomerBasicInformationBean.setCustomerMnemonic((String) currentResult.get("GFCUS"));
+			currentCustomerBasicInformationBean.setCustomerLocation((String) currentResult.get("GFCLC"));
+		}
+	}
+
+	/**
+	 * This method will call the API G01MRRMCD for the current customer and process all output.
+	 * 
+	 * @param currentCustomerBasicInformation
+	 *            current customer.
+	 */
+	private Map<String, IEquationStandardObject> callAPIG01MRRMCD(
+					UniversalCustomerBasicInformationBean currentCustomerBasicInformation)
+	{
+		Map<String, String> apiFields = new HashMap<String, String>();
+		Map<String, IEquationStandardObject> apiCallResults = null;
+
+		apiFields.put("GZCUS", currentCustomerBasicInformation.getCustomerMnemonic()); // Customer mnemonic (6A)
+		apiFields.put("GZCLC", currentCustomerBasicInformation.getCustomerLocation()); // Customer location (3A)
+
+		globalProcessingApiExecuter = new GlobalProcessingApiExecuter(session, IEquationStandardObject.FCT_RTV);
+		globalProcessingApiExecuter.setApiFields(apiFields);
+		globalProcessingApiExecuter.setApiName(apiName);
+		globalProcessingApiExecuter.setSystemAndUnitToBeUsed(currentCustomerBasicInformation.getSystem(),
+						currentCustomerBasicInformation.getUnit());
+		globalProcessingApiExecuter.executeAPI();
+		apiCallResults = globalProcessingApiExecuter.getResults();
+
+		return apiCallResults;
+	}
+
+	/**
+	 * This method will create a <code>List</code> of all Customer details across units base on the passed universal customer id.
+	 * 
+	 * @return Customer details across units base on the passed universal customer id.
+	 */
+	public List<CustomerDetailsBean> getGASCustomerDetails()
+	{
+		List<Map<String, Object>> customerNumberAcrossUnits = null;
+		List<UniversalCustomerBasicInformationBean> customerBasicInformationBeanList = null;
+
+		Map<String, IEquationStandardObject> apiCallResults;
+
+		// if there is not any global customer id, the local customer number must used instead.
+		if (isGlobalCustomerNumberIDEmpty())
+		{
+			customerBasicInformationBeanList = getCustomerMnemonicAndLoctionInASpecificUnit();
+		}
+		else
+		{
+			customerNumberAcrossUnits = getCustomerNumberAcrossAllUnits();
+			customerBasicInformationBeanList = getCustomerMnemonicAndLoctionAcrossAllUnits(customerNumberAcrossUnits);
+		}
+
+		for (UniversalCustomerBasicInformationBean currentCustomerBasicInformation : customerBasicInformationBeanList)
+		{
+			apiCallResults = callAPIG01MRRMCD(currentCustomerBasicInformation);
+
+			populateGASCustomerDetailsBeans(apiCallResults, currentCustomerBasicInformation);
+		}
+
+		sortGlobalAccountBalances();
+		return gASCustomerDetailsBeans;
+	}
+	/**
+	 * This method will sort all GASCustomerDetailsBeans.
+	 */
+	private void sortGlobalAccountBalances()
+	{
+		Collections.sort(gASCustomerDetailsBeans, new CustomerDetailsBeanComparator());
+	}
+
+	/**
+	 * This method will create a <code>List</code> of all Customer details base on passed customer-number and unit.
+	 * 
+	 * @param customernumber
+	 *            this the customer number that will be used to get the <code>List</code> of all Customer details across units.
+	 * 
+	 * @param unit
+	 *            this is the unit to be used.
+	 * 
+	 * @return Customer details across units base on the passed universal customer id.
+	 */
+	public List<CustomerDetailsBean> getGASCustomerDetailsBaseOnCustomerNumber(String customernumber, String definedSystem,
+					String unit)
+	{
+		this.customerNumber = customernumber;
+		this.definedSystem = definedSystem;
+		this.currentUnit = unit;
+		return getGASCustomerDetails();
+	}
+
+	/**
+	 * This method will populate the <code>CustomerDetailsBean</code> <code>ArrayList</code>.
+	 * 
+	 * @param apiCallResults
+	 *            the result from the API
+	 * @param customerNumber
+	 *            this is the current customer number.
+	 */
+	private void populateGASCustomerDetailsBeans(Map<String, IEquationStandardObject> apiCallResults,
+					UniversalCustomerBasicInformationBean currentCustomerBasicInformation)
+	{
+		IEquationStandardObject equationStandardObject;
+		CustomerDetailsBean gasCustomerDetailsBean = null;
+		String unit = null;
+
+		for (Entry<String, IEquationStandardObject> entry : apiCallResults.entrySet())
+		{
+			unit = entry.getKey();
+			equationStandardObject = apiCallResults.get(unit);
+
+			gasCustomerDetailsBean = new CustomerDetailsBean();
+
+			gasCustomerDetailsBean.setGlobalUserId(globalCustomerNumberID);
+			gasCustomerDetailsBean.setSystem(currentCustomerBasicInformation.getSystem());
+			gasCustomerDetailsBean.setUnit(currentCustomerBasicInformation.getUnit());
+
+			gasCustomerDetailsBean.setCustomerLocation(equationStandardObject.getFieldValue("GZCLC"));
+			gasCustomerDetailsBean.setCustomerMnemonic(equationStandardObject.getFieldValue("GZCUS"));
+
+			gasCustomerDetailsBean.setCustomerName(equationStandardObject.getFieldValue("GZCUN"));
+			gasCustomerDetailsBean.setCustomerNumber(equationStandardObject.getFieldValue("GZCPNC"));
+
+			// get the master CLDMFLG using DAO.
+			gasCustomerDetailsBean.setMasterFlag(currentCustomerBasicInformation.getMasterFlag());
+			gasCustomerDetailsBean.setCustomerType(equationStandardObject.getFieldValue("GZCTP"));
+
+			gasCustomerDetailsBean.setParentCountry(equationStandardObject.getFieldValue("GZCNAP"));
+			gasCustomerDetailsBean.setResidenceCountry(equationStandardObject.getFieldValue("GZCNAL"));
+			gasCustomerDetailsBean.setAct(getAct(equationStandardObject));
+			gasCustomerDetailsBean.setResponsibilityCode(equationStandardObject.getFieldValue("GZACO"));
+			gasCustomerDetailsBean.setAnalysisCode(equationStandardObject.getFieldValue("GZCA2"));
+			gasCustomerDetailsBean.setSundryAnalysisCode(equationStandardObject.getFieldValue("GZSAC"));
+			gasCustomerDetailsBean.setMessages(equationStandardObject.getMessages());
+
+			gASCustomerDetailsBeans.add(gasCustomerDetailsBean);
+		}
+	}
+
+	/**
+	 * This method will return the Active flag.
+	 * 
+	 * @param equationStandardObject
+	 *            this the API query result.
+	 * @return the Active flag.
+	 */
+	private String getAct(IEquationStandardObject equationStandardObject)
+	{
+		String act = "";
+
+		String deceased = equationStandardObject.getFieldValue("GZCUDD");
+		String closed = equationStandardObject.getFieldValue("GZCUCD");
+		String inactive = equationStandardObject.getFieldValue("GZCUZD");
+
+		if (deceased.equals("N") && closed.equals("N") && inactive.equals("N"))
+		{
+			act = "Y";
+		}
+		else if (deceased.equals("Y") || closed.equals("Y") || inactive.equals("Y"))
+		{
+			act = "N";
+		}
+
+		return act;
+	}
+
+	/**
+	 * This method will return the global customer id.
+	 * 
+	 * @return This method will return the global customer id.
+	 */
+	public String getGlobalCustomerNumberID()
+	{
+		return globalCustomerNumberID;
+	}
+
+	/**
+	 * This method will return true is there is not any universal customer id.
+	 * 
+	 * @return true is there is not any universal customer id.
+	 */
+	public boolean isGlobalCustomerNumberIDEmpty()
+	{
+		if (globalCustomerNumberID == null || globalCustomerNumberID.equals(""))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	public String getCustomerNumber()
+	{
+		return customerNumber;
+	}
+
+	public void setCustomerNumber(String customerNumber)
+	{
+		this.customerNumber = customerNumber;
+	}
+
+	public String getCurrentUnit()
+	{
+		return currentUnit;
+	}
+
+	public void setCurrentUnit(String currentUnit)
+	{
+		this.currentUnit = currentUnit;
+	}
+
+	public String getDefinedSystem()
+	{
+		return definedSystem;
+	}
+
+	public void setDefinedSystem(String definedSystem)
+	{
+		this.definedSystem = definedSystem;
+	}
+}

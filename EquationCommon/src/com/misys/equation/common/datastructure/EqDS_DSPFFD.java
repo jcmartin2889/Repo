@@ -1,0 +1,184 @@
+package com.misys.equation.common.datastructure;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationDataStructure;
+import com.misys.equation.common.access.EquationFieldDefinition;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EqDataType;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.SQLToolbox;
+import com.misys.equation.common.utilities.Toolbox;
+
+public class EqDS_DSPFFD extends EquationDataStructure
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EqDS_DSPFFD.java 10279 2011-01-18 09:02:51Z MACDONP1 $";
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(EqDS_DSPFFD.class);
+
+	private static final long serialVersionUID = 1L;
+
+	// File name
+	private final String file;
+
+	/**
+	 * Construct an Equation Data Structure from a file
+	 * 
+	 * @param file
+	 *            - file
+	 * @param session
+	 *            - the Equation Standard Session
+	 */
+	public EqDS_DSPFFD(String file, EquationStandardSession session)
+	{
+		this(file, session, false);
+	}
+
+	/**
+	 * Construct an Equation Data Structure from a file
+	 * 
+	 * @param file
+	 *            - file
+	 * @param session
+	 *            - the Equation Standard Session
+	 * @param globalTable
+	 *            - is the table in an Equation global library
+	 */
+	public EqDS_DSPFFD(String file, EquationStandardSession session, boolean globalTable)
+	{
+		super(file, Toolbox.DEF_CCSID);
+		this.file = file;
+
+		// get a connection
+		Connection connection = session.getConnection();
+		Statement statement = null;
+		ResultSet resultSet = null;
+
+		try
+		{
+			if (globalTable)
+			{
+				file = EquationCommonContext.getConfigProperty("eq.GlobalLibraryName").trim() + "/" + file;
+			}
+
+			// generate the DSPFFD
+			statement = connection.createStatement();
+			String command = "DSPFFD FILE(" + file + ") OUTPUT(*OUTFILE) OUTFILE(QTEMP/GZFFD) OUTMBR(*FIRST *REPLACE)";
+
+			// generate the cmdexec
+			String query = SQLToolbox.getQcmdexcString(command);
+			// execute and process it
+			statement.execute(query);
+
+			// Now read the outfile results (the set of fields)
+			statement = connection.createStatement();
+			// file, field name, field lengths in bytes, number of digits, decimal places, desc, ref field
+			resultSet = statement
+							.executeQuery("select WHFILE, WHFLDI, WHFLDB, WHFLDD, WHFLDP, WHFTXT, WHFLDT, WHRFLD  from QTEMP/GZFFD");
+			initialiseFFD(resultSet);
+		}
+		catch (Exception e)
+		{
+			LOG.error("Error running DSPPFD or reading OUTFILE results for file [" + file + "]", e);
+		}
+		finally
+		{
+			SQLToolbox.close(resultSet);
+			SQLToolbox.close(statement);
+
+			// Try to delete the temporary file
+			String command = "DLTF FILE(QTEMP/GZFFD)";
+			String query = SQLToolbox.getQcmdexcString(command);
+			try
+			{
+				statement = connection.createStatement();
+				statement.execute(query);
+			}
+			catch (SQLException e)
+			{
+				LOG.error("Cannot close down resources", e);
+			}
+			finally
+			{
+				SQLToolbox.close(statement);
+			}
+		}
+
+		// final setup
+		initialDefaultValue();
+	}
+
+	/**
+	 * Return the file name
+	 * 
+	 * @return the file name
+	 */
+	public String getFile()
+	{
+		return file;
+	}
+
+	/**
+	 * Setup the data structure based on the result set
+	 * 
+	 * @param resultSet
+	 *            - the result set
+	 * 
+	 * @throws EQException
+	 */
+	private void initialiseFFD(ResultSet resultSet) throws EQException
+	{
+		try
+		{
+			while (resultSet.next())
+			{
+				String fieldName = resultSet.getString(2).trim();
+				int fieldLen = Integer.parseInt(resultSet.getString(3));
+				int fieldDig = Integer.parseInt(resultSet.getString(4));
+				int decimal = Integer.parseInt(resultSet.getString(5));
+				String fieldLabel = resultSet.getString(6).trim();
+				String fieldDataType = resultSet.getString(7).trim();
+				String fieldType = resultSet.getString(8).trim();
+
+				// default field label if blank
+				if (fieldLabel.length() == 0)
+				{
+					fieldLabel = fieldName;
+				}
+
+				if (fieldDataType.equals(EqDataType.TYPE_PACKED))
+				{
+					EquationFieldDefinition fd = createPackedField(fieldName, fieldLabel, 0, fieldDig, decimal);
+					fd.setFieldType(fieldType);
+				}
+				else if (fieldDataType.equals(EqDataType.TYPE_ZONED))
+				{
+					EquationFieldDefinition fd = createZonedField(fieldName, fieldLabel, 0, fieldDig, decimal);
+					fd.setFieldType(fieldType);
+				}
+				else if (fieldDataType.equals(EqDataType.TYPE_ISERIES_DATE))
+				{
+					EquationFieldDefinition fd = createCharacterField(fieldName, fieldLabel, 0, EqDataType.LEN_ISERIES_DATE);
+					fd.setFieldType(fieldType);
+				}
+				else
+				{
+					EquationFieldDefinition fd = createCharacterField(fieldName, fieldLabel, 0, fieldLen);
+					fd.setFieldType(fieldType);
+				}
+			}
+
+		}
+		catch (Exception e)
+		{
+			throw new EQException("EqDS_DSPFFD: initialiseFFD(): SQL Error", e);
+		}
+	}
+
+}

@@ -1,0 +1,90 @@
+package com.misys.equation.global.test;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Hashtable;
+import java.util.List;
+
+import junit.framework.TestCase;
+
+import com.misys.equation.common.access.EquationConsolidatedTable;
+import com.misys.equation.common.access.EquationConsolidator;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationSystem;
+import com.misys.equation.common.access.EquationUnit;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EqDataType;
+import com.misys.equation.common.utilities.Toolbox;
+
+public class TestConsolidatedUnitData extends TestCase
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: TestConsolidatedUnitData.java 11310 2011-06-27 12:20:21Z ESTHER.WILLIAMS $";
+	private final Hashtable<String, EquationSystem> systems = new Hashtable<String, EquationSystem>();
+	public void test()
+	{
+		try
+		{
+			String[] systemIds = { "SLOUGH1", "SLOUGH1" };
+			String[] userIds = { "EQUIADMIN", "EQUIADMIN" };
+			String[] passwords = { "EQUIADMIN", "EQUIADMIN" };
+			String[] unitIds = { "GP4", "GP5" };
+
+			// COnsider storing it all into a PVFieldSet?
+			// PVFieldSet pvFieldSet = new PVFieldSet("ACCS", "ACCOUNTS", "", "N", false);
+			// PVField pvField = new PVField("SCAB", "", "");
+			// pvFieldSet.addPVField(pvField);
+
+			// Get us a set of sessions
+			List<EquationStandardSession> sessions = new ArrayList<EquationStandardSession>();
+			for (int i = 0; i < unitIds.length; i++)
+			{
+				EquationUnit unit = getEqSystem(systemIds[i], userIds[i], passwords[i]).getUnit(unitIds[i]);
+				sessions.add(unit.getEquationSessionPool().getEquationStandardSession());
+			}
+
+			// Get us a consolidator...
+			EquationConsolidator consolidator = new EquationConsolidator(sessions, null);
+
+			// Get us a consolidated table
+			String[] selectFields = { "SCAB", "SCAN", "SCAS", "NEEAN", "SCSHN", "SCACT", "SCCCY", "SCBAL" };
+			String[] keyFields = { "SCAB", "SCAN", "SCAS" };
+			String fromPart = "FROM SC10LF LEFT JOIN NE10LF ON (SCAB=NEAB AND SCAN=NEAN AND SCAS=NEAS) ";
+			String wherePart = "";
+
+			String selectPart2 = Arrays.toString(selectFields);
+			String selectPart3 = "SELECT " + selectPart2.substring(1, selectPart2.length() - 1) + " ";
+
+			EquationConsolidatedTable table = new EquationConsolidatedTable(selectPart3, keyFields, fromPart, wherePart,
+							consolidator, 31, false);
+
+			// Execute the query
+			String zlslct = "*   012*  *  *                   *              * *   *                  ";
+			String keyLast = "";
+
+			String buffer = consolidator.executeConsolidatedTableQuery(table, zlslct, keyLast, 1, EquationConsolidator.MAXRESULTS);
+			System.out.println(Toolbox.printArray(buffer.split(EqDataType.GLOBAL_DELIMETER)));
+
+			// Return the sessions
+			consolidator.returnSessions();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	public EquationSystem getEqSystem(String systemId, String userId, String password) throws EQException
+	{
+		EquationSystem system = null;
+		if (!systems.containsKey(systemId))
+		{
+			system = new EquationSystem(systemId, userId, password);
+			systems.put(systemId, system);
+		}
+		else
+		{
+			system = systems.get(systemId);
+		}
+		return system;
+	}
+}

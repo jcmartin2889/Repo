@@ -1,0 +1,44 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
+import com.misys.equation.common.test.AbstractTestSuite;
+
+public class _AllNoticeWithdrawl extends AbstractTestSuite
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	public static Test suite()
+	{
+		// test suite
+		TestSuite suite = new TestSuite("Test for Notice Withdrawls");
+
+		// Notice Withdrawal
+		addTests(suite, AddTest_MSD.class); // Maintain Account Settlement Details
+
+		addTests(suite, ANW.class); // Add Notice Withdrawal
+		addTests(suite, MNW.class); // Maintain Notice Withdrawal
+		addTests(suite, RMW.class); // Release Matured Withdrawal
+
+		// addTests(suite, ANW_1.class); // Add Notice Withdrawal
+		addTests(suite, CancelTest_MSD.class); // Maintain Account Settlement Details
+		addTests(suite, CUW.class); // Cancel Unmatured Notice Withdrawal
+
+		// addTests(suite, CMW.class); // Cancel Matured Notice Withdrawal - not possible as none are matured
+
+		return suite;
+	}
+
+}

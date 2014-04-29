@@ -1,0 +1,216 @@
+package com.misys.equation.common.internal.dao;
+
+import java.util.Hashtable;
+import java.util.List;
+
+import com.misys.equation.common.dao.IHBRecordDao;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.dao.beans.HBRecordDataModel;
+import com.misys.equation.common.internal.dao.mappers.HBRecordRowMapper;
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * This the HB-Record Dao implementation. <br>
+ * This class is going to provide all back-end services for HB-Record.
+ * 
+ * @author deroset
+ */
+public class HBRecordDao extends AbsEquationDao implements IHBRecordDao
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: HBRecordDao.java 9725 2010-11-08 12:34:45Z MACDONP1 $";
+
+	public HBRecordDao()
+	{
+		super();
+	}
+
+	/**
+	 * This method will check if the current record was already set in the database. <br>
+	 * The Sql <code>SELECT COUNT(*)</code> query will be executed.
+	 * 
+	 * @param sqlWhereStatement
+	 *            - the WHERE clause of the SQL statement
+	 * 
+	 * @return true if the SQL statement returns a count >= 1
+	 */
+	public boolean checkIfThisHBRecordIsInTheDB(String sqlWhereStatement)
+	{
+
+		return checkIfThisRecordIsInTheDB(sqlWhereStatement);
+	}
+
+	/**
+	 * This method will check if the current record was already set in the database. <br>
+	 * The Sql <code>SELECT COUNT(*)</code> query will be executed.
+	 * 
+	 * @return true if the SQL statement returns a count >= 1
+	 */
+	public boolean checkIfThisHBRecordIsInTheDB()
+	{
+		return checkIfThisRecordIsInTheDB(getWhereConditionBaseOnIdRecord());
+	}
+
+	/**
+	 * This method will return an instance of the preset data model.
+	 * 
+	 * @return an instance of the preset data model.
+	 */
+	public HBRecordDataModel getMyDataModel()
+	{
+		HBRecordDataModel HBRecordDataModel = null;
+		AbsRecord record = getRecord();
+
+		if (record instanceof HBRecordDataModel)
+		{
+			HBRecordDataModel = (HBRecordDataModel) getRecord();
+
+		}
+		return HBRecordDataModel;
+	}
+
+	/**
+	 * This method will return a <code>String</code> which represents and sql where condition base on the record id.<br>
+	 * For example <code>id = getDataModel.getId()</code>
+	 * 
+	 * @return a <code>String</code> which represents and sql filter.
+	 */
+	@Override
+	protected String getWhereConditionBaseOnIdRecord()
+	{
+		StringBuilder whereCondition = new StringBuilder("HBLNM='");
+		whereCondition.append(getMyDataModel().getLanguageCode());
+		whereCondition.append("' and HBCFR='");
+		whereCondition.append(getMyDataModel().getFilePrefix());
+		whereCondition.append("' and HBCFL='");
+		whereCondition.append(getMyDataModel().getFileKey());
+		whereCondition.append("' ");
+		return whereCondition.toString();
+	}
+
+	/**
+	 * Returns a list of name and ? pairs in the format of:
+	 * <p>
+	 * field1=?, field2=?, field3=?, ...
+	 * 
+	 * @return a list of name and ? pairs
+	 */
+	@Override
+	protected String getParameterizedFields()
+	{
+		String fields = " HBLNM=?, HBCFR=?, HBCFL=?, HBRNM=?, HBDLM=? ";
+		return fields;
+	}
+
+	/**
+	 * Returns a list of the field's name
+	 * 
+	 * @return a list of the field's name
+	 */
+	@Override
+	protected String getFields()
+	{
+		String fields = " HBLNM, HBCFR, HBCFL, HBRNM, HBDLM ";
+		return fields;
+	}
+
+	/**
+	 * Returns a list of the field's parameters
+	 * 
+	 * @return the list of the field's parameters
+	 */
+	@Override
+	protected String getParameters()
+	{
+		String fields = " ?, ?, ?, ?, ? ";
+		return fields;
+	}
+
+	/**
+	 * This method create an array that contains the fields values and its types. <br>
+	 * It will be used by jdbc <code>PreparedStatement</code>
+	 * 
+	 * @return An array that contains the fields values and its types.
+	 */
+	@Override
+	public Object[] getParameterizedFieldsValues()
+	{
+		HBRecordDataModel dataModel = getMyDataModel();
+
+		Object[] object = new Object[] { dataModel.getLanguageCode(), dataModel.getFilePrefix(), dataModel.getFileKey(),
+						dataModel.getCodeDescription(), dataModel.getDateLastMaintained() };
+
+		return object;
+	}
+
+	/**
+	 * This method is going execute a Sql query using the filter criteria.
+	 * 
+	 * @param whereClause
+	 *            this is the <code>String</code> that represent the sql filter.
+	 * @return a <code>List</code> which contains a records
+	 */
+	public List<AbsRecord> getRecordBy(String whereClause)
+	{
+		return getRecordBy(whereClause, new HBRecordRowMapper());
+	}
+
+	/**
+	 * This method is going to get all records.
+	 * 
+	 * @return a <code>List</code> which contains a records
+	 */
+	public List<AbsRecord> getRecords()
+	{
+		return getRecordBy(null, new HBRecordRowMapper());
+	}
+
+	/**
+	 * This method is going to return a <code>HBRecordDataModel</code>
+	 * 
+	 * @return a <code>HBRecordDataModel</code>
+	 */
+	public HBRecordDataModel getHBRecord()
+	{
+		HBRecordDataModel HBRecordDataModel = null;
+		List<AbsRecord> results = getRecordBy(getWhereConditionBaseOnIdRecord(), new HBRecordRowMapper());
+
+		if (!results.isEmpty())
+		{
+
+			HBRecordDataModel = (HBRecordDataModel) results.get(0);
+		}
+
+		return HBRecordDataModel;
+	}
+
+	@Override
+	protected Hashtable<String, AbsRecord> createHashtableRecordModel(List<AbsRecord> records)
+	{
+		Hashtable<String, AbsRecord> results = null;
+
+		HBRecordDataModel hbRecordDataModel;
+
+		if (!records.isEmpty())
+		{
+			results = new Hashtable<String, AbsRecord>();
+		}
+		else
+		{
+			return null;
+		}
+
+		for (AbsRecord absRecord : records)
+		{
+			hbRecordDataModel = (HBRecordDataModel) absRecord;
+			String language = Toolbox.trim(Toolbox.pad(hbRecordDataModel.getLanguageCode(), 2), 2);
+			String filePrefix = Toolbox.trim(Toolbox.pad(hbRecordDataModel.getFilePrefix(), 3), 3);
+			String fileKey = Toolbox.trimr(hbRecordDataModel.getFileKey());
+			String key = language + filePrefix + fileKey;
+			results.put(key, hbRecordDataModel);
+		}
+
+		return results;
+	}
+}

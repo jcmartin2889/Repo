@@ -1,0 +1,255 @@
+package com.misys.equation.common.test.dao;
+
+import com.misys.equation.common.dao.IGAARecordDao;
+import com.misys.equation.common.dao.IGAURecordDao;
+import com.misys.equation.common.dao.IHeaderRecordDao;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.dao.beans.GAARecordDataModel;
+import com.misys.equation.common.dao.beans.GAURecordDataModel;
+import com.misys.equation.common.dao.beans.HeaderRecordDataModel;
+import com.misys.equation.common.test.EquationTestCaseDao;
+
+/**
+ * This class will test the HeaderRecordDao.
+ * 
+ * @author barcelr1
+ * 
+ */
+public class HeaderRecord extends EquationTestCaseDao
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: HeaderRecord.java 11310 2011-06-27 12:20:21Z ESTHER.WILLIAMS $";
+
+	GAARecordDataModel gaaRecord;
+	GAURecordDataModel gauRecord;
+	HeaderRecordDataModel record;
+
+	public HeaderRecord()
+	{
+		super();
+		initialiseDummyData();
+	}
+
+	/*
+	 * & (non-Javadoc)
+	 * 
+	 * @see com.misys.equation.common.test.EquationTestCaseDao#assertDataModel(com.misys.equation.common.dao.beans.AbsRecord)
+	 */
+	@Override
+	protected void assertDataModel(AbsRecord dataModel)
+	{
+		HeaderRecordDataModel record = (HeaderRecordDataModel) dataModel;
+		assertEquals(getMyModel().getSequenceId(), record.getSequenceId());
+		assertEquals(getMyModel().getSessionId(), record.getSessionId());
+		assertEquals(getMyModel().getUser(), record.getUser());
+		assertEquals(getMyModel().getAuditTimestamp(), record.getAuditTimestamp());
+		assertEquals(getMyModel().getSource(), record.getSource());
+		assertEquals(getMyModel().getSourceUnit(), record.getSourceUnit());
+		assertEquals(getMyModel().getSourceServer(), record.getSourceServer());
+		assertEquals(getMyModel().getProcessingDate(), record.getProcessingDate());
+		assertEquals(getMyModel().getUnitDefaultBranch(), record.getUnitDefaultBranch());
+		assertEquals(getMyModel().getOptionId(), record.getOptionId());
+		assertEquals(getMyModel().getReferenceDetailsType(), record.getReferenceDetailsType());
+		assertEquals(getMyModel().getReferenceDetails(), record.getReferenceDetails());
+		assertEquals(getMyModel().getStatus(), record.getStatus());
+		assertEquals(getMyModel().getAcknowledgedStatus(), record.getAcknowledgedStatus());
+		assertEquals(getMyModel().getToUnit(), record.getToUnit());
+		assertEquals(getMyModel().getToServer(), record.getToServer());
+		assertEquals(getMyModel().getPropDataSequenceNumber(), record.getPropDataSequenceNumber());
+		assertEquals(getMyModel().getUnitDatasequenceNumber(), record.getUnitDatasequenceNumber());
+		assertEquals(getMyModel().getGlobalLayerStatus(), record.getGlobalLayerStatus());
+		assertEquals(getMyModel().getLastAction(), record.getLastAction());
+		assertEquals(getMyModel().getLastRetrySeq(), record.getLastRetrySeq());
+		assertEquals(getMyModel().getLastUpdate(), record.getLastUpdate());
+	}
+
+	/**
+	 * This method is going to return a cast data model.
+	 * 
+	 * @return a cast data model
+	 */
+	public HeaderRecordDataModel getMyModel()
+	{
+		HeaderRecordDataModel record = null;
+
+		if (dataModel instanceof HeaderRecordDataModel)
+		{
+			record = (HeaderRecordDataModel) dataModel;
+		}
+		else
+		{
+			throw new IllegalArgumentException("The set data-model does not correspond to the expected one.");
+		}
+		return record;
+	}
+
+	/*
+	 * & (non-Javadoc)
+	 * 
+	 * @see com.misys.equation.common.test.EquationTestCaseDao#checkIfThisRecordIsInTheDB()
+	 */
+	@Override
+	protected boolean checkIfThisRecordIsInTheDB()
+	{
+		boolean result;
+		result = ((IHeaderRecordDao) dao).checkIfHeaderRecordIsInTheDB();
+		return result;
+	}
+
+	/*
+	 * & (non-Javadoc)
+	 * 
+	 * @see com.misys.equation.common.test.EquationTestCaseDao#getRecord()
+	 */
+	@Override
+	protected AbsRecord getRecord()
+	{
+
+		AbsRecord record = ((IHeaderRecordDao) dao).getHeaderRecord();
+		assertDataModel(record);
+		return record;
+	}
+
+	/*
+	 * & (non-Javadoc)
+	 * 
+	 * @see com.misys.equation.common.test.EquationTestCaseDao#setDao()
+	 */
+	@Override
+	protected void setDao()
+	{
+		dao = daoFactory.getHeaderDao(session, dataModel);
+	}
+
+	/*
+	 * & (non-Javadoc)
+	 * 
+	 * @see com.misys.equation.common.test.EquationTestCaseDao#setDataModel()
+	 */
+	@Override
+	protected void setDataModel()
+	{
+		this.dataModel = record;
+	}
+
+	/*
+	 * & (non-Javadoc)
+	 * 
+	 * @see com.misys.equation.common.test.EquationTestCaseDao#updateRecord()
+	 */
+	@Override
+	protected void updateRecord()
+	{
+		// do nothing
+	}
+
+	/*
+	 * & (non-Javadoc)
+	 * 
+	 * @see com.misys.equation.common.test.EquationTestCaseDao#insertRecord()
+	 */
+	@Override
+	public void insertRecord()
+	{
+		IGAURecordDao gauRecordDao = daoFactory.getGAUDao(session, gauRecord);
+		gauRecordDao.insertRecord(gauRecord);
+
+		IGAARecordDao gaaRecordDao = daoFactory.getGAADao(session, gaaRecord);
+		gaaRecordDao.insertRecord(gaaRecord);
+	}
+
+	/*
+	 * & (non-Javadoc)
+	 * 
+	 * @see com.misys.equation.common.test.EquationTestCaseDao#deleteRecord()
+	 */
+	@Override
+	public void deleteRecord()
+	{
+
+		IGAURecordDao gauRecordDao = daoFactory.getGAUDao(session, gauRecord);
+		gauRecordDao.deleteRecord(gauRecord);
+
+		IGAARecordDao gaaRecordDao = daoFactory.getGAADao(session, gaaRecord);
+		gaaRecordDao.deleteRecord(gaaRecord);
+
+	}
+
+	/**
+	 * Initialise test data for JUnit tests
+	 */
+	public void initialiseDummyData()
+	{
+		long seqId = 9688888223L;
+		int retrySeq = 12345;
+		gaaRecord = new GAARecordDataModel(seqId, retrySeq);
+		gaaRecord.setRetryUser("String_TES");
+		gaaRecord.setApplyType("S");
+		gaaRecord.setApplyStatus("S");
+		gaaRecord.setApplicationMessages("String_TEST");
+		gaaRecord.setApplyTimestamp(new java.sql.Timestamp(System.currentTimeMillis()));
+		gaaRecord.setLibrary(getKLibName());
+
+		record = new HeaderRecordDataModel();
+		record.setSequenceId(seqId);
+		record.setSessionId("String_TES");
+		record.setUser("String_TES");
+		record.setAuditTimestamp(new java.sql.Timestamp(System.currentTimeMillis()));
+		record.setSource("S");
+		record.setSourceUnit("Str");
+		record.setSourceServer("String_T");
+		record.setProcessingDate(1);
+		record.setUnitDefaultBranch("Stri");
+		record.setOptionId("Str");
+		record.setReferenceDetailsType("String_TES");
+		record.setReferenceDetails("String_TEST");
+		record.setStatus("S");
+		record.setAcknowledgedStatus("S");
+		record.setToUnit("Str");
+		record.setToServer("String_T");
+		record.setPropDataSequenceNumber(9688888223L);
+		record.setUnitDatasequenceNumber(9688888223L);
+		record.setGlobalLayerStatus("S");
+		record.setLibrary(getKLibName());
+		record.setLastAction(gaaRecord.getApplyType());
+		record.setLastRetrySeq(gaaRecord.getRetrySequence());
+		record.setLastUpdate(gaaRecord.getApplyTimestamp());
+
+		gauRecord = new GAURecordDataModel();
+		gauRecord.setSequenceId(seqId);
+		gauRecord.setSessionId("String_TES");
+		gauRecord.setUser("String_TES");
+		gauRecord.setAuditTimestamp(new java.sql.Timestamp(System.currentTimeMillis()));
+		gauRecord.setSource("S");
+		gauRecord.setSourceUnit("Str");
+		gauRecord.setSourceServer("String_T");
+		gauRecord.setProcessingDate(1);
+		gauRecord.setUnitDefaultBranch("Stri");
+		gauRecord.setOptionId("Str");
+		gauRecord.setReferenceDetailsType("String_TES");
+		gauRecord.setReferenceDetails("String_TEST");
+		gauRecord.setStatus("S");
+		gauRecord.setAcknowledgedStatus("S");
+		gauRecord.setToUnit("Str");
+		gauRecord.setToServer("String_T");
+		gauRecord.setPropDataSequenceNumber(9688888223L);
+		gauRecord.setUnitDataSequenceNumber(9688888223L);
+		gauRecord.setGlobalLayerStatus("S");
+		gauRecord.setLibrary(getKLibName());
+
+	}
+
+	/*
+	 * & (non-Javadoc)
+	 * 
+	 * @see com.misys.equation.common.test.EquationTestCaseDao#testJournal()
+	 */
+	@Override
+	public void testJournal()
+	{
+		// no need for journal
+		// Header DAO is only for enquiry
+	}
+
+}

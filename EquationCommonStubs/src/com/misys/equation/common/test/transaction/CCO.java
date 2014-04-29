@@ -1,0 +1,107 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseAddMore;
+
+/**
+ * Equation test cases for Allow AEI Recording to Continue function
+ * 
+ * This function does not have any data or validation.
+ * 
+ * This function triggers updates of the item definition file BDPF with field information, causes SL parameters to be generated,
+ * generates source for the new physical and logical files and calls programs to build these files.
+ */
+public class CCO extends EquationTestCaseAddMore
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: CCO.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	String programName = "E11MRR";
+	String optionId = "CCO";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+
+	}
+
+	/**
+	 * Setup an existing key fields
+	 */
+	@Override
+	public void setupExistKeyFields(EquationStandardTransaction transaction)
+	{
+
+	}
+
+	/**
+	 * Setup the mandatory fields
+	 */
+	@Override
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+
+	}
+	/**
+	 * Test: validate mode: non-existing record<br>
+	 * Expected result: Fail<br>
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public void test00100Add_Validate_NonExistingRecord() throws Exception
+	{
+		// Do nothing
+	}
+	/**
+	 * Test: validate mode: existing record<br>
+	 * Expected result: Fail<br>
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public void test00300Add_Validate_ExistingRecord() throws Exception
+	{
+		// Do nothing
+	}
+}

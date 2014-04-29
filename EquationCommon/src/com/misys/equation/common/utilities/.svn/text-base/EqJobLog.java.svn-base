@@ -1,0 +1,133 @@
+package com.misys.equation.common.utilities;
+
+import com.ibm.as400.access.AS400;
+import com.ibm.as400.access.JobLog;
+import com.ibm.as400.access.QueuedMessage;
+import com.misys.equation.common.access.EquationCommonContext;
+
+public class EqJobLog
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	public static final int MAX_MSG = 50;
+	public static final int RETRIEVE_FROM_START = -1;
+	public static final int RETRIEVE_UP = 1;
+	public static final int RETRIEVE_DOWN = 2;
+	private final String jobName;
+	private final String jobUser;
+	private final String jobNumber;
+
+	// all messages available
+	private QueuedMessage[] queueMessages;
+
+	private int queuePosition;
+	private int totalMessages;
+
+	private final JobLog jobLog;
+
+	/**
+	 * Create a job log session
+	 * 
+	 * @param eqAS400
+	 *            - the AS400 job
+	 * @param jobName
+	 *            - the job name
+	 * @param jobUser
+	 *            - the job user
+	 * @param jobNumber
+	 *            - the job number
+	 * @param pos
+	 *            - position
+	 * @param njoblogs
+	 *            - number of joblog entries
+	 */
+	public EqJobLog(AS400 eqAS400, String jobName, String jobUser, String jobNumber, int pos, int njoblogs)
+	{
+		this.jobName = jobName;
+		this.jobUser = jobUser;
+		this.jobNumber = jobNumber;
+		jobLog = new JobLog(eqAS400, jobName, jobUser, jobNumber);
+		jobLog.setListDirection(true);
+		refresh(pos, njoblogs);
+	}
+
+	/**
+	 * Retrieve the required joblog entries starting from the specified position
+	 * 
+	 * @param pos
+	 *            - starting joblog entry to retrieve
+	 * @param msgCount
+	 *            - number of joblog entries to retrieve
+	 */
+	public void refresh(int pos, int msgCount)
+	{
+		try
+		{
+			// get maximum length
+			totalMessages = jobLog.getLength();
+
+			// all messages can be displayed
+			if (totalMessages < MAX_MSG && msgCount > 1)
+			{
+				queuePosition = 0;
+				queueMessages = jobLog.getMessages(-1, 0);
+			}
+
+			// Reset
+			else if (pos == RETRIEVE_FROM_START)
+			{
+				queuePosition = totalMessages - MAX_MSG;
+				queueMessages = jobLog.getMessages(queuePosition, MAX_MSG);
+			}
+
+			else if (pos + msgCount > totalMessages)
+			{
+				queuePosition = totalMessages - MAX_MSG;
+				queueMessages = jobLog.getMessages(queuePosition, msgCount);
+			}
+
+			else
+			{
+				queuePosition = pos;
+				queueMessages = jobLog.getMessages(queuePosition, msgCount);
+			}
+		}
+		catch (Exception arithmeticException)
+		{
+			EquationCommonContext.getContext().getLOG().error(arithmeticException);
+		}
+	}
+	/**
+	 * Return queued messages
+	 * 
+	 */
+	public QueuedMessage[] getQueueMessages()
+	{
+		return queueMessages;
+	}
+	/**
+	 * Return job name
+	 * 
+	 */
+	public String getJobName()
+	{
+		return jobName;
+	}
+	/**
+	 * Return job user
+	 * 
+	 */
+	public String getJobUser()
+	{
+		return jobUser;
+	}
+	/**
+	 * Return job number
+	 * 
+	 */
+	public String getJobNumber()
+	{
+		return jobNumber;
+	}
+
+}

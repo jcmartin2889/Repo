@@ -1,0 +1,261 @@
+package com.misys.equation.function.tools;
+
+import com.misys.equation.common.access.EquationPVData;
+import com.misys.equation.common.access.EquationUser;
+import com.misys.equation.common.datastructure.EqDS_DSJOBE;
+import com.misys.equation.common.utilities.EqDataType;
+import com.misys.equation.common.utilities.Toolbox;
+import com.misys.equation.function.beans.FunctionData;
+import com.misys.equation.function.beans.InputField;
+
+public class FunctionValidatePVSpecific
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private final EquationUser eqUser;
+	private final FunctionData functionData;
+
+	/**
+	 * Construct a Function Validate PV Specific
+	 * 
+	 * @param eqUser
+	 *            - the Equation user
+	 */
+	public FunctionValidatePVSpecific(EquationUser eqUser, FunctionData functionData)
+	{
+		this.eqUser = eqUser;
+		this.functionData = functionData;
+	}
+
+	/**
+	 * For some PV fields always do trimming (e.g. amounts which is normally 30 long)
+	 * 
+	 * @param inputField
+	 *            - the input field
+	 * @param pvName
+	 *            - the Equation PV name
+	 * @param pvField
+	 *            - the PV field
+	 * @param dsccn
+	 *            - the dsccn
+	 * @param value
+	 *            - the value
+	 * @param dbValue
+	 *            - the equivalent in DB value
+	 * @param length
+	 *            - the field length
+	 * @param decimal
+	 *            - the number of decimal places
+	 * 
+	 * @return the trimmed value
+	 */
+	public String specialInputPVField(InputField inputField, String pvName, String pvField, String dsccn, String value, int length,
+					int decimal)
+	{
+		// GWV28R Validate interest rate
+		if (pvName.equals("GWV28R"))
+		{
+			if (pvField.equals("$RATEI"))
+			{
+				return Toolbox.removeTrailingZeroes(value, eqUser.getDsjobctle().getFieldValue(EqDS_DSJOBE.DECST));
+			}
+		}
+
+		// GWV53R Validate exchange rate
+		else if (pvName.equals("GWV53R"))
+		{
+			// must be a valid numeric fields of 15,9
+			if (pvField.equals("$53EXR"))
+			{
+				// check if valid number, if not, simply return the same number
+				try
+				{
+					String dbValue = EqDataType.cvtNumericToDb(value, functionData.getIntegerSeparator(),
+									functionData.getDecimalSeparator());
+					Double.parseDouble(dbValue);
+					return dbValue;
+				}
+				catch (Exception e)
+				{
+					return value;
+				}
+
+			}
+		}
+
+		// GWV94R Validate date
+		else if (pvName.equals("GWV94R"))
+		{
+			// Input date in 8 digit
+			if (pvField.equals("$V948DM"))
+			{
+				// if this is blank, then use the DSCCN
+				if (value.trim().length() == 0)
+				{
+					return dsccn;
+				}
+			}
+		}
+
+		// return the value;
+		return value;
+	}
+
+	/**
+	 * For some PV fields always do trimming (e.g. amounts which is normally 30 long)
+	 * 
+	 * @param pvName
+	 *            - the Equation PV name
+	 * @param pvField
+	 *            - the PV field
+	 * @param value
+	 *            - the value
+	 * 
+	 * @return the trimmed value
+	 */
+	public String specialOutputPVField(String pvName, String pvField, String value)
+	{
+		// GWV30R Validate amount and edit for display
+		if (pvName.equals("GWV30R"))
+		{
+			if (pvField.equals("$INPAM") || pvField.equals("$EDTAM"))
+			{
+				return value.trim();
+			}
+		}
+
+		// GWV29R Validate amount and edit for display
+		else if (pvName.equals("GWV29R"))
+		{
+			if (pvField.equals("$AMTIN") || pvField.equals("$AMTED"))
+			{
+				return value.trim();
+			}
+		}
+
+		// GWV28R Validate interest rate
+		else if (pvName.equals("GWV28R"))
+		{
+			if (pvField.equals("$RATEI") || pvField.equals("$RATEO"))
+			{
+				return value.trim();
+			}
+		}
+
+		// GWV94R Validate date
+		else if (pvName.equals("GWV94R"))
+		{
+			if (pvField.equals("$948F1"))
+			{
+				// ensure it is always 7 digit (e.g. 0991231 instead of 991231)
+				if (value.length() == 6)
+				{
+					return "0" + value;
+				}
+				else
+				{
+					return value;
+				}
+			}
+		}
+
+		// return the value;
+		return value;
+	}
+
+	/**
+	 * For some PV, perform special processing
+	 * 
+	 * @param inputField
+	 *            - the input field
+	 * @param equationPVData
+	 *            - the Equation PV Data
+	 * 
+	 * @return the trimmed value
+	 */
+	public void specialInputPVPgm(InputField inputField, EquationPVData equationPVData)
+	{
+		// GWV45R Validate number
+		// when it says it is length 5, then it should be length 5
+		// when it says it is decimal 3, then there should be 3 decimal places
+		// so let us add leading/trailing zeroes if needed
+		if (equationPVData.getPvMetaData().getId().equals("GWV45R"))
+		{
+			// default the field length to the field size
+			if (equationPVData.getFieldValue("$45LEN").trim().length() == 0)
+			{
+				equationPVData.setFieldValue("$45LEN", Toolbox.padAtFront(inputField.getSize(), "0", 2));
+			}
+
+			// default the field decimal to the field decimal
+			if (equationPVData.getFieldValue("$45DPL").trim().length() == 0)
+			{
+				equationPVData.setFieldValue("$45DPL", inputField.getDecimals());
+			}
+
+			// pad leading/trailing 0
+			String fieldValue = equationPVData.getFieldValue("$45NUM").trim();
+			if (fieldValue.length() > 0)
+			{
+				int length = Toolbox.parseInt(equationPVData.getFieldValue("$45LEN"), 0);
+				int decimal = Toolbox.parseInt(equationPVData.getFieldValue("$45DPL"), 0);
+				fieldValue = Toolbox.reformatNumber2(fieldValue, length, decimal, ".");
+				equationPVData.setFieldValue("$45NUM", fieldValue);
+			}
+			return;
+		}
+
+		// GWV30R Validate amount
+		if (equationPVData.getPvMetaData().getId().equals("GWV30R"))
+		{
+			// default the field length to the field size
+			if (equationPVData.getFieldValue("$NODIG").trim().length() == 0)
+			{
+				equationPVData.setFieldValue("$NODIG", Toolbox.padAtFront(inputField.getSize(), "0", 2));
+			}
+
+			// default the field decimal to the field decimal
+			if (equationPVData.getFieldValue("$NDPAM").trim().length() == 0)
+			{
+				equationPVData.setFieldValue("$NDPAM", inputField.getDecimals());
+			}
+			return;
+		}
+	}
+
+	/**
+	 * Determine whether the field is in user input format or English input format
+	 * 
+	 * @param pvName
+	 *            - the pv name
+	 * @param pvField
+	 *            - the pv field
+	 * 
+	 * @return true if in user input format (default)
+	 */
+	public boolean isInputValue(String pvName, String pvField)
+	{
+		// GWV53R Validate exchange rate
+		if (pvName.equals("GWV30R"))
+		{
+			// default the field length to the field size
+			if (pvField.equals("$NUMAM"))
+			{
+				return false;
+			}
+		}
+
+		// GWV53R Validate exchange rate
+		if (pvName.equals("GWV53R"))
+		{
+			// default the field length to the field size
+			if (pvField.equals("$53EXR"))
+			{
+				return false;
+			}
+		}
+
+		// assume user input format
+		return true;
+	}
+}

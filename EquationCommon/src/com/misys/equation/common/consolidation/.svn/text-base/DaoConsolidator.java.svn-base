@@ -1,0 +1,156 @@
+package com.misys.equation.common.consolidation;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationUnit;
+import com.misys.equation.common.dao.DaoFactory;
+import com.misys.equation.common.dao.IDao;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.internal.eapi.core.EQException;
+
+/**
+ * This is the base class for DAO consolidators. It can be used in its based form for generic retrieval operations across units such
+ * as getConsolidatedRecords(), getConsolidatedRecordBy(), etc. If custom retrieval is required for a particular DAO then it is
+ * suggested that the developer extends this class and implements a custom consolidator for the DAO in question.
+ * 
+ * @author camillen
+ * 
+ */
+public class DaoConsolidator
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	private final EquationStandardSession session;
+	protected List<EquationStandardSession> sessions;
+	private final String daoName;
+	private final List<EquationUnit> unitToUse;
+	protected List<IDao> daos;
+
+	/**
+	 * Constructor to create a DAO consolidator with all units for the current session.
+	 * 
+	 * @param session
+	 *            EquationStandardSession
+	 * @param daoName
+	 *            String
+	 * @throws EQException
+	 *             - If there is a problem in retrieving the sessions for the current user
+	 */
+	public DaoConsolidator(final EquationStandardSession session, final String daoName) throws EQException
+	{
+		this(session, daoName, new ArrayList<EquationUnit>());
+	}
+
+	/**
+	 * Constructor to create a DAO consolidator with all units for the current session. This constructor allows for filtering of
+	 * units, by selecting a list of units to use.
+	 * 
+	 * @param session
+	 *            EquationStandardSession
+	 * @param daoName
+	 *            String
+	 * @param unitsToUse
+	 *            ArrayList<EquationUnit>
+	 * @throws EQException
+	 */
+	public DaoConsolidator(final EquationStandardSession session, final String daoName, final List<EquationUnit> unitsToUse)
+					throws EQException
+	{
+		this.session = session;
+		this.daoName = daoName;
+		this.unitToUse = unitsToUse;
+
+		DaoFactory daoFactory = new DaoFactory();
+		this.sessions = EquationCommonContext.getContext().getGlobalProcessingEquationStandardSessions(
+						session.getSessionIdentifier());
+		this.daos = daoFactory.getDaosAcrossUnits(sessions, daoName);
+	}
+
+	/**
+	 * This method consolidates the results the getRecords() method across units.
+	 * 
+	 * @return List<AbsRecord> - List of records
+	 */
+	public List<AbsRecord> getConsolidatedRecords()
+	{
+		List<AbsRecord> consolidatedRecords = new ArrayList<AbsRecord>();
+		for (IDao dao : daos)
+		{
+			consolidatedRecords.addAll(dao.getRecords());
+		}
+		return consolidatedRecords;
+	}
+
+	/**
+	 * This method consolidates the results the getRecords() method across units.
+	 * 
+	 * @param String
+	 *            whereClause
+	 * @return List<AbsRecord> - List of records
+	 */
+	public List<AbsRecord> getConsolidatedRecordBy(String whereClause)
+	{
+		List<AbsRecord> consolidatedRecords = new ArrayList<AbsRecord>();
+		for (IDao dao : daos)
+		{
+			consolidatedRecords.addAll(dao.getRecordBy(whereClause));
+		}
+		return consolidatedRecords;
+	}
+
+	/**
+	 * This method will check if a record exists across units by running the query across all the connections available.
+	 * 
+	 * @param whereClause
+	 *            String - Clause to check for record.
+	 * @return
+	 */
+	public boolean checkIfThisRecordInConsolidatedDb(String whereClause)
+	{
+		boolean exists = false;
+		for (IDao dao : daos)
+		{
+			exists = exists || dao.checkIfThisRecordIsInTheDB(whereClause);
+		}
+		return exists;
+	}
+
+	/**
+	 * Returns the session for this DAO consolidator.
+	 * 
+	 * @return EquationStandardSession
+	 */
+	public EquationStandardSession getSession()
+	{
+		return session;
+	}
+
+	/**
+	 * Returns all global processing sessions for this DAO consolidator.
+	 * 
+	 * @return List<EquationStandardSession> sessions - all global processing sessions
+	 */
+	public List<EquationStandardSession> getSessions()
+	{
+		return sessions;
+	}
+
+	public String getDaoName()
+	{
+		return daoName;
+	}
+
+	public List<EquationUnit> getUnitToUse()
+	{
+		return unitToUse;
+	}
+
+	public List<IDao> getDaos()
+	{
+		return daos;
+	}
+}

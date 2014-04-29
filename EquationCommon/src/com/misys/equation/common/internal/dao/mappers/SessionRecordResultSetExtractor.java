@@ -1,0 +1,51 @@
+package com.misys.equation.common.internal.dao.mappers;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.springframework.jdbc.core.ResultSetExtractor;
+
+import com.misys.equation.common.dao.beans.SessionRecordDataModel;
+
+/**
+ * This is a helper class used by Sp framework to populate the data model.<br>
+ * This class will extract data from the <code>ResultSet</code> and create a data model.
+ * 
+ * @author deroset
+ * 
+ */
+
+public class SessionRecordResultSetExtractor implements ResultSetExtractor
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: SessionRecordResultSetExtractor.java 4646 2009-09-07 16:28:30Z weddelc1 $";
+
+	/**
+	 * This class will extract data from the <code>ResultSet</code> and create a data model.
+	 * 
+	 * @param the
+	 *            passed <code>ResultSet</code> which contains the data.
+	 * @return a <code>SessionRecordDataModel</code> data model.
+	 */
+	public Object extractData(ResultSet resultSet) throws SQLException
+	{
+
+		SessionRecordDataModel record = new SessionRecordDataModel();
+
+		record.setUserId(resultSet.getString(1).trim());
+		record.setOptionId(resultSet.getString(2).trim());
+		record.setSessionId(resultSet.getString(3).trim());
+		record.setTransactionId(resultSet.getString(4).trim());
+		record.setMode(resultSet.getString(5).trim());
+		record.setFunctionData(resultSet.getString(6).trim());
+		record.setFunctionCRMData(resultSet.getString(7).trim());
+		record.setFunctionEFCData(resultSet.getString(8).trim());
+		record.setFunctionEFC2Data(resultSet.getString(9).trim());
+		record.setFunctionMessages(resultSet.getString(10).trim());
+		record.setWarningMessages(resultSet.getString(11).trim());
+		record.setBeforeImage(resultSet.getString(12).trim());
+
+		return record;
+	}
+
+}

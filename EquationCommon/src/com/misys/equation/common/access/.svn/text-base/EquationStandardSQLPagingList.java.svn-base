@@ -1,0 +1,801 @@
+package com.misys.equation.common.access;
+
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EqBeanFactory;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.SQLToolbox;
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * This class provides methods for processing SQL select statements over tables with a primary unique key where paging
+ * forward/backward is required. The keys of the first and last row positions are stored. This class can be serialised as XML and
+ * sent in the response and subsequent request so that resuming the query at a specific location in the table is possible. The
+ * requested maximum results will be given unless end of file is reached.
+ * 
+ * After the first execution the properties other than callback must not be changed using the set methods.
+ * 
+ * If a prompt validate module is called it is assumed a calculated column named DTA will be used. If the prompt validate returns a
+ * error KSM in "DTA" then the row will be ignored.
+ */
+public class EquationStandardSQLPagingList
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	private static final EquationLogger LOG = new EquationLogger(EquationStandardSQLPagingList.class);
+
+	private LinkedHashMap<String, String> keyFieldValues = new LinkedHashMap<String, String>();
+	private String sqlSelectStart = null;
+	private String sqlSelectFilter = null;
+	// this determines the total number of records required
+	private int numberOfRows = 0;
+	IEquationSQLPagingListCallback callback;
+
+	private int currentPage = 0;
+	private int totalPages = 0;
+	private int totalNumberOfRecordsCollected = 0;
+	private boolean moreRows = false;
+	private HashMap<String, String> firstRow = new HashMap<String, String>();
+	private HashMap<String, String> lastRow = new HashMap<String, String>();
+
+	// this determines the first or last record read for this result set depending on direction
+	private HashMap<String, String> positionRow;
+	boolean initialisedKeyFields = false;
+	/**
+	 * Constructor for deserialisation
+	 */
+	public EquationStandardSQLPagingList()
+	{
+	}
+	/**
+	 * Construct a list with SQL select statement that pages
+	 * 
+	 * @param keyFieldValues
+	 *            - database column names/values to provide information about the primary key and to determine where the selection
+	 *            starts. This collection can be set to null here and added to before calling the execute query method. There must
+	 *            be unique keys setup before calling the execute query method.
+	 * @param sqlSelectStart
+	 *            - select statement with columns and file e.q."SELECT SCAB, SCAN, SCAS, SCAB || SCAN || SCAS AS DTAKEY, UTW06RFNC('V','GWR76R', SCAB || SCAN || SCAS,'N','N','G','') AS DTA FROM SC10LF"
+	 *            . If a prompt validate module is called it is assumed a calculated column named DTA will be used. If the prompt
+	 *            validate returns a error KSM then the row will be ignored.
+	 * @param sqlSelectFilter
+	 *            - portion of where clause with filtering e.g. "SCAB EQ '0132' AND 'SCAN LIKE '1%'"
+	 * @param numberOfRows
+	 *            - number of rows to return, the number returned could be less if end of file is reached
+	 * @param callback
+	 *            - class to call if rows will be rejected/altered. The setCallback method will need to be used if this instance is
+	 *            serialised / deserialised.
+	 */
+	public EquationStandardSQLPagingList(LinkedHashMap<String, String> keyFieldValues, String sqlSelectStart,
+					String sqlSelectFilter, int numberOfRows, IEquationSQLPagingListCallback callback)
+	{
+
+		// Set the starting position...
+		if ((keyFieldValues == null) || (keyFieldValues.equals("")))
+		{
+			keyFieldValues = new LinkedHashMap<String, String>();
+		}
+		this.keyFieldValues = keyFieldValues;
+		this.sqlSelectStart = sqlSelectStart;
+		this.sqlSelectFilter = sqlSelectFilter;
+		this.numberOfRows = numberOfRows;
+		this.callback = callback;
+
+		currentPage = 0;
+	}
+
+	/**
+	 * Execute the query
+	 * 
+	 * @param session
+	 *            - the session
+	 * @param requestedPage
+	 *            - page number
+	 * @throws Exception
+	 * 
+	 */
+	public ArrayList<HashMap<String, String>> executeQuery(EquationStandardSession session, int requestedPage) throws Exception
+	{
+		ArrayList<HashMap<String, String>> resultData = new ArrayList<HashMap<String, String>>();
+
+		// adjust key fields so that if full key is supplied we start 1 row earlier
+		if (initialisedKeyFields == false)
+		{
+			adjustKeyFields(session);
+			initialisedKeyFields = true;
+		}
+
+		// request for more pages but there are no more records
+		if (requestedPage > currentPage && currentPage != 0 && moreRows == false)
+		{
+			// no result data
+			return resultData;
+		}
+		// determine the direction and start position for the query
+		String direction = determineDirection(requestedPage);
+
+		// Get the right page
+		boolean eof = false;
+		int calculatedCurrentPage = currentPage;
+		if (direction.equals(">"))
+		{
+			while (calculatedCurrentPage < requestedPage && eof == false)
+			{
+				int numberOfRowsThisStatement = numberOfRows + 1;
+				eof = executeQueryToFullnumberOfRows(session, direction, numberOfRowsThisStatement, resultData);
+				calculatedCurrentPage++;
+			}
+
+			if (totalNumberOfRecordsCollected >= numberOfRows)
+			{
+				moreRows = true;
+			}
+			else
+			{
+				moreRows = false;
+			}
+		}
+		else
+		{
+			while (calculatedCurrentPage > requestedPage)
+			{
+				executeQueryToFullnumberOfRows(session, direction, numberOfRows, resultData);
+				calculatedCurrentPage--;
+			}
+			// Going backwards there are always more records because you can go forward again.
+			// Being on page one does not mean there are no more records.
+			moreRows = true;
+		}
+		if (calculatedCurrentPage > totalPages)
+		{
+			totalPages = calculatedCurrentPage;
+		}
+		if (calculatedCurrentPage == requestedPage)
+		{
+			if (resultData.size() != 0)
+			{
+				currentPage = requestedPage;
+			}
+
+		}
+		else
+		{
+			// No data was found for the right page
+			currentPage = 0;
+			resultData.clear();
+		}
+		if (resultData.size() > 0)
+		{
+			firstRow = resultData.get(0);
+			lastRow = resultData.get(resultData.size() - 1);
+		}
+		else
+		{
+			firstRow = null;
+			lastRow = null;
+		}
+		// cleanup
+		positionRow = null;
+		return resultData;
+	}
+	private String determineDirection(int requestedPage) throws Exception
+	{
+		String direction = null;
+		if (requestedPage == 0)
+		{
+			throw new RuntimeException("Page number must not be zero.");
+		}
+
+		// forward request - start from where we left off
+		if (requestedPage > currentPage)
+		{
+			direction = ">";
+			if (currentPage == 0 || lastRow == null)
+			{
+				positionRow = keyFieldValues;
+			}
+			else
+			{
+				positionRow = lastRow;
+			}
+		}
+		else
+
+		// backward request - start from where we left off
+		if (requestedPage < currentPage && firstRow != null)
+		{
+			direction = "<";
+			positionRow = firstRow;
+		}
+		else
+		{
+			// Same page - have to start from scratch as we don't keep the result set
+			direction = ">";
+			positionRow = keyFieldValues;
+			currentPage = 0;
+		}
+		return direction;
+	}
+	private boolean executeQueryToFullnumberOfRows(EquationStandardSession session, String direction,
+					int numberOfRowsThisStatement, ArrayList<HashMap<String, String>> resultData)
+	{
+		boolean eof = false;
+		totalNumberOfRecordsCollected = 0;
+		resultData.clear();
+
+		while (totalNumberOfRecordsCollected < numberOfRows)
+		{
+
+			// Generate the SQL
+			String sqlSelect = generateSQL(direction, numberOfRowsThisStatement);
+
+			// Perform the query
+			eof = executeQueryForOneResultSet(session, sqlSelect, direction, resultData);
+
+			// Total number of records read less than the required, then it means no more data
+			if (eof)
+			{
+				break;
+			}
+
+		}
+		return eof;
+	}
+	private boolean executeQueryForOneResultSet(EquationStandardSession session, String sqlSelect, String direction,
+					ArrayList<HashMap<String, String>> resultData)
+	{
+		ResultSet equationResultSet = null;
+		PreparedStatement equationStatement = null;
+		boolean eof = false;
+
+		try
+		{
+			Connection equationConnection = session.getConnection();
+
+			// Build the result set
+			equationStatement = equationConnection.prepareStatement(sqlSelect, ResultSet.TYPE_SCROLL_INSENSITIVE,
+							ResultSet.CONCUR_READ_ONLY);
+			if (direction.equals(">"))
+			{
+				equationStatement.setMaxRows(numberOfRows + 1);
+				equationStatement.setFetchSize(numberOfRows + 1);
+			}
+			else
+			{
+				equationStatement.setMaxRows(numberOfRows);
+				equationStatement.setFetchSize(numberOfRows);
+			}
+
+			// record time
+
+			// System.out.println(sqlSelect);
+			long startTime = System.nanoTime();
+			equationResultSet = equationStatement.executeQuery();
+			if (LOG.isDebugEnabled())
+			{
+				// record time
+				long endTime = System.nanoTime();
+				// log the time taken to make the SQL call
+				LOG.debug("EquationStandardSQLPagingList: " + sqlSelect + " (Duration: " + ((endTime - startTime) / 1000000)
+								+ "ms)");
+			}
+
+			ResultSetMetaData rsMeta = equationResultSet.getMetaData();
+
+			positionRow = null;
+			int resultSetRowsReturned = 0;
+
+			for (int j = 1; equationResultSet.next() && j <= numberOfRows; j++)
+			{
+				resultSetRowsReturned++;
+
+				if (totalNumberOfRecordsCollected < numberOfRows)
+				{
+					processRow(rsMeta, equationResultSet, direction, resultData);
+				}
+
+			}
+			if (resultSetRowsReturned < numberOfRows)
+			{
+				eof = true;
+			}
+
+			// Return true if it only read less than the required
+			return eof;
+		}
+		catch (SQLException sqle)
+		{
+			LOG.error("SQL Statement: " + sqlSelect);
+			LOG.error("Replace this", sqle);
+			throw new RuntimeException("EquationStandardSQLPagingList: " + Toolbox.getExceptionMessage(sqle), sqle);
+		}
+		finally
+		{
+			SQLToolbox.close(equationResultSet);
+			SQLToolbox.close(equationStatement);
+		}
+	}
+
+	private void processRow(ResultSetMetaData rsMeta, ResultSet equationResultSet, String direction,
+					ArrayList<HashMap<String, String>> resultData) throws SQLException
+	{
+		boolean callbackIncludeInResult = true;
+		String errorText = "";
+
+		HashMap<String, String> rowData = new HashMap<String, String>();
+
+		for (int i = 0; i < rsMeta.getColumnCount(); i++)
+		{
+			String dbColumnId = rsMeta.getColumnName(i + 1);
+
+			int type = rsMeta.getColumnType(i + 1);
+
+			String result = null;
+			if (type == Types.CHAR)
+			{
+				result = equationResultSet.getString(dbColumnId);
+			}
+
+			else if (type == Types.DECIMAL || type == Types.FLOAT || type == Types.DOUBLE || type == Types.REAL)
+			{
+				BigDecimal bd = equationResultSet.getBigDecimal(dbColumnId);
+				if (bd != null)
+					result = bd.toPlainString();
+				else
+					result = String.valueOf(0);
+
+			}
+
+			else if (type == Types.TINYINT || type == Types.BIGINT || type == Types.NUMERIC || type == Types.INTEGER
+							|| type == Types.SMALLINT)
+			{
+				result = String.valueOf(equationResultSet.getLong(dbColumnId));
+			}
+
+			else
+			{
+				result = equationResultSet.getString(dbColumnId);
+			}
+
+			rowData.put(dbColumnId, result);
+			if (dbColumnId.equals("DTA"))
+			{
+				errorText = result.substring(0, 7).trim();
+			}
+		}
+
+		positionRow = rowData;
+
+		if (callback != null)
+		{
+			callbackIncludeInResult = callback.validateRow(rowData);
+		}
+
+		if (errorText.equals("") && callbackIncludeInResult == true)
+		{
+			if (direction.equals(">"))
+			{
+				resultData.add(rowData);
+			}
+			else
+			{
+				// build the list in the collection backwards
+				resultData.add(0, rowData);
+			}
+
+			// accumulate total records read
+			totalNumberOfRecordsCollected++;
+
+		}
+
+	}
+	/**
+	 * Generate the SQL statement
+	 * 
+	 * @param direction
+	 *            - (<) page down (>) page up
+	 */
+	private String generateSQL(String direction, int numberOfRowsThisStatement)
+	{
+		boolean hasDbKey = hasDbKey();
+		// SQL statement buffer
+		StringBuffer sqlSelect = new StringBuffer(sqlSelectStart);
+
+		boolean firstWhere = true;
+
+		if (sqlSelectFilter != null && sqlSelectFilter.length() > 0)
+		{
+			sqlSelect.append(" WHERE ");
+			sqlSelect.append(sqlSelectFilter);
+			firstWhere = false;
+		}
+		if (firstWhere)
+		{
+			sqlSelect.append(" WHERE ");
+			firstWhere = false;
+		}
+		else
+		{
+			if (hasDbKey)
+			{
+				sqlSelect.append(" AND ");
+			}
+		}
+		if (hasDbKey)
+		{
+			sqlSelect.append(getWhereClauseForDbKey(direction) + " ");
+		}
+
+		// Append the ordering
+		sqlSelect.append(" ORDER BY " + getOrderBy(direction));
+
+		// fetch only this rows
+		sqlSelect.append(" FETCH FIRST " + (numberOfRowsThisStatement) + " ROWS ONLY");
+
+		// read uncommitted records
+		sqlSelect.append(" WITH UR");
+
+		// Return the statement
+		return sqlSelect.toString();
+	}
+	/**
+	 * Return the where clause
+	 * 
+	 * @param direction
+	 *            - (<) page down (>) page up
+	 * 
+	 * @return the where clause
+	 */
+	private String getWhereClauseForDbKey(String direction)
+	{
+
+		StringBuffer whereClause = new StringBuffer(" (");
+		StringBuffer whereClauseCurrent = null;
+		StringBuffer whereClauseLast = null;
+		String keyField = null;
+		String fieldValue = null;
+		int i = 0;
+		Iterator<String> iterator = keyFieldValues.keySet().iterator();
+		while (iterator.hasNext())
+		{
+			keyField = iterator.next();
+			fieldValue = positionRow.get(keyField);
+			if (fieldValue != null)
+			{
+
+				if (i == 0)
+				{
+					whereClauseCurrent = new StringBuffer(keyField + direction + "'" + fieldValue + "' ");
+
+				}
+				else
+				{
+					whereClauseCurrent = new StringBuffer(" (" + whereClauseLast + " AND " + keyField + direction + "'"
+									+ fieldValue + "'" + ") ");
+
+				}
+				if (i == 0)
+				{
+					whereClauseLast = new StringBuffer(keyField + "=" + "'" + fieldValue + "'");
+				}
+				else
+				{
+					whereClauseLast = whereClauseLast.append(" AND " + keyField + "=" + "'" + fieldValue + "'");
+				}
+
+				if (i < keyFieldValues.keySet().size() - 1 && keyFieldValues.keySet().size() > 1)
+				{
+					whereClause = whereClause.append(whereClauseCurrent + "OR");
+				}
+				else
+				{
+					whereClause = whereClause.append(whereClauseCurrent);
+				}
+			}
+			i++;
+		}
+		whereClause = whereClause.append(")");
+
+		return whereClause.toString();
+	}
+	/**
+	 * Return whether any key field values have been supplied
+	 * 
+	 * @return whether any key field values have been supplied
+	 */
+	private boolean hasDbKey()
+	{
+		String keyField = null;
+		String fieldValue = null;
+		Iterator<String> iterator = keyFieldValues.keySet().iterator();
+		while (iterator.hasNext())
+		{
+			keyField = iterator.next();
+			fieldValue = positionRow.get(keyField);
+			if (fieldValue != null)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	private void adjustKeyFields(EquationStandardSession session)
+	{
+		// Adjust the supplied key fields to go back 1 record. If we don't do this and the supplied full start key exist the first
+		// record will be skipped on the first page.
+		// record.
+		positionRow = keyFieldValues;
+		if (hasDbKey())
+		{
+			String direction = "<";
+			ArrayList<HashMap<String, String>> resultData = new ArrayList<HashMap<String, String>>();
+
+			// save of real numberOfRows as we want to go back 1 record to be able to position correctly
+
+			String keyField = null;
+			String fieldValue = null;
+			boolean eof = executeQueryToFullnumberOfRows(session, direction, 1, resultData);
+			if (!eof && resultData.size() > 0)
+			{
+				Iterator<String> iterator = keyFieldValues.keySet().iterator();
+				while (iterator.hasNext())
+				{
+					keyField = iterator.next();
+					fieldValue = positionRow.get(keyField);
+					keyFieldValues.put(keyField, fieldValue);
+				}
+			}
+
+		}
+	}
+	/**
+	 * Return the order by clause
+	 * 
+	 * @param direction
+	 *            - (<) page down (>) page up
+	 * 
+	 * @return the order by clause
+	 */
+	private String getOrderBy(String direction)
+	{
+		StringBuffer orderBy = new StringBuffer();
+		String delimiterOrderBy = ", ";
+		String ascend = " ASC";
+		String decend = " DESC";
+
+		String keyField = null;
+		Iterator<String> iterator = keyFieldValues.keySet().iterator();
+		while (iterator.hasNext())
+		{
+			keyField = iterator.next();
+
+			// add the delimiter to concatenate all the key fields
+			if (orderBy.length() != 0)
+			{
+				orderBy.append(delimiterOrderBy);
+			}
+
+			orderBy.append(keyField);
+
+			if (direction.equals("<"))
+			{
+				orderBy.append(decend);
+			}
+			else
+			{
+				orderBy.append(ascend);
+			}
+
+		}
+		return orderBy.toString();
+	}
+	/**
+	 * Add field to key fields value collection with padding
+	 * 
+	 * @param columnName
+	 *            - the primary key column name
+	 * @param value
+	 *            - the primary key column value. If null is supplied the value will be padded to the field length supplied.
+	 * @param fieldLength
+	 *            - the field length
+	 * @param isString
+	 *            - does the column contain Strings
+	 */
+	public void addPrimaryKeyFieldValues(String columnName, String value, int fieldLength, boolean isString)
+	{
+		if (keyFieldValues == null)
+		{
+			keyFieldValues = new LinkedHashMap<String, String>();
+		}
+		if (value == null)
+		{
+			value = "";
+		}
+		if (value.trim().equals(""))
+		{
+			if (isString)
+			{
+				value = Toolbox.pad(value, fieldLength);
+			}
+			else
+			{
+				value = Toolbox.padAtFront(value, "0", fieldLength);
+			}
+		}
+		keyFieldValues.put(columnName, value);
+	}
+	/**
+	 * Return this instance as an XML String
+	 * 
+	 * @return this instance as an XML String
+	 * @throws EQException
+	 */
+	public String serialiseAsXML() throws EQException
+	{
+		EqBeanFactory eqBeanFactory = EqBeanFactory.getEqBeanFactory();
+		String xml = eqBeanFactory.serialiseBeanAsXML(this);
+		return xml;
+	}
+	/**
+	 * return EquationStandardSQLPagingList instance from XML String
+	 * 
+	 * @param xml
+	 * @return EquationStandardSQLPagingList instance from XML String
+	 * @throws EQException
+	 */
+	public static EquationStandardSQLPagingList deserialiseFromXML(String xml) throws EQException
+	{
+		EquationStandardSQLPagingList pagingList = null;
+
+		EqBeanFactory beanFactory = EqBeanFactory.getEqBeanFactory();
+		pagingList = (EquationStandardSQLPagingList) beanFactory.deserialiseXMLAsBean(xml, EquationStandardSQLPagingList.class);
+
+		return pagingList;
+	}
+
+	public void addKeyFieldValues(String key, String value)
+	{
+		keyFieldValues.put(key, value);
+	}
+	public void addFirstRow(String key, String value)
+	{
+		firstRow.put(key, value);
+	}
+	public void addLastRow(String key, String value)
+	{
+		lastRow.put(key, value);
+	}
+
+	public LinkedHashMap<String, String> getKeyFieldValues()
+	{
+		return keyFieldValues;
+	}
+
+	public void setKeyFieldValues(LinkedHashMap<String, String> keyFieldValues)
+	{
+		this.keyFieldValues = keyFieldValues;
+	}
+
+	public String getSqlSelectStart()
+	{
+		return sqlSelectStart;
+	}
+
+	public void setSqlSelectStart(String sqlSelectStart)
+	{
+		this.sqlSelectStart = sqlSelectStart;
+	}
+
+	public String getSqlSelectFilter()
+	{
+		return sqlSelectFilter;
+	}
+
+	public void setSqlSelectFilter(String sqlSelectFilter)
+	{
+		this.sqlSelectFilter = sqlSelectFilter;
+	}
+
+	public int getNumberOfRows()
+	{
+		return numberOfRows;
+	}
+
+	public void setNumberOfRows(int numberOfRows)
+	{
+		this.numberOfRows = numberOfRows;
+	}
+
+	public IEquationSQLPagingListCallback getCallback()
+	{
+		return callback;
+	}
+
+	public void setCallback(IEquationSQLPagingListCallback callback)
+	{
+		this.callback = callback;
+	}
+
+	public int getCurrentPage()
+	{
+		return currentPage;
+	}
+
+	public void setCurrentPage(int currentPage)
+	{
+		this.currentPage = currentPage;
+	}
+
+	public int getTotalPages()
+	{
+		return totalPages;
+	}
+
+	public void setTotalPages(int totalPages)
+	{
+		this.totalPages = totalPages;
+	}
+
+	public int getTotalNumberOfRecordsCollected()
+	{
+		return totalNumberOfRecordsCollected;
+	}
+
+	public void setTotalNumberOfRecordsCollected(int totalNumberOfRecordsCollected)
+	{
+		this.totalNumberOfRecordsCollected = totalNumberOfRecordsCollected;
+	}
+
+	public boolean isMoreRows()
+	{
+		return moreRows;
+	}
+
+	public void setMoreRows(boolean moreRows)
+	{
+		this.moreRows = moreRows;
+	}
+
+	public HashMap<String, String> getFirstRow()
+	{
+		return firstRow;
+	}
+
+	public void setFirstRow(HashMap<String, String> firstRow)
+	{
+		this.firstRow = firstRow;
+	}
+
+	public HashMap<String, String> getLastRow()
+	{
+		return lastRow;
+	}
+
+	public void setLastRow(HashMap<String, String> lastRow)
+	{
+		this.lastRow = lastRow;
+	}
+
+	public boolean isInitialisedKeyFields()
+	{
+		return initialisedKeyFields;
+	}
+
+	public void setInitialisedKeyFields(boolean initialisedKeyFields)
+	{
+		this.initialisedKeyFields = initialisedKeyFields;
+	}
+
+}

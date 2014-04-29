@@ -1,0 +1,463 @@
+package com.misys.equation.common.ant.builder.core;
+
+import java.io.CharConversionException;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+
+import com.ibm.as400.access.AS400PackedDecimal;
+import com.ibm.as400.access.AS400Text;
+import com.ibm.as400.access.AS400ZonedDecimal;
+import com.ibm.as400.access.CharacterFieldDescription;
+import com.ibm.as400.access.PackedDecimalFieldDescription;
+import com.ibm.as400.access.Record;
+import com.ibm.as400.access.RecordFormat;
+import com.ibm.as400.access.ZonedDecimalFieldDescription;
+import com.misys.equation.common.ant.builder.helpText.backEnd.SQLToolbox;
+import com.misys.equation.common.ant.builder.helpText.helpers.Toolbox;
+
+/**
+ * @author weddelc1
+ */
+public class EquationDataStructure
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EquationDataStructure.java 5233 2009-10-30 12:12:47Z macdonp1 $";
+	private String formatId = "";
+	private RecordFormat rcdFmt = null;
+	private Record initialRcd = null;
+	private final Map<String, EquationFieldDefinition> fieldDefinitions = new LinkedHashMap<String, EquationFieldDefinition>();
+	private static final EquationLogger LOG = new EquationLogger(EquationDataStructure.class);
+	private int ccsid;
+
+	/**
+	 * Create an empty data structure
+	 * 
+	 */
+	@SuppressWarnings("unused")
+	private EquationDataStructure()
+	{
+	}
+
+	/**
+	 * Create an empty data structure with a record name
+	 * 
+	 * @param formatId
+	 *            - file name
+	 */
+	public EquationDataStructure(String formatId, int ccsid)
+	{
+		this.formatId = formatId;
+		this.ccsid = ccsid;
+		rcdFmt = new RecordFormat();
+		rcdFmt.setRecordFormatID(formatId);
+		rcdFmt.setRecordFormatType(RecordFormat.FIXED_LAYOUT_LENGTH);
+	}
+
+	/**
+	 * Create a data structure based on a record format of a file
+	 * 
+	 * @param formatId
+	 *            - file name
+	 * @param unit
+	 *            - the Equation unit where the file is located
+	 * 
+	 * @throws EQException
+	 */
+	public EquationDataStructure(String formatId, EquationStandardSession unit)
+	{
+		this.formatId = formatId;
+		this.ccsid = unit.getCcsid();
+		initialise(unit);
+	}
+
+	/**
+	 * Create a data structure based on an SQL ResultSet
+	 * 
+	 * @param formatId
+	 *            - record name
+	 * @param result
+	 *            - the SQL ResultSet
+	 * 
+	 * @throws EQException
+	 */
+	public EquationDataStructure(String formatId, ResultSet result, int ccsid)
+	{
+		this.formatId = formatId;
+		this.ccsid = ccsid;
+		initialise(result);
+	}
+
+	/**
+	 * Initialise the data structure based on a record format of a file
+	 * 
+	 * @param equationStandardSession
+	 *            - the Equation unit
+	 * 
+	 * @throws EQException
+	 */
+	private void initialise(EquationStandardSession equationStandardSession)
+	{
+		Statement rcdFmtStatement = null;
+		ResultSet rcdFmtResultSet = null;
+		try
+		{
+			// Find out what the fieldSet is like and build a record
+			rcdFmtStatement = equationStandardSession.getConnection().createStatement();
+			rcdFmtResultSet = rcdFmtStatement.executeQuery("SELECT * FROM " + formatId + " WHERE 1=0");
+			initialise(rcdFmtResultSet);
+		}
+		catch (SQLException sqle)
+		{
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error("EquationDataStructure.initialise - Failed", sqle);
+			}
+
+		}
+		finally
+		{
+			SQLToolbox.closeResulset(rcdFmtResultSet);
+			SQLToolbox.closeStatement(rcdFmtStatement);
+
+		}
+	}
+
+	/**
+	 * Initialise the data structure given a SQL ResultSet
+	 * 
+	 * @param rcdRmtResultSet
+	 *            - the SQL ResultSet
+	 * 
+	 * @throws EQException
+	 */
+	private void initialise(ResultSet rcdRmtResultSet)
+	{
+		try
+		{
+			int fieldStart = 0;
+			int i = 0;
+			ResultSetMetaData rcdFmtResultSetMetaData = rcdRmtResultSet.getMetaData();
+			int rcdFmtColumnCount = rcdFmtResultSetMetaData.getColumnCount();
+
+			// First lets create the record fieldSet
+			rcdFmt = new RecordFormat();
+			rcdFmt.setRecordFormatID(formatId);
+			rcdFmt.setRecordFormatType(RecordFormat.FIXED_LAYOUT_LENGTH);
+
+			// Next put the fields into the fieldSet and store their names
+			for (i = 1; i <= rcdFmtColumnCount; i++)
+			{
+				// create the Equation field definition
+				EquationFieldDefinition fd = new EquationFieldDefinition(rcdFmtResultSetMetaData.getColumnName(i),
+								rcdFmtResultSetMetaData.getColumnType(i), fieldStart, rcdFmtResultSetMetaData.getPrecision(i),
+								rcdFmtResultSetMetaData.getScale(i), rcdFmtResultSetMetaData.getColumnLabel(i), "", "");
+				fieldDefinitions.put(fd.getFieldName(), fd);
+
+				if (rcdFmtResultSetMetaData.getColumnType(i) == Types.CHAR
+								|| rcdFmtResultSetMetaData.getColumnType(i) == Types.BINARY)
+				{
+					fd.setFieldDataTypeString(EqDataType.TYPE_CHAR);
+					CharacterFieldDescription cfd = new CharacterFieldDescription(new AS400Text(rcdFmtResultSetMetaData
+									.getPrecision(i), ccsid), rcdFmtResultSetMetaData.getColumnName(i));
+					rcdFmt.addFieldDescription(cfd);
+				}
+				else if (rcdFmtResultSetMetaData.getColumnType(i) == Types.VARCHAR
+								|| rcdFmtResultSetMetaData.getColumnType(i) == Types.VARBINARY)
+				{
+					fd.setFieldDataTypeString(EqDataType.TYPE_CHAR);
+					CharacterFieldDescription cfd = new CharacterFieldDescription(new AS400Text(rcdFmtResultSetMetaData
+									.getPrecision(i), ccsid), rcdFmtResultSetMetaData.getColumnName(i));
+					cfd.setVariableLength(true);
+					rcdFmt.addFieldDescription(cfd);
+				}
+				else if (rcdFmtResultSetMetaData.getColumnType(i) == Types.DECIMAL)
+				{
+					fd.setFieldDataTypeString(EqDataType.TYPE_PACKED);
+					PackedDecimalFieldDescription pdfd = new PackedDecimalFieldDescription(new AS400PackedDecimal(
+									rcdFmtResultSetMetaData.getPrecision(i), rcdFmtResultSetMetaData.getScale(i)),
+									rcdFmtResultSetMetaData.getColumnName(i));
+					rcdFmt.addFieldDescription(pdfd);
+				}
+				else if (rcdFmtResultSetMetaData.getColumnType(i) == Types.NUMERIC)
+				{
+					fd.setFieldDataTypeString(EqDataType.TYPE_ZONED);
+					ZonedDecimalFieldDescription zdfd = new ZonedDecimalFieldDescription(new AS400ZonedDecimal(
+									rcdFmtResultSetMetaData.getPrecision(i), rcdFmtResultSetMetaData.getScale(i)),
+									rcdFmtResultSetMetaData.getColumnName(i));
+					rcdFmt.addFieldDescription(zdfd);
+				}
+				else
+				{
+					if (LOG.isErrorEnabled())
+					{
+						LOG.error(new StringBuilder("Type not supported for type: ").append(
+										rcdFmtResultSetMetaData.getColumnType(i)).toString());
+					}
+
+				}
+
+				// reset the field length with the correct data type
+				fd.setFieldLength(rcdFmtResultSetMetaData.getPrecision(i));
+				fieldStart += fd.getInternalFieldLength();
+			}
+
+			// Next lets populate the record fieldSet with default values
+			initialRcd = new Record(rcdFmt);
+			for (i = 1; i <= rcdFmtColumnCount; i++)
+			{
+				if (rcdFmtResultSetMetaData.getColumnType(i) == Types.CHAR
+								|| rcdFmtResultSetMetaData.getColumnType(i) == Types.BINARY
+								|| rcdFmtResultSetMetaData.getColumnType(i) == Types.VARCHAR
+								|| rcdFmtResultSetMetaData.getColumnType(i) == Types.VARBINARY)
+
+				{
+					initialRcd.setField(rcdFmtResultSetMetaData.getColumnName(i), Toolbox.pad("", rcdFmtResultSetMetaData
+									.getPrecision(i)));
+				}
+				else
+				{
+					initialRcd.setField(rcdFmtResultSetMetaData.getColumnName(i), new BigDecimal(0));
+				}
+			}
+		}
+		catch (SQLException e)
+		{
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error("EquationDataStructure - initialise", e);
+			}
+		}
+	}
+
+	/**
+	 * Return the record format
+	 * 
+	 * @return the record format
+	 */
+	public RecordFormat getRcdFmt()
+	{
+		return rcdFmt;
+	}
+
+	/**
+	 * Return the default values in bytes
+	 * 
+	 * @return the default values in bytes
+	 */
+	public byte[] getInitialBytes()
+	{
+		try
+		{
+			return initialRcd.getContents();
+		}
+		catch (CharConversionException charConversionException)
+		{
+			LOG.error(charConversionException);
+			return null;
+		}
+		catch (UnsupportedEncodingException e)
+		{
+			LOG.error(e);
+			return null;
+		}
+	}
+
+	/**
+	 * Return the field definition of a field
+	 * 
+	 * @param fieldName
+	 *            - field name
+	 * 
+	 * @return the field definition of a field
+	 */
+	public EquationFieldDefinition getFieldDefinition(String fieldName)
+	{
+		EquationFieldDefinition fieldDefinition = fieldDefinitions.get(fieldName.toUpperCase());
+		return fieldDefinition;
+	}
+
+	/**
+	 * Return the list of field definitions
+	 * 
+	 * @return the list of field definitions
+	 */
+	public Map<String, EquationFieldDefinition> getFieldDefinitions()
+	{
+		return fieldDefinitions;
+	}
+
+	/**
+	 * Determine whether a field name already exists or not
+	 * 
+	 * @param fieldName
+	 *            - the field name
+	 * 
+	 * @return true - if the field name already exists
+	 */
+	public boolean containsField(String fieldName)
+	{
+		return fieldDefinitions.containsKey(fieldName.toUpperCase());
+	}
+
+	/**
+	 * Return the field type of a field
+	 * 
+	 * @param fieldName
+	 *            - the field name
+	 * 
+	 * @return the field type of the field
+	 */
+	public int getFieldDataType(String fieldName)
+	{
+		EquationFieldDefinition field = fieldDefinitions.get(fieldName.toUpperCase());
+		int fieldType = field.getFieldDataType();
+		return fieldType;
+	}
+
+	/**
+	 * Return the field length of a field
+	 * 
+	 * @param fieldName
+	 *            - the field name
+	 * 
+	 * @return the field length of the field
+	 */
+	public int getFieldLength(String fieldName)
+	{
+		EquationFieldDefinition field = fieldDefinitions.get(fieldName.toUpperCase());
+		int fieldLength = field.getFieldLength();
+		return fieldLength;
+	}
+
+	/**
+	 * Return the list of field names
+	 * 
+	 * @return the list of field names
+	 */
+	public Set<String> getFieldNames()
+	{
+		return fieldDefinitions.keySet();
+	}
+
+	/**
+	 * Create a character field
+	 * 
+	 * @param fieldName
+	 *            - field name
+	 * @param fieldLabel
+	 *            - field label
+	 * @param start
+	 *            - field start position within the DS
+	 * @param length
+	 *            - field length
+	 * 
+	 * @return the field definition
+	 */
+	public EquationFieldDefinition createCharacterField(String fieldName, String fieldLabel, int start, int length)
+	{
+		// create the field definition
+		EquationFieldDefinition fd = new EquationFieldDefinition(fieldName, Types.CHAR, start, length, 0, fieldLabel,
+						EqDataType.TYPE_CHAR, "");
+		fieldDefinitions.put(fd.getFieldName(), fd);
+
+		// add to the record
+		CharacterFieldDescription cfd = new CharacterFieldDescription(new AS400Text(length, ccsid), fieldName);
+		rcdFmt.addFieldDescription(cfd);
+
+		return fd;
+	}
+
+	/**
+	 * Create a packed field
+	 * 
+	 * @param fieldName
+	 *            - field name
+	 * @param fieldLabel
+	 *            - field label
+	 * @param start
+	 *            - field start position within the DS
+	 * @param length
+	 *            - the number of digits the packed field can hold.<br>
+	 *            If the packed field has a length of n, then this should be 2n-1
+	 * @param decimal
+	 *            - the number of decimal places
+	 * 
+	 * @return the field definition
+	 */
+	public EquationFieldDefinition createPackedField(String fieldName, String fieldLabel, int start, int length, int decimal)
+	{
+		// create the field definition
+		EquationFieldDefinition fd = new EquationFieldDefinition(fieldName, Types.DECIMAL, start, length, decimal, fieldLabel,
+						EqDataType.TYPE_PACKED, "");
+		fieldDefinitions.put(fd.getFieldName(), fd);
+
+		PackedDecimalFieldDescription pdfd = new PackedDecimalFieldDescription(new AS400PackedDecimal(length, decimal), fieldName);
+		rcdFmt.addFieldDescription(pdfd);
+
+		return fd;
+	}
+
+	/**
+	 * Create a zoned field
+	 * 
+	 * @param fieldName
+	 *            - field name
+	 * @param fieldLabel
+	 *            - field label
+	 * @param start
+	 *            - field start position within the DS
+	 * @param length
+	 *            - field length
+	 * @param decimal
+	 *            - the number of decimal places
+	 * 
+	 * @return the field definition
+	 */
+	public EquationFieldDefinition createZonedField(String fieldName, String fieldLabel, int start, int length, int decimal)
+	{
+		// create the field definition
+		EquationFieldDefinition fd = new EquationFieldDefinition(fieldName, Types.NUMERIC, start, length, decimal, fieldLabel,
+						EqDataType.TYPE_ZONED, "");
+		fieldDefinitions.put(fd.getFieldName(), fd);
+
+		ZonedDecimalFieldDescription zdfd = new ZonedDecimalFieldDescription(new AS400ZonedDecimal(length, decimal), fieldName);
+		rcdFmt.addFieldDescription(zdfd);
+
+		return fd;
+	}
+
+	/**
+	 * Initial value
+	 */
+	public void initialDefaultValue()
+	{
+		initialRcd = new Record(rcdFmt);
+		Set<String> fieldKeySet = fieldDefinitions.keySet();
+		Iterator<String> fieldIter = fieldKeySet.iterator();
+		while (fieldIter.hasNext())
+		{
+			EquationFieldDefinition fd = fieldDefinitions.get(fieldIter.next());
+			if (fd.getFieldDataType() == Types.CHAR || fd.getFieldDataType() == Types.BINARY
+							|| fd.getFieldDataType() == Types.VARCHAR || fd.getFieldDataType() == Types.VARBINARY)
+
+			{
+				initialRcd.setField(fd.getFieldName(), Toolbox.pad("", fd.getFieldLength()));
+			}
+			else
+			{
+				initialRcd.setField(fd.getFieldName(), new BigDecimal(0));
+			}
+		}
+
+	}
+
+}

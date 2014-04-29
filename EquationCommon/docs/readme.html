@@ -1,0 +1,97 @@
+<HTML>
+<head>
+<TITLE>Equation Common Java Toolkit</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+Copyright © Misys International Banking Systems Ltd, 2009.
+
+Misys Banking Systems
+One Kingdom Street 
+Paddington
+London
+W2 6BL
+
+T: +44 (0)20 3320 5000
+F: +44 (0)20 3320 1771
+W: www.misys.com
+
+File: README
+<HR>
+<H3>Contents</H3>
+
+<A HREF="#what">What is Equation Common?</A>
+
+<A HREF="#install">Installation of Equation Common</A>
+  <A HREF="#req">Requirements</A>
+  <A HREF="#files">Files</A>
+  <A HREF="#use">Building and Using Equation Common</A>
+
+
+<HR><A NAME="what"><H3>What is Equation Common?</H3></A>
+The Equation Common Java Library is a set of Java classes that allow you to 
+access Equation data and programs through a Java program. With these classes,
+you can write your own java applications that work with Equation functionality
+and can be deployed on any platform with a supported Java Virtual Machine.
+
+The Library is available as a stand-alone component or is additionally released 
+as an underpinning component of several Misys products that are based in Java
+technology. This includes, but is not limited to the BankFusion Equation 
+release.
+
+Newer versions of the Library should be backwards-compatible with earlier
+versions. Upgrading to a newer version is usually recommended.
+
+<HR><A NAME="install"><H3>Installation of Equation Common</H3></A>
+
+<A NAME="req"><H4><U>Requirements</U></H4></A>
+When using the Equation Common library within your own applications (i.e. when
+it is not a component of a separately delivered product or component) the 
+requirements for using the Library are as follows:
+
+<H5>Equation Server</H5>
+1. An AS/400 (IBM i) with OS V5R4 or higher.
+
+2. The server must have the Option 12 Host Servers installed and running. 
+   (this is a requirement of <A HREF="http://jt400.sourceforge.net/">JTOpen</A> which is used for communications with the 
+   server).
+
+<H5>Equation</H5>
+1. Equation 4.0 with the latest FX release recommended.
+   
+<H5>Java Client</H5>
+1. A Java Virtual Machine (JVM) with a 1.5.x or higher JDK/JRE. 
+
+2. jt400.jar available from <A HREF="http://jt400.sourceforge.net/">JTOpen</A> version 6.1 or higher. This is required for
+   connectivity the Equation APIs via IBM's open source implementation of JDBC
+   as well as other utility classes provided in the library. 
+
+3. commons-logging-1.1.1.jar or higher (within release 1.1.x) available from 
+   <A HREF="http://commons.apache.org/logging/">logging</A>. Required as a standard bridge to the log4j implementation (below).
+
+4. log4j-1.2.15.jar or higher (within release 1.2.x) available from <A HREF="http://logging.apache.org/log4j/">log4j</A>. 
+   Required as the standard implementation logging.
+   
+5. spring.jar. available from <A HREF="http://www.springsource.org/">spring</A>. Required for database connectivity.
+
+<A NAME="files"><H4><U>Files</U></H4></A>
+EquationCommon is comprised of the following components:
+
+Component                   Contents
+---------                   --------
+
+equation-common-x.y.z.jar   The library containing the classes.
+
+javadoc                     The javadoc for the supplied classes. Navigate to 
+                            the index.html in the supplied distribution.
+                            
+license.html                license information.
+
+readme.html                 this document.
+
+<A NAME="use"><H4><U>Using Equation Common</U></H4></A>
+Please refer to the Equation Common Java Interface user guide included in the main BankFusion Equation release for details
+and examples on how to configure and use the Equation Common library.
+</PRE>
+</BODY>
+</HTML>

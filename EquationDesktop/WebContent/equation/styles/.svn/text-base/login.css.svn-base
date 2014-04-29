@@ -1,0 +1,171 @@
+/*******************************************************************************
+ *  Login Style Sheet
+ *
+ *  This style sheet was provided by the UX Team
+ *
+ *  Equation specific modification
+ *  - Change the URL to point to the correct folder structure
+ *  - Rename the login.png to fullbackgrounddetailed.png
+ *  - Change the height of the container from 499px to 799px
+ ******************************************************************************/
+
+html, body{
+width:100%;
+height:100%;
+margin:0;
+font-family: 'OpenSansRegular',Open Sans,Segoe UI,Arial,Helvetica,sans-serif;
+font-size: 12px !important;
+overflow:auto;
+}
+body{
+background:url(../images/login/mback02.jpg) #d9d9d9 repeat;
+}
+/* Login Page */
+.mys .logincontainer{
+background-color: transparent;
+background-image: url(../images/login/fullbackgrounddetailed.png);
+background-repeat: no-repeat;
+background-position: 0 0;
+width:611px;
+height: 799px;
+margin: 10px auto 0;
+z-index:300;
+padding: 68px 0 0 43px;
+position: relative;
+}
+.mys .logincontainerbottom{
+background-color: transparent;
+background-image: url(../images/login/gradient_shadow.png);
+background-repeat: no-repeat;
+background-position: 0 0;
+width:611px;
+height: 95px;
+margin: 0px auto 0;
+z-index:300;
+padding: 68px 0 0 43px;
+position: relative;
+}
+.mys img#logo {
+    height: 40px;
+    margin-bottom: 110px;
+}
+.mys #applicationName {
+    margin: 0 0 14px;
+}
+.mys .mlogininput {
+	font-family: 'OpenSansSemibold';
+	font-size: 13px;
+	text-shadow: 0px 2px rgba(0, 0, 0, 0.75);
+	-moz-text-shadow: 0px 2px rgba(0, 0, 0, 0.75);
+	-webkit-text-shadow: 0px 2px rgba(0, 0, 0, 0.75);
+}
+.mys .mlogininput {
+	padding: 0;
+}
+.mys .loginbutton {
+	text-align: right;
+	width: 255px;
+	padding-top: 0px;
+}
+.mys .logincontainer label {
+	margin-bottom: 7px;
+	color: #ffffff;
+	width: 165px;
+	display: block;
+	clear: both;
+}
+.mys .mlogininput div {
+	margin-bottom: 12px;
+}
+.mys .logincontainer input[type="text"] {
+    background: url("../images/login/field.png") no-repeat scroll left center transparent;
+    border: medium none;
+    color: #BABFCD;
+    display: block;
+    font-size: 12px;
+    height: 14px;
+    padding: 11px 5px;
+    width: 245px;
+}
+.mys .logincontainer input[type="password"] {
+    background: url("../images/login/field.png") no-repeat scroll left center transparent;
+    border: medium none;
+    color: #BABFCD;
+    display: block;
+    font-size: 12px;
+    height: 14px;
+    padding: 11px 5px;
+    width: 245px;
+}
+
+.mys .loginbutton input[type="button"] {
+    background-image: none;
+    float: right;
+    margin: 0;
+    width: auto;
+}
+.mys input[type="button"]{
+	border:#b2b2b2 1px solid;
+	padding:0px 5px;
+	background-color:#fcfcfc;
+	-moz-border-radius:4px;
+	border-radius:4px;
+	color:#808080;
+	height: 23px;
+	font-size: 12px;
+}
+.mys .loginbutton input[type="button"]:focus {
+    -webkit-box-shadow:0 0 6px 2px rgba(0, 175, 216, 0.77);
+	-moz-box-shadow: 0 0 6px 2px rgba(0, 175, 216, 0.77);
+	box-shadow: 0 0 6px 2px rgba(0, 175, 216, 0.77);
+}
+.mys .loginbutton input[type="button"]:hover {
+	background-color:#E3E3E3;
+}
+.mys .loginbutton input[type="button"]:active {
+    background-color:#E3E3E3;
+	-webkit-box-shadow:0 0 5px 1px rgba(0, 0, 0, 0.35) inset;
+	-moz-box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.35) inset;
+	box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.35) inset;
+}
+
+	/*******************************************************************************
+	 *  ERROR STYLES
+	 *******************************************************************************/                                           
+	#errorHeader 
+	{
+		font-family: 'OpenSansSemibold';
+		font-size: 13px;
+		text-shadow: 0px 2px rgba(0, 0, 0, 0.75);
+		-moz-text-shadow: 0px 2px rgba(0, 0, 0, 0.75);
+		-webkit-text-shadow: 0px 2px rgba(0, 0, 0, 0.75);
+		background-color: #fbdadd;
+		width: 45%;
+		position:absolute;
+		top:25px;
+		right:0;
+		margin-top: 0px;
+		padding-top: 0px;
+		padding-left: 10px;
+		word-wrap : break-word;
+		border: 1px solid red;
+	}
+	
+	#errorHeader p
+	{
+		margin-top: 10px;
+	}
+	
+	#errorHeader ul
+	{
+		padding-left: 16px;
+		margin-left:15px;
+		padding:0px;
+		
+	}
+	
+	.inputoutputcontainer
+	{
+		position: relative;
+		width: 90%;
+	}

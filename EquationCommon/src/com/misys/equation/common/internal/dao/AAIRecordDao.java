@@ -1,0 +1,200 @@
+package com.misys.equation.common.internal.dao;
+
+import java.util.Hashtable;
+import java.util.List;
+
+import com.misys.equation.common.dao.IAAIRecordDao;
+import com.misys.equation.common.dao.beans.AAIRecordDataModel;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.internal.dao.mappers.AAIRecordRowMapper;
+
+public class AAIRecordDao extends AbsEquationDao implements IAAIRecordDao
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: AAIRecordDao.java 9725 2010-11-08 12:34:45Z MACDONP1 $";
+	/**
+	 * Default constructor.
+	 */
+	public AAIRecordDao()
+	{
+		super();
+	}
+
+	@Override
+	protected String getFields()
+	{
+		return "AAIEVNT, AAIEVDS, AAIEVTP, AAIAPP, AAIADC, AAITTP, AAIUSRD, AAITATP, AAIDTRF, "
+						+ "AAIDCRA, AAIDDTE, AAIDARF, AAIDSQN, AAITQ, AAIFE, AAICHG, AAIEFE, AAITAT ";
+	}
+
+	@Override
+	protected String getParameterizedFields()
+	{
+		return "AAIEVNT= ?, AAIEVDS= ?, AAIEVTP= ?, AAIAPP= ?, AAIADC= ?, AAITTP= ?, AAIUSRD= ?, AAITATP= ?, AAIDTRF= ?, "
+						+ "AAIDCRA= ?, AAIDDTE= ?, AAIDARF= ?, AAIDSQN= ?, AAITQ= ?, AAIFE= ?, AAICHG= ?, AAIEFE= ?, AAITAT= ? ";
+	}
+
+	@Override
+	protected Object[] getParameterizedFieldsValues()
+	{
+
+		AAIRecordDataModel aAIRecordDataModel = getMyDataModel();
+
+		Object[] object = new Object[] {
+
+		aAIRecordDataModel.getEvent(), aAIRecordDataModel.getDescription(), aAIRecordDataModel.getType(),
+						aAIRecordDataModel.getApp(), aAIRecordDataModel.getReference(), aAIRecordDataModel.getTranType(),
+						aAIRecordDataModel.getUserDefined(), aAIRecordDataModel.getTranAmount(),
+						aAIRecordDataModel.getDispTranRef(), aAIRecordDataModel.getDispCreditAc(),
+						aAIRecordDataModel.getDispTranDate(), aAIRecordDataModel.getDispAddRef(), aAIRecordDataModel.getDispSqn(),
+						aAIRecordDataModel.getSupTQ(), aAIRecordDataModel.getSupFE(), aAIRecordDataModel.getChargeEvent(),
+						aAIRecordDataModel.getSupEFC(), aAIRecordDataModel.getSupTranAudTrail(),
+
+		};
+
+		return object;
+
+	}
+
+	@Override
+	protected String getParameters()
+	{
+		String fields = "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ? , ? , ? , ? , ?";
+		return fields;
+	}
+
+	/**
+	 * This method will return a <code>String</code> which represents and sql where condition base on the record id.<br>
+	 * For example <code>id = getDataModel.getId()</code>
+	 * 
+	 * @return a <code>String</code> which represents and sql filter.
+	 */
+	@Override
+	protected String getWhereConditionBaseOnIdRecord()
+	{
+
+		StringBuilder whereCondition = new StringBuilder("AAIEVNT='");
+		whereCondition.append(getMyDataModel().getEvent());
+		whereCondition.append("'");
+		return whereCondition.toString();
+	}
+
+	/**
+	 * This method will check if the current record was already set in the database. <br>
+	 * The Sql <code>SELECT COUNT(*)</code> query will be executed.
+	 * 
+	 * @param sqlWhereStatement
+	 *            - the WHERE clause of the SQL statement
+	 * 
+	 * @return true if the SQL statement returns a count >= 1
+	 */
+	public boolean checkIfThisAAIRecordIsInTheDB(String sqlWhereStatement)
+	{
+
+		return checkIfThisRecordIsInTheDB(sqlWhereStatement);
+	}
+
+	/**
+	 * This method will check if the current record was already set in the database. <br>
+	 * The Sql <code>SELECT COUNT(*)</code> query will be executed.
+	 * 
+	 * @return true if the SQL statement returns a count >= 1
+	 */
+	public boolean checkIfThisAAIRecordIsInTheDB()
+	{
+
+		return checkIfThisRecordIsInTheDB(getWhereConditionBaseOnIdRecord());
+	}
+
+	/**
+	 * This method will return an instance of the preset data model.
+	 * 
+	 * @return an instance of the preset data model.
+	 */
+	public AAIRecordDataModel getMyDataModel()
+	{
+
+		AAIRecordDataModel aAIRecordDataModel = null;
+		AbsRecord record = getRecord();
+
+		if (record instanceof AAIRecordDataModel)
+		{
+			aAIRecordDataModel = (AAIRecordDataModel) getRecord();
+
+		}
+		return aAIRecordDataModel;
+	}
+
+	/**
+	 * This method is going execute a Sql query using the filter criteria.
+	 * 
+	 * @param whereClause
+	 *            this is the <code>String</code> that represent the sql filter.
+	 * @return a <code>List</code> which contains a records
+	 */
+	public List<AbsRecord> getRecordBy(String whereClause)
+	{
+
+		return getRecordBy(whereClause, new AAIRecordRowMapper());
+	}
+
+	/**
+	 * This method is going to get all records.
+	 * 
+	 * @return a <code>List</code> which contains a records
+	 */
+	public List<AbsRecord> getRecords()
+	{
+
+		return getRecordBy(null, new AAIRecordRowMapper());
+	}
+
+	/**
+	 * This method is going to return a <code>AAIRecordDataModel</code> base on key
+	 * 
+	 * @return a <code>AAIRecordDataModel</code> base on key
+	 */
+	public AAIRecordDataModel getAAIRecord()
+	{
+
+		AAIRecordDataModel aAIRecordDataModel = null;
+		List<AbsRecord> results = getRecordBy(getWhereConditionBaseOnIdRecord(), new AAIRecordRowMapper());
+
+		if (!results.isEmpty())
+		{
+
+			aAIRecordDataModel = (AAIRecordDataModel) results.get(0);
+		}
+
+		return aAIRecordDataModel;
+	}
+
+	@Override
+	protected Hashtable<String, AbsRecord> createHashtableRecordModel(List<AbsRecord> records)
+	{
+		Hashtable<String, AbsRecord> results = null;
+
+		AAIRecordDataModel AAIRecordDataModel;
+
+		if (!records.isEmpty())
+		{
+
+			results = new Hashtable<String, AbsRecord>();
+		}
+		else
+		{
+
+			return null;
+		}
+
+		for (AbsRecord absRecord : records)
+		{
+			AAIRecordDataModel = (AAIRecordDataModel) absRecord;
+			results.put(AAIRecordDataModel.getEvent(), AAIRecordDataModel);
+		}
+
+		return results;
+	}
+
+}

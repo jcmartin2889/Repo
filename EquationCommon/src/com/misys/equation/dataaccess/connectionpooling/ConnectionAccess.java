@@ -1,0 +1,74 @@
+package com.misys.equation.dataaccess.connectionpooling;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import com.misys.equation.dataaccess.connectionpooling.impl.JndiConnectionPool;
+
+/**
+ * This class provides the rest of the application with a connection to the database. If global processing is installed the system
+ * requires two separate connections for the global layer and individual unit.
+ * 
+ * Connections to the global layer are accessed using a single user name and via JNDI.
+ * 
+ * Connections to the specific units are accessed using different user names depending on the login information.
+ */
+public class ConnectionAccess
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: ConnectionAccess.java 11001 2011-05-19 14:03:00Z MACDONP1 $";
+
+	private static final Map<String, String> GLOBAL_CONNECTION_PROPERTIES = new HashMap<String, String>();
+	private static final Map<ConnectionPoolName, AbstractConnectionPool> CONNECTION_POOLS = new HashMap<ConnectionPoolName, AbstractConnectionPool>();
+	static
+	{
+		GLOBAL_CONNECTION_PROPERTIES.put(JndiConnectionPool.CONN_PROP_KEY_INIT_CONTEXT, "java:comp/env");
+		GLOBAL_CONNECTION_PROPERTIES.put(JndiConnectionPool.CONN_PROP_KEY_ENV_CONTEXT, "jdbc/GlobalDB");
+	}
+
+	/**
+	 * Enumeration of connection pool names.
+	 */
+	private enum ConnectionPoolName
+	{
+		GLOBAL_CONNECTION_POOL
+	}
+
+	/**
+	 * Generic method to retrieve a JndiConnectionPool.
+	 * 
+	 * @return a JndiConnectionPool
+	 * @throws EQDataAccessException
+	 */
+	public synchronized static JndiConnectionPool getGlobalConnectionPool() throws EQDataAccessException
+	{
+		return (JndiConnectionPool) getConnectionPool(ConnectionPoolName.GLOBAL_CONNECTION_POOL);
+	}
+
+	/**
+	 * Generic method to retrieve a connection pool based on the connection pool name.
+	 * 
+	 * @param connectionPool
+	 * @return an AbstractConnectionPool
+	 * @throws EQDataAccessException
+	 */
+	private synchronized static AbstractConnectionPool getConnectionPool(final ConnectionPoolName connectionPool)
+					throws EQDataAccessException
+	{
+		AbstractConnectionPool connPool = CONNECTION_POOLS.get(connectionPool);
+		if (connPool == null)
+		{
+			switch (connectionPool)
+			{
+				case GLOBAL_CONNECTION_POOL:
+					connPool = new JndiConnectionPool(GLOBAL_CONNECTION_PROPERTIES, false);
+					CONNECTION_POOLS.put(connectionPool, connPool);
+					break;
+				default:
+					throw new EQDataAccessException("No implementation mapping for " + connectionPool.toString());
+			}
+
+		}
+		return connPool;
+	}
+}

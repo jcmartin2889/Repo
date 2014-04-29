@@ -1,0 +1,360 @@
+package com.misys.equation.common.ant.builder.helpText.core;
+
+import java.io.FileInputStream;
+import java.util.Properties;
+
+import com.misys.equation.common.ant.builder.core.EquationLogger;
+import com.misys.equation.common.ant.builder.helpText.helpers.CommonDefinitions;
+import com.misys.equation.common.ant.builder.helpText.helpers.FileUtils;
+
+public class HelpTextProperties
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private static HelpTextProperties currentInstance;
+	private static final EquationLogger LOG = new EquationLogger(HelpTextlEnvironment.class);
+
+	private final FileUtils fileUtils = FileUtils.getInstance();
+	private Properties properties;
+
+	private String system;
+	private String user;
+	private String password;
+	private String release;
+	private String application;
+	private String group;
+	private String developer;
+	private String task;
+	private String environment;
+	private String workLibrary;
+	private String aldonLibrary;
+	private String apiHtmlTemplateHeaderTemplate;
+	private String apiHtmlTemplateFooterTemplate;
+	private String apiHtmlTemplateRepeatTemplate;
+	private String apiLinkLine;
+	private String optionId;
+	private String language;
+
+	private String resources;
+	private String inputDir;
+	private String outputDir;
+
+	public static HelpTextProperties getInstance()
+	{
+		// if currentInstance == null means that the process was executed from a main method
+		// The outputDirectory and inputDirectory values will be obtained from the property file.
+
+		synchronized (HelpTextProperties.class)
+		{
+			if (currentInstance == null)
+			{
+				currentInstance = new HelpTextProperties();
+				// the resources are in the classPath;
+				currentInstance.setResources(CommonDefinitions.RESOURCES.toString());
+				currentInstance.initialisation();
+				currentInstance.setDirectories();
+			}
+		}
+		return currentInstance;
+	}
+
+	public static HelpTextProperties getInstance(String resources, String inputDir, String outputDir)
+	{
+		synchronized (HelpTextProperties.class)
+		{
+			if (currentInstance == null)
+			{
+				currentInstance = new HelpTextProperties();
+				currentInstance.setResources(resources);
+				currentInstance.setInputDir(inputDir);
+				currentInstance.setOutputDirectory(outputDir);
+				currentInstance.initialisation();
+			}
+		}
+		return currentInstance;
+	}
+
+	private void initialisation()
+	{
+		// Read properties file.
+		properties = new Properties();
+		FileInputStream fileInputStream = null;
+
+		StringBuilder propertyFilePath = null;
+
+		propertyFilePath = new StringBuilder(resources).append(CommonDefinitions.FILE_SEPARATOR);
+
+		try
+		{
+			propertyFilePath.append(CommonDefinitions.PROPERTY_FILE_NAME.toString());
+			fileInputStream = new FileInputStream(propertyFilePath.toString());
+			properties.load(fileInputStream);
+		}
+		catch (Exception exception)
+		{
+			if (LOG.isErrorEnabled())
+			{
+				if (LOG.isErrorEnabled())
+				{
+					StringBuilder message = new StringBuilder("There was a problem trying to open the property file ");
+					message.append(CommonDefinitions.PROPERTY_FILE_NAME.toString());
+					LOG.error(message.toString(), exception);
+				}
+			}
+		}
+		finally
+		{
+			fileUtils.close(fileInputStream);
+		}
+
+		setSystem(properties.getProperty("system"));
+		setUser(properties.getProperty("user"));
+		setPassword(properties.getProperty("password"));
+		setRelease(properties.getProperty("release"));
+		setApplication(properties.getProperty("application"));
+
+		setGroup(properties.getProperty("group"));
+		setDeveloper(properties.getProperty("developer"));
+		setTask(properties.getProperty("task"));
+		setEnvironment(properties.getProperty("environment"));
+
+		setAldonLibrary(properties.getProperty("aldonLibrary"));
+		setWorkLibrary(properties.getProperty("workLibrary"));
+		setApiHtmlHeaderTemplate(properties.getProperty("apiHtmlTemplateHeader"));
+		setApiHtmlFooterTemplate(properties.getProperty("apiHtmlTemplateFooter"));
+		setApiHtmlRepeatTemplate(properties.getProperty("apiHtmlTemplateRepeat"));
+		setApiLinkLine(properties.getProperty("apiLinkLine"));
+		setOptionId(properties.getProperty("optionId"));
+		setLanguage(properties.getProperty("language"));
+	}
+
+	/**
+	 * This method will set the outputDirectory and inputDirectory, using the property file values.
+	 */
+	private void setDirectories()
+	{
+		setOutputDirectory(properties.getProperty("outputDirectory"));
+		setInputDir(properties.getProperty("inputDirectory"));
+	}
+
+	/**
+	 * This method will check if the option was defined in the property file.
+	 * 
+	 * @param option
+	 *            this is the option to be evaluated.
+	 * @return true if the option was defined.
+	 */
+	public boolean containsOption(String option)
+	{
+		return properties.containsKey(option);
+	}
+
+	/**
+	 * This method will check if the property key has a related value.
+	 * 
+	 * @param key
+	 *            this is the property key.
+	 * @return true if the key has a related value.
+	 */
+	public boolean hasADefinedValue(String key)
+	{
+		String value = properties.getProperty(key);
+
+		if (value == null)
+		{
+			return false;
+		}
+		if (value.equals(""))
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * This method will return the property value base on the passed key
+	 * 
+	 * @param key
+	 *            this the property key.
+	 * @return property value base on the passed key.
+	 */
+	public String getPropertyValue(String key)
+	{
+		return properties.getProperty(key);
+	}
+
+	public String getSystem()
+	{
+		return system;
+	}
+	public void setSystem(String system)
+	{
+		this.system = system;
+	}
+	public String getUser()
+	{
+		return user;
+	}
+	public void setUser(String user)
+	{
+		this.user = user;
+	}
+	public String getPassword()
+	{
+		return password;
+	}
+	public void setPassword(String password)
+	{
+		this.password = password;
+	}
+	public String getRelease()
+	{
+		return release;
+	}
+	public void setRelease(String release)
+	{
+		this.release = release;
+	}
+	public String getApplication()
+	{
+		return application;
+	}
+	public void setApplication(String application)
+	{
+		this.application = application;
+	}
+	public String getGroup()
+	{
+		return group;
+	}
+	public void setGroup(String group)
+	{
+		this.group = group;
+	}
+	public String getDeveloper()
+	{
+		return developer;
+	}
+	public void setDeveloper(String developer)
+	{
+		this.developer = developer;
+	}
+	public String getTask()
+	{
+		return task;
+	}
+	public void setTask(String task)
+	{
+		this.task = task;
+	}
+	public String getEnvironment()
+	{
+		return environment;
+	}
+	public void setEnvironment(String environment)
+	{
+		this.environment = environment;
+	}
+	public String getWorkLibrary()
+	{
+		return workLibrary;
+	}
+	public void setWorkLibrary(String workLibrary)
+	{
+		this.workLibrary = workLibrary;
+	}
+	public String getAldonLibrary()
+	{
+		return aldonLibrary;
+	}
+	public void setAldonLibrary(String aldonLibrary)
+	{
+		this.aldonLibrary = aldonLibrary;
+	}
+	public String getApiHtmlHeaderTemplate()
+	{
+		return apiHtmlTemplateHeaderTemplate;
+	}
+	public void setApiHtmlHeaderTemplate(String apiHtmlHeaderTemplate)
+	{
+		this.apiHtmlTemplateHeaderTemplate = apiHtmlHeaderTemplate;
+	}
+	public String getApiHtmlFooterTemplate()
+	{
+		return apiHtmlTemplateFooterTemplate;
+	}
+	public void setApiHtmlFooterTemplate(String apiHtmlFooterTemplate)
+	{
+		this.apiHtmlTemplateFooterTemplate = apiHtmlFooterTemplate;
+	}
+	public String getApiHtmlRepeatTemplate()
+	{
+		return apiHtmlTemplateRepeatTemplate;
+	}
+	public void setApiHtmlRepeatTemplate(String apiHtmlRepeatTemplate)
+	{
+		this.apiHtmlTemplateRepeatTemplate = apiHtmlRepeatTemplate;
+	}
+	public String getApiLinkLine()
+	{
+		return apiLinkLine;
+	}
+	public void setApiLinkLine(String apiLinkLine)
+	{
+		this.apiLinkLine = apiLinkLine;
+	}
+	public String getOptionId()
+	{
+		return optionId;
+	}
+	public void setOptionId(String optionId)
+	{
+		this.optionId = optionId;
+	}
+	public String getInputDir()
+	{
+		return inputDir;
+	}
+	public void setInputDir(String inputDir)
+	{
+		this.inputDir = inputDir;
+	}
+
+	public String getOutputDirectory()
+	{
+		return outputDir;
+	}
+
+	public void setOutputDirectory(String outputDirectory)
+	{
+		this.outputDir = outputDirectory;
+	}
+
+	public String getLanguage()
+	{
+		return language;
+	}
+
+	public void setLanguage(String language)
+	{
+		this.language = language;
+	}
+
+	public String getResources()
+	{
+		return resources;
+	}
+
+	public void setResources(String resources)
+	{
+		this.resources = resources;
+	}
+
+	private HelpTextProperties()
+	{
+
+	}
+
+}

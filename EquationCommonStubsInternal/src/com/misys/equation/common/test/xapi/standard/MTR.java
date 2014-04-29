@@ -1,0 +1,110 @@
+/*
+ * This sample code is provided by Misys for illustrative purposes only.
+ * 
+ * These examples have not been thoroughly tested under all conditions.
+ * 
+ * Misys, therefore, cannot guarantee or imply reliability, serviceability, or function of these programs.
+ * 
+ * All programs contained herein are provided to you "AS IS" without any warranties of any kind. The implied warranties of
+ * non-infringement, merchantability and fitness for a particular purpose are expressly disclaimed.
+ */
+package com.misys.equation.common.test.xapi.standard;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.TestEnvironment;
+import com.misys.equation.common.utilities.Toolbox;
+
+// *************************************************************************************************
+/**
+ * 
+ * 
+ */
+// *************************************************************************************************
+public class MTR
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: MTR.java 11310 2011-06-27 12:20:21Z ESTHER.WILLIAMS $";
+	String inputBrnmStr = "LOND";
+	EquationStandardSession session;
+	long startTime = System.currentTimeMillis();
+	long currentTime = startTime;
+	// *********************************************************************************************
+	/**
+	 * 
+	 */
+	// *********************************************************************************************
+	private MTR()
+	{
+		try
+		{
+			session = TestEnvironment.getTestEnvironment().getStandardSession();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+	public static void main(String[] inputParameters)
+	{
+		MTR test = new MTR();
+		test.test();
+	}
+	// *********************************************************************************************
+	/**
+	 * 
+	 */
+	// *********************************************************************************************
+	public void test()
+	{
+		// Have a bash...
+		try
+		{
+			// Get a new transaction for a sundry item
+			EquationStandardTransaction MaintainTransactionCode = new EquationStandardTransaction("C89FRRMTR", session);
+			// Set the transaction type
+			MaintainTransactionCode.setMode("M");
+			// Set the fields required for the sundry item
+			MaintainTransactionCode.setFieldValue("GZTCD", "010");
+			MaintainTransactionCode.setFieldValue("GZTCN", "New Debit");
+			MaintainTransactionCode.setFieldValue("GZDCI", "D");
+			MaintainTransactionCode.setFieldValue("GZTCM", "DR1");
+			MaintainTransactionCode.setFieldValue("GZTC1", "001");
+			MaintainTransactionCode.setFieldValue("GZTC2", "998");
+			MaintainTransactionCode.setFieldValue("GZTC3", "000");
+			MaintainTransactionCode.setFieldValue("GZTC4", "000");
+			MaintainTransactionCode.setFieldValue("GZTCDR", "510");
+			MaintainTransactionCode.setFieldValue("GZTCA", "00");
+			MaintainTransactionCode.setFieldValue("GZTCC", "07");
+			MaintainTransactionCode.setFieldValue("GZTAP", "N");
+			MaintainTransactionCode.setFieldValue("GZPMA", "Y");
+			MaintainTransactionCode.setFieldValue("GZPTA", "N");
+			MaintainTransactionCode.setFieldValue("GZPEA", "N");
+			MaintainTransactionCode.setFieldValue("GZPCA", "N");
+			MaintainTransactionCode.setFieldValue("GZPIA", "Y");
+			MaintainTransactionCode.setFieldValue("GZRVT", "N");
+			MaintainTransactionCode.setFieldValue("GZDDB", "N");
+			MaintainTransactionCode.setFieldValue("GZPTN", "Y");
+			MaintainTransactionCode.setFieldValue("GZSUD", "N");
+			MaintainTransactionCode.setFieldValue("GZSTR", "N");
+			MaintainTransactionCode.setFieldValue("GZDFA", "N");
+			MaintainTransactionCode.setFieldValue("GZBTR", "N");
+			MaintainTransactionCode.setFieldValue("GZCTC", "N");
+			MaintainTransactionCode.setFieldValue("GZMID", "N");
+			MaintainTransactionCode.setFieldValue("GZVXD", "N");
+			session.addEquationTransaction(MaintainTransactionCode);
+			// Apply the transaction
+			session.applyTransactions();
+			session.commitTransactions();
+			Toolbox.printMessages(MaintainTransactionCode.getErrorList());
+			Toolbox.printMessages(MaintainTransactionCode.getWarningList());
+			System.out.println("finished!");
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.toString());
+			// Rollback any transactions for the unit
+		}
+	}
+}

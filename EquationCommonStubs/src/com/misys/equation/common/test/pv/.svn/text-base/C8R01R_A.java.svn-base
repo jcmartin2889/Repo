@@ -1,0 +1,17 @@
+package com.misys.equation.common.test.pv;
+
+import com.misys.equation.common.test.EquationTestCasePVMetaData;
+
+public class C8R01R_A extends EquationTestCasePVMetaData
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		validCCN = "   020";
+		invalidCCN = "AAA999";
+		decode = "A";
+	}
+}

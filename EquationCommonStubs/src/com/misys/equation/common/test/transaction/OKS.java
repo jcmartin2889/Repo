@@ -1,0 +1,95 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseMaintain;
+
+/**
+ * Equation test cases for Commercial Paper Sent to Court
+ */
+public class OKS extends EquationTestCaseMaintain
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: OKS.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	String programName = "W55MRR";
+	String optionId = "OKS";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZBPN", "05439999999X"); // Paper Number
+		transaction.setFieldValue("GZSTC", "Y"); // Sent to court?
+	}
+
+	/**
+	 * Setup an existing key fields
+	 */
+	@Override
+	public void setupExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZBPN", "054399999997"); // Paper Number
+		transaction.setFieldValue("GZSTC", "Y"); // Sent to court?
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	@Override
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZNSTA", "ST"); // New Status
+		transaction.setFieldValue("GZSTCD", "1000105"); // Sent to Court Date
+		transaction.setFieldValue("GZPF", "AC"); // Protest Fees
+		transaction.setFieldValue("GZPFPL", "AC"); // P&L Protest Fees
+		transaction.setFieldValue("GZPFAM", "1"); // Protest Fee Amount
+		transaction.setFieldValue("GZPLAM", "1"); // P&L Protest Fees Amount
+	}
+
+	/**
+	 * Cannot maintain the same record twice
+	 */
+	@Override
+	public void test00700Maint_RetrievalMaintain_ExistingRecord() throws Exception
+	{
+	}
+}

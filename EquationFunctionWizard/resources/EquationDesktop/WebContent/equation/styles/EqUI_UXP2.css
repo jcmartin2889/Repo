@@ -1,0 +1,2606 @@
+/* ***************************************************/
+/* DO NOT MODIFY THIS ARTIFACT. IT IS AUTO GENERATED.*/
+/* ***************************************************/
+/*******************************************************************************
+ *  Equation User Interface Styles
+ * -------------------------------
+ *  
+ *  Copyright and all other intellectual property rights in this software, 
+ *  in any form, is vested in Misys International Banking Systems Ltd ("Misys") 
+ *  or a related company.                                  
+ *                                                     
+ *  This software may not be copied, amended, compiled, translated, or developed
+ *  or sold, leased, hired, rented, or disclosed to any third party without the 
+ *  prior written consent of Misys.                     
+ *                                                     
+ *  Copyright © Misys International Banking Systems Ltd                           
+ *******************************************************************************/
+@media screen, print
+{
+/*******************************************************************************
+	 *  GLOBAL STYLES
+	 *******************************************************************************/
+HTML
+{
+	margin:0px;
+	padding:0px;
+	color:black;
+	background-color:white;
+}
+BODY
+{
+	margin:0px;
+	padding:0px;
+	font-family:OpenSansRegular , Open Sans , Segoe UI , Arial , Helvetica , sans-serif;
+	font-size:9pt;
+}
+SELECT
+{
+	background-color:white;
+}
+INPUT.wf_field
+{
+	font-family:OpenSansRegular , Open Sans , Segoe UI , Arial , Helvetica , sans-serif;
+	font-size:9pt;
+	margin:4px 2px 6px 2px;
+	padding:2px 6px 3px 6px;
+	border:1px solid #b2b2b2;
+	color:black;
+	background-color:white;
+	border-radius:3px 3px 3px 3px;
+	vertical-align:middle;
+	box-shadow:1px 1px 2px 0px rgba(0, 0, 0, 0.09) inset;
+	height:16px;
+}
+INPUT.wf_ri_red
+{
+	color:#000000;
+	background-color:#fadbdd;
+	border-color:#aa0a2f;
+}
+INPUT.wf_field2
+{
+	margin:0px;
+	padding:0px;
+	padding-left:2px;
+	padding-right:2px;
+	border:1px solid ThreeDShadow;
+	color:black;
+}
+INPUT.wf_field:focus
+{
+	background-color:#e8f5fa;
+	border-color:#00afd8;
+	background-color:#e8f5fa;
+	transition-duration:0.1s;
+}
+INPUT.wf_field.wf_pr:focus
+{
+	background-color:#e5e5e5;
+	border:1px solid #b2b2b2;
+	transition-duration:0.1s;
+}
+INPUT.wf_field.wf_pr:hover
+{
+	background-color:#e5e5e5;
+	border:1px solid #b2b2b2;
+	transition-duration:0.1s;
+}
+INPUT.wf_field:hover
+{
+	border-color:#00afd8;
+	transition-duration:0.1s;
+}
+INPUT.wf_pr
+{
+	background-color:#e5e5e5;
+	border:1px solid #b2b2b2;
+	box-shadow:0px 0px 0px 0px;
+	color:#969696;
+}
+INPUT.link_ul
+{
+	text-decoration:underline;
+	border:0;
+	border-spacing:1px;
+	padding:0px;
+	background-color:#ffffff;
+}
+.repeatingDiv INPUT.wf_field.wf_pr:focus
+{
+	background-color:transparent;
+	border:1px solid transparent;
+}
+.repeatingDiv INPUT.wf_field.wf_pr:hover
+{
+	background-color:transparent;
+	border:1px solid transparent;
+	transition-duration:0.1s;
+}
+.repeatingDiv INPUT.wf_pr
+{
+	background-color:transparent;
+	border:1px solid transparent;
+	box-shadow:0px 0px 0px 0px;
+	color:black;
+}
+.repeatingDiv *.mousePointerHover INPUT.wf_pr
+{
+	cursor:pointer;
+}
+.wf_hi.wf_ri_default
+{
+	background-color:#99cc99;
+}
+.mandatory
+{
+	background-position:right;
+	background-repeat:repeat-y;
+	background-image:url('../images/req_indicator.png');
+}
+.inputText
+{
+	font-family:OpenSansRegular , Open Sans , Segoe UI , Arial , Helvetica , sans-serif;
+	font-size:8pt;
+	margin:0px;
+	padding:0px;
+	padding-left:2px;
+	padding-right:2px;
+	border:1px solid ThreeDShadow;
+	color:black;
+}
+.inputPassword
+{
+	font-family:OpenSansRegular , Open Sans , Segoe UI , Arial , Helvetica , sans-serif;
+	font-size:8pt;
+	margin:0px;
+	padding:0px;
+	padding-left:2px;
+	padding-right:2px;
+	border:1px solid ThreeDShadow;
+}
+.inputSubmit
+{
+	font-family:OpenSansRegular , Open Sans , Segoe UI , Arial , Helvetica , sans-serif;
+	font-size:8pt;
+	margin:0px;
+	padding:0px;
+}
+.inputButton,
+.inputButton2,
+.inputButtonExt
+{
+	font-size:9pt;
+	margin:0px 2px;
+	border:1px solid #b2b2b2;
+	padding:0px 5px;
+	background-color:#fcfcfc;
+	border-radius:4px 4px 4px 4px;
+	height:23px;
+	color:gray;
+}
+.inputButton
+{
+/* For buttons with short text, a fixed width is used. */
+	width:70px;
+}
+input[type="button"]:hover,
+input[type="submit"]:hover
+{
+	transition-duration:0.2s;
+	background-color:#f2f2f2;
+	border-color:#b2b2b2;
+}
+input[type="button"][disabled],
+input[type="submit"][disabled]
+{
+	background-color:#e5e5e5;
+	border:solid 1px #b2b2b2;
+	box-shadow:0 0 0 1px #ffffff inset;
+	color:#969696;
+}
+TABLE.wf_TABLE_RIGHT_ALIGN
+{
+	float:right;
+	margin-right:14px;
+}
+SELECT
+{
+	margin:0px;
+	padding:0px;
+	border:1px solid ThreeDShadow;
+}
+.passwordText
+{
+	text-decoration:underline;
+	color:black;
+/*******************************************************************************
+	 *  ERROR STYLES
+	 *******************************************************************************/
+}
+.errorHeader
+{
+	padding-left:10px;
+	font-size:x-large;
+	color:red;
+/*******************************************************************************
+	 *  HEADER STYLES
+	 *******************************************************************************/
+}
+.header
+{
+	margin:0px;
+	padding:0px;
+	background-color:#ffffff;
+	background-image:url('../images/equi/mys_header.jpg');
+	background-position:left top;
+	background-repeat:no-repeat;
+	font-family:OpenSansRegular , Open Sans , Segoe UI , Arial , Helvetica , sans-serif;
+	font-size:8pt;
+	border:0px;
+}
+.header font.externalLink
+{
+	color:#ffffff;
+}
+.header td.externalLink
+{
+	display:none;
+}
+.headBanner
+{
+	padding-right:5px;
+}
+.corporateImage
+{
+	padding-left:10px;
+	border:0px solid window;
+	display:none;
+}
+.banner
+{
+	background:../images/equi/mys_logo.png no-repeat 20px;
+}
+.banner img
+{
+	width:120px;
+	margin:-5px 5px 10px 5px;
+	visibility:hidden;
+	height:37px;
+}
+.externalLinkBar
+{
+	background-image:none;
+	background-color:#5e5e5e;
+	background-repeat:repeat-x;
+	border:0;
+	cellpadding:0;
+/* TODO - remove */
+	cellspacing:0;
+/* TODO - remove */
+	width:100%;
+	height:8px;
+}
+.externalLink
+{
+	white-space:nowrap;
+	color:#666666;
+	text-decoration:none;
+}
+.appName
+{
+	white-space:nowrap;
+	color:#ffffff;
+	font-size:12pt;
+	width:292px;
+	padding:8px 5px 0 0;
+	display:block;
+	background-color:#00aeef;
+	font-weight:bold;
+	text-align:right;
+	height:28px;
+/*******************************************************************************
+	 *  FOOTER STYLES
+	 *******************************************************************************/
+}
+.footer
+{
+	font-family:OpenSansRegular , Open Sans , Segoe UI , Arial , Helvetica , sans-serif;
+	font-size:8pt;
+	background-image:url('../images/equi/mys_footerBG.gif');
+	border:1px solid #6f6453;
+}
+.bottombar
+{
+	font-size:larger;
+	font-weight:bold;
+	background-image:url('../images/bar24lightgray.gif');
+	border-top:2px solid #6f6453;
+	border-left:1px solid #aba598;
+	border-right:1px solid #6f6453;
+	border-bottom:1px solid #6f6453;
+}
+.tabbar
+{
+	font-family:OpenSansRegular , Open Sans , Segoe UI , Arial , Helvetica , sans-serif;
+	font-size:8pt;
+	background-image:none;
+	background-color:#9d9d9d;
+	border:1px solid #6f6453;
+	border:0;
+	border-top:5px solid #9d9d9d;
+}
+.bottombarframe
+{
+	background-color:#e0e0e0;
+	background-image:none;
+}
+.bottombarframe *.inputButton
+{
+	margin-left:5px;
+}
+#statusBar td
+{
+	padding-right:3px;
+	padding-left:3px;
+/*******************************************************************************
+	 *  INPUT AREA STYLES
+	 *******************************************************************************/
+}
+.inputBackground
+{
+	border:0px solid inactivecaption;
+}
+.welcomeBackground
+{
+	border:0px solid inactivecaption;
+	background-image:none;
+	background-position:center;
+}
+.welcomeBackground *.corporateImage
+{
+	display:none;
+}
+.inputArea
+{
+	background-color:#ffffff;
+	margin-right:0;
+	margin-top:0;
+	height:100%;
+}
+.footertexts
+{
+	position:absolute;
+	right:17px;
+	bottom:0px;
+}
+.functionKeys
+{
+	position:relative;
+	right:0px;
+	bottom:1px;
+}
+a.functionKeysAnchor:link
+{
+	color:#0645ad;
+}
+a.functionKeysAnchor:hover
+{
+	color:#0b0080;
+}
+a.functionKeysAnchor:active
+{
+	color:#0b0080;
+}
+a.functionKeysAnchor:visited
+{
+	color:#660099;
+}
+a.functionKeysAnchor:visited:hover
+{
+	color:#0b0080;
+}
+.optionKeys
+{
+}
+a.consoleStyle:link
+{
+	color:#0645ad;
+}
+a.consoleStyle:hover
+{
+	color:#0b0080;
+}
+a.consoleStyle:active
+{
+	color:#0b0080;
+}
+a.consoleStyle:visited
+{
+	color:#660099;
+}
+a.consoleStyle:visited:hover
+{
+	color:#0b0080;
+}
+.consoleDiv
+{
+	padding:2px 0px 0px 0px;
+}
+.consoleMessageTable
+{
+	border-collapse:collapse;
+}
+.consoleTextCell
+{
+	padding:0px 0px 0px 0px;
+	vertical-align:top;
+}
+.consoleImageCell
+{
+	height:18px;
+	padding:0px 0px 0px 0px;
+	vertical-align:top;
+}
+.consoleAnchor
+{
+	vertical-align:top;
+	padding:0px 0px 0px 0px;
+}
+.consoleImage
+{
+	position:relative;
+	top:1px;
+	border:0;
+	padding-left:3px;
+}
+.consoleText
+{
+	color:#0645ad;
+}
+.messageStyle
+{
+}
+.bottomBar
+{
+	position:absolute;
+	right:8px;
+	top:6px;
+}
+.bottombarBody
+{
+	background-color:#e0e0e0;
+	box-shadow:0px 0px 3px 0px rgba(0, 0, 0, 0.1) inset;
+	margin:0px;
+	padding:6px 10px;
+	text-align:left;
+}
+frame#inputFrame
+{
+	border-top:10px solid #9d9d9d;
+	border-bottom:10px solid #9d9d9d;
+	border-right:10px solid #9d9d9d;
+	border-left:0;
+/*******************************************************************************
+	 *  NAVIGATION STYLES
+	 *******************************************************************************/
+}
+.navigatorBody
+{
+}
+.navigationbar
+{
+	font-weight:bold;
+	background-image:url('../images/bar24lightgray.gif');
+	border-top:0;
+	border-left:0;
+	border-right:0;
+	border-bottom:5px solid #9d9d9d;
+	background:#f5f5f5 ../images/equi/mys_bar24lightgray_dwn.png repeat right top;
+}
+.navigationbar *.button
+{
+	background:#f5f5f5 ../images/equi/mys_bar24grycurve.png no-repeat right top;
+}
+.navigationbar *.labelText
+{
+	padding-left:10px;
+	background:#f5f5f5 ../images/equi/mys_bar24grycurve.png no-repeat left;
+}
+.navigationbarSelected
+{
+	font-weight:bold;
+	border-top:0;
+	border-left:0;
+	border-right:0;
+	border-bottom:1px solid #e0e0e0;
+	background:../images/equi/mys_bar24lightgray.png #ffffff repeat right top;
+}
+.navigationbarSelected *.labelText
+{
+	background:../images/equi/mys_bar24whtcurve.png #ffffff no-repeat left top;
+	color:#00aeef;
+	padding-left:10px;
+}
+.navigationbarSelected *.button[id|="DivSwitch"]
+{
+	background:../images/equi/mys_bar24whtcurve.png #ffffff no-repeat right top;
+}
+.navigatorFldGroup
+{
+	border:1px solid lightgrey;
+}
+frame#navigatorFrame
+{
+	border-top:10px solid #9d9d9d;
+	border-bottom:10px solid #9d9d9d;
+	border-left:0 solid #9d9d9d;
+	border-right:0;
+}
+.navi
+{
+	background-color:#9d9d9d;
+}
+.navi div
+{
+	border-bottom:5px solid #9d9d9d;
+	background-color:#ffffff;
+}
+.naviExpanded
+{
+	background-color:#9d9d9d;
+}
+.naviExpanded div
+{
+	border-bottom:5px solid #9d9d9d;
+	background-color:#ffffff;
+}
+#AllMenuDiv
+{
+	background-color:#ffffff;
+/*******************************************************************************
+	 *  TOOLBAR STYLES
+	 *******************************************************************************/
+}
+.toolbarBody
+{
+	margin:0px;
+	padding:0px;
+	font-family:OpenSansRegular , Open Sans , Segoe UI , Arial , Helvetica , sans-serif;
+	font-size:8pt;
+	background-color:#888888;
+}
+.toolbar
+{
+	font-weight:bold;
+	background-image:url('../images/bar24lightgray.gif');
+	border:0px solid window;
+	background:#9d9d9d ../images/equi/mys_toolbarback.png repeat left;
+}
+.toolbar *.labelText
+{
+	color:#ffffff;
+}
+#tdhelpLabel
+{
+	background:../images/equi/EQHelp.png no-repeat center;
+}
+.toolbar *#tdhelpLabel img
+{
+	visibility:hidden;
+}
+#funcKeyAnchor
+{
+	background:transparent ../images/equi/mys_EqFuncKeywht.png no-repeat center;
+}
+#funcKeyAnchor img
+{
+	visibility:hidden;
+}
+#sliderAnchor
+{
+	background:transparent ../images/equi/mys_upwht.png no-repeat center;
+}
+#tdoptionLabel
+{
+	padding-left:10px;
+}
+#sliderAnchor img
+{
+	visibility:hidden;
+}
+#tdlogoutLabel
+{
+	background:transparent ../images/equi/mys_EQExitwht.png no-repeat center;
+}
+#tdlogoutLabel img
+{
+	visibility:hidden;
+/*******************************************************************************
+	 *  SEARCH STYLES
+	 *******************************************************************************/
+}
+.tableHeader
+{
+/*******************************************************************************
+	 *  GLOBAL BUTTON STYLES
+	 *******************************************************************************/
+}
+.buttonbar
+{
+	font-size:larger;
+	font-weight:bold;
+	border-top:0;
+	border-left:0;
+	border-right:0;
+	border-bottom:1px solid #e0e0e0;
+	background:../images/equi/mys_bar24whtcurve.png #ffffff no-repeat right top;
+}
+.buttonbar *.buttonBarTitle
+{
+	padding-left:10px;
+}
+.buttonBarFiller
+{
+	vertical-align:middle;
+	padding-left:10px;
+	white-space:nowrap;
+	background:../images/equi/mys_bar24lightgray.png;
+}
+.buttonBarTitle
+{
+	vertical-align:middle;
+	padding-right:10px;
+	white-space:nowrap;
+	background:../images/equi/mys_bar24whtcurve.png #ffffff no-repeat left top;
+	color:#00aeef;
+	font-weight:bold;
+}
+.buttonBarTitleUXP
+{
+	vertical-align:middle;
+	padding-left:0px;
+	white-space:nowrap;
+}
+.buttonDisabled
+{
+	display:inline;
+	margin-left:2px;
+	margin-right:2px;
+	vertical-align:middle;
+	border:1px solid transparent;
+	_border-color:tomato;
+}
+.button
+{
+	padding:2px;
+}
+.button a
+{
+	display:block;
+	width:18px;
+	height:18px;
+	border:1px solid transparent;
+	vertical-align:middle;
+	_border-color:tomato;
+}
+.button a:hover
+{
+	border-top:1px solid ButtonHighlight;
+	border-left:1px solid ButtonHighlight;
+	border-right:1px solid #6f6453;
+	border-bottom:1px solid #6f6453;
+}
+.buttonDown a
+{
+	display:block;
+	width:18px;
+	height:18px;
+	margin-left:2px;
+	margin-right:2px;
+	vertical-align:middle;
+	background-color:#f1f1f1;
+	border-top:1px solid #6f6453;
+	border-left:1px solid #6f6453;
+	border-right:1px solid #ffffff;
+	border-bottom:1px solid #ffffff;
+}
+.buttonText
+{
+	font-family:OpenSansRegular , Open Sans , Segoe UI , Arial , Helvetica , sans-serif;
+	font-size:8pt;
+	white-space:nowrap;
+}
+.buttonText a
+{
+	text-decoration:none;
+	display:block;
+	padding:2px;
+	margin-left:2px;
+	margin-right:2px;
+	border:1px solid transparent;
+	vertical-align:middle;
+	_border-color:tomato;
+}
+.buttonText a:hover
+{
+	padding:2px;
+	border-top:1px solid ButtonHighlight;
+	border-left:1px solid ButtonHighlight;
+	border-right:1px solid #6f6453;
+	border-bottom:1px solid #6f6453;
+}
+.widgetButton
+{
+	display:inline;
+	margin-left:2px;
+	margin-right:2px;
+	width:18px;
+	height:18px;
+	border:1px solid transparent;
+	vertical-align:middle;
+	_border-color:window;
+}
+.widgetButton:hover
+{
+	border-top:1px solid #f1f1f1;
+	border-left:1px solid #f1f1f1;
+	border-right:1px solid #6f6453;
+	border-bottom:1px solid #6f6453;
+}
+.widgetButton:active
+{
+	border-top:1px solid #6f6453;
+	border-left:1px solid #6f6453;
+	border-right:1px solid #f1f1f1;
+	border-bottom:1px solid #f1f1f1;
+/*******************************************************************************
+	 *  GLOBAL TEXT STYLES
+	 *******************************************************************************/
+}
+.legalText
+{
+	vertical-align:middle;
+	padding-left:10px;
+}
+.mandatoryText
+{
+}
+.mandatoryText.labelTextTopBottom
+{
+	padding-right:10px;
+}
+.labelText
+{
+	vertical-align:middle;
+	padding-right:10px;
+	white-space:nowrap;
+	color:gray;
+}
+.labelTextBold
+{
+	vertical-align:middle;
+	padding-right:10px;
+	white-space:nowrap;
+	color:gray;
+}
+.labelTextTopBottom
+{
+	font-weight:bold;
+	vertical-align:middle;
+	white-space:nowrap;
+}
+.defaultSpaceTopBottom
+{
+	padding-right:10px;
+}
+.labelColumnHeaderText
+{
+	font-weight:bold;
+	vertical-align:middle;
+	padding-right:10px;
+	white-space:nowrap;
+}
+.labelColumnHeaderTextWithWrap
+{
+	font-weight:bold;
+	vertical-align:middle;
+	white-space:normal;
+}
+.outputText
+{
+	color:graytext;
+	vertical-align:middle;
+	padding-right:10px;
+	white-space:nowrap;
+}
+.enquiryText
+{
+	vertical-align:middle;
+	padding-right:10px;
+	white-space:nowrap;
+}
+.descriptionText
+{
+	color:graytext;
+	vertical-align:middle;
+	white-space:nowrap;
+}
+.labelTextHi
+{
+	vertical-align:middle;
+	padding-left:10px;
+	white-space:nowrap;
+	color:white;
+}
+.fieldValue
+{
+	vertical-align:middle;
+	padding-left:40px;
+}
+.textInput
+{
+	padding-right:10px;
+}
+.textInputRepeatingGroup
+{
+	padding-right:10px;
+	white-space:nowrap;
+}
+.statusBarText
+{
+	vertical-align:middle;
+	white-space:nowrap;
+	padding:0px;
+	padding-left:2px;
+	padding-right:2px;
+	border-left:1px solid #6f6453;
+	border-right:1px solid buttonhighlight;
+	border:0;
+	color:#ffffff;
+}
+.statusBarSpacer
+{
+	padding:0px;
+	border-right:2px solid #aba598;
+	border:0;
+}
+.tabBarImage
+{
+	display:none;
+	border-bottom:1px solid #9d9d9d;
+	background:#f1f1f1 ../images/equi/mys_bar24grycurve.png no-repeat right top;
+/* left; */
+}
+.tabBarText
+{
+	cursor:default;
+	background-image:url('../images/bar24lightgray.gif');
+	white-space:nowrap;
+	padding-left:4px;
+	padding-right:4px;
+	border-left:1px solid #9d9d9d;
+	border-bottom:1px solid #9d9d9d;
+	padding:0 5px 0 5px;
+	background:#f1f1f1 ../images/equi/mys_bar24grycurve.png no-repeat right top;
+	color:#6f6453;
+	font-weight:bold;
+}
+.tabbar *.tabBarText
+{
+	padding:0 5px 0 5px;
+}
+.tabBarFlash
+{
+	background-image:none;
+	background-color:transparent;
+	color:#ff0000;
+}
+.tabBarImageSelected
+{
+	cursor:default;
+	background-color:buttonface;
+	vertical-align:middle;
+	padding-top:0px;
+	padding-bottom:0px;
+	padding-right:4px;
+	padding-left:0px;
+	border-bottom:1px solid #ffffff;
+	padding:0 0 0 5px;
+	background:#f1f1f1 ../images/equi/mys_bar24whtcurve.png no-repeat left top;
+}
+.tabBarTextSelected
+{
+	cursor:default;
+	background-color:buttonface;
+	background-image:url('../images/equi/mys_bar24lightgray.png');
+	white-space:nowrap;
+	padding-left:4px;
+	padding-right:4px;
+	border-left:1px solid #e0e0e0;
+	border-bottom:1px solid #ffffff;
+	padding:0 5px 0 2px;
+	color:#00aeef;
+	background:#f1f1f1 ../images/equi/mys_bar24whtcurve.png no-repeat right top;
+	font-weight:bold;
+}
+.tabDiv
+{
+	background:buttonface;
+	border-top:1px solid #6f6453;
+	border-left:1px solid #6f6453;
+	border-right:1px solid #6f6453;
+	border-bottom:1px solid #6f6453;
+	position:relative;
+	top:auto;
+	left:20px;
+	font:message-box;
+	width:75%;
+}
+.headingText
+{
+	font-size:larger;
+	vertical-align:middle;
+	padding-left:10px;
+}
+.consoleBody
+{
+	padding-right:17px;
+}
+.joblogBody
+{
+}
+.systemBody
+{
+}
+.messagesBody
+{
+}
+.referralsBody
+{
+}
+.commentBody
+{
+}
+.commentAddDiv
+{
+	padding-top:2px;
+}
+.spooledFileHeaderBody
+{
+}
+.menuAndOptionText
+{
+	white-space:nowrap;
+/*******************************************************************************
+	 *  PROMPT WIDGET ICON STYLES
+	 *******************************************************************************/
+}
+.promptWidget
+{
+	background:url("../images/popup_icon.png") no-repeat scroll 1px 2px transparent;
+	display:inline-block;
+	height:23px;
+	width:18px;
+	vertical-align:middle;
+	margin-left:3px;
+	padding-left:0px;
+}
+.promptWidget:hover
+{
+	background-position:1px -20px;
+	transition-duration:0.1s;
+}
+.promptWidget:active
+{
+	background-position:1px -42px;
+	transition-duration:0.1s;
+/*******************************************************************************
+	 *  PV WIDGET STYLES
+	 *******************************************************************************/
+}
+.pvContainerDIV
+{
+	position:absolute;
+	visibility:hidden;
+}
+.pvContainer
+{
+	position:relative;
+	top:auto;
+	left:auto;
+	font:message-box;
+}
+.pvHeader tr
+{
+	box-shadow:0px 0px 3px 0px rgba(0, 0, 0, 0.1) inset;
+	color:#1a1a1a;
+	font-family:OpenSansSemibold;
+	font-size:13px;
+	font-weight:bold;
+	height:25px;
+	margin:0;
+	font-color:#000000;
+}
+.pvHeader tr td
+{
+	background-color:#cde9ef;
+}
+#pvPopUpTitle
+{
+	background:url("../images/blue_corner_rtl.png") no-repeat scroll right top #CDE9EF;
+}
+#pvPopUpTitle span
+{
+	padding:2px 10px 10px 10px;
+	color:#000000;
+}
+.pvBody
+{
+	background-color:#e9f1f2;
+	position:relative;
+	top:auto;
+	left:auto;
+	font-family:OpenSansSemibold;
+	font-size:12px;
+	font-weight:bold;
+	padding-top:5px;
+	padding-bottom:5px;
+}
+.pvFooter
+{
+	background-color:#e7e7e7;
+	font-weight:bold;
+	position:relative;
+	right:auto;
+	top:auto;
+	left:auto;
+	bottom:auto;
+	_border-color:tomato;
+	padding-left:5px;
+	padding-top:5px;
+	padding-bottom:10px;
+}
+#pvPopUpCancelButtonTD
+{
+	text-align:right;
+}
+.pvFooter *.buttonText
+{
+	padding:5px;
+	border:1px solid #e0e0e0;
+	color:#00aeef;
+	background-image:url('../images/equi/mys_bar24lightgray.png');
+	font-size:9pt;
+	font-weight:bold;
+}
+.pvColumnHeadings
+{
+	vertical-align:middle;
+	padding-left:5px;
+	padding-right:5px;
+	white-space:nowrap;
+}
+.pvColumnDetails
+{
+	vertical-align:middle;
+	padding-left:5px;
+	padding-right:5px;
+	white-space:nowrap;
+}
+.pvWidgetField
+{
+	font-size:12px;
+	border:1px solid #b2b2b2;
+	border-radius:3px 3px 3px 3px;
+	box-shadow:1px 1px 2px 0 rgba(0, 0, 0, 0.09) inset;
+	color:black;
+	background-color:white;
+	margin:0 0px 3px;
+	padding-top:2px;
+	padding-bottom:2px;
+	vertical-align:middle;
+}
+body.popupPV *.tableHeader
+{
+	background-color:#e9f1f2;
+/*******************************************************************************
+	 *  HELP WIDGET STYLES
+	 *******************************************************************************/
+}
+.helpContainerDIV
+{
+	position:absolute;
+	visibility:hidden;
+}
+.helpContainer
+{
+	border-top:1px solid #6f6453;
+	border-left:1px solid #6f6453;
+	border-right:1px solid #6f6453;
+	border-bottom:1px solid #6f6453;
+	position:relative;
+	top:auto;
+	left:auto;
+	font:message-box;
+	left:20px;
+}
+.helpHeader tr
+{
+	box-shadow:0px 0px 3px 0px rgba(0, 0, 0, 0.1) inset;
+	color:#1a1a1a;
+	font-family:OpenSansSemibold;
+	font-size:13px;
+	font-weight:bold;
+	height:25px;
+	margin:0;
+	font-color:#000000;
+}
+.helpHeader tr td
+{
+	background-color:#cde9ef;
+}
+#helpPopUpTitle
+{
+	background:url("../images/blue_corner_rtl.png") no-repeat scroll right top #CDE9EF;
+}
+#helpPopUpTitle span
+{
+	padding:2px 10px 10px 10px;
+	color:#000000;
+}
+.helpBody
+{
+	background-color:#e9f1f2;
+	position:relative;
+	top:auto;
+	left:auto;
+	font-family:OpenSansSemibold;
+	font-size:12px;
+	font-weight:bold;
+	padding-top:5px;
+	padding-bottom:5px;
+}
+.helpTableBody
+{
+	width:20%;
+}
+.helpFooter
+{
+	font-weight:bold;
+	border:2px solid #aba598;
+	position:relative;
+	right:auto;
+	top:auto;
+	left:auto;
+	bottom:auto;
+}
+.helpDescription
+{
+	vertical-align:middle;
+	padding-top:5px;
+	padding-left:5px;
+	padding-right:5px;
+}
+.helpColumnHeadings
+{
+	color:gray;
+	white-space:nowrap;
+	vertical-align:middle;
+	padding-top:5px;
+	padding-left:5px;
+	padding-right:5px;
+}
+.helpColumnDetails
+{
+	white-space:nowrap;
+	vertical-align:middle;
+	padding-top:5px;
+	padding-left:5px;
+	padding-right:5px;
+	text-decoration:none;
+}
+#helpPopuUpExitImg
+{
+	display:none;
+}
+#helpPopUpExit
+{
+	text-align:center;
+	padding-left:8px;
+}
+#helpPopUpExitHref
+{
+	background:url("../images/dialogCloseIcon.png") no-repeat scroll 0px 0px transparent;
+	display:inline-block;
+	height:8px;
+	width:8px;
+	vertical-align:middle;
+	margin-left:3px;
+	padding-left:0px;
+	border:0px;
+	outline:0;
+}
+#helpPopUpExitHref:hover
+{
+	background:url("../images/dialogCloseIcon.png") no-repeat scroll 0px -9px transparent;
+	display:inline-block;
+	height:8px;
+	width:8px;
+	vertical-align:middle;
+	margin-left:3px;
+	padding-left:0px;
+	border:0px;
+	outline:0;
+/*******************************************************************************
+	 *  DATE PICKER WIDGET ICON STYLES
+	 *******************************************************************************/
+}
+.calWidget
+{
+	background:url("../images/calendar.png") no-repeat scroll -2px -1px transparent;
+	display:inline-block;
+	height:23px;
+	width:18px;
+	vertical-align:middle;
+	margin-left:3px;
+	padding-left:0px;
+}
+.calWidget:hover
+{
+	background-position:-2px -24px;
+	transition-duration:0.1s;
+}
+.calWidget:active
+{
+	background-position:-2px -47px;
+	transition-duration:0.1s;
+/*******************************************************************************
+	 *  FREQUENCY WIDGET ICON STYLES
+	 *******************************************************************************/
+}
+.frqWidget
+{
+	background:url("../images/frequency_icon.png") no-repeat scroll 1px 3px transparent;
+	display:inline-block;
+	height:23px;
+	width:18px;
+	vertical-align:middle;
+	margin-left:3px;
+	padding-left:0px;
+}
+.frqWidget:hover
+{
+	background-position:1px -20px;
+	transition-duration:0.1s;
+}
+.frqWidget:active
+{
+	background-position:1px -43px;
+	transition-duration:0.1s;
+/*******************************************************************************
+	 *  DATE PICKER LAYOUT STYLES
+	 *******************************************************************************/
+/* Set the position of the widget and fixed style settings */
+}
+cal
+{
+	vertical-align:middle;
+	font-size:11px;
+}
+iframe.cal
+{
+	position:absolute;
+	top:0px;
+	left:0px;
+	visibility:hidden;
+	width:1px;
+	height:1px;
+}
+table.cal
+{
+	position:absolute;
+	cursor:default;
+	top:0px;
+	left:0px;
+	text-align:center;
+	vertical-align:middle;
+	padding:0px;
+}
+td.calDrag,
+td.calHead
+{
+	padding:0px 5px;
+	text-align:center;
+}
+td.calDrag
+{
+}
+select.calHead
+{
+}
+input.calHead
+{
+	height:20px;
+	width:22px;
+	vertical-align:middle;
+	text-align:center;
+	margin:2px 1px;
+}
+td.calWeekNumberHead,
+td.calWeek
+{
+	padding-top:2px;
+	padding-bottom:2px;
+	text-align:center;
+}
+td.calFoot,
+td.calFootHover,
+td.calFoot:hover,
+td.calFootDisabled
+{
+	text-align:center;
+}
+table.calCells
+{
+	text-align:center;
+	width:96%;
+}
+td.calCells,
+td.calCellsHover,
+td.calCells:hover,
+td.calCellsDisabled,
+td.calCellsExMonth,
+td.calCellsExMonthHover,
+td.calCellsExMonth:hover,
+td.calCellsExMonthDisabled,
+td.calCellsExMonthWeekend,
+td.calCellsExMonthWeekendHover,
+td.calCellsExMonthWeekend:hover,
+td.calCellsWeekend,
+td.calCellsWeekendHover,
+td.calCellsWeekend:hover,
+td.calCellsWeekendDisabled,
+td.calInputDate,
+td.calInputDateHover,
+td.calInputDate:hover,
+td.calInputDateDisabled,
+td.calWeekNo,
+td.calWeeks
+{
+	padding:1px;
+	width:16px;
+	height:5px;
+	vertical-align:middle;
+	border:1px solid transparent;
+/*******************************************************************************
+	 *  DATE PICKER COLOURS
+	 *******************************************************************************/
+/* Calendar background */
+}
+table.cal
+{
+/* Drag Handle */
+}
+td.calDrag
+{
+	background-color:#000000;
+	color:#cccccc;
+/* Week number heading */
+}
+td.calWeekNumberHead
+{
+	color:#000000;
+/* Week day headings */
+}
+td.calWeek
+{
+	color:#000000;
+/* Week numbers */
+}
+td.calWeekNo
+{
+	background-color:#000000;
+	color:#cccccc;
+/* Week Day */
+}
+td.calCells
+{
+	background-color:#ffffff;
+	color:#000000;
+/* Day matching the input date */
+}
+td.calInputDate
+{
+	background-color:#00afd8;
+	border-color:#00afd8;
+/* Weekend Day */
+}
+td.calCellsWeekend
+{
+	background-color:#e0e0e0;
+/* Day outside the current month */
+}
+td.calCellsExMonth
+{
+	background-color:#ffffff;
+	color:#666666;
+}
+td.calCellsExMonthWeekend
+{
+	background-color:#e0e0e0;
+	color:#666666;
+}
+td.calCells.calTodayDate,
+td.calCellsWeekend.calTodayDate,
+td.calCellsExMonth.calTodayDate,
+td.calCellsExMonthWeekend.calTodayDate
+{
+	background-color:#bbd200;
+}
+td.calInputDate.calTodayDate
+{
+	background-color:#bbd200;
+	border:1px solid #00afd8;
+/* Today selector */
+}
+td.calFoot
+{
+	padding-top:5px;
+	padding-bottom:5px;
+}
+.calFootTd
+{
+	padding-top:10px;
+	padding-bottom:5px;
+/*******************************************************************************
+	 *  DATE PICKER MOUSE OVER COLOURS
+	 *******************************************************************************/
+/* Active cells */
+}
+td.calCells:hover,
+td.calCellsHover
+{
+	background-color:#e6f7fb;
+	border:solid 1px #00afd8;
+}
+
+{
+}
+cursor:pointer
+{
+/* Day matching the input date */
+}
+td.calInputDate:hover,
+td.calInputDateHover
+{
+	cursor:pointer;
+/* Weekend cells */
+}
+td.calCellsWeekend:hover,
+td.calCellsWeekendHover
+{
+	background-color:#e6f7fb;
+	border:solid 1px #00afd8;
+}
+
+{
+}
+cursor:pointer
+{
+/* Day outside the current month */
+}
+td.calCellsExMonth:hover,
+td.calCellsExMonthHover
+{
+	background-color:#e6f7fb;
+	border:solid 1px #00afd8;
+}
+
+{
+}
+cursor:pointer
+{
+/* Weekend cells and ex month*/
+}
+td.calCellsExMonthWeekend:hover,
+td.calCellsExMonthWeekendHover
+{
+	background-color:#e6f7fb;
+	box-shadow:0 0 2px 2px rgba(0, 0, 0, 0.25) inset;
+	border:solid 1px #00afd8;
+}
+
+{
+}
+cursor:pointer
+{
+/* Active cells */
+}
+td.calInputDate:active,
+td.calCells:active,
+td.calCellsHover:active,
+td.calCellsWeekend:active,
+td.calCellsWeekendHover:active,
+td.calCellsExMonth:active,
+td.calCellsExMonthHover:active,
+td.calCellsExMonthWeekend:active,
+td.calCellsExMonthWeekendHover:active
+{
+	background-color:#f2f2f2;
+	box-shadow:0 0 2px 2px rgba(0, 0, 0, 0.25) inset;
+	border:1px solid #b2b2b2;
+}
+
+{
+}
+cursor:pointer
+{
+/* Active cells today's date*/
+}
+td.calInputDate.calTodayDate:active,
+td.calCells.calTodayDate:active,
+td.calCellsHover.calTodayDate:active,
+td.calCellsWeekend.calTodayDate:active,
+td.calCellsWeekendHover.calTodayDate:active,
+td.calCellsExMonth.calTodayDate:active,
+td.calCellsExMonthHover.calTodayDate:active,
+td.calCellsExMonthWeekend.calTodayDate:active,
+td.calCellsExMonthWeekendHover.calTodayDate:active
+{
+	border:1px solid #00afd8;
+/* Today selector */
+}
+td.calFoot:hover,
+td.calFootHover
+{
+	color:#000000;
+	cursor:pointer;
+/* Day matching the input date */
+}
+td.calInputDateDisabled
+{
+	background-color:#999999;
+	color:#000000;
+}
+td.calCellsDisabled
+{
+	background-color:#999999;
+	color:#000000;
+/* Weekend Day */
+}
+td.calCellsWeekendDisabled
+{
+	background-color:#999999;
+	color:#cccccc;
+/* Day outside the current month */
+}
+td.calCellsExMonthDisabled
+{
+	background-color:#999999;
+	color:#666666;
+}
+td.calFootDisabled
+{
+	background-color:#000000;
+	color:#ffffff;
+}
+.calCells thead
+{
+	font-size:12px;
+}
+.calCells thead tr td
+{
+	padding-top:2px;
+	padding-bottom:2px;
+}
+.calCells tbody tr
+{
+	border-style:solid;
+}
+.calCells tbody tr td
+{
+	padding-top:3px;
+	padding-bottom:3px;
+	padding-left:6px;
+	padding-right:6px;
+	font-size:11px;
+	border-bottom:1px solid #666666;
+}
+.callCells tfoot tr td
+{
+	padding-top:10px;
+/*******************************************************************************
+	 *  TREE VIEW STYLES
+	 *******************************************************************************/
+/* Turn off list bullets */
+}
+ul.mktree li
+{
+	list-style:none;
+}
+ul.mktree li
+{
+	font-family:OpenSansRegular , Open Sans , Segoe UI , Arial , Helvetica , sans-serif;
+	font-size:9pt;
+	margin:5px 0 5px 0;
+/* Control how "spaced out" the tree is */
+}
+ul.mktree,
+ul.mktree ul,
+ul.mktree li
+{
+	margin-right:10px;
+	padding:0px;
+/* Provide space for our own "bullet" inside the LI */
+}
+ul.mktree li *.bullet
+{
+	padding-right:16px;
+/* Show "bullets" in the links, depending on the class of the LI that the link's in */
+}
+ul.mktree li.liOpen *.bullet
+{
+	cursor:pointer;
+	padding-right:16px;
+	background:url(../images/minus.gif)   center right no-repeat;
+}
+ul.mktree li.liClosed *.bullet
+{
+	cursor:pointer;
+	padding-right:16px;
+	background:url(../images/plus.gif) center right no-repeat;
+}
+ul.mktree li.liBullet *.bullet
+{
+	cursor:default;
+	padding-right:16px;
+	background:url(../images/bullet.gif) center right no-repeat;
+/* Sublists are visible or not based on class of parent LI */
+}
+ul.mktree li.liOpen ul
+{
+	display:block;
+}
+ul.mktree li.liClosed ul
+{
+	display:none;
+}
+.mktree a
+{
+	text-decoration:none;
+	padding-right:2px;
+	white-space:nowrap;
+}
+.mktree a:hover
+{
+	text-decoration:underline;
+}
+.mktree a.active
+{
+	background:Highlight;
+	color:HighlightText;
+	width:100%;
+}
+.mktree a.active:hover
+{
+	text-decoration:underline;
+	background:Highlight;
+	color:HighlightText;
+	width:100%;
+/*******************************************************************************
+	 *  WIDGET STYLES
+	 *******************************************************************************/
+}
+.widgetContainerDIV
+{
+	position:absolute;
+	visibility:hidden;
+}
+.widgetContainer
+{
+	background-color:buttonface;
+	border-top:1px solid #6f6453;
+	border-left:1px solid #6f6453;
+	border-right:1px solid #6f6453;
+	border-bottom:1px solid #6f6453;
+	position:relative;
+	top:auto;
+	left:auto;
+	font:message-box;
+	left:20px;
+	font-family:OpenSansRegular , Open Sans , Segoe UI , Arial , Helvetica , sans-serif;
+	font-size:11px;
+}
+.widgetContainerBelow
+{
+	background-color:buttonface;
+	border-top:1px solid #6f6453;
+	border-left:1px solid #6f6453;
+	border-right:1px solid #6f6453;
+	border-bottom:1px solid #6f6453;
+	position:relative;
+	top:auto;
+	left:auto;
+	font:message-box;
+	font-family:OpenSansRegular , Open Sans , Segoe UI , Arial , Helvetica , sans-serif;
+	font-size:11px;
+}
+.widgetContainerAsPopup
+{
+	background-color:buttonface;
+	border-top:1px solid #6f6453;
+	border-left:1px solid #6f6453;
+	border-right:1px solid #6f6453;
+	border-bottom:1px solid #6f6453;
+	position:relative;
+	top:auto;
+	font:message-box;
+}
+.referWidgetContainer
+{
+	border-top:1px solid #6f6453;
+	border-left:1px solid #6f6453;
+	border-right:1px solid #6f6453;
+	border-bottom:1px solid #6f6453;
+	position:relative;
+	top:auto;
+	left:auto;
+	font:message-box;
+	left:20px;
+	float:left;
+}
+}
+.widgetHeader
+{
+	font-weight:bold;
+	position:relative;
+	right:auto;
+	top:auto;
+	left:auto;
+	bottom:auto;
+}
+.widgetHeader tr
+{
+	background:url("../images/blue_corner_rtl.png") no-repeat scroll right top #CDE9EF;
+	box-shadow:0px 0px 3px 0px rgba(0, 0, 0, 0.1) inset;
+	color:#1a1a1a;
+	height:25px;
+	margin:0;
+}
+.widgetHeader tr td
+{
+	padding-left:15px;
+	padding-right:15px;
+}
+.widgetBody
+{
+	background-color:#e9f1f2;
+	position:relative;
+	top:auto;
+	left:auto;
+}
+.widgetBodyFooter
+{
+	background-color:#e7e7e7;
+	font-weight:bold;
+	border:2px solid transparent;
+	position:relative;
+	right:auto;
+	top:auto;
+	left:auto;
+	bottom:auto;
+	_border-color:tomato;
+	padding-right:5px;
+	padding-top:5px;
+	padding-bottom:5px;
+}
+.widgetFooter tr td
+{
+	padding-left:2px;
+	padding-right:2px;
+}
+.widgetField
+{
+	font-size:11px;
+	font-family:OpenSansRegular , Open Sans , Segoe UI , Arial , Helvetica , sans-serif;
+	border:1px solid #b2b2b2;
+	border-radius:3px 3px 3px 3px;
+	box-shadow:1px 1px 2px 0 rgba(0, 0, 0, 0.09) inset;
+	color:black;
+	background-color:white;
+	margin:0 2px 3px;
+	padding:2px 6px;
+	vertical-align:middle;
+}
+.widgetFieldDropDown
+{
+	font-size:11px;
+	font-family:OpenSansRegular , Open Sans , Segoe UI , Arial , Helvetica , sans-serif;
+	border:1px solid #b2b2b2;
+	border-radius:3px 3px 3px 3px;
+	box-shadow:1px 1px 2px 0 rgba(0, 0, 0, 0.09) inset;
+	color:black;
+	margin-right:2px;
+	padding-left:2px;
+	vertical-align:middle;
+	width:180px;
+	height:20px;
+}
+#widgetTableFrq tr td
+{
+	padding-top:5px;
+	padding-bottom:5px;
+}
+#widgetTableFrq tr td:first-child + td
+{
+	padding-right:20px;
+}
+#widgetTableFrq
+{
+	padding-top:15px;
+	padding-bottom:15px;
+	padding-left:20px;
+	padding-right:20px;
+}
+.widgetFooterButton a
+{
+	color:gray;
+}
+#frqWidgetContainer
+{
+	box-shadow:5px 5px 5px rgba(0, 0, 0, 0.09);
+}
+#calWidgetFooter tr td
+{
+	padding-top:5px;
+	padding-bottom:5px;
+}
+#calMonths
+{
+	font-size:11px;
+	border:1px solid #b2b2b2;
+	border-radius:3px 3px 3px 3px;
+	box-shadow:1px 1px 2px 0 rgba(0, 0, 0, 0.09) inset;
+	color:black;
+	vertical-align:middle;
+	text-align:center;
+}
+#calYears
+{
+	font-size:11px;
+	border:1px solid #b2b2b2;
+	border-radius:3px 3px 3px 3px;
+	box-shadow:1px 1px 2px 0 rgba(0, 0, 0, 0.09) inset;
+	color:black;
+	vertical-align:middle;
+	text-align:center;
+}
+#listKbdOpt
+{
+	background-color:#e9f1f2;
+}
+#kbdOpt
+{
+	background-color:#e9f1f2;
+}
+#kbdVOpt
+{
+	background-color:#e9f1f2;
+}
+#kbdOptWidgetContainer,
+#kbdVOptWidgetContainer,
+kbdOptWidgetContainer
+{
+	background-color:#e9f1f2;
+	border:1px solid ThreeDShadow;
+}
+#kbdOpt,
+#listKbdOpt,
+#kbdVOpt
+{
+	border:0px solid ThreeDShadow;
+/*******************************************************************************
+	 *  WIDGET STYLES
+	 *******************************************************************************/
+}
+.wf_NDP
+{
+	visibility:hidden;
+}
+.wf_AST
+{
+}
+.wf_W97
+{
+	visibility:hidden;
+}
+.wf_NPF
+{
+	font-family:monospace;
+	font-size:100%;
+}
+.wf_FTT
+{
+	font-family:monospace;
+	color:#777777;
+}
+.wf_FFD
+{
+	font-family:monospace;
+	color:#777777;
+}
+.wf_RDF
+{
+	font-family:monospace;
+	color:#777777;
+}
+.wf_OUT
+{
+	color:#000000;
+}
+.wf_OUR
+{
+	text-align:right;
+	color:#777777;
+}
+.wf_ACI
+{
+}
+.wf_ART
+{
+}
+.wf_RPD
+{
+	color:gray;
+}
+.wf_LBL
+{
+	color:gray;
+}
+.wf_LBR
+{
+	text-align:right;
+}
+.wf_PVS
+{
+	color:#000000;
+	font-family:OpenSansRegular , Open Sans , Segoe UI , Arial , Helvetica , sans-serif;
+	text-decoration:none;
+}
+.wf_PVR
+{
+	text-align:right;
+	color:#777777;
+}
+.wf_HDR
+{
+	visibility:hidden;
+}
+.wf_HD2
+{
+	visibility:hidden;
+}
+.wf_PGM
+{
+	visibility:hidden;
+}
+.wf_LVL
+{
+	visibility:hidden;
+}
+.wf_PGT
+{
+	visibility:hidden;
+}
+.wf_FCT
+{
+	visibility:hidden;
+}
+.wf_DTE
+{
+	visibility:hidden;
+}
+.wf_TIM
+{
+	visibility:hidden;
+}
+.wf_LST
+{
+}
+.wf_PMT
+{
+}
+.wf_CAL
+{
+}
+.wf_FRQ
+{
+}
+.wf_YNO
+{
+	color:gray;
+}
+.wf_SEL
+{
+	visibility:hidden;
+}
+.wf_OPT
+{
+}
+.wf_AMT
+{
+	text-align:right;
+}
+.wf_AMR
+{
+	text-align:right;
+}
+.wf_RIGHT_ALIGN
+{
+	text-align:right;
+	margin-left:auto;
+}
+.wf_LEFT_ALIGN
+{
+	text-align:left;
+}
+.wf_CENTER_ALIGN
+{
+	text-align:center;
+}
+.wf_RTOL
+{
+	direction:rtl;
+}
+.wf_LTOR
+{
+	direction:ltr;
+}
+.wf_LTOR font
+{
+	font-weight:bold;
+	color:#ffffff;
+}
+.wf_LTOR a
+{
+	text-decoration:none;
+}
+.wf_CODERTL
+{
+}
+.wf_CON
+{
+	visibility:hidden;
+}
+.wf_ERROR
+{
+	background-color:#fadbdd;
+	border-color:#aa0a2f;
+}
+INPUT.wf_ERROR
+{
+	background-color:#fadbdd;
+	border-color:#aa0a2f;
+}
+.wf_WARNING
+{
+	background-color:#ffff80;
+}
+.wf_INFO
+{
+	background-color:#acd683;
+}
+.wf_NOBORDER
+{
+	border-style:none;
+	border-width:0px;
+}
+.wf_UPPERCASE
+{
+	TEXT-TRANSFORM:uppercase;
+}
+.wf_SELECTED
+{
+	background-color:#ff9966;
+}
+.wf_DSPNONE
+{
+	display:none;
+}
+.wf_VALIDVALUE
+{
+	display:none;
+}
+.wf_NOWRAP
+{
+	white-space:nowrap;
+/*******************************************************************************
+	 *  DISPLAY GROUP STYLE
+	 *******************************************************************************/
+}
+.groupHeaderRowClass
+{
+	vertical-align:middle;
+	font-family:OpenSansSemibold , OpenSansRegular , Open Sans;
+	font-weight:bold;
+}
+.groupHeaderCellClass
+{
+	color:#000000;
+	height:auto;
+	border:0;
+	background-image:none;
+	background-color:#e0e0e0;
+	padding-left:6px;
+	padding-right:6px;
+	padding-top:3px;
+	padding-bottom:3px;
+}
+.groupHeaderCellClass *.widgetButton
+{
+	vertical-align:top;
+}
+.groupButtonDiv
+{
+	padding-right:5px;
+}
+.groupTabDiv
+{
+}
+.groupTabText
+{
+	color:#00aeef;
+	height:auto;
+	background-image:url('../images/equi/mys_bar24lightgray.png');
+	white-space:nowrap;
+	padding-left:4px;
+	padding-right:4px;
+	border-right:1px solid #e0e0e0;
+}
+.groupTabTextSelected
+{
+	cursor:default;
+	height:auto;
+	background-color:lightcyan;
+	white-space:nowrap;
+	padding-left:4px;
+	padding-right:4px;
+	border-right:1px solid #e0e0e0;
+	background-image:url('../images/equi/mys_bar24lightgray_dwn.png');
+	color:#e86d1f;
+}
+.groupTabTextWithMsg
+{
+	color:#e86d1f;
+	height:auto;
+	white-space:nowrap;
+	padding-left:4px;
+	padding-right:4px;
+	border-left:1px solid #e0e0e0;
+}
+.GroupTableClass
+{
+	border-top:0;
+	border-left:0px solid #0099ff;
+	border-right:0px solid #0099ff;
+	border-bottom:0px solid #0099ff;
+}
+.GroupTableClass tr
+{
+	padding-bottom:0px;
+}
+.NonGroupTableClass
+{
+	border-top:0;
+	border-left:0px solid #0099ff;
+	border-right:0px solid #0099ff;
+	border-bottom:0px solid #0099ff;
+}
+.NonGroupTableClass tr
+{
+	padding-bottom:7px;
+}
+.SubNonGroupTableClass
+{
+	position:relative;
+	right:10px;
+	border-top:1px solid #0099ff;
+	border-left:0px solid #0099ff;
+	border-right:0px solid #0099ff;
+	border-bottom:0px solid #0099ff;
+}
+.GroupClass
+{
+	padding-bottom:0px;
+}
+.KeyGroupClass
+{
+}
+.DetailGroupClass
+{
+/*******************************************************************************
+	 *  MAIN DIV
+	 *******************************************************************************/
+}
+.MainDivClass
+{
+	padding-top:10px;
+	width:100%;
+}
+.mainTD
+{
+	padding-top:10px;
+/*******************************************************************************
+	 *  MODAL WINDOW STYLE
+	 *******************************************************************************/
+}
+.modalHeader,
+.modalHeaderWarning
+{
+	box-shadow:0px 0px 3px 0px rgba(0, 0, 0, 0.1) inset;
+	color:#1a1a1a;
+	font-family:OpenSansSemibold;
+	font-size:13px;
+	font-weight:bold;	
+	height:25px;
+	margin:0;
+	font-color:#000000;
+}
+.modalHeader
+{
+	background:url("../images/blue_corner_rtl.png") no-repeat scroll right top #F2F2F2;
+}
+.modalHeaderWarning
+{
+	background:url("../images/yellow_corner_rtl.png") no-repeat scroll right top #F4E7BA;
+}
+.modalHeaderText
+{
+	padding:2px 10px 10px 17px;
+	color:#000000;
+}
+.modalBody
+{
+	background:#ffffff;
+	padding-top:10px;
+	padding-bottom:10px;
+	border:0px;
+	border-bottom:1px solid #6f6453;
+	position:relative;
+	top:auto;
+	left:auto;
+}
+.modalTable
+{
+	border:0;
+	border-spacing:0px;
+	padding:0px;
+}
+.modalCell
+{
+	margin:0px;
+	padding:0px;
+	background:#e7e7e7;
+}
+.modalInnerTable
+{
+	border:0;
+	border-spacing:0px;
+	padding:0px;
+}
+.modalInnerCell
+{
+}
+.modalButtons,
+.modalFooter
+{
+	background:#e7e7e7;
+	font-weight:bold;
+	padding-left:5px;
+	padding-top:4px;
+	padding-bottom:4px;
+	position:relative;
+	right:auto;
+	top:auto;
+	left:auto;
+	bottom:auto;
+}
+.modalButton
+{
+	font-size:9pt;
+	margin:0px 2px;
+	border:1px solid #b2b2b2;
+	padding:0px 5px;
+	background-color:#fcfcfc;
+	border-radius:4px 4px 4px 4px;
+	height:23px;
+	color:gray;
+/*******************************************************************************
+	 *  DEFAULT HORIZONTAL STYLE
+	 *******************************************************************************/
+}
+.hr_default
+{
+	margin-left:10px;
+	margin-right:10px;
+	border-top:0;
+	border-bottom:1px solid #e0e0e0;
+/*******************************************************************************
+	 *  SUPERVISOR ONLINE REQUEST STYLE
+	 *******************************************************************************/
+}
+.onlineRequest
+{
+	color:red;
+/*******************************************************************************
+	 *  OTHERS
+	 *******************************************************************************/
+}
+.rowSpacer
+{
+	line-height:0;
+	height:6px;
+}
+.alignTop
+{
+	vertical-align:top;
+}
+.alignBottom
+{
+	vertical-align:bottom;
+}
+.alignMiddle
+{
+	vertical-align:middle;
+}
+.scrollingX
+{
+	overflow:auto;
+	overflow-y:hidden;
+}
+.scrollingY
+{
+	overflow:auto;
+	overflow-x:hidden;
+}
+.scrollingXY
+{
+	overflow:auto;
+}
+.maxWidth
+{
+	width:100%;
+}
+.contextMenuStyle
+{
+	color:black;
+	text-decoration:none;
+/*******************************************************************************
+	 *  REPEATING GROUPS STYLE
+	 *******************************************************************************/
+}
+.repeatingDiv
+{
+}
+.repeatingHeaderDiv
+{
+	background-color:buttonface;
+}
+.repeatingHeaderDivAsRow
+{
+	background-color:buttonface;
+}
+.repeatingDataDiv
+{
+}
+.repeatingFooterDiv
+{
+	background-color:buttonface;
+}
+.repeatingFooterDivAsRow
+{
+	background-color:buttonface;
+}
+.defaultPadding
+{
+	padding-right:10px;
+}
+.repeatingGroupButtons
+{
+	width:22px;
+	height:22px;
+/*******************************************************************************
+	 *  REPEATING GROUPS STYLE - GLOBAL PROCESSING
+	 *******************************************************************************/
+}
+.gproweven
+{
+	background-color:#bfecff;
+/*******************************************************************************
+	 *  CUSTOM SELECT STYLE (predictive list)
+	 *******************************************************************************/
+}
+.customSelectContainer
+{
+	border-top:1px solid #6f6453;
+	border-left:1px solid #6f6453;
+	border-right:1px solid #6f6453;
+	border-bottom:1px solid #6f6453;
+	top:auto;
+	left:auto;
+	font:message-box;
+	background:white;
+}
+.customSelect
+{
+	background-color:buttonface;
+/*******************************************************************************
+	 *  SELECTION BOX (for copying/pasting using mouse)
+	 *******************************************************************************/
+}
+.mouseSelectionBox
+{
+	background-color:transparent;
+	position:absolute;
+	z-index:101;
+	border:1px solid lightgrey;
+}
+.calendarArrowLeft
+{
+	background-image:url('../images/calendarArrows.png');
+	background-repeat:no-repeat;
+	background-position:0px 0px;
+	width:15px;
+	height:15px;
+	text-align:center;
+}
+.calendarArrowRight
+{
+	background-image:url('../images/calendarArrows.png');
+	background-repeat:no-repeat;
+	background-position:-18px 0px;
+	width:15px;
+	height:15px;
+	text-align:center;
+/*******************************************************************************
+	 *  UXP STYLE
+	 *******************************************************************************/
+}
+.ux_form_title
+{
+	background:url("../images/blue_corner_rtl.png") no-repeat scroll right top #F2F2F2;
+	box-shadow:0px 0px 3px 0px rgba(0, 0, 0, 0.1) inset;
+	color:#1a1a1a;
+	font-family:OpenSansSemibold;
+	font-size:13px;
+	font-weight:bold;
+	height:13px;
+	margin:0;
+	padding:2px 10px 10px 17px;
+}
+.ux_problems_title
+{
+	background:url("../images/yellow_corner_rtl.png") no-repeat scroll right top #F4E7BA;
+	box-shadow:0px 0px 3px 0px rgba(0, 0, 0, 0.1) inset;
+	color:#1a1a1a;
+	font-family:OpenSansSemibold;
+	font-size:13px;
+	font-weight:bold;
+	height:13px;
+	margin:0;
+	padding:2px 10px 10px 17px;
+}
+.ux_comment_title
+{
+	background:../images/blue_corner.png no-repeat scroll 1px 1px #f2f2f2;
+	box-shadow:0px 0px 3px 0px rgba(0, 0, 0, 0.1) inset;
+	color:#1a1a1a;
+	font-family:OpenSansSemibold;
+	font-size:13px;
+	font-weight:bold;
+	height:26px;
+	margin:0;
+	width:100%;
+	white-space:nowrap;
+	padding:2px 0px 10px 0x;
+}
+.title_line_style
+{
+	padding-right:10px;
+/*******************************************************************************
+	 *  Dont display the header in UXP
+	 *******************************************************************************/
+}
+#calWidgetHeader,
+#frqWidgetHeader
+{
+	display:none;
+/*******************************************************************************
+	 *  Confirmation.jsp
+	 *******************************************************************************/
+}
+#confirmationTable
+{
+	margin:0;
+	font-color:#000000;
+	border-color:#cde9ef;
+	border:0px;
+	border-spacing:0px;
+}
+#confirmationRowHeader
+{
+	box-shadow:0px 0px 3px 0px rgba(0, 0, 0, 0.1) inset;
+	color:#1a1a1a;
+	font-family:OpenSansSemibold;
+	font-size:13px;
+	font-weight:bold;
+	height:25px;
+	border:1px;
+	border-spacing:1px;
+	background:../images/blue_corner.png no-repeat scroll 1px 1px #cde9ef;
+}
+#submittedLabel
+{
+	font-family:OpenSansSemibold;
+	font-weight:bold;
+	padding-left:10px;
+/*******************************************************************************
+	 *  Dummy field used in predictive list
+	 *******************************************************************************/
+}
+.dummyField
+{
+	background-color:white;
+	color:black;
+	border:0px;
+/*******************************************************************************
+	 *  Standard alternating style for list
+	 *******************************************************************************/
+}
+.standardRowStyle1
+{
+	background-color:#ffffff;
+}
+.standardRowStyle2
+{
+	background-color:#f4f9f9;
+}
+.standardRowStyle1:hover
+{
+	background-color:#d8f3f9;
+}
+.standardRowStyle2:hover
+{
+	background-color:#d8f3f9;
+}
+.standardRowStyle1 *.textInputRepeatingGroup
+{
+	border:1px solid;
+	border-bottom-color:#d7e5e9;
+	border-top-color:transparent;
+	border-right-color:#a7dce8;
+	border-left-color:transparent;
+}
+.standardRowStyle2 *.textInputRepeatingGroup
+{
+	border:1px solid;
+	border-bottom-color:#d7e5e9;
+	border-top-color:transparent;
+	border-right-color:#a7dce8;
+	border-left-color:transparent;
+/*******************************************************************************
+	 *  Change mouse cursor to pointer on hover
+	 *******************************************************************************/
+}
+.mousePointerHover:hover
+{
+	cursor:pointer;
+}
+.mousePointerHover input[readonly]:hover
+{
+	cursor:pointer;
+}
+
+{
+}

@@ -1,0 +1,105 @@
+/*
+ * This sample code is provided by Misys for illustrative purposes only.
+ * 
+ * These examples have not been thoroughly tested under all conditions.
+ * 
+ * Misys, therefore, cannot guarantee or imply reliability, serviceability, or function of these programs.
+ * 
+ * All programs contained herein are provided to you "AS IS" without any warranties of any kind. The implied warranties of
+ * non-infringement, merchantability and fitness for a particular purpose are expressly disclaimed.
+ */
+package com.misys.equation.common.test.xapi.standard;
+
+import com.ibm.as400.access.AS400BidiTransform;
+import com.ibm.as400.access.BidiStringType;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.TestEnvironment;
+import com.misys.equation.common.utilities.Toolbox;
+
+// *************************************************************************************************
+/**
+ * 
+ * 
+ */
+// *************************************************************************************************
+public class HCI
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	EquationStandardSession session;
+	long startTime = System.currentTimeMillis();
+	long currentTime = startTime;
+	// *********************************************************************************************
+	/**
+	 * 
+	 */
+	// *********************************************************************************************
+	private HCI()
+	{
+		try
+		{
+			session = TestEnvironment.getTestEnvironment().getStandardSession();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+	public static void main(String[] inputParameters)
+	{
+		HCI test = new HCI();
+		test.test();
+	}
+	// *********************************************************************************************
+	/**
+	 * 
+	 */
+	// *********************************************************************************************
+	public void test()
+	{
+		// Have a bash...
+		try
+		{
+			// Get a new transaction for Clean Payment
+			EquationStandardTransaction holdCodeTransaction = new EquationStandardTransaction("J46FRRHCI", session);
+
+			// **********************************************
+			// Set the fields required for the retrieval call
+			// **********************************************
+			// String sourceStr = "ش ي ل ب ل ا ";
+			String sourceStr = "FBC شيستبثصخهعقلبتمؤلاقفششتتتشيش ABC";
+			// String sourceStr = "ABC ش ي ل &45ب ل  DEF";
+			// String sourceStr = "我们的yi";
+
+			AS400BidiTransform abt;
+			abt = new AS400BidiTransform(session.getCcsid());
+			// abt.setJavaStringType(BidiStringType.ST5);
+			String description = abt.toAS400Layout(sourceStr);
+
+			abt.setJavaStringType(BidiStringType.ST5);
+			String description2 = abt.toJavaLayout(sourceStr);
+
+			holdCodeTransaction.setFieldValue("GZHRC", "AR9");
+			holdCodeTransaction.setFieldValue("GZHRD", description);
+
+			// Do the invocation
+			holdCodeTransaction.setMode("M");
+			session.addEquationTransaction(holdCodeTransaction);
+			session.applyTransactions();
+			Toolbox.printMessages(holdCodeTransaction.getErrorList());
+			Toolbox.printMessages(holdCodeTransaction.getWarningList());
+
+			// **********************************************
+			// Finish
+			// **********************************************
+			System.out.println("finished!");
+			session.commitTransactions();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.toString());
+		}
+	}
+}

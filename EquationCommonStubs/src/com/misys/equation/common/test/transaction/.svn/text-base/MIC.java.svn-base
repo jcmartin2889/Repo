@@ -1,0 +1,101 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseMaintain;
+
+/**
+ * Equation test cases for Maintain Customer Account Interest
+ */
+public class MIC extends EquationTestCaseMaintain
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	String programName = "H73MRR";
+	String optionId = "MIC";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZAB", "9898"); // Account branch (4A)
+		transaction.setFieldValue("GZAN", "898989"); // Basic part of account number (6A)
+		transaction.setFieldValue("GZAS", "898"); // Account suffix (3A)
+		transaction.setFieldValue("GZCHG", "0991231"); // Date for interest changes (7S,0)
+	}
+
+	/**
+	 * Setup an existing key fields
+	 */
+	@Override
+	public void setupExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZAB", "0543"); // Account branch (4A)
+		transaction.setFieldValue("GZAN", "123107"); // Basic part of account number (6A)
+		transaction.setFieldValue("GZAS", "002"); // Account suffix (3A)
+		transaction.setFieldValue("GZCHG", "0991231"); // Date for interest changes (7S,0)
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	@Override
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZIFQD", "V31"); // Debit interest frequency (3A)
+		transaction.setFieldValue("GZNCDD", "1010130"); // Next interest cycle date - debit (7S,0)
+		transaction.setFieldValue("GZIDBD", "1"); // Debit interest days basis (1A)
+		transaction.setFieldValue("GZBRRD", "10"); // Debit base rate code (2A)
+		transaction.setFieldValue("GZDRRD", "12"); // Debit differential rate code (2A)
+		transaction.setFieldValue("GZRTMD", "0000.0500000"); // Actual margin rate - debit (11P,7)
+
+		transaction.setFieldValue("GZIFQC", "V31"); // Credit interest frequency (3A)
+		transaction.setFieldValue("GZNCDC", "1010130"); // Next interest cycle date - credit (7S,0)
+		transaction.setFieldValue("GZIDBC", "1"); // Credit interest days basis (1A)
+		transaction.setFieldValue("GZTRCC", "01"); // Credit tier rate code (4A)
+		transaction.setFieldValue("GZCRC1", "00"); // Credit tax rate code 1 (2A)
+		transaction.setFieldValue("GZCRC2", "00"); // Credit tax rate code 2 (2A)
+		transaction.setFieldValue("GZCLT", "N"); // Collateral required (1A)
+
+	}
+
+}

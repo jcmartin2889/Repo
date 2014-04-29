@@ -1,0 +1,44 @@
+###########################################################
+# Copy this file under your project root folder and 
+# change its name to build.properties
+###########################################################
+
+# User-defined properties
+
+# NAME OF THE PROJECT
+PROJECT_NAME=EquationBankFusionServer
+#This is the user name 
+USER_NAME=weddelc1
+
+# This is the name which will be used as a jar name.
+JAR_NAME=equation-bankfusionserver
+#jar version.
+VERSION=3.1.2
+# This is the directory that contains all compiled classes.
+CLASSES=bin
+# This is the source directory which contains all java source files and others. 
+SRC=src
+#This is the project that contains all jars to be included in the classpath.
+CLASSPATH=../ExternalJars
+#This is the resource directory which contains all property / confg files. 
+RESOURCES=
+# This is the target directory name. 
+TARGET=equation-bankfusionserver
+DIST=../EquationBuilder/dist
+
+# This property is to decide if the javadoc are going to be generated.
+CREATE_JAVA_DOCS=true
+# This is the name of the java doc directory.
+JAVA_DOCS_NAME=javadocs
+
+# Directory to which the packaged .jar file is to be copied.
+DEPLOY_DIR=../EquationFunctionWizard/lib
+
+# Projects
+EQUATION_BUILDER=../EquationBuilder
+BUILDER_TEMP=#temp
+EQUATION_COMMON=../EquationCommon
+EQUATION_FUNCTION=../EquationFunction
+EQUATION_FUNCTION_WIZARD=../EquationFunctionWizard
+EQUATION_DESKTOP=../EquationDesktop
+

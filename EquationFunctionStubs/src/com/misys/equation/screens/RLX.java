@@ -1,0 +1,617 @@
+package com.misys.equation.screens;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.files.JournalHeader;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.function.adaptor.AbstractFunctionAdaptor;
+import com.misys.equation.function.adaptor.AbstractValueAdaptor;
+import com.misys.equation.function.runtime.UserData;
+import com.misys.equation.function.runtime.UserModifyData;
+import com.misys.equation.function.tools.FunctionRuntimeToolbox;
+
+public class RLX extends AbstractFunctionAdaptor
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: RLX.java 9942 2010-11-17 16:56:54Z lima12 $";
+	// -------------------------------------------------------------- METHODS
+
+	public void defaultMode(int curScreen, UserModifyData userModifyData)
+	{
+	}
+
+	public void validateMode(int curScreen, UserData userData)
+	{
+	}
+
+	public void preUpdate(UserData userData)
+	{
+	}
+
+	public void postUpdate(JournalHeader journalHeader, UserData userData)
+	{
+		try
+		{
+			EquationStandardTransaction transaction;
+
+			transaction = add(journalHeader, userData);
+			if (!transaction.getValid())
+			{
+				getReturnMessages().addError("Error during add CP");
+				getReturnMessages().addMessage(transaction.getErrorList().get(0).getDsepms());
+				return;
+			}
+
+			transaction = review(journalHeader, userData);
+			if (!transaction.getValid())
+			{
+				getReturnMessages().addError("Error during review CP");
+				getReturnMessages().addMessage(transaction.getErrorList().get(0).getDsepms());
+				return;
+			}
+
+			transaction = authorise(journalHeader, userData);
+			if (!transaction.getValid())
+			{
+				getReturnMessages().addError("Error during authorise CP");
+				getReturnMessages().addMessage(transaction.getErrorList().get(0).getDsepms());
+				return;
+			}
+		}
+		catch (Exception e)
+		{
+			getReturnMessages().addError("Post update call fails");
+		}
+	}
+
+	public class AB_Primitive_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			if (userData.rtvFieldDbValue("wfAB").trim().equals(""))
+			{
+				return null;
+			}
+			else
+			{
+				return userData.rtvFieldDbValue("wfAB");
+			}
+		}
+	}
+
+	public class AN_Primitive_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			if (userData.rtvFieldDbValue("wfAN").trim().equals(""))
+			{
+				return null;
+			}
+			else
+			{
+				return userData.rtvFieldDbValue("wfAN");
+			}
+		}
+	}
+
+	public class AS_Primitive_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			if (userData.rtvFieldDbValue("wfAS").trim().equals(""))
+			{
+				return null;
+			}
+			else
+			{
+				return userData.rtvFieldDbValue("wfAS");
+			}
+		}
+	}
+
+	public class EAN_Primitive_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			if (userData.rtvFieldDbValue("wfEAN").trim().equals(""))
+			{
+				return null;
+			}
+			else
+			{
+				return userData.rtvFieldDbValue("wfEAN");
+			}
+		}
+	}
+
+	public class ABP_Primitive_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			if (userData.rtvFieldDbValue("wfABP").trim().equals(""))
+			{
+				return null;
+			}
+			else
+			{
+				return userData.rtvFieldDbValue("wfABP");
+			}
+		}
+	}
+
+	public class ANP_Primitive_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			if (userData.rtvFieldDbValue("wfANP").trim().equals(""))
+			{
+				return null;
+			}
+			else
+			{
+				return userData.rtvFieldDbValue("wfANP");
+			}
+		}
+	}
+
+	public class ASP_Primitive_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			if (userData.rtvFieldDbValue("wfASP").trim().equals(""))
+			{
+				return null;
+			}
+			else
+			{
+				return userData.rtvFieldDbValue("wfASP");
+			}
+		}
+	}
+
+	public class EANP_Primitive_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			if (userData.rtvFieldDbValue("wfEANP").trim().equals(""))
+			{
+				return null;
+			}
+			else
+			{
+				return userData.rtvFieldDbValue("wfEANP");
+			}
+		}
+	}
+
+	public class ABI_Primitive_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			if (userData.rtvFieldDbValue("wfABI").trim().equals(""))
+			{
+				return null;
+			}
+			else
+			{
+				return userData.rtvFieldDbValue("wfABI");
+			}
+		}
+	}
+
+	public class ANI_Primitive_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			if (userData.rtvFieldDbValue("wfANI").trim().equals(""))
+			{
+				return null;
+			}
+			else
+			{
+				return userData.rtvFieldDbValue("wfANI");
+			}
+		}
+	}
+
+	public class ASI_Primitive_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			if (userData.rtvFieldDbValue("wfASI").trim().equals(""))
+			{
+				return null;
+			}
+			else
+			{
+				return userData.rtvFieldDbValue("wfASI");
+			}
+		}
+	}
+
+	public class EANI_Primitive_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			if (userData.rtvFieldDbValue("wfEANI").trim().equals(""))
+			{
+				return null;
+			}
+			else
+			{
+				return userData.rtvFieldDbValue("wfEANI");
+			}
+		}
+	}
+
+	public class NPY_GWV45R_$45LEN_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			return "03";
+		}
+
+	}
+
+	public class NPY_GWV45R_$45DPL_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			return "0";
+		}
+	}
+
+	public class DLA_GWV30R_$NDPAM_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			return "0";
+		}
+
+	}
+
+	public class DLA_GWV30R_$NODIG_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			return "15";
+		}
+	}
+
+	public class EAM_GWV30R_$NDPAM_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			return "0";
+		}
+
+	}
+
+	public class EAM_GWV30R_$NODIG_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			return "15";
+		}
+	}
+
+	public class RPA_GWV30R_$NDPAM_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			return "0";
+		}
+
+	}
+
+	public class RPA_GWV30R_$NODIG_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			return "15";
+		}
+	}
+
+	public class FTA_GWV30R_$NDPAM_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			return "0";
+		}
+
+	}
+
+	public class FTA_GWV30R_$NODIG_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			return "15";
+		}
+	}
+
+	public class DLA_UTR71R_X69LCY_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			return userData.getUserAccessHandler().getEquationUser().getEquationUnit().getLocalCurrency();
+		}
+	}
+
+	public class DLA_UTR71R_X69AMT_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			String amount = userData.rtvFieldDbValue("DLA").trim();
+			if (amount.length() > 15)
+			{
+				return amount.substring(amount.length() - 15);
+			}
+			else
+			{
+				return amount;
+			}
+		}
+	}
+
+	public class DLA_UTR71R_X69DBR_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			return userData.getUserAccessHandler().getEquationUser().getInputBranchNo();
+		}
+	}
+
+	public class DLA_UTR71R_X69DR_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			return "Y";
+		}
+	}
+
+	public class DLA_UTR71R_X69USR_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			return userData.getUserAccessHandler().getEquationUser().getUserId();
+		}
+	}
+
+	public class wfMDT_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			if (userData.rtvFieldInputValue("MDT").trim().length() > 0)
+			{
+				return userData.rtvFieldDbValue("MDT");
+			}
+			else
+			{
+				return "";
+			}
+		}
+	}
+
+	public class wfNCD_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			if (userData.rtvFieldInputValue("NCD").trim().length() > 0)
+			{
+				return userData.rtvFieldDbValue("NCD");
+			}
+			else
+			{
+				return "";
+			}
+		}
+	}
+
+	public class RAMT_GWV30R_$NDPAM_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			return "0";
+		}
+
+	}
+
+	public class RAMT_GWV30R_$NODIG_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			return "15";
+		}
+	}
+
+	public class RNMT_GWV30R_$NDPAM_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			return "0";
+		}
+
+	}
+
+	public class RNMT_GWV30R_$NODIG_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			return "15";
+		}
+	}
+
+	public class PAMT_GWV30R_$NDPAM_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			return "0";
+		}
+
+	}
+
+	public class PAMT_GWV30R_$NODIG_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			return "15";
+		}
+	}
+
+	public class PNMT_GWV30R_$NDPAM_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			return "0";
+		}
+
+	}
+
+	public class PNMT_GWV30R_$NODIG_ValueAdaptor extends AbstractValueAdaptor
+	{
+		public String getValue(String curValue, UserData userData)
+		{
+			return "15";
+		}
+	}
+
+	private EquationStandardTransaction add(JournalHeader journalHeader, UserData userData) throws EQException
+	{
+		// get session
+		EquationStandardSession session = userData.getUserAccessHandler().getSession();
+
+		// Get a new transaction for Clean Payment
+		EquationStandardTransaction transaction = new EquationStandardTransaction("K61ARRAOP", session);
+		setupCPTransaction(transaction, userData);
+
+		// Other setup
+		transaction.setFieldValue("GZUSNL", userData.getUserAccessHandler().getEquationUser().getUserId());
+		transaction.setFieldValue("GZSAV", "N");
+
+		// Other details
+		FunctionRuntimeToolbox.setupTransaction(transaction, journalHeader, false, false);
+
+		// Do the invocation
+		transaction.setMode("A");
+		transaction.setByteCP("H");
+		session.applyEquationTransaction(transaction);
+		if (!transaction.getValid())
+		{
+			return transaction;
+		}
+
+		// Do the invocation
+		transaction.setMode("A");
+		transaction.setByteCP("Z");
+		session.addEquationTransaction(transaction);
+		session.applyEquationTransaction(transaction);
+		return transaction;
+	}
+
+	private EquationStandardTransaction review(JournalHeader journalHeader, UserData userData) throws EQException
+	{
+		// get session
+		EquationStandardSession session = userData.getUserAccessHandler().getSession();
+
+		// Get a new transaction for Clean Payment
+		EquationStandardTransaction transaction = new EquationStandardTransaction("K61MRRROP", session);
+		setupCPTransaction(transaction, userData);
+
+		// Other setup
+		transaction.setFieldValue("GZUSNR", session.getUserId());
+		transaction.setFieldValue("GZNTR", "N");
+		transaction.setFieldValue("GZPMC", "N");
+		transaction.setFieldValue("GZPRVW", "N");
+		transaction.setFieldValue("GZSAV", "N");
+
+		// Other details
+		FunctionRuntimeToolbox.setupTransaction(transaction, journalHeader, false, false);
+
+		// Do the invocation
+		transaction.setMode("M");
+		transaction.setByteCP("H");
+		session.applyEquationTransaction(transaction);
+		if (!transaction.getValid())
+		{
+			return transaction;
+		}
+
+		// **********************************************
+		// Set the fields required for the update call
+		// **********************************************
+
+		// Do the invocation
+		transaction.setMode("M");
+		transaction.setByteCP("Z");
+		session.applyEquationTransaction(transaction);
+		return transaction;
+	}
+
+	private EquationStandardTransaction authorise(JournalHeader journalHeader, UserData userData) throws EQException
+	{
+		// get session
+		EquationStandardSession session = userData.getUserAccessHandler().getSession();
+
+		EquationStandardTransaction transaction = new EquationStandardTransaction("K62MRRAOC", session);
+		setupCPTransaction(transaction, userData);
+		transaction.setFieldValue("GZDECD", "O"); // Decode; O/I=Auth,P/J=Susp,C=Conf,L=Coll (1A)
+		transaction.setFieldValue("GZXREF", userData.rtvFieldDbValue("XREF")); // Payment reference (16A)
+		transaction.setFieldValue("GZUSID", session.getUserId()); // Authorised by (4A)
+
+		// Other details
+		FunctionRuntimeToolbox.setupTransaction(transaction, journalHeader, false, false);
+
+		// Do the invocation
+		transaction.setMode("M");
+		session.applyEquationTransaction(transaction);
+		return transaction;
+	}
+
+	private void setupCPTransaction(EquationStandardTransaction transaction, UserData userData)
+	{
+		transaction.setFieldValue("GZREF", userData.rtvFieldDbValue("XREF"));
+		transaction.setFieldValue("GZXREF", userData.rtvFieldDbValue("XREF"));
+		transaction.setFieldValue("GZAPP", "CP");
+		transaction.setFieldValue("GZIAB", userData.rtvFieldDbValue("BRNM"));
+		transaction.setFieldValue("GZPYT", userData.rtvFieldDbValue("PYT"));
+		transaction.setFieldValue("GZNST1", userData.rtvFieldDbValue("NST1"));
+		transaction.setFieldValue("GZRCCY", userData.rtvFieldDbValue("RCCY"));
+		transaction.setFieldValue("GZPCCY", userData.rtvFieldDbValue("PCCY"));
+		transaction.setFieldValue("GZRAMT", userData.rtvFieldDbValue("RAMT"));
+		transaction.setFieldValue("GZPAMT", userData.rtvFieldDbValue("PAMT"));
+
+		transaction.setFieldValue("GZAMTE", "1");
+		transaction.setFieldValue("GZRMTR", userData.rtvFieldDbValue("RMTR"));
+		transaction.setFieldValue("GZSAD1", userData.rtvFieldDbValue("SAD1"));
+		transaction.setFieldValue("GZSAD2", userData.rtvFieldDbValue("SAD2"));
+		transaction.setFieldValue("GZSAD3", userData.rtvFieldDbValue("SAD3"));
+		transaction.setFieldValue("GZSAD4", userData.rtvFieldDbValue("SAD4"));
+
+		transaction.setFieldValue("GZNST2", userData.rtvFieldDbValue("NST2"));
+		transaction.setFieldValue("GZSWB7", userData.rtvFieldDbValue("SWB7"));
+		transaction.setFieldValue("GZSNA7", userData.rtvFieldDbValue("SNA7"));
+		transaction.setFieldValue("GZSWL7", userData.rtvFieldDbValue("SWL7"));
+		transaction.setFieldValue("GZSWR7", userData.rtvFieldDbValue("SWR7"));
+		transaction.setFieldValue("GZOAN1", userData.rtvFieldDbValue("OAN1"));
+		transaction.setFieldValue("GZBAD1", userData.rtvFieldDbValue("BAD1"));
+		transaction.setFieldValue("GZBAD2", userData.rtvFieldDbValue("BAD2"));
+		transaction.setFieldValue("GZBAD3", userData.rtvFieldDbValue("BAD3"));
+		transaction.setFieldValue("GZBAD4", userData.rtvFieldDbValue("BAD4"));
+
+		transaction.setFieldValue("GZOAN2", userData.rtvFieldDbValue("OAN2"));
+		transaction.setFieldValue("GZSWB3", userData.rtvFieldDbValue("SWB3"));
+		transaction.setFieldValue("GZCNA3", userData.rtvFieldDbValue("CNA3"));
+		transaction.setFieldValue("GZSWL3", userData.rtvFieldDbValue("SWL3"));
+		transaction.setFieldValue("GZSWR3", userData.rtvFieldDbValue("SWR3"));
+		transaction.setFieldValue("GZAAD1", userData.rtvFieldDbValue("AAD1"));
+		transaction.setFieldValue("GZAAD2", userData.rtvFieldDbValue("AAD2"));
+		transaction.setFieldValue("GZAAD3", userData.rtvFieldDbValue("AAD3"));
+		transaction.setFieldValue("GZAAD4", userData.rtvFieldDbValue("AAD4"));
+		transaction.setFieldValue("GZUS1", userData.rtvFieldDbValue("US1"));
+		transaction.setFieldValue("GZUS2", userData.rtvFieldDbValue("US2"));
+
+		// transaction.setFieldValue("GZBOPC", bankOpCode);
+		// transaction.setFieldValue("GZCHRG", chargesFor);
+	}
+
+}

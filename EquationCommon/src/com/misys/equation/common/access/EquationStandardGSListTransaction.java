@@ -1,0 +1,357 @@
+package com.misys.equation.common.access;
+
+import com.misys.equation.common.dao.beans.GAERecordDataModel;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.internal.eapi.core.EQRuntimeException;
+
+/**
+ * This class provides methods for setting Equation API fields before the transaction is executed and for getting fields after the
+ * transaction is executed - multiple GS records are supported.
+ * <p>
+ * TODO: This class is a prototype only
+ * 
+ * @equation.external
+ */
+public class EquationStandardGSListTransaction extends EquationStandardTransaction implements IListTransaction
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EquationStandardGSListTransaction.java 15065 2012-12-18 15:17:20Z williae1 $";
+
+	private static final long serialVersionUID = 1L;
+
+	private EquationDataStructureRepeatingData gsDSDatas;
+	private int gsOffset = 0;
+	private String gsFormatName = "";
+	private int maxItems = 0;
+	private boolean complete;
+
+	public EquationStandardGSListTransaction(String inputApiName, EquationStandardSession equationStandardSession)
+					throws EQException
+	{
+		super(inputApiName, equationStandardSession);
+
+		// We need to perform list initialisation
+		GAERecordDataModel gaeRecordDataModel = null;
+		if (inputApiName.length() > 6)
+		{
+			String optionId = inputApiName.substring(6).trim();
+			gaeRecordDataModel = equationStandardSession.getUnit().getRecords().getGAERecord(optionId);
+		}
+
+		if (gaeRecordDataModel == null)
+		{
+			throw new EQRuntimeException("GAEPF record not found for api [" + inputApiName + "]");
+		}
+
+		if (gaeRecordDataModel.getDetailJournalFileName().length() == 0)
+		{
+			throw new EQRuntimeException("GAEPF record journal detail name is blank for api [" + inputApiName + "]");
+		}
+
+		this.gsFormatName = gaeRecordDataModel.getDetailJournalFileName();
+		this.gsOffset = gaeRecordDataModel.getRepeatingDataOffset();
+		this.maxItems = gaeRecordDataModel.getRepeatingDataLength();
+
+		if (maxItems == 0)
+		{
+			throw new EQRuntimeException("GAEPF record for api [" + inputApiName
+							+ "] does not specify the number of repeating items");
+		}
+		// TODO: Figure out what needs to happen with Keys
+		initialiseTransactionGS(equationStandardSession, "");
+	}
+
+	/**
+	 * Initialise the GS journal data structure
+	 * 
+	 * @throws EQException
+	 */
+	private void initialiseTransactionGS(EquationStandardSession equationStandardSession, String keys) throws EQException
+	{
+		EquationDataStructure ds = equationStandardSession.getEquationDataStructure(gsFormatName);
+		gsDSDatas = new EquationDataStructureRepeatingData(ds, keys);
+	}
+
+	@Deprecated
+	public EquationStandardGSListTransaction(String inputApiName, EquationStandardSession equationStandardSession, String gzName,
+					String gsName, int gsOffset) throws EQException
+	{
+		super(inputApiName, equationStandardSession, gzName, gsName, gsOffset);
+	}
+	/**
+	 * @equation.external
+	 */
+	public boolean next()
+	{
+		return gsDSDatas.next();
+	}
+
+	@Override
+	public void setBytes(byte[] data)
+	{
+		getGzDSData().setBytes(data);
+		// GS defined?
+		int offset = getGzBytes().length > gsOffset ? getGzBytes().length : gsOffset;
+		int gsLength = gsDSDatas.rowSize();
+		int rows = 0;
+		boolean nullRow = false;
+		byte[] initialGSBytes = gsDSDatas.getEqDS().getInitialBytes();
+
+		while (offset < data.length && !nullRow)
+		{
+			int itemBytes = gsLength > data.length - offset ? data.length - offset : gsLength;
+			byte[] gsBytes = new byte[itemBytes];
+
+			System.arraycopy(data, offset, gsBytes, 0, itemBytes);
+
+			// If the array is all zeros, then we're past the data:
+			boolean allNull = true;
+			for (byte gsByte : gsBytes)
+			{
+				if (gsByte != 0)
+				{
+					allNull = false;
+					break;
+				}
+			}
+
+			// If the array is all zeros, then we're past the data:
+			boolean allSpace = true;
+			for (byte gsByte : gsBytes)
+			{
+				if (gsByte != 64)
+				{
+					allSpace = false;
+					break;
+				}
+			}
+
+			if (allNull || allSpace)
+			{
+				nullRow = true;
+			}
+			else
+			{
+				// Ensure that the packed fields in the GS header fields are
+				// not blanks
+				for (int hack = 0; hack < 16; hack++)
+				{
+					gsBytes[hack] = initialGSBytes[hack];
+				}
+
+				// Add this row:
+				gsDSDatas.addRow();
+				gsDSDatas.setBytes(gsBytes);
+				offset += gsLength;
+				rows++;
+			}
+		}
+	}
+
+	/**
+	 * Note that this method is obviously used (amongst other things) to get the byte[] to send to X56HMR when calling the Load API
+	 * in retrieve mode. It should be noted that X56HMR will limit the returned buffer to the size supplied. Therefore, when
+	 * creating the byte array, the maximum possible size of the GZ and maximum number of GS records must be used. I.E. we can't
+	 * just send a buffer sized to the GZ record.
+	 */
+	@Override
+	public byte[] getBytes()
+	{
+		// Calculate the length of the byte array to create:
+		int length;
+
+		// Start with the length of the GZ record (or the offset)
+		// TODO: Include check against max rows?
+		length = getGzBytes().length > gsOffset ? getGzBytes().length : gsOffset;
+		length += maxItems * gsDSDatas.rowSize();
+
+		// special thing for CP
+		if (length < getBytePositionCP() && getByteCP() != 0x20)
+		{
+			length = getBytePositionCP();
+		}
+
+		// create the byte array with the desired length
+		byte[] targetByte = new byte[length];
+
+		// GZ
+		int index = getGzBytes().length;
+		System.arraycopy(getGzBytes(), 0, targetByte, 0, index);
+
+		// If there are any rows, then include them:
+		if (gsDSDatas.rows() > 0)
+		{
+			// First, pad with blanks up to the start of the repeating data
+			int repeatOffset = gsOffset > 0 ? gsOffset : getGzDSData().getEqDS().getRecordByteLength();
+			for (; index < repeatOffset; index++)
+			{
+				targetByte[index] = 0x40;
+			}
+
+			// Now add on the repeating rows:
+			gsDSDatas.moveFirst();
+			while (gsDSDatas.next())
+			{
+				// String image = gsDSDatas.getFieldValue("GSIMG").trim();
+				byte[] row = gsDSDatas.getBytes();
+				System.arraycopy(row, 0, targetByte, index, row.length);
+				index += gsDSDatas.rowSize();
+			}
+		}
+		// TODO: Should the buffer be set to non-zero up to the CP position?
+		// Some API programs look at position 4000/9999, so set if it should be
+		if (getByteCP() != 0x20)
+		{
+			targetByte[getBytePositionCP() - 1] = getByteCP();
+		}
+
+		// Return the DSAIM bytes
+		return targetByte;
+	}
+
+	@Override
+	public void setGzBytes(byte[] bytes)
+	{
+		setBytes(bytes);
+	}
+	/**
+	 * Return the String representation
+	 * 
+	 * @return the String representation
+	 */
+	@Override
+	public String toString()
+	{
+		StringBuffer serialisation = new StringBuffer(getGzDSData().toString());
+		serialisation.append(gsDSDatas.toString());
+		return serialisation.toString();
+	}
+	/**
+	 * Implementation of the IListTransaction.moveFirst
+	 * 
+	 * @equation.external
+	 */
+	public void moveFirst()
+	{
+		gsDSDatas.moveFirst();
+	}
+
+	/**
+	 * Clears all repeating (GS) records
+	 * 
+	 * @equation.external
+	 */
+	public void clearList()
+	{
+		gsDSDatas.clear();
+	}
+	/**
+	 * Add a GS record
+	 * 
+	 * @return
+	 * @equation.external
+	 */
+	public int addRow()
+	{
+		gsDSDatas.addRow();
+		gsDSDatas.setBytes(gsDSDatas.getEqDS().getInitialBytes());
+		return gsDSDatas.rows();
+	}
+
+	@Override
+	/*
+	 * * Return the value of the GZ/GS field
+	 * 
+	 * @equation.external
+	 */
+	public void setFieldValue(String fieldName, String fieldValue)
+	{
+		// We need to determine whether this is repeating
+		if (gsDSDatas.eqDS.containsField(fieldName))
+		{
+			gsDSDatas.setFieldValue(fieldName, fieldValue);
+		}
+		else
+		{
+			// Base implementation should set the GZ
+			super.setFieldValue(fieldName, fieldValue);
+		}
+	}
+
+	/**
+	 * Return the value of the GZ/GS field
+	 * 
+	 * @equation.external
+	 */
+	@Override
+	public String getFieldValue(String fieldName)
+	{
+		// We need to determine whether this is repeating
+		if (gsDSDatas.eqDS.containsField(fieldName))
+		{
+			return gsDSDatas.getFieldValue(fieldName);
+		}
+		else
+		{
+			// Get GZ value from base implementation
+			return super.getFieldValue(fieldName);
+		}
+	}
+
+	/**
+	 * @param row
+	 * 
+	 * @return boolean indicating success
+	 * @equation.external
+	 */
+	public boolean moveToRow(int row)
+	{
+		return gsDSDatas.moveToRow(row);
+	}
+
+	/**
+	 * Set whether the all the records have been retrieved or not. There will be scenarios where this is FALSE when trying to
+	 * retrieve only the first n records to prevent memory error
+	 * 
+	 * @param listComplete
+	 *            - true if all records have been retrieved
+	 */
+	public void setComplete(boolean complete)
+	{
+		this.complete = complete;
+	}
+
+	/**
+	 * Determines whether all the records have been retrieved. There will be scenarios where this is FALSE when trying to retrieve
+	 * only the first n records to prevent memory error
+	 * 
+	 * @return true if all records have been retrieved.
+	 * @equation.external
+	 */
+	public boolean isComplete()
+	{
+		return complete;
+	}
+
+	/**
+	 * Return maximum record length
+	 * 
+	 * @return the maximum record length
+	 */
+	public int getRecordLength()
+	{
+		return gsDSDatas.getBytes().length;
+	}
+
+	/**
+	 * Return the number of records
+	 * 
+	 * @return the number of records
+	 * @equation.external
+	 */
+	public int getRecordCount()
+	{
+		return gsDSDatas.rows();
+	}
+
+}

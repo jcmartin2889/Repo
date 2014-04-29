@@ -1,0 +1,298 @@
+package com.misys.equation.function.adaptor;
+
+import java.lang.reflect.Constructor;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.dao.beans.GAZRecordDataModel;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.internal.eapi.core.EQRuntimeException;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.FunctionClassLoader;
+import com.misys.equation.function.beans.DisplayAttributes;
+import com.misys.equation.function.el.ELRuntime;
+
+/**
+ * This class manages the runtime interaction with the user exit code for DisplayAttributes
+ * <p>
+ * The class encapsulates the visible and protected state checking, and will call the appropriate user exit class method
+ * implementation if appropriate.
+ */
+public class AttributesAdaptor extends Adaptor
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: AttributesAdaptor.java 10420 2011-02-03 12:22:26Z MACDONP1 $";
+
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(AttributesAdaptor.class);
+
+	private ILayoutAdaptor layoutAdaptorImpl;
+	private Class<IAttributesAdaptor> attributesAdaptorClass;
+	private IAttributesAdaptor attributesAdaptorImpl;
+
+	/**
+	 * Construct an Attributes Adaptor
+	 * 
+	 * @param session
+	 *            - the Equation standard session
+	 * @param classLoader
+	 *            - the Function class loader
+	 * @param layoutAdaptorImpl
+	 *            - an instance of the Equation service
+	 * @param option
+	 *            id - the option id of the Equation service
+	 * @param fieldId
+	 *            - the field name
+	 * @param layoutAdaptor
+	 *            - the layout adaptor
+	 */
+	@SuppressWarnings("unchecked")
+	public AttributesAdaptor(EquationStandardSession session, FunctionClassLoader classLoader, ILayoutAdaptor layoutAdaptorImpl,
+					String optionId, String fieldId, LayoutAdaptor layoutAdaptor) throws EQException
+	{
+		this.userData = null;
+		this.layoutAdaptorImpl = layoutAdaptorImpl;
+
+		if (layoutAdaptorImpl != null)
+		{
+			this.attributesAdaptorClass = layoutAdaptor.getClass(session, classLoader, optionId, fieldId, "",
+							GAZRecordDataModel.TYP_ATTRIBUTES);
+		}
+
+		if (this.attributesAdaptorClass != null)
+		{
+			this.attributesAdaptorImpl = getInstance(layoutAdaptorImpl, attributesAdaptorClass);
+		}
+	}
+
+	/**
+	 * Return the function adaptor implementation
+	 * 
+	 * @return the function adaptor implementation
+	 */
+	public ILayoutAdaptor getLayoutAdaptorImpl()
+	{
+		return layoutAdaptorImpl;
+	}
+
+	/**
+	 * Return the field adaptor class
+	 * 
+	 * @return the field adaptor class
+	 */
+	public Class<IAttributesAdaptor> getFieldAdaptorClass()
+	{
+		return attributesAdaptorClass;
+	}
+
+	/**
+	 * Return the attributes adaptor implementation
+	 * 
+	 * @return the attributes adaptor implementation
+	 */
+	public IAttributesAdaptor getAttributesAdaptorImpl()
+	{
+		return attributesAdaptorImpl;
+	}
+
+	/**
+	 * Return an instance of the specified inner class of an outer class
+	 * 
+	 * @param layoutAdaptor
+	 *            - the outer class instance
+	 * @param innerClass
+	 *            - the class definition of the inner class
+	 * 
+	 * @return an instance of the inner class
+	 */
+	private IAttributesAdaptor getInstance(ILayoutAdaptor layoutAdaptor, Class<IAttributesAdaptor> innerClass)
+	{
+		try
+		{
+			if (LOG.isDebugEnabled())
+			{
+				LOG.debug("getInstance - creating a new instance of inner class [" + innerClass.getName() + "]");
+			}
+			Constructor<IAttributesAdaptor> constructor = innerClass.getConstructor(layoutAdaptor.getClass());
+			IAttributesAdaptor instance = constructor.newInstance(layoutAdaptor);
+			return instance;
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Determine whether the field is visible or not
+	 * 
+	 * @param attributes
+	 *            - DisplayAttributes for the field. These specify whether the field is definitely visible or not, or whether this
+	 *            should be determined by calling the isVisible method on the Java user exit
+	 * 
+	 * @return true if visible
+	 */
+	public boolean isVisible(DisplayAttributes attributes)
+	{
+		if (DisplayAttributes.VISIBLE_NO.equals(attributes.getVisible()))
+		{
+			LOG.debug("isVisible for DisplayAttributes [" + attributes.getId() + "] returning false (NO)");
+			return false;
+		}
+		else if (DisplayAttributes.VISIBLE_YES.equals(attributes.getVisible()))
+		{
+			LOG.debug("isVisible for DisplayAttributes [" + attributes.getId() + "] returning true (YES)");
+			return true;
+		}
+		else if (DisplayAttributes.VISIBLE_SCRIPT.equals(attributes.getVisible()))
+		{
+			boolean scriptResult = ELRuntime.runBooleanScript(attributes.getVisibleExpression(), functionData, attributes.getId(),
+							"visible", true, ELRuntime.REALTYPE_VALUE);
+			LOG.debug("isVisible for DisplayAttributes [" + attributes.getId() + "] returning returning [" + scriptResult
+							+ "] (SCRIPT)");
+			return scriptResult;
+		}
+		else if (DisplayAttributes.VISIBLE_CODE.equals(attributes.getVisible()))
+		{
+			if (attributesAdaptorImpl == null)
+			{
+				LOG.error("isVisible for DisplayAttributes [" + attributes.getId()
+								+ "] returning false(because CODE class not loaded)");
+				return false;
+			}
+			else
+			{
+				boolean codeResult = attributesAdaptorImpl.isVisible(userData);
+				LOG.debug("isVisible for DisplayAttributes [" + attributes.getId() + "] returning [" + codeResult + "] (SCRIPT)");
+				return codeResult;
+			}
+		}
+		else
+		{
+			throw new EQRuntimeException("DisplayAttributes [" + attributes.getId() + "] visibleStatus contains invalid value ["
+							+ attributes.getVisible() + "]");
+		}
+	}
+
+	/**
+	 * Determine whether the field is protected or not
+	 * 
+	 * @param attributes
+	 *            - DisplayAttributes for the field. These specify whether the field is definitely protected or not, or whether this
+	 *            should be determined by calling the isProtected method on the Java user exit
+	 * 
+	 * @return true if protected
+	 */
+	public boolean isProtected(DisplayAttributes attributes)
+	{
+		if (DisplayAttributes.PROTECTED_NO.equals(attributes.getProtected()))
+		{
+			LOG.debug("isProtected for DisplayAttributes [" + attributes.getId() + "] returning false (NO)");
+			return false;
+		}
+		else if (DisplayAttributes.PROTECTED_YES.equals(attributes.getProtected()))
+		{
+			LOG.debug("isProtected for DisplayAttributes [" + attributes.getId() + "] returning true (YES)");
+			return true;
+		}
+		else if (DisplayAttributes.PROTECTED_SCRIPT.equals(attributes.getProtected()))
+		{
+			boolean scriptResult = ELRuntime.runBooleanScript(attributes.getProtectedExpression(), functionData,
+							attributes.getId(), "protected", false, ELRuntime.REALTYPE_VALUE);
+			LOG.debug("isProtected for DisplayAttributes [" + attributes.getId() + "] returning returning [" + scriptResult
+							+ "] (SCRIPT)");
+			return scriptResult;
+		}
+		else if (DisplayAttributes.PROTECTED_CODE.equals(attributes.getProtected()))
+		{
+			if (attributesAdaptorImpl == null)
+			{
+				LOG.error("isProtected for DisplayAttributes [" + attributes.getId()
+								+ "] returning false(because CODE class not loaded)");
+				return false;
+			}
+			else
+			{
+				boolean codeResult = attributesAdaptorImpl.isProtected(userData);
+				LOG.debug("isProtected for DisplayAttributes [" + attributes.getId() + "] returning [" + codeResult + "] (SCRIPT)");
+				return codeResult;
+			}
+		}
+		else
+		{
+			throw new EQRuntimeException("DisplayAttributes [" + attributes.getId() + "] protected contains invalid value ["
+							+ attributes.getProtected() + "]");
+		}
+	}
+
+	/**
+	 * Call the user exit procedure to determine the editing parameter
+	 * 
+	 * @param fieldName
+	 *            - the field name to edit
+	 * 
+	 * @return the currency mnemonic
+	 */
+	public String getEditingParameter()
+	{
+		if (attributesAdaptorImpl != null)
+		{
+			return attributesAdaptorImpl.getEditingParameter(userData);
+		}
+		else
+		{
+			return "";
+		}
+	}
+
+	/**
+	 * Determine whether the field is visible or not
+	 * 
+	 * @param attributes
+	 *            - DisplayAttributes for the field. These specify whether the field is definitely visible or not, or whether this
+	 *            should be determined by calling the isVisible method on the Java user exit
+	 * 
+	 * @return true if visible
+	 */
+	public boolean isInGridVisible(DisplayAttributes attributes)
+	{
+		if (DisplayAttributes.VISIBLE_NO.equals(attributes.getInGridVisible()))
+		{
+			LOG.debug("isVisible for DisplayAttributes [" + attributes.getId() + "] returning false (NO)");
+			return false;
+		}
+		else if (DisplayAttributes.VISIBLE_YES.equals(attributes.getInGridVisible()))
+		{
+			LOG.debug("isVisible for DisplayAttributes [" + attributes.getId() + "] returning true (YES)");
+			return true;
+		}
+		else if (DisplayAttributes.VISIBLE_SCRIPT.equals(attributes.getInGridVisible()))
+		{
+			boolean scriptResult = ELRuntime.runBooleanScript(attributes.getInGridVisibleExpression(), functionData,
+							attributes.getId(), "visible", true, ELRuntime.REALTYPE_VALUE);
+			LOG.debug("isVisible for DisplayAttributes [" + attributes.getId() + "] returning returning [" + scriptResult
+							+ "] (SCRIPT)");
+			return scriptResult;
+		}
+		else if (DisplayAttributes.VISIBLE_CODE.equals(attributes.getInGridVisible()))
+		{
+			if (attributesAdaptorImpl == null)
+			{
+				LOG.error("isVisible for DisplayAttributes [" + attributes.getId()
+								+ "] returning false(because CODE class not loaded)");
+				return false;
+			}
+			else
+			{
+				boolean codeResult = attributesAdaptorImpl.isInGridVisible(userData);
+				LOG.debug("isVisible for DisplayAttributes [" + attributes.getId() + "] returning [" + codeResult + "] (SCRIPT)");
+				return codeResult;
+			}
+		}
+		else
+		{
+			throw new EQRuntimeException("DisplayAttributes [" + attributes.getId() + "] visibleStatus contains invalid value ["
+							+ attributes.getInGridVisible() + "]");
+		}
+	}
+
+}

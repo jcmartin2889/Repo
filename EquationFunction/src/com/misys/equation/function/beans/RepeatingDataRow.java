@@ -1,0 +1,77 @@
+package com.misys.equation.function.beans;
+
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Set;
+
+public class RepeatingDataRow
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: RepeatingDataRow.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	Map<String, FieldValues> fieldValues;
+
+	/**
+	 * Construct an empty row
+	 */
+	public RepeatingDataRow()
+	{
+		this.fieldValues = new Hashtable<String, FieldValues>();
+	}
+
+	/**
+	 * Return all the field values
+	 * 
+	 * @return all the field values
+	 */
+	public Map<String, FieldValues> getFieldValues()
+	{
+		return fieldValues;
+	}
+
+	/**
+	 * Set all the field values
+	 * 
+	 * @param fieldValues
+	 *            - all the field values
+	 */
+	public void setFieldValues(Map<String, FieldValues> fieldValues)
+	{
+		this.fieldValues = fieldValues;
+	}
+
+	/**
+	 * Add a field name and field value
+	 * 
+	 * @param fieldName
+	 *            - the field name
+	 * @param fieldValue
+	 *            - the field value
+	 */
+	public void addFieldValue(String fieldName, FieldValues fieldValue)
+	{
+		this.fieldValues.put(fieldName, fieldValue);
+	}
+
+	/**
+	 * Return a field value
+	 * 
+	 * @param fieldName
+	 *            - the field name
+	 * @return the field value of the field name
+	 */
+	public FieldValues rtvFieldValue(String fieldName)
+	{
+		return fieldValues.get(fieldName);
+	}
+
+	/**
+	 * Return the set of field name
+	 * 
+	 * @return the set of field name
+	 */
+	public Set<String> rtvFieldSet()
+	{
+		return fieldValues.keySet();
+	}
+
+}

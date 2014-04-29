@@ -1,0 +1,465 @@
+package com.misys.equation.common.test;
+
+import com.misys.equation.common.access.EquationData;
+import com.misys.equation.common.access.EquationDataList;
+import com.misys.equation.common.access.EquationDataStructure;
+import com.misys.equation.common.access.EquationFieldDefinition;
+import com.misys.equation.common.access.EquationPVData;
+import com.misys.equation.common.access.EquationPVDecodeMetaData;
+import com.misys.equation.common.access.EquationPVFieldMetaData;
+import com.misys.equation.common.access.EquationPVMetaData;
+import com.misys.equation.common.access.EquationStandardListValidation;
+import com.misys.equation.common.datastructure.EqDS_DSPFFD;
+import com.misys.equation.common.utilities.EqBeanFactory;
+import com.misys.equation.common.utilities.FileErrorLog;
+
+/**
+ * Test cases for PVs
+ */
+abstract public class EquationTestCasePVMetaData extends EquationTestCase
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EquationTestCasePVMetaData.java 12379 2011-12-05 14:50:17Z williae1 $";
+	protected String pvName;
+	protected String validCCN;
+	protected String invalidCCN;
+	protected String decode;
+	protected boolean largeCCN;
+	private FileErrorLog fileErrorLog = FileErrorLog.getInstance();
+
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+
+		String className = this.getClass().getSimpleName();
+		int _position = className.indexOf('_');
+		if (_position == -1)
+		{
+			pvName = className;
+		}
+		else
+		{
+			pvName = className.substring(0, _position);
+		}
+		System.out.print("Testing: " + pvName);
+
+		decode = "";
+		largeCCN = false;
+	}
+
+	public void test00100PV_Metadata() throws Exception
+	{
+		System.out.println("");
+		System.out.println("test00100PV_Metadata");
+
+		EquationPVMetaData pvmetadata = unit.getPVMetaData(pvName);
+		EqBeanFactory eqBeanFactory = EqBeanFactory.getEqBeanFactory();
+		String xml = eqBeanFactory.serialiseBeanAsXML(pvmetadata);
+		System.out.println(xml);
+		// Test metadata and bean serialisation
+		System.out.println(pvmetadata);
+		assertEquals(false, (pvmetadata == null || xml.equals("")));
+	}
+
+	/**
+	 * Test: retrieve mode<br>
+	 * Expected result: Pass<br>
+	 * 
+	 * @throws Exception
+	 */
+	public void test00200PV_GetDataCall() throws Exception
+	{
+		System.out.println("");
+		System.out.println("test00200PV_GetDataList");
+
+		EquationPVMetaData pvmetadata = unit.getPVMetaData(pvName);
+
+		EquationPVData equationPVData = new EquationPVData(pvmetadata, session.getCcsid());
+		equationPVData.setDataDsccn(validCCN);
+
+		EquationStandardListValidation listValidation = new EquationStandardListValidation(decode, pvName, equationPVData, "N",
+						"N", "", "", 1, 10);
+		session.executeListValidate(user, listValidation);
+		System.out.println(listValidation);
+
+		assertEquals(listValidation.getDataOutputList().size() > 0, true);
+
+	}
+	/**
+	 * Test: check PV Meta Data is correct<br>
+	 * Expected result: Pass<br>
+	 * 
+	 * @throws Exception
+	 */
+	public void test002A00PV_CheckMetaData() throws Exception
+	{
+		System.out.println("");
+		System.out.println("test002A00PV_CheckMetaData");
+
+		EquationPVMetaData pvmetadata = unit.getPVMetaData(pvName);
+
+		boolean results = true;
+		String message = null;
+
+		if (pvmetadata.getPvDvals().size() > 0)
+		{
+			message = pvName + " DVAL ERROR";
+			System.err.println(message);
+			fileErrorLog.appendMessage(pvName, message);
+			results = false;
+		}
+		if (pvmetadata.getDecodeMetaData(decode).getpFile().equals(""))
+		{
+			message = pvName + " PF ERROR";
+			System.err.println(message);
+			fileErrorLog.appendMessage(pvName, message);
+			results = false;
+		}
+		if (pvmetadata.getDecodeMetaData(decode).getKeyFields().size() == 0)
+		{
+			message = pvName + " KEYS ERROR";
+			System.err.println(message);
+			fileErrorLog.appendMessage(pvName, message);
+			results = false;
+		}
+		if (dsccnSize(pvmetadata) > 127 && dsccnSize(pvmetadata) < 256)
+		{
+			message = pvName + " Greater than 127 - Ensure DSCCN_A is used";
+			System.err.println(message);
+			fileErrorLog.appendMessage(pvName, message);
+			// results = false;
+		}
+		if (dsccnSize(pvmetadata) > 255)
+		{
+			message = pvName + " Greater than 255 - Ensure DSCCN_B is used";
+			System.err.println(message);
+			// results = false;
+		}
+		if (dsccnSize(pvmetadata) > 511)
+		{
+			message = pvName + " Greater than 255 - Ensure DSCCN_B is used";
+			System.err.println(message);
+			results = false;
+		}
+
+		EquationPVFieldMetaData pvField;
+		String dbName = null;
+		EquationFieldDefinition dbField = null;
+		String dbFieldType = null;
+		int dbFieldLength = 0;
+
+		// Check columns have correct field names
+		String hdrName = null;
+		for (int i = 0; i < pvmetadata.getHdrNames().size(); i++)
+		{
+			hdrName = pvmetadata.getHdrNames().get(i);
+			if (!pvmetadata.rtvFieldIds().contains(hdrName))
+			{
+				message = "Column - " + hdrName + " is not a PV field";
+				System.err.println(message);
+				fileErrorLog.appendMessage(pvName, message);
+				results = false;
+			}
+		}
+		if (pvmetadata.getDecodeMetaData(decode).getpFile().contains("9"))
+
+		{
+			message = "File - " + pvmetadata.getDecodeMetaData(decode).getpFile() + " used";
+			System.err.println(message);
+			fileErrorLog.appendMessage(pvName, message);
+		}
+
+		EquationDataStructure dbFields = rtvFileFieldDescription(pvmetadata.getDecodeMetaData(decode).getpFile());
+		for (int i = 0; i < pvmetadata.rtvNumberOfFields(); i++)
+		{
+			pvField = pvmetadata.rtvFieldMetaData(i);
+			dbName = pvField.getDb();
+			if (dbName != null && !dbName.equals(""))
+			{
+				dbField = dbFields.getFieldDefinition(dbName);
+
+				if (dbField != null && !dbField.equals(""))
+				{
+					dbFieldType = dbField.getFieldDataTypeString();
+					if (dbFieldType.equals("P"))
+					{
+						dbFieldType = "S";
+					}
+					if (!pvField.getType().equals(dbFieldType) && !pvField.getType().equals("V"))
+					{
+						message = pvField.getId() + " - " + pvField.getDescription() + " - type - " + pvField.getType()
+										+ " - does not match DB.  Remove mapping or change PV Meta Data.  KEY fields must match.";
+						System.err.println(message);
+						fileErrorLog.appendMessage(pvName, message);
+						results = false;
+					}
+					dbFieldLength = dbField.getFieldLength();
+					if (dbFieldLength != pvField.getLength())
+					{
+						message = pvField.getId() + " - " + pvField.getDescription() + " - length - " + pvField.getLength()
+										+ " - does not match DB.";
+						System.err.println(message);
+						fileErrorLog.appendMessage(pvName, message);
+						results = false;
+					}
+				}
+				else
+				{
+					message = pvField.getId() + " - " + pvField.getDescription() + " - db mapping - " + pvField.getDb()
+									+ " - does not exist.  Remove mapping or change PV Meta Data.  KEY fields must match.";
+					System.err.println(message);
+					fileErrorLog.appendMessage(pvName, message);
+					results = false;
+				}
+
+			}
+
+			if (pvField.getUsage().equals("O") && pvField.getType().equals("A")
+							&& !pvField.getDescription().toUpperCase().contains("DESC"))
+			{
+				if (pvField.getDescription().toUpperCase().contains("DATE") && !pvField.getDb().equals("")
+								&& pvField.getLength() > 5)
+				{
+					message = pvField.getId() + " - " + pvField.getDescription() + " - length - " + pvField.getLength()
+									+ " - is a date and should not be mapped to DB field because of format";
+					System.err.println(message);
+					fileErrorLog.appendMessage(pvName, message);
+					results = false;
+				}
+				if (pvField.getDescription().toUpperCase().contains("AMOUNT") && !pvField.getDb().equals("")
+								&& pvField.getLength() > 5)
+				{
+					message = pvField.getId() + " - " + pvField.getDescription() + " - length - " + pvField.getLength()
+									+ " - is an amount and should not be mapped to DB field because of format";
+					System.err.println(message);
+					fileErrorLog.appendMessage(pvName, message);
+					results = false;
+				}
+				if (pvField.getDescription().toUpperCase().contains("RATE") && !pvField.getDb().equals("")
+								&& pvField.getLength() > 5)
+				{
+					message = pvField.getId() + " - " + pvField.getDescription() + " - length - " + pvField.getLength()
+									+ " - is a rate and should not be mapped to DB field because of format";
+					System.err.println(message);
+					fileErrorLog.appendMessage(pvName, message);
+					results = false;
+				}
+				if ((pvField.getDescription().toUpperCase().contains("EDITTED") || pvField.getDescription().toUpperCase().contains(
+								"EDITED"))
+								&& !pvField.getDb().equals(""))
+				{
+					message = pvField.getId() + " - " + pvField.getDescription() + " - length - " + pvField.getLength()
+									+ " - is an editted field and should not be mapped to DB field because of format";
+					System.err.println(message);
+					fileErrorLog.appendMessage(pvName, message);
+					results = false;
+				}
+				// if ((pvField.getDesc().toUpperCase().contains(" NO ") || pvField.getDesc().toUpperCase().contains(" NO. ") ||
+				// pvField
+				// .getDesc().toUpperCase().contains("NUMBER"))
+				// && !pvField.getDb().equals(""))
+				// {
+				// System.err.println(pvField.getName() + " - " + pvField.getDesc() + " - length - " + pvField.getLength()
+				// + " - is an number and should not be mapped to DB field because of format");
+				// results = false;
+				// }
+				// if ((pvField.getDesc().toUpperCase().contains("VALUE")) && !pvField.getDb().equals(""))
+				// {
+				// System.err.println(pvField.getName() + " - " + pvField.getDesc() + " - length - " + pvField.getLength()
+				// + " - is an numeric field and should not be mapped to DB field because of format");
+				// }
+			}
+		}
+		// Check decodes have matching descriptions and file data
+		String usedDecodes = "";
+		for (int i = 0; i < pvmetadata.rtvNumberOfDecodes(); i++)
+		{
+			EquationPVDecodeMetaData decodeData = pvmetadata.getDecodeMetaData(i);
+			String decode = decodeData.getDecode();
+			if (!decode.equals("") && usedDecodes.contains(decode))
+			{
+				message = decode + " - is duplicated";
+				System.err.println(message);
+				fileErrorLog.appendMessage(pvName, message);
+				results = false;
+			}
+			if (decodeData.getDescription().toUpperCase().contains("TEST"))
+			{
+				message = decode + " " + decodeData.getDescription() + " - description may be invalid";
+				System.err.println(message);
+				fileErrorLog.appendMessage(pvName, message);
+				results = false;
+			}
+			usedDecodes = usedDecodes + decodeData.getDecode();
+			if (decodeData.getDescription() == null || decodeData.getDescription().equals(""))
+			{
+				message = decodeData.getDecode() + " - decode has no description";
+				System.err.println(message);
+				fileErrorLog.appendMessage(pvName, message);
+				results = false;
+			}
+			if (decodeData.getpFile() == null || decodeData.getpFile().equals(""))
+			{
+				message = decodeData.getDecode() + " - decode has no physical file";
+				System.err.println(message);
+				fileErrorLog.appendMessage(pvName, message);
+				results = false;
+			}
+			if (decodeData.getKeyFields() == null || decodeData.getKeyFields().equals(""))
+			{
+				message = decodeData.getDecode() + " - decode has no key fields";
+				System.err.println(message);
+				fileErrorLog.appendMessage(pvName, message);
+				results = false;
+			}
+			if (decodeData.getZpParam() == null || decodeData.getZpParam().equals(""))
+			{
+				message = decodeData.getDecode() + " - decode has no ZP parameter";
+				System.err.println(message);
+				fileErrorLog.appendMessage(pvName, message);
+				results = false;
+			}
+		}
+
+		// If last PV, then save the results.
+		// if (pvName.equals("ZZR05R"))
+		// {
+		// fileErrorLog.persistErrorLogFile("pvErrors/AllErrors" + ".txt");
+		// }
+		assertEquals(true, results);
+
+	}
+	/**
+	 * Test: list mode. Force issue of SQL with filtering of all fields.<br>
+	 * Expected result: Pass<br>
+	 * 
+	 * @throws Exception
+	 */
+	public void test002B00PV_List() throws Exception
+	{
+		// Do this test to see if the SQL statement for prompting is valid
+		System.out.println("");
+		System.out.println("test002BPV_List");
+
+		EquationPVMetaData pvmetadata = unit.getPVMetaData(pvName);
+		EquationPVData equationPVData = new EquationPVData(pvmetadata, session.getCcsid());
+		StringBuffer longCCN = new StringBuffer(512);
+		while (longCCN.length() < 512)
+		{
+			longCCN.append('1');
+		}
+		equationPVData.setDataDsccn(longCCN.toString());
+
+		EquationDataList listCheck = new EquationDataList();
+		listCheck.initialise(user, pvName, " ", equationPVData, "", 1, 10);
+
+		assertEquals(true, true);
+
+	}
+	/**
+	 * Test: validate mode: existing record<br>
+	 * Expected result: Fail<br>
+	 * 
+	 * @throws Exception
+	 */
+	public void test00300PV_ValidCCNNotNew() throws Exception
+	{
+		System.out.println("");
+		System.out.println("test00300PV_ValidateCall");
+
+		EquationData data = getEQData(pvName, validCCN, decode, "Y");
+		String error = data.getErrorMessage().trim();
+		System.out.println(error);
+		// An error should be returned as the key should not be new
+		assertEquals(false, error.equals(""));
+	}
+	/**
+	 * Test: validate mode: existing record<br>
+	 * Expected result: Fail<br>
+	 * 
+	 * @throws Exception
+	 */
+	public void test00301PV_ValidCCNValid() throws Exception
+	{
+		System.out.println("");
+		System.out.println("test00300PV_ValidateCall");
+
+		EquationData data = getEQData(pvName, validCCN, decode, "N");
+		String error = data.getErrorMessage().trim();
+		System.out.println(error);
+		// An error should not be generated as the key is not new and the key is valid
+		assertEquals(true, error.equals(""));
+	}
+	/**
+	 * Test: validate mode: Non-existing record<br>
+	 * Expected result: Pass<br>
+	 * 
+	 * @throws Exception
+	 */
+	public void test00400PV_InvalidCCN() throws Exception
+	{
+		System.out.println("");
+		System.out.println("test00400PV_ValidateNonExistingCall");
+
+		EquationData data = getEQData(pvName, invalidCCN, decode, "N");
+		String error = data.getErrorMessage().trim();
+		System.out.println(error);
+		// An error should be generated as the key should be new AND the data not valid.
+		// No distinction was made about what the test was doing - testing existence or checking values to add were ok.
+		assertEquals(false, error.equals(""));
+	}
+	/**
+	 * Test: validate mode: existing record. Save DSCCN results to file.<br>
+	 * Expected result: Fail<br>
+	 * 
+	 * @throws Exception
+	 */
+	public void xtest00500PV_ValidateCallForDSCCN() throws Exception
+	{
+		System.out.println("");
+		System.out.println("test00500PV_ValidateCallForDSCCN");
+
+		EquationData data = getEQData(pvName, validCCN, decode, "N");
+		String error = data.getErrorMessage().trim();
+		System.out.println(error);
+		assertEquals(true, error.equals(""));
+		// EquationTestResultsHelper.add(pvName, data);
+		EquationTestResultsHelper.saveResults(pvName, data);
+	}
+	/**
+	 * Parse the data in DSCCN format into the Equation Data Structure Data
+	 * 
+	 * @param dsccn
+	 *            - the data in DSCCN format
+	 */
+	protected int dsccnSize(EquationPVMetaData pvMetaData)
+	{
+		int lastPosition = 0;
+		int fieldLastPosition = 0;
+		EquationPVFieldMetaData pvField;
+		for (int i = 0; i < pvMetaData.rtvNumberOfFields(); i++)
+		{
+			pvField = pvMetaData.rtvFieldMetaData(i);
+			fieldLastPosition = pvField.getIndex() + pvField.getLength();
+			if (fieldLastPosition > lastPosition)
+			{
+				lastPosition = fieldLastPosition;
+			}
+
+		}
+		return lastPosition;
+	}
+
+	/**
+	 * Return the Equation Data Structure of the field information for the specified file
+	 * 
+	 * @return the Equation Data Structure of the field information for the specified file
+	 * 
+	 */
+	protected EquationDataStructure rtvFileFieldDescription(String file)
+	{
+		EquationDataStructure eqDs = new EqDS_DSPFFD(file, session);
+		return eqDs;
+	}
+}

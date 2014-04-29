@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<ReleaseBundle application="[APPLICATION]">
+
+	<component group="version" seqNo="1" bundlepath="/bin/version"
+		signRequired="false" destination="EQ_VERSION">
+		<resourceMapping>
+			<scmpath classifier="file" name="version"
+				resourceloc="[SCM_SOURCE_ROOT_PROJECT]/version/version.xml"></scmpath>
+		</resourceMapping>
+	</component>
+
+	<component group="source" seqNo="2" bundlepath="/bin/artefacts_source"
+		signRequired="false" activity="filesystem" destination="EQ_ARTEFACTS_SOURCE">
+		<resourceMapping>
+			<scmpath classifier="folder" name="[SERVICES]_source"
+				resourceloc="[SCM_SOURCE_ROOT_PROJECT]/[SERVICES]"></scmpath>
+			<scmpath classifier="folder" name="[PVMICROFLOWS]_source"
+				resourceloc="[SCM_SOURCE_ROOT_PROJECT]/[PVMICROFLOWS]"></scmpath>
+		</resourceMapping>
+	</component>
+
+	<component group="database" seqNo="3" scriptType="data"
+		bundlepath="/bin/aretefacts_database" signRequired="false" activity="db"
+		destination="EQ_ARTEFACTS">
+		<resourceMapping>
+			<scmpath classifier="folder" name="[SERVICES]"
+				resourceloc=""></scmpath>
+			<scmpath classifier="folder" name="[PVMICROFLOWS]"
+				resourceloc=""></scmpath>
+		</resourceMapping>
+	</component>
+
+	<component group="misc" seqNo="4" bundlepath="/bin/misc"
+		signRequired="false" activity="filesystem" destination="EQ_FILES">
+		<resourceMapping>
+			<scmpath classifier="folder" name="src"
+				resourceloc="[SCM_SOURCE_ROOT_PROJECT]/src"></scmpath>
+			<scmpath classifier="folder" name="classes"
+				resourceloc="[SCM_SOURCE_ROOT_PROJECT]/target"></scmpath>
+			<scmpath classifier="folder" name="[EXITS]_source"
+				resourceloc="[SCM_SOURCE_ROOT_PROJECT]/[EXITS]"></scmpath>
+			<scmpath classifier="folder" name="[PROMPTS]_source"
+				resourceloc="[SCM_SOURCE_ROOT_PROJECT]/[PROMPTS]"></scmpath>
+			<scmpath classifier="folder" name="[LINKAGES]_source"
+				resourceloc="[SCM_SOURCE_ROOT_PROJECT]/[LINKAGES]"></scmpath>
+		</resourceMapping>
+	</component>
+
+	<component group="misc" seqNo="5" bundlepath="/bin/conf"
+		signRequired="false" activity="filesystem" destination="EQ_INSTALLER_PROPERTIES">
+		<resourceMapping>
+			<scmpath classifier="file"
+				resourceloc="[SCM_SOURCE_ROOT_PROJECT]/conf/[INSTALLER_PROPERTIES_NAME]"></scmpath>
+		</resourceMapping>
+	</component>
+
+	<component group="executable" seqNo="6" bundlepath="/bin/executor"
+		signRequired="false" activity="api" destination="EQ_INSTALLER">
+		<resourceMapping>
+			<scmpath classifier="file"
+				resourceloc="[SCM_SOURCE_ROOT_PROJECT]/conf/[INSTALLER_JAR_NAME]">
+				<apidetails
+					className="com.misys.equation.function.tools.ServiceBundleInstaller"
+					methodName="process" customPropertiesAvailble="true"
+					rollbackClassName=" " rollbackMethodName=" " />
+			</scmpath>
+		</resourceMapping>
+	</component>
+
+</ReleaseBundle>

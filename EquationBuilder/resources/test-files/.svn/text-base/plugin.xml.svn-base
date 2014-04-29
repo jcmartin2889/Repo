@@ -1,0 +1,637 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?><plugin>
+   <extension point="org.eclipse.ui.editors">
+      <editor class="com.misys.equation.fb.editors.EquationFunctionEditor" default="true"
+              extensions="eqf"
+              icon="icons/serviceComposer.gif"
+              id="com.misys.equation.fb.editors.EquationFunctionEditor"
+              name="Function Editor">
+      </editor>
+      <editor class="com.misys.equation.fb.editors.EquationUserExitEditor" default="true"
+              extensions="eqx"
+              icon="icons/userExit.gif"
+              id="com.misys.equation.fb.editors.EquationUserExitEditor"
+              name="User Exit Editor">
+      </editor>
+      <editor class="com.misys.equation.fb.editors.EquationLayoutEditor" default="true"
+              extensions="eql"
+              icon="icons/layout.gif"
+              id="com.misys.equation.fb.editors.EquationLayoutEditor"
+              name="Layout Editor">
+      </editor>
+      <editor class="com.misys.equation.fb.editors.EquationPromptValidateEditor"
+              default="true"
+              extensions="eqv"
+              icon="icons/promptValidate.gif"
+              id="com.misys.equation.fb.editors.EquationPromptValidateEditor"
+              name="Prompt Validate Editor">
+      </editor>
+      <editor class="com.misys.equation.fb.editors.EquationTranslationEditor" default="true"
+              extensions="eqt"
+              icon="icons/textImport.gif"
+              id="com.misys.equation.fb.editors.EquationTranslationEditor"
+              name="Translate Editor">
+      </editor>
+   </extension>
+   <extension point="org.eclipse.ui.newWizards">
+      <category id="EquationFunction" name="Equation">
+      </category>
+      <wizard category="EquationFunction"
+              class="com.misys.equation.fb.wizards.EquationProjectWizard"
+              icon="icons/project.gif"
+              id="com.misys.equation.fb.wizards.EquationProjectWizard"
+              name="Equation Project"
+              project="true">
+      </wizard>
+      <wizard category="EquationFunction"
+              class="com.misys.equation.fb.wizards.EquationFunctionWizard"
+              icon="icons/serviceComposer.gif"
+              id="com.misys.equation.fb.wizards.EquationFunctionWizard"
+              name="Equation Service">
+      </wizard>
+      <wizard category="EquationFunction"
+              class="com.misys.equation.fb.wizards.pvwizards.NewPromptValidateWizard"
+              icon="icons/promptValidate.gif"
+              id="com.misys.equation.fb.wizards.NewPromptValidateWizard"
+              name="Equation Prompt Validate">
+      </wizard> 
+      <wizard category="EquationFunction"
+              class="com.misys.equation.fb.wizards.NewLayoutWizard"
+              icon="icons/layout.gif"
+              id="com.misys.equation.fb.wizards.NewLayoutWizard"
+              name="Equation Layout">
+      </wizard>
+      <wizard category="EquationFunction"
+              class="com.misys.equation.fb.wizards.EquationUserExitWizard"
+              icon="icons/userExit.gif"
+              id="com.misys.equation.fb.wizards.EquationUserExitWizard"
+              name="Equation User Exit">
+      </wizard>
+      <wizard category="EquationFunction"
+              class="com.misys.equation.fb.wizards.pvwizards.NewPromptValidateWebWizard"
+              icon="icons/promptValidate.gif"
+              id="com.misys.equation.fb.wizards.NewPromptValidateWebWizard"
+              name="Equation Prompt Validate Microflow">  
+      </wizard> 
+      <wizard category="EquationFunction"
+              class="com.misys.equation.fb.wizards.SynchroniseServiceWizard"
+              icon="icons/serviceComposer.gif"
+              id="com.misys.equation.fb.wizards.SynchroniseServiceWizard"
+              name="Synchronise Service">  
+      </wizard> 
+   </extension>
+   
+   <extension point="org.eclipse.ui.preferencePages">
+       <page class="com.misys.equation.fb.dialogs.EquationConnectionPreferences"
+            id="com.misys.equation.fb.dialogs.EquationPreferences"
+            name="%equation.preferences.tree">
+       </page>
+       <page category="com.misys.equation.fb.dialogs.EquationPreferences"
+            class="com.misys.equation.fb.dialogs.EquationPreferencesDefaults"
+            id="com.misys.equation.fb.dialogs.EquationPreferencesDefaults"
+            name="%equation.preferences.default">
+       </page>
+        <page category="com.misys.equation.fb.dialogs.EquationPreferences"
+            class="com.misys.equation.fb.dialogs.EquationPreferencesISeriesConnection"
+            id="com.misys.equation.fb.dialogs.EquationPreferencesISeriesConnection"
+            name="%equation.preferences.iseries.connection">
+       </page>
+       <page category="com.misys.equation.fb.dialogs.EquationPreferences"
+            class="com.misys.equation.fb.dialogs.EquationPreferencesUserClass"
+            id="com.misys.equation.fb.dialogs.EquationPreferencesUserClass"
+            name="%equation.preferences.userclass">
+       </page>
+       
+ 	</extension>
+          
+	  <extension point="org.eclipse.core.contenttype.contentTypes"> 
+      <file-association content-type="org.eclipse.core.runtime.xml" file-extensions="eqf"/>
+      <file-association content-type="org.eclipse.core.runtime.xml" file-extensions="eqx"/>
+      <file-association content-type="org.eclipse.core.runtime.xml" file-extensions="eql"/>
+      <file-association content-type="org.eclipse.core.runtime.xml" file-extensions="eqv"/>
+      <file-association content-type="org.eclipse.core.runtime.xml" file-extensions="eqt"/>
+   </extension>
+
+  <extension point="org.eclipse.ui.exportWizards">
+              <category id="EquationExports" name="Equation">
+      </category>
+      <wizard category="EquationExports"
+              class="com.misys.equation.fb.wizards.ServiceExportWizard"
+              icon="icons/export.gif"
+              id="com.misys.equation.fb.wizards.ServiceExportWizard"
+              name="Equation Service Export Wizard"> 
+         <description> 
+            Exports Equation Services 
+         </description> 
+         <selection class="org.eclipse.core.resources.IResource"/> 
+      </wizard> 
+      <wizard category="EquationExports"
+              class="com.misys.equation.fb.wizards.webexport.WebExportWizard"
+              icon="icons/export.gif"
+              id="com.misys.equation.fb.wizards.WebExportWizard"
+              name="%equation.web.export.wizard"> 
+         <description>%equation.web.export.wizard.description</description> 
+         <selection class="org.eclipse.core.resources.IResource"/> 
+      </wizard> 
+   </extension> 
+
+	  <extension point="org.eclipse.wst.common.project.facet.core.facets">
+	     <project-facet id="equation.desktop.facet">
+	        <version-comparator class="com.misys.equation.fb.tools.BFEQFacetVersionComparator"/>
+	        <label>EquationDesktop</label>
+	        <description>
+	      Add all the artefacts to run the Equation Desktop.
+	    </description>
+	     </project-facet>
+	     <project-facet-version facet="equation.desktop.facet" version="1.0.6"/>
+	     <project-facet-version facet="equation.desktop.facet" version="1.0.7"/>
+	     <project-facet-version facet="equation.desktop.facet" version="1.0.8"/>
+	     <project-facet-version facet="equation.desktop.facet" version="1.0.9"/>
+	     <project-facet-version facet="equation.desktop.facet" version="1.0.10"/>
+	     <project-facet-version facet="equation.desktop.facet" version="1.0.11"/>
+	     <project-facet-version facet="equation.desktop.facet" version="1.0.12"/>
+	     <project-facet-version facet="equation.desktop.facet" version="1.1.0"/>
+	     <project-facet-version facet="equation.desktop.facet" version="1.1.1"/>
+	     <project-facet-version facet="equation.desktop.facet" version="1.1.2"/>
+	     <project-facet-version facet="equation.desktop.facet" version="1.2.0"/>
+	  
+	     <project-facet-version facet="equation.desktop.facet" version="1.2.1">
+		       <constraint>
+			         <and>
+				           <requires facet="jst.java" version="[5.0"/> 
+				           <requires facet="jst.web" version="[2.4"/>
+			         </and>
+		       </constraint>
+         <action id="equation.desktop.install" type="INSTALL" version="1.2.1">
+            <delegate class="com.misys.equation.fb.delegates.EquationDesktopFacetInstallDelegate"/>
+         </action>
+         <action id="equation.desktop.version_change" type="VERSION_CHANGE" version="1.2.1">
+            <delegate class="com.misys.equation.fb.delegates.EquationDesktopFacetVersionChangeDelegate"/>
+         </action>
+	     </project-facet-version>
+	     
+	     
+	  </extension>
+	  <extension point="org.eclipse.wst.common.project.facet.core.runtimes">
+		    <supported>
+			      <facet id="equation.desktop.facet" version="1.2.1"/>
+		       <runtime-component any="true"/>
+		 	     <runtime-component id="com.ibm.ws.ast.st.runtime" version="[6.0"/> 
+		 	     <runtime-component id="org.eclipse.jst.server.tomcat" version="[6.0"/> 
+		 	     <runtime-component id="org.eclipse.jst.server.generic.runtime.jboss" version="[4.0"/>
+		 	     <runtime-component id="org.eclipse.jst.server.generic.runtime.jboss" version="[4.2"/>		 	
+		    </supported>
+	  </extension>   		
+	  <extension point="org.eclipse.wst.common.project.facet.ui.images">
+	     <image facet="equation.desktop.facet" path="icons/import.gif"/>
+	  </extension>
+  <extension id="equationBuilder" name="Equation Project Builder"
+              point="org.eclipse.core.resources.builders">
+     <builder hasNature="true">
+        <run class="com.misys.equation.fb.builder.EquationBuilder">
+        </run>
+     </builder>
+  </extension>
+
+  <!-- A Nature to indicate that a project is an Equation (EQ4) project -->
+  <extension id="equationNature" name="Equation Project Nature"
+              point="org.eclipse.core.resources.natures">
+     <runtime>
+        <run class="com.misys.equation.fb.builder.EquationNature">
+        </run>
+     </runtime>
+     <builder id="com.misys.equation.EquationFunctionWizard.equationBuilder">
+     </builder>
+  </extension>
+  <extension id="equationProblem" name="Equation EQ4 Problem"
+              point="org.eclipse.core.resources.markers">
+     <super type="org.eclipse.core.resources.problemmarker">
+     </super>
+     <persistent value="true">
+     </persistent>
+  </extension>
+  <extension point="org.eclipse.ui.decorators">
+		    <decorator adaptable="true" icon="icons/projectDecorator.gif"
+                 id="com.misys.equation.EquationFunctionWizard.projectDecorator"
+                 label="%decorator.label"
+                 lightweight="true"
+                 location="BOTTOM_RIGHT"
+                 state="false">
+			      <description>%decorator.description</description>
+			      <enablement>
+		          <objectState name="nature" value="com.misys.equation.EquationFunctionWizard.equationNature"/>
+			      </enablement>
+		    </decorator>
+    	<decorator adaptable="true" class="com.misys.equation.decorators.EquationFolderDecorator"
+                 id="com.misys.equation.decorators.com.misys.equation.decorators.EquationFolderDecorator"
+                 label="%folder.decorator.label"
+                 lightweight="true"
+                 state="true">
+			      <description>%folder.decorator.description</description>
+            <enablement>
+        	   <objectClass name="org.eclipse.core.resources.IFolder"/>
+			      </enablement>
+  		  </decorator>
+  </extension>
+
+	  <!-- Start of command/handler and menu definitions for the Equation context sub-menu -->
+	<extension point="org.eclipse.core.expressions.definitions">
+		<!-- This definition is a common expression that indicates when most 
+			menu options can be visible. I.E. If the current selection is 
+			resource in a project which has the Equation Nature installed -->
+		<definition id="com.misys.equation.EquationFunctionWizard.inEquationProject">
+		 	     <and>
+		 		       <count value="1"/>
+				        <with variable="selection">
+					          <iterate>
+						            <adapt type="org.eclipse.core.resources.IResource">
+							              <test property="org.eclipse.core.resources.projectNature"
+                           value="com.misys.equation.EquationFunctionWizard.equationNature"/>
+						            </adapt>
+					          </iterate>
+				        </with>
+			      </and>
+		    </definition>
+		    <definition id="com.misys.equation.EquationFunctionWizard.inEquationDesktop">
+		 	     <and>
+		 		       <count value="1"/>
+				        <with variable="selection">
+					          <iterate>
+						            <adapt type="org.eclipse.core.resources.IResource">
+							              <test property="org.eclipse.wst.common.project.facet.core.projectFacet"
+                           value="equation.desktop.facet"/>
+						            </adapt>
+					          </iterate>
+				        </with>
+			      </and>
+		    </definition>
+	  </extension>
+	
+   <extension point="org.eclipse.ui.commands">
+      <category id="com.misys.equation.EquationFunctionWizard.commands.category"
+                name="Equation Category">
+      </category>
+      <command categoryId="com.misys.equation.EquationFunctionWizard.commands.category"
+               id="com.misys.equation.EquationFunctionWizard.commands.removeEquationNature"
+               name="%remove.equation.nature">
+      </command>
+      <command categoryId="com.misys.equation.EquationFunctionWizard.commands.category"
+               id="com.misys.equation.EquationFunctionWizard.commands.unpublish"
+               name="%unpublish">
+      </command>      
+      <command categoryId="com.misys.equation.EquationFunctionWizard.commands.category"
+               id="com.misys.equation.EquationFunctionWizard.commands.addEquationNature"
+               name="%add.equation.nature">
+      </command>
+      <command categoryId="com.misys.equation.EquationFunctionWizard.commands.category"
+               id="com.misys.equation.EquationFunctionWizard.commands.export"
+               name="%export">
+      </command>
+      <command categoryId="com.misys.equation.EquationFunctionWizard.commands.category"
+               id="com.misys.equation.EquationFunctionWizard.commands.newService"
+               name="%new.service">
+      </command>
+      <command categoryId="com.misys.equation.EquationFunctionWizard.commands.category"
+               id="com.misys.equation.EquationFunctionWizard.commands.newUserExit"
+               name="%new.userexit">
+      </command>
+      <command categoryId="com.misys.equation.EquationFunctionWizard.commands.category"
+               id="com.misys.equation.EquationFunctionWizard.commands.newLayout"
+               name="%new.layout">
+      </command>
+      <command categoryId="com.misys.equation.EquationFunctionWizard.commands.category"
+               id="com.misys.equation.EquationFunctionWizard.commands.newPromptValidate"
+               name="%new.promptValidate">
+      </command>
+	     <command categoryId="com.misys.equation.EquationFunctionWizard.commands.category"
+               id="com.misys.equation.EquationFunctionWizard.commands.newPromptValidateWeb"
+               name="%new.promptValidateMicroflow">
+      </command>
+      <command categoryId="com.misys.equation.EquationFunctionWizard.commands.category"
+               id="com.misys.equation.EquationFunctionWizard.commands.equationPreferences"
+               name="%equation.preferences.command">
+      </command>
+      <command categoryId="com.misys.equation.EquationFunctionWizard.commands.category"
+               id="com.misys.equation.EquationFunctionWizard.commands.importEDLanguageProperty"
+               name="%Language.DesktopLanguageImport.command">
+      </command>
+      <command categoryId="com.misys.equation.EquationFunctionWizard.commands.category"
+               id="com.misys.equation.EquationFunctionWizard.commands.synchroniseService"
+               name="%Language.SynchroniseService.command">
+      </command>
+      <command categoryId="com.misys.equation.EquationFunctionWizard.commands.category"
+               id="com.misys.equation.EquationFunctionWizard.commands.serviceImport"
+               name="%import.service">
+      </command>
+       <command categoryId="com.misys.equation.EquationFunctionWizard.commands.category"
+               id="com.misys.equation.EquationFunctionWizard.commands.serviceBeanImport"
+               name="%import.serviceBean">
+      </command>
+      <command categoryId="com.misys.equation.EquationFunctionWizard.commands.category"
+               id="com.misys.equation.EquationFunctionWizard.commands.layoutImport"
+               name="%import.layout">
+      </command>
+      <command categoryId="com.misys.equation.EquationFunctionWizard.commands.category"
+               id="com.misys.equation.EquationFunctionWizard.commands.promptValidateImport"
+               name="%import.promptvalidate">
+      </command>
+      <command categoryId="com.misys.equation.EquationFunctionWizard.commands.category"
+               id="com.misys.equation.EquationFunctionWizard.commands.textImport"
+               name="%import.text">
+      </command>
+      <command categoryId="com.misys.equation.EquationFunctionWizard.commands.category"
+               id="com.misys.equation.EquationFunctionWizard.commands.serviceUpgrade"
+               name="%upgrade.service">
+      </command>
+    </extension>
+   
+   <extension point="org.eclipse.ui.handlers">
+      <handler class="com.misys.equation.fb.actions.CommandHandler"
+               commandId="com.misys.equation.EquationFunctionWizard.commands.addEquationNature">
+      </handler>
+      <handler class="com.misys.equation.fb.actions.CommandHandler"
+               commandId="com.misys.equation.EquationFunctionWizard.commands.removeEquationNature">
+      </handler>
+      <handler class="com.misys.equation.fb.actions.CommandHandler"
+               commandId="com.misys.equation.EquationFunctionWizard.commands.export">
+      </handler>
+      <handler class="com.misys.equation.fb.actions.CommandHandler"
+               commandId="com.misys.equation.EquationFunctionWizard.commands.newService">
+      </handler>
+      <handler class="com.misys.equation.fb.actions.CommandHandler"
+               commandId="com.misys.equation.EquationFunctionWizard.commands.unpublish">
+      </handler>
+      
+      <handler class="com.misys.equation.fb.actions.CommandHandler"
+               commandId="com.misys.equation.EquationFunctionWizard.commands.newLayout">
+      </handler>
+      <handler class="com.misys.equation.fb.actions.CommandHandler"
+               commandId="com.misys.equation.EquationFunctionWizard.commands.newPromptValidate">
+      </handler>
+	     <handler class="com.misys.equation.fb.actions.CommandHandler"
+               commandId="com.misys.equation.EquationFunctionWizard.commands.newPromptValidateWeb">
+      </handler>
+      <handler class="com.misys.equation.fb.actions.CommandHandler"
+               commandId="com.misys.equation.EquationFunctionWizard.commands.newUserExit">
+      </handler>
+      <handler class="com.misys.equation.fb.actions.CommandHandler"
+               commandId="com.misys.equation.EquationFunctionWizard.commands.equationPreferences">
+      </handler>
+      <handler class="com.misys.equation.fb.actions.CommandHandler"
+               commandId="com.misys.equation.EquationFunctionWizard.commands.importEDLanguageProperty">
+      </handler>
+      <handler class="com.misys.equation.fb.actions.CommandHandler"
+               commandId="com.misys.equation.EquationFunctionWizard.commands.synchroniseService">
+      </handler>
+      <handler class="com.misys.equation.fb.actions.CommandHandler"
+               commandId="com.misys.equation.EquationFunctionWizard.commands.serviceImport">
+      </handler>
+      <handler class="com.misys.equation.fb.actions.CommandHandler"
+               commandId="com.misys.equation.EquationFunctionWizard.commands.serviceBeanImport">
+      </handler>
+      <handler class="com.misys.equation.fb.actions.CommandHandler"
+               commandId="com.misys.equation.EquationFunctionWizard.commands.layoutImport">
+      </handler>
+      <handler class="com.misys.equation.fb.actions.CommandHandler"
+               commandId="com.misys.equation.EquationFunctionWizard.commands.promptValidateImport">
+      </handler>
+      <handler class="com.misys.equation.fb.actions.CommandHandler"
+               commandId="com.misys.equation.EquationFunctionWizard.commands.textImport">
+      </handler>
+       <handler class="com.misys.equation.fb.actions.CommandHandler"
+               commandId="com.misys.equation.EquationFunctionWizard.commands.serviceUpgrade">
+      </handler>
+   </extension>
+   
+   <extension point="org.eclipse.ui.menus">
+      <menuContribution locationURI="popup:org.eclipse.ui.popup.any?after=additions">
+	      <!-- Add a separator before the "Equation" sub menu to separate from the other (Java) options --> 
+           <separator name="org.eclipse.ui.tools.separator" visible="true">
+            </separator>
+      	
+      	  <!-- Note that the menu level icon does not work in Eclipse 3.3.2 --> 
+         <menu icon="icons/serviceComposer.gif"
+               id="com.misys.equation.EquationFunctionWizard.menus.popupMenu"
+               label="Equation">
+            <command commandId="com.misys.equation.EquationFunctionWizard.commands.newService"
+                     icon="icons/serviceComposer.gif"
+                     id="com.misys.equation.EquationFunctionWizard.menus.newService">
+				           <visibleWhen>
+				 	            <reference definitionId="com.misys.equation.EquationFunctionWizard.inEquationProject"/>
+	        	     </visibleWhen>
+            </command>
+            <command commandId="com.misys.equation.EquationFunctionWizard.commands.newLayout"
+                     icon="icons/layout.gif"
+                     id="com.misys.equation.EquationFunctionWizard.menus.newLayout">
+				           <visibleWhen>
+				 	            <reference definitionId="com.misys.equation.EquationFunctionWizard.inEquationProject"/>
+	        	     </visibleWhen>
+            </command>
+            <command commandId="com.misys.equation.EquationFunctionWizard.commands.newPromptValidate"
+                     icon="icons/promptValidate.gif"
+                     id="com.misys.equation.EquationFunctionWizard.menus.newPromptValidate">
+				           <visibleWhen>
+				 	            <reference definitionId="com.misys.equation.EquationFunctionWizard.inEquationProject"/>
+	        	     </visibleWhen>
+            </command>
+		          <command commandId="com.misys.equation.EquationFunctionWizard.commands.newPromptValidateWeb"
+                     icon="icons/promptValidate.gif"
+                     id="com.misys.equation.EquationFunctionWizard.menus.newPromptValidateWeb">
+				           <visibleWhen>
+				 	            <reference definitionId="com.misys.equation.EquationFunctionWizard.inEquationProject"/>
+	        	     </visibleWhen>
+            </command>
+            <command commandId="com.misys.equation.EquationFunctionWizard.commands.newUserExit"
+                     icon="icons/serviceComposer.gif"
+                     id="com.misys.equation.EquationFunctionWizard.menus.newUserExit">
+				           <visibleWhen>
+				 	            <reference definitionId="com.misys.equation.EquationFunctionWizard.inEquationProject"/>
+	        	     </visibleWhen>
+            </command>
+            <separator name="org.eclipse.ui.tools.separator2" visible="true">
+            </separator>
+            <command commandId="com.misys.equation.EquationFunctionWizard.commands.serviceImport"
+                     icon="icons/serviceImport.gif"
+                     id="com.misys.equation.EquationFunctionWizard.menus.serviceImport">
+				           <visibleWhen>
+				 	            <reference definitionId="com.misys.equation.EquationFunctionWizard.inEquationProject"/>
+	        	     </visibleWhen>
+            </command>
+             <command commandId="com.misys.equation.EquationFunctionWizard.commands.serviceBeanImport"
+                     icon="icons/serviceBeanImport.gif"
+                     id="com.misys.equation.EquationFunctionWizard.menus.serviceBeanImport">
+				           <visibleWhen>
+				 	            <reference definitionId="com.misys.equation.EquationFunctionWizard.inEquationProject"/>
+	        	     </visibleWhen>
+            </command>
+            <command commandId="com.misys.equation.EquationFunctionWizard.commands.layoutImport"
+                     icon="icons/layoutImport.gif"
+                     id="com.misys.equation.EquationFunctionWizard.menus.layoutImport">
+				           <visibleWhen>
+				 	            <reference definitionId="com.misys.equation.EquationFunctionWizard.inEquationProject"/>
+	        	     </visibleWhen>
+            </command>
+            <command commandId="com.misys.equation.EquationFunctionWizard.commands.promptValidateImport"
+                     icon="icons/promptValidateImport.gif"
+                     id="com.misys.equation.EquationFunctionWizard.menus.promptValidateImport">
+				           <visibleWhen>
+				 	            <reference definitionId="com.misys.equation.EquationFunctionWizard.inEquationProject"/>
+	        	     </visibleWhen>
+            </command>
+            <command commandId="com.misys.equation.EquationFunctionWizard.commands.textImport"
+                     icon="icons/textImport.gif"
+                     id="com.misys.equation.EquationFunctionWizard.menus.textImport">
+				           <visibleWhen>
+				 	            <reference definitionId="com.misys.equation.EquationFunctionWizard.inEquationProject"/>
+	        	     </visibleWhen>
+            </command>
+   			      <separator name="org.eclipse.ui.tools.separator" visible="true">
+            </separator>
+            <command commandId="com.misys.equation.EquationFunctionWizard.commands.export"
+                     icon="icons/serviceComposer.gif"
+                     id="com.misys.equation.EquationFunctionWizard.menus.export">
+				           <visibleWhen>
+				 	            <reference definitionId="com.misys.equation.EquationFunctionWizard.inEquationProject"/>
+	        	     </visibleWhen>
+            </command>
+            <command commandId="com.misys.equation.EquationFunctionWizard.commands.unpublish"
+                     icon="icons/serviceComposer.gif"
+                     id="com.misys.equation.EquationFunctionWizard.menus.unpublish">
+				           <visibleWhen>
+				 	            <reference definitionId="com.misys.equation.EquationFunctionWizard.inEquationProject"/>
+	        	     </visibleWhen>
+            </command>
+            <separator name="org.eclipse.ui.tools.separator3" visible="true">
+            </separator>
+           <command commandId="com.misys.equation.EquationFunctionWizard.commands.serviceUpgrade"
+                     icon="icons/serviceComposer.gif"
+                     id="com.misys.equation.EquationFunctionWizard.menus.serviceUpgrade">
+				           <visibleWhen>
+				 	            <reference definitionId="com.misys.equation.EquationFunctionWizard.inEquationProject"/>
+	        	     </visibleWhen>
+            </command>  
+            <separator name="org.eclipse.ui.tools.separator" visible="true">
+            </separator>
+            <command commandId="com.misys.equation.EquationFunctionWizard.commands.addEquationNature"
+                     icon="icons/serviceComposer.gif"
+                     id="com.misys.equation.EquationFunctionWizard.menus.addEquationNature">
+			            <visibleWhen>
+	                 <and>
+					                <count value="1"/>
+					                <with variable="selection">
+						                  <iterate>
+							                    <adapt type="org.eclipse.core.resources.IProject">
+								                      <not>
+									                        <test property="org.eclipse.core.resources.projectNature"
+                                       value="com.misys.equation.EquationFunctionWizard.equationNature"/>
+								                      </not>
+							                    </adapt>
+						                  </iterate>
+					                </with>
+				              </and>
+        	      </visibleWhen>
+           </command>
+
+  			       <command commandId="com.misys.equation.EquationFunctionWizard.commands.removeEquationNature"
+                     icon="icons/serviceComposer.gif"
+                     id="com.misys.equation.EquationFunctionWizard.menus.removeEquationNature">
+				           <visibleWhen>
+    	        	    <and>
+						               <count value="1"/>
+						               <with variable="selection">
+							                 <iterate>
+								                   <adapt type="org.eclipse.core.resources.IProject">
+									                     <test property="org.eclipse.core.resources.projectNature"
+                                    value="com.misys.equation.EquationFunctionWizard.equationNature"/>
+								                   </adapt>
+							                 </iterate>
+						               </with>
+					             </and>
+	        	     </visibleWhen>
+            </command>
+            
+  			       <separator name="org.eclipse.ui.tools.separator" visible="true">
+            </separator>
+            
+             <command commandId="com.misys.equation.EquationFunctionWizard.commands.equationPreferences"
+                     icon="icons/serviceComposer.gif"
+                     id="com.misys.equation.EquationFunctionWizard.menus.equationPreferences">
+				           <visibleWhen>
+				 	            <reference definitionId="com.misys.equation.EquationFunctionWizard.inEquationProject"/>
+	        	     </visibleWhen>
+            </command>
+            <command commandId="com.misys.equation.EquationFunctionWizard.commands.importEDLanguageProperty"
+                     icon="icons/serviceComposer.gif"
+                     id="com.misys.equation.EquationFunctionWizard.menus.importEDLanguageProperty">
+				           <visibleWhen>
+				 	            <reference definitionId="com.misys.equation.EquationFunctionWizard.inEquationDesktop"/>
+	        	     </visibleWhen>
+           </command>
+            <command commandId="com.misys.equation.EquationFunctionWizard.commands.synchroniseService"
+                     icon="icons/serviceComposer.gif"
+                     id="com.misys.equation.EquationFunctionWizard.menus.synchroniseService">
+				           <visibleWhen>
+				 	            <iterate ifEmpty="false" operator="and">
+						               <adapt type="org.eclipse.core.resources.IResource">				 
+				                    <test property="org.eclipse.core.resources.name" value="*.eqf"/>
+			        	         </adapt>
+			               </iterate>
+	        	     </visibleWhen>
+           </command>
+           
+             
+         </menu>
+      </menuContribution>
+   </extension>
+   
+   <extension id="com.misys.equation.fb.PropertyPages" name="Equation Property Pages"
+              point="org.eclipse.ui.propertyPages">
+      <page class="com.misys.equation.fb.dialogs.EquationLocationsPropertyPage"
+            id="com.misys.equation.fb.equationLocationsPropertyPage"
+            name="%locations.property.page">
+      		<enabledWhen>
+		          <adapt type="org.eclipse.core.resources.IProject">
+		             <test property="org.eclipse.core.resources.projectNature"
+                     value="com.misys.equation.EquationFunctionWizard.equationNature"/>
+		          </adapt>         
+         	</enabledWhen>            
+      </page>
+   </extension>
+   <extension point="org.eclipse.ui.importWizards">
+      <category id="com.misys.equation.fb.wizards.EquationImport"
+                name="%equation.import.category">
+      </category>
+      <wizard category="com.misys.equation.fb.wizards.EquationImport"
+              class="com.misys.equation.fb.wizards.SchemaImportWizard"
+              icon="icons/serviceComposer.gif"
+              id="com.misys.equation.fb.wizards.SchemaImportWizard"
+              name="%equation.schema.import">
+         <description>
+            Import reference field definitions from Equation into a schema file in the workspace.
+         </description>
+      </wizard>
+   </extension>
+	      
+   <extension point="org.eclipse.ui.views">
+      <category id="com.misys.equation.EquationFunctionWizard" name="%equation.views">
+      </category>
+      <view category="com.misys.equation.EquationFunctionWizard"
+            class="com.misys.equation.views.JobView"
+            icon="icons/information.gif"
+            id="com.misys.equation.views.JobView"
+            name="%equation.userJobs">
+      </view>
+   </extension>
+   
+   <extension point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension targetID="org.eclipse.jdt.ui.JavaPerspective">
+         <view id="com.misys.equation.views.JobView" ratio="0.5" relationship="right"
+               relative="org.eclipse.ui.views.TaskList">
+         </view>
+      </perspectiveExtension>
+   </extension>
+   <extension point="org.eclipse.help.contexts">
+      <contexts file="contexts.xml">
+      </contexts>
+   </extension>   
+</plugin>

@@ -1,0 +1,97 @@
+/*
+ * This sample code is provided by Misys for illustrative purposes only.
+ * 
+ * These examples have not been thoroughly tested under all conditions.
+ * 
+ * Misys, therefore, cannot guarantee or imply reliability, serviceability, or function of these programs.
+ * 
+ * All programs contained herein are provided to you "AS IS" without any warranties of any kind. The implied warranties of
+ * non-infringement, merchantability and fitness for a particular purpose are expressly disclaimed.
+ */
+package com.misys.equation.common.test.xapi.standard;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.TestEnvironment;
+import com.misys.equation.common.utilities.Toolbox;
+
+// *************************************************************************************************
+/**
+ * 
+ * 
+ */
+// *************************************************************************************************
+public class CAN
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	String inputBrnmStr = "0000";
+	String GZDLP = "RDS";
+	String GZDLR = "133463";
+	String GZDBNM = "ACC1";
+	String GZMAX = "-999999999999999";
+	String GZCLR = "TEST";
+	String GZASR = "3";
+	String GZASP = "00.100";
+	EquationStandardSession session;
+	long startTime = System.currentTimeMillis();
+	long currentTime = startTime;
+	// *********************************************************************************************
+	/**
+	 * 
+	 */
+	// *********************************************************************************************
+	private CAN()
+	{
+		try
+		{
+			session = TestEnvironment.getTestEnvironment().getStandardSession();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+	public static void main(String[] inputParameters)
+	{
+		CAN test = new CAN();
+		test.test();
+	}
+	// *********************************************************************************************
+	/**
+	 * 
+	 */
+	// *********************************************************************************************
+	public void test()
+	{
+		// Have a bash...
+		try
+		{
+			// Get a new transaction for a sundry item
+			EquationStandardTransaction collateralAssign = new EquationStandardTransaction("U14FRRCAN", session);
+			// Set the transaction type
+			collateralAssign.setMode("A");
+			// Set the fields required for the sundry item
+			collateralAssign.setFieldValue("GZDLP", GZDLP);
+			collateralAssign.setFieldValue("GZDLR", GZDLR);
+			collateralAssign.setFieldValue("GZDBNM", GZDBNM);
+			collateralAssign.setFieldValue("GZCLR", GZCLR);
+			collateralAssign.setFieldValue("GZASR", GZASR);
+			collateralAssign.setFieldValue("GZMAX", GZMAX);
+			collateralAssign.setFieldValue("GZASP", GZASP);
+			// loan = unit.validateEquationTransaction(loan);
+			session.addEquationTransaction(collateralAssign);
+			// Apply the transaction
+			session.applyTransactions();
+			session.commitTransactions();
+			Toolbox.printMessages(collateralAssign.getErrorList());
+			Toolbox.printMessages(collateralAssign.getWarningList());
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.toString());
+			// Rollback any transactions for the unit
+		}
+	}
+}

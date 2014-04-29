@@ -1,0 +1,251 @@
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/repos/bfeq_src/!svn/ver/17760/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao
+END
+IEDMRecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IEDMRecordDao.java
+END
+ICLHRecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/ICLHRecordDao.java
+END
+IVP1RecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IVP1RecordDao.java
+END
+IGPARecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IGPARecordDao.java
+END
+IAPJRecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IAPJRecordDao.java
+END
+IGPERecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IGPERecordDao.java
+END
+IGPFRecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IGPFRecordDao.java
+END
+IGYRecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IGYRecordDao.java
+END
+IGPX1RecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IGPX1RecordDao.java
+END
+IGPX2RecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IGPX2RecordDao.java
+END
+IGPX3RecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IGPX3RecordDao.java
+END
+IGPX4RecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IGPX4RecordDao.java
+END
+INE1RecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/INE1RecordDao.java
+END
+IGPMRecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IGPMRecordDao.java
+END
+ISC1RecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/ISC1RecordDao.java
+END
+IAPVRecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IAPVRecordDao.java
+END
+IGLURecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IGLURecordDao.java
+END
+IGPRRecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IGPRRecordDao.java
+END
+IGAARecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IGAARecordDao.java
+END
+IMPMRecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IMPMRecordDao.java
+END
+IGPURecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IGPURecordDao.java
+END
+IGPVRecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IGPVRecordDao.java
+END
+IGAFRecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IGAFRecordDao.java
+END
+IGPXRecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IGPXRecordDao.java
+END
+IIPVRecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/17760/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IIPVRecordDao.java
+END
+ILU1RecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/ILU1RecordDao.java
+END
+ICMDRecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/ICMDRecordDao.java
+END
+IGALRecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IGALRecordDao.java
+END
+IX01RecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IX01RecordDao.java
+END
+IDH0RecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IDH0RecordDao.java
+END
+IKAPRecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IKAPRecordDao.java
+END
+IGAURecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IGAURecordDao.java
+END
+IGAVRecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IGAVRecordDao.java
+END
+IGAWRecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IGAWRecordDao.java
+END
+IQD1RecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IQD1RecordDao.java
+END
+IEQSRecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IEQSRecordDao.java
+END
+IGSPRecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IGSPRecordDao.java
+END
+IGCRecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IGCRecordDao.java
+END
+IGSRRecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/IGSRRecordDao.java
+END
+ICLCRecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/ICLCRecordDao.java
+END
+ICLDRecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src_gen/com/misys/equation/common/dao/ICLDRecordDao.java
+END

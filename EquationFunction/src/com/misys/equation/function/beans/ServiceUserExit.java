@@ -1,0 +1,148 @@
+package com.misys.equation.function.beans;
+
+import com.misys.equation.function.beans.valid.IValidation;
+import com.misys.equation.function.beans.valid.MessageContainer;
+
+/**
+ * This class represents a service user exit
+ * 
+ */
+public class ServiceUserExit implements IValidation
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: ServiceUserExit.java 14799 2012-11-05 11:54:35Z williae1 $";
+	/** Name of the service user exit (e.g. XXXUserExit) */
+	private String serviceUserExitName;
+
+	/** Java package name */
+	private String packageName = "";
+
+	/** Version of plug-in used to create the service */
+	private String pluginVersion = "";
+
+	/** Release version of the patch/enhancement of the service */
+	private String releaseVersion = "";
+
+	/**
+	 * Construct a new empty user exit
+	 */
+	public ServiceUserExit()
+	{
+		super();
+	}
+
+	/**
+	 * Construct a new user exit given the program name
+	 * 
+	 * @param serviceUserExitName
+	 *            - program name
+	 */
+	public ServiceUserExit(String serviceUserExitName)
+	{
+		this.serviceUserExitName = serviceUserExitName;
+	}
+
+	/**
+	 * Return the service user exit name
+	 * 
+	 * @return the service user exit name
+	 */
+	public String getServiceUserExitName()
+	{
+		return serviceUserExitName;
+	}
+
+	/**
+	 * Set the service user exit name
+	 * 
+	 * @param service
+	 *            user exit name - program name
+	 */
+	public void setServiceUserExitName(String serviceUserExitName)
+	{
+		this.serviceUserExitName = serviceUserExitName;
+	}
+
+	/**
+	 * @return the packageName
+	 */
+	public String getPackageName()
+	{
+		// TODO: Remove this temporary defaulting
+		if (packageName == null)
+		{
+			packageName = "com.misys.equation.userexits";
+		}
+		return packageName;
+	}
+
+	/**
+	 * @param packageName
+	 *            the packageName to set
+	 */
+	public void setPackageName(String packageName)
+	{
+		this.packageName = packageName;
+	}
+	/**
+	 * Validate the user exit definition
+	 * <p>
+	 * There is relatively little validation required for a user exit definition as the processing is performed in the Java code.
+	 * <p>
+	 * 
+	 * @param messageContainer
+	 *            A MessageContainer to add messages to
+	 * @param subSet
+	 *            A String specifying a subset of validation processing to perform
+	 * @param includeChildren
+	 *            whether to validate the whole 'tree'. This parameter is not relevant to UserExit validation
+	 * 
+	 * @return boolean (currently unused)
+	 */
+	public boolean validateBean(MessageContainer messageContainer, String subSet, boolean includeChildren)
+	{
+
+		return false;
+	}
+	/**
+	 * Gets the plug-in version
+	 * 
+	 * @return The version of plug-in used to create the service
+	 */
+	public String getPluginVersion()
+	{
+		return pluginVersion;
+	}
+
+	/**
+	 * Sets the plug-in version
+	 * 
+	 * @param pluginVersion
+	 *            - the version of plug-in used to create the service
+	 */
+	public void setPluginVersion(String pluginVersion)
+	{
+		this.pluginVersion = pluginVersion;
+	}
+
+	/**
+	 * Gets the release version
+	 * 
+	 * @return The patch/enhancement used to despatch/install the service
+	 */
+	public String getReleaseVersion()
+	{
+		return releaseVersion;
+	}
+
+	/**
+	 * Sets the release version
+	 * 
+	 * @param releaseVersion
+	 *            The patch/enhancement used to despatch/install the service
+	 */
+	public void setReleaseVersion(String releaseVersion)
+	{
+		this.releaseVersion = releaseVersion;
+	}
+}

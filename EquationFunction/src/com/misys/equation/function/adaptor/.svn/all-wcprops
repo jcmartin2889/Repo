@@ -1,0 +1,251 @@
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/repos/bfeq_src/!svn/ver/17382/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor
+END
+IValueAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/IValueAdaptor.java
+END
+FunctionAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/17382/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/FunctionAdaptor.java
+END
+AttributesAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/AttributesAdaptor.java
+END
+AbstractAttributesSetAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/AbstractAttributesSetAdaptor.java
+END
+IDisplayButtonLinkAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/IDisplayButtonLinkAdaptor.java
+END
+IInputFieldSetAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/IInputFieldSetAdaptor.java
+END
+IFieldAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/IFieldAdaptor.java
+END
+IFunctionAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/IFunctionAdaptor.java
+END
+IAttributesAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/IAttributesAdaptor.java
+END
+MethodCallStatus.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/MethodCallStatus.java
+END
+DisplayLabelAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/DisplayLabelAdaptor.java
+END
+UserExitLayoutAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/UserExitLayoutAdaptor.java
+END
+AbstractFunctionAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/AbstractFunctionAdaptor.java
+END
+AbstractAttributesAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/AbstractAttributesAdaptor.java
+END
+IAttributesSetAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/IAttributesSetAdaptor.java
+END
+ValueAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/ValueAdaptor.java
+END
+LayoutAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/LayoutAdaptor.java
+END
+IDisplayLabelAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/IDisplayLabelAdaptor.java
+END
+DisplayButtonLinkAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/DisplayButtonLinkAdaptor.java
+END
+Adaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/Adaptor.java
+END
+InputFieldSetAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/InputFieldSetAdaptor.java
+END
+DisplayGroupAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/DisplayGroupAdaptor.java
+END
+FieldAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/FieldAdaptor.java
+END
+ILayoutAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/ILayoutAdaptor.java
+END
+AbstractDisplayLabelAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/AbstractDisplayLabelAdaptor.java
+END
+IDisplayGroupAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/IDisplayGroupAdaptor.java
+END
+FieldSetAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/FieldSetAdaptor.java
+END
+AbstractValueAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/AbstractValueAdaptor.java
+END
+AbstractLayoutAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/AbstractLayoutAdaptor.java
+END
+AttributesSetAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/AttributesSetAdaptor.java
+END
+AbstractInputFieldSetAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/AbstractInputFieldSetAdaptor.java
+END
+AbstractDisplayButtonLinkAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/AbstractDisplayButtonLinkAdaptor.java
+END
+AbstractAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/AbstractAdaptor.java
+END
+IPromptValidateAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/IPromptValidateAdaptor.java
+END
+AbstractDisplayGroupAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/AbstractDisplayGroupAdaptor.java
+END
+AbstractFieldAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/AbstractFieldAdaptor.java
+END
+IFieldSetAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/IFieldSetAdaptor.java
+END
+UserExitFunctionAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/UserExitFunctionAdaptor.java
+END
+AdaptorKeyFields.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/AdaptorKeyFields.java
+END
+AbstractPromptValidateAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/AbstractPromptValidateAdaptor.java
+END
+AbstractFieldSetAdaptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/adaptor/AbstractFieldSetAdaptor.java
+END

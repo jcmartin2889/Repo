@@ -1,0 +1,118 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseAddMore;
+import com.misys.equation.common.test.TestEnvironment;
+
+/**
+ * Equation test cases for Maintain function
+ */
+public class EQP extends EquationTestCaseAddMore
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	String programName = "Q36ARR";
+	String optionId = "EQP";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		String reference = TestEnvironment.getTestEnvironment().getParameter("ITA");
+		transaction.setFieldValue("GZEVM", "ITA"); // User defined event (6A)
+		transaction.setFieldValue("GZQAB", "0543"); // Original queued against account branch (4A)
+		transaction.setFieldValue("GZQAN", "123467"); // Original queued against account number (6A)
+		transaction.setFieldValue("GZQAS", "086"); // Original queued against account suffix (3A)
+		transaction.setFieldValue("GZOAB", "0543"); // Original owning account branch (4A)
+		transaction.setFieldValue("GZOAN", "123467"); // Original owning account number (6A)
+		transaction.setFieldValue("GZOAS", "087"); // Original owning account suffix (3A)
+		transaction.setFieldValue("GZBRM", ""); // Deal branch (4A)
+		transaction.setFieldValue("GZDLP", ""); // Deal type (3A)
+		transaction.setFieldValue("GZDLR", ""); // Deal reference (13A)
+		transaction.setFieldValue("GZCMR", ""); // Commitment reference (13A)
+		transaction.setFieldValue("GZTRN", "DOESNOTEXIST"); // Transaction reference (16A)
+		transaction.setFieldValue("GZDTE", "0"); // Transaction date (7S,0)
+		transaction.setFieldValue("GZDRF", ""); // Subsidiary reference (16A)
+		transaction.setFieldValue("GZTSQ", "0"); // Transaction sequence number (16P,0)
+		transaction.setFieldValue("GZESQ", "0"); // Event sequence number (7P,0)
+	}
+
+	/**
+	 * Setup an existing key fields
+	 */
+	@Override
+	public void setupExistKeyFields(EquationStandardTransaction transaction)
+	{
+		String reference = TestEnvironment.getTestEnvironment().getParameter("ITA");
+		transaction.setFieldValue("GZEVM", "ITA"); // User defined event (6A)
+		transaction.setFieldValue("GZQAB", "0543"); // Original queued against account branch (4A)
+		transaction.setFieldValue("GZQAN", "123467"); // Original queued against account number (6A)
+		transaction.setFieldValue("GZQAS", "086"); // Original queued against account suffix (3A)
+		transaction.setFieldValue("GZOAB", "0543"); // Original owning account branch (4A)
+		transaction.setFieldValue("GZOAN", "123467"); // Original owning account number (6A)
+		transaction.setFieldValue("GZOAS", "087"); // Original owning account suffix (3A)
+		transaction.setFieldValue("GZBRM", ""); // Deal branch (4A)
+		transaction.setFieldValue("GZDLP", ""); // Deal type (3A)
+		transaction.setFieldValue("GZDLR", ""); // Deal reference (13A)
+		transaction.setFieldValue("GZCMR", ""); // Commitment reference (13A)
+		transaction.setFieldValue("GZTRN", reference); // Transaction reference (16A)
+		transaction.setFieldValue("GZDTE", "1000105"); // Transaction date (7S,0)
+		transaction.setFieldValue("GZDRF", ""); // Subsidiary reference (16A)
+		transaction.setFieldValue("GZTSQ", "0"); // Transaction sequence number (16P,0)
+		transaction.setFieldValue("GZESQ", "0"); // Event sequence number (7P,0)
+	}
+
+	/**
+	 * Setup the mandatory fields
+	 */
+	@Override
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZSSQ", "0"); // Slave sequence number (7P,0)
+		transaction.setFieldValue("GZPTY", "00020"); // New priority code (5A)
+		transaction.setFieldValue("GZQDT", "0991231"); // Current queued date (7S,0)
+		transaction.setFieldValue("GZTERR", ""); // Held due to technical error (1A)
+		transaction.setFieldValue("GZBERR", ""); // Held due to business error (1A)
+	}
+
+}

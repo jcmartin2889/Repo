@@ -1,0 +1,431 @@
+package com.misys.equation.bankfusion.tools;
+
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.exolab.castor.types.AnyNode;
+
+import bf.com.misys.eqf.types.header.EqProcessHeader;
+import bf.com.misys.eqf.types.header.MessageStatus;
+import bf.com.misys.eqf.types.header.StartLRPProcessRsHeader;
+import bf.com.misys.eqf.types.header.TaskBasicDetails;
+import bf.com.misys.eqf.types.header.TaskEsfRqHeader;
+import bf.com.misys.eqf.types.header.TaskEsfRsHeader;
+import bf.com.misys.eqf.types.header.TaskRsHeader;
+
+import com.misys.equation.bankfusion.lrp.bean.TaskQueryDetail;
+import com.misys.equation.bankfusion.lrp.engine.ITaskEngine;
+import com.misys.equation.bankfusion.lrp.engine.TaskEngineToolbox;
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.internal.eapi.core.EQException;
+
+public class LRPToolbox
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: LRPToolbox.java 17343 2013-09-23 12:04:01Z perkinj1 $";
+	/**
+	 * This converts an AnyNode into a collection
+	 * 
+	 * @param element
+	 *            - the node to be parsed
+	 * 
+	 * @return
+	 */
+	public static Map<Object, Object> constructListFromElement(AnyNode element)
+	{
+		Map<Object, Object> map = new HashMap<Object, Object>();
+
+		if (element == null)
+		{
+			return map;
+		}
+
+		AnyNode child = element.getFirstChild();
+
+		while (child != null)
+		{
+			boolean add = true;
+
+			// no child?
+			if (child.getFirstChild() == null)
+			{
+				add = false;
+			}
+
+			// only child?
+			else if (child.getFirstChild().getFirstChild() == null)
+			{
+				AnyNode grandchild = child.getFirstChild();
+				if (grandchild.getNodeType() == AnyNode.TEXT)
+				{
+					add = false;
+					map.put(child.getLocalName(), grandchild.getStringValue());
+				}
+			}
+
+			if (add)
+			{
+				Map<Object, Object> childMap = constructListFromElement(child);
+				map.put(child.getLocalName(), childMap);
+			}
+
+			child = child.getNextSibling();
+		}
+
+		return map;
+	}
+
+	/**
+	 * This prints an AnyNode
+	 * 
+	 * @param element
+	 *            - the node to be printed
+	 * @param tab
+	 *            - tab
+	 * 
+	 * @return the String representation of the AnyNode
+	 */
+	public static String print(AnyNode element, String tab)
+	{
+		if (element == null)
+		{
+			return "";
+		}
+
+		StringBuilder builder = new StringBuilder();
+		AnyNode child = element.getFirstChild();
+
+		while (child != null)
+		{
+			boolean add = true;
+
+			// no child?
+			if (child.getFirstChild() == null)
+			{
+				add = false;
+			}
+
+			// only child?
+			else if (child.getFirstChild().getFirstChild() == null)
+			{
+				AnyNode grandchild = child.getFirstChild();
+				if (grandchild.getNodeType() == AnyNode.TEXT)
+				{
+					add = false;
+					builder.append(tab + child.getLocalName() + " = " + grandchild.getStringValue());
+					builder.append("\n");
+				}
+			}
+
+			if (add)
+			{
+				String childBuffer = print(child, tab + "\t");
+				builder.append(tab + child.getLocalName());
+				builder.append("\n");
+				builder.append(childBuffer);
+				builder.append("\n");
+			}
+
+			child = child.getNextSibling();
+		}
+
+		return builder.toString();
+	}
+
+	/**
+	 * Return the concatenated System Id and Unit Id as Zone
+	 * 
+	 * @param systemId
+	 *            - the system Id
+	 * @param unitId
+	 *            - the unit Id
+	 * 
+	 * @return the generated zone in format <systemId>-<unitId>
+	 */
+	public static String getTaskZone(String systemId, String unitId)
+	{
+		return (systemId.concat("-").concat(unitId));
+	}
+
+	/**
+	 * Class comparator for sorting the tasks
+	 */
+	public static class sortTasks implements Comparator<Object>
+	{
+		public int compare(Object o1, Object o2)
+		{
+			TaskQueryDetail taskDetail1;
+			TaskQueryDetail taskDetail2;
+			taskDetail1 = (TaskQueryDetail) o1;
+
+			String s1 = taskDetail1.getCreateDate() + taskDetail1.getCreateTime() + taskDetail1.getTkiid();
+			taskDetail2 = (TaskQueryDetail) o2;
+
+			String s2 = taskDetail2.getCreateDate() + taskDetail2.getCreateTime() + taskDetail2.getTkiid();
+
+			return (s2.compareTo(s1));
+		}
+	}
+
+	/**
+	 * Return a task basic details
+	 * 
+	 * @param optionId
+	 *            - the option Id
+	 * @param taskType
+	 *            - the task type
+	 * @param zone
+	 *            - the zone
+	 * 
+	 * @return a task basic details
+	 */
+	public static TaskBasicDetails getTaskBasicDetails(String optionId, String taskType, String zone)
+	{
+		TaskBasicDetails basicDetails = new TaskBasicDetails();
+		basicDetails.setBfeqType(TaskEngineToolbox.BFEQ_TYPE);
+		basicDetails.setOptionId(optionId);
+		basicDetails.setOriginatorId("");
+		basicDetails.setTaskType(taskType);
+		basicDetails.setZone(zone);
+		return basicDetails;
+	}
+
+	/**
+	 * Return a task respond payload with all mandatory fields setup
+	 * 
+	 * @return a task respond payload with all mandatory fields setup
+	 */
+	public static TaskRsHeader getRespondPayload()
+	{
+		// Assume successful
+		MessageStatus messageStatus = new MessageStatus();
+		messageStatus.setOverallStatus("S");
+
+		// Payload
+		TaskRsHeader payload = new TaskRsHeader();
+		payload.setMessages(messageStatus);
+
+		payload.setFunctionMode("");
+		payload.setReason("");
+		payload.setTaskAction(TaskEngineToolbox.TASK_ACTION_UPDATE);
+		payload.setReferToUserId("");
+
+		return payload;
+	}
+
+	/**
+	 * Return a task esf request payload with all mandatory fields setup
+	 * 
+	 * @param optionId
+	 *            - the option Id
+	 * @param taskType
+	 *            - the task type
+	 * @param zone
+	 *            - the zone
+	 * 
+	 * @return a task esf request payload with all mandatory fields setup
+	 */
+	public static TaskEsfRqHeader getRequestEsfPayload(String optionId, String taskType, String systemId, String unitId)
+	{
+		// Assume successful
+		MessageStatus messageStatus = new MessageStatus();
+		messageStatus.setOverallStatus("S");
+
+		// Payload
+		TaskEsfRqHeader payload = new TaskEsfRqHeader();
+		payload.setMessages(messageStatus);
+		payload.setBasicDetail(getTaskBasicDetails(optionId, taskType, getTaskZone(systemId, unitId)));
+
+		payload.setCurrentFieldSet("");
+		payload.setCurrentScreenFieldSet("");
+		payload.setSupervisorId("");
+		payload.setSystemId(systemId);
+		payload.setUnitId(unitId);
+
+		return payload;
+	}
+
+	/**
+	 * Return a task esf respond payload
+	 * 
+	 * @param taskAction
+	 *            - the task action
+	 * @param reason
+	 *            - any comments
+	 * 
+	 * @return a task esf respond payload
+	 */
+	public static TaskEsfRsHeader getRespondEsfPayload(String taskAction, String reason)
+	{
+		// Payload
+		TaskEsfRsHeader payload = new TaskEsfRsHeader();
+		payload.setReason(reason);
+		payload.setTaskAction(taskAction);
+
+		return payload;
+	}
+
+	/**
+	 * Determine if task can be claimed by the user
+	 * 
+	 * @param taskDetail
+	 *            - the task detail
+	 * @param userId
+	 *            - the user
+	 * 
+	 * @return true if task can be claimed by the user
+	 */
+	public static boolean isValidTask(TaskQueryDetail taskDetail, String userId)
+	{
+		// task is claimed by other user?
+		if (taskDetail.isClaimed() && taskDetail.getOwner() != null && !taskDetail.getOwner().equalsIgnoreCase(userId))
+		{
+			return false;
+		}
+
+		// task type is ESF, then make sure user is not authorising its own transaction
+		if (taskDetail.getType().equals(TaskEngineToolbox.TASK_TYPE_ESF) && taskDetail.getOriginator() != null
+						&& taskDetail.getOriginator().equalsIgnoreCase(userId))
+		{
+			return false;
+		}
+
+		// valid
+		return true;
+	}
+
+	/**
+	 * Determine if supervisor allows to authorise transaction based on the task action list
+	 * 
+	 * @param taskActionList
+	 *            - the task action list
+	 * 
+	 * @return true if supervisor allows to authorise transaction based on the task action list
+	 */
+	public static boolean isTaskActionAuth(String taskActionList)
+	{
+		if (taskActionList.length() == 0 || taskActionList.indexOf(TaskEngineToolbox.TASK_ACTION_AUTH) >= 0)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Determine if supervisor allows to refer transaction based on the task action list
+	 * 
+	 * @param taskActionList
+	 *            - the task action list
+	 * 
+	 * @return true if supervisor allows to refer transaction based on the task action list
+	 */
+	public static boolean isTaskActionRefer(String taskActionList)
+	{
+		if (taskActionList.length() == 0 || taskActionList.indexOf(TaskEngineToolbox.TASK_ACTION_REFER) >= 0)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Determine if supervisor allows to decline transaction based on the task action list
+	 * 
+	 * @param taskActionList
+	 *            - the task action list
+	 * 
+	 * @return true if supervisor allows to decline transaction based on the task action list
+	 */
+	public static boolean isTaskActionDecline(String taskActionList)
+	{
+		if (taskActionList.length() == 0 || taskActionList.indexOf(TaskEngineToolbox.TASK_ACTION_DECL) >= 0)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Determine if supervisor allows to update transaction based on the task action list
+	 * 
+	 * @param taskActionList
+	 *            - the task action list
+	 * 
+	 * @return true if supervisor allows to update transaction based on the task action list
+	 */
+	public static boolean isTaskActionUpdate(String taskActionList)
+	{
+		if (taskActionList.indexOf(TaskEngineToolbox.TASK_ACTION_UPDATE) >= 0)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Start an LRP process
+	 * 
+	 * @param taskEngine
+	 *            - the task engine to start the process
+	 * @param serviceName
+	 *            - the JUDDI service
+	 * @param operationName
+	 *            - the operation name
+	 * @param payload
+	 *            - the payload
+	 * @param payloadCRM
+	 *            - the payload for CRM
+	 * @param payloadEFC
+	 *            - the payload for EFC
+	 * 
+	 * @return the output
+	 * 
+	 * @throws EQException
+	 */
+	public static StartLRPProcessRsHeader startLRPProcess(ITaskEngine taskEngine, String serviceName, String operationName,
+					Object payload, Object payloadCRM, Object payloadEFC) throws EQException
+	{
+		// construct the default parameter
+		EqProcessHeader eqProcessHeader = new EqProcessHeader();
+		eqProcessHeader.setZone(taskEngine.getZone());
+		eqProcessHeader.setBfeqType(TaskEngineToolbox.BFEQ_TYPE);
+		eqProcessHeader.setPayload(payload);
+		eqProcessHeader.setPayloadCRM(payloadCRM);
+		eqProcessHeader.setPayloadEFC(payloadEFC);
+
+		// start the process
+		StartLRPProcessRsHeader output = taskEngine.startLrpProcess(serviceName, operationName, eqProcessHeader);
+
+		// return the output
+		return output;
+	}
+
+	/**
+	 * Corrects the case of a user name
+	 * 
+	 * This is required as some WPS APIs are case sensitive. For example transfer task needs the fromUser exactly matching the
+	 * current owner.
+	 * 
+	 * @param userName
+	 * @return the userName converted as specified by the eq.lrp.usercase property
+	 */
+	public static String correctUserCase(String userName)
+	{
+		String userCase = EquationCommonContext.getConfigProperty("eq.lrp.usercase");
+		if ("upper".equalsIgnoreCase(userCase))
+		{
+			return userName.toUpperCase();
+		}
+		if ("lower".equalsIgnoreCase(userCase))
+		{
+			return userName.toLowerCase();
+		}
+		return userName;
+	}
+}

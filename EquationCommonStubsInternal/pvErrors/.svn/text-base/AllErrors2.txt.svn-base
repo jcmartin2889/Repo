@@ -1,0 +1,137 @@
+O1R01R $O1PSD - Posting Set Description - length - 35 - description
+O1R01R $O1PSD - Posting Set Description - length - 35 - over 14
+O3R01R $O3CRSD - Charge set description - length - 35 - description
+O3R01R $O3CRSD - Charge set description - length - 35 - over 14
+O5R01R $O5HSD - Hold Set Description - length - 35 - description
+O5R01R $O5HSD - Hold Set Description - length - 35 - over 14
+O7R01R $O7RPD - Report Set Description - length - 35 - description
+O7R01R $O7RPD - Report Set Description - length - 35 - over 14
+O9R01R File - O910LF used
+O9R01R $O9ASD - Accounting Set Desc - length - 35 - description
+O9R01R $O9ASD - Accounting Set Desc - length - 35 - over 14
+OBR37R $OBDPD - Deal type description - length - 35 - description
+OBR37R $OBDPD - Deal type description - length - 35 - over 14
+OCR15R $OCUNM - User Name - length - 35 - name
+OCR15R $OCUNM - User Name - length - 35 - over 14
+OSR33R $CUS - Customer name - length - 6 - name
+OSR34R $CUS - Customer name - length - 6 - name
+OSR37R $CUS - Customer name - length - 6 - name
+OSR38R $CUS - Customer name - length - 6 - name
+OSR38R $CUS - Customer name - length - 6 - name
+OSR40R $CUS - Customer name - length - 6 - name
+OSR42R File - U910LF used
+P3R01R $P3REF - Payment reference - length - 16 - over 14
+P3R01R $P3XREF - External payment reference - length - 16 - over 14
+P3R02R $P3XREF - External payment reference - length - 16 - over 14
+P3R03R $P3REF - Payment reference - length - 16 - over 14
+P3R04R P3R04R Greater than 127 - Ensure DSCCN_A is used
+P3R04R $P3REF - Payment reference - length - 16 - over 14
+P3R04R $P3XREF - Exterenal payment reference - length - 16 - over 14
+P6R01R $6TDES - Template description - length - 35 - description
+P6R01R $6TDES - Template description - length - 35 - over 14
+PMR10R File - PM99LF used
+Q1R01R $Q1REF - Settlement reference - length - 16 - over 14
+Q6R10R File - Q6B99LF used
+Q7R10R $Q7REF - Originators reference - length - 20 - over 14
+Q8R10R Q8R10R Greater than 127 - Ensure DSCCN_A is used
+Q8R10R $Q8REFC - Originators reference - length - 20 - over 14
+QDR10R $QDSGD - System option group desc - length - 35 - description
+QDR10R $QDSGD - System option group desc - length - 35 - over 14
+QQAR10R QQAR10R Greater than 127 - Ensure DSCCN_A is used
+QQAR10R $QQADTR - Description - length - 35 - description
+QQAR10R $QQADTR - Description - length - 35 - over 14
+QQR10R $QQREF - Notice withdrawal reference - length - 16 - over 14
+QRR10R $QRRNM - ZP parameter desc - length - 35 - description
+QRR10R $QRRNM - ZP parameter desc - length - 35 - over 14
+QZR20R $QZFLN - Field name - length - 6 - name
+R4R01R R4R01R Greater than 127 - Ensure DSCCN_A is used
+R4R01R $R4FSN - First serial number - length - 16 - over 14
+R4R01R $R4LSR - Last serial number - length - 16 - over 14
+R4R01R $R4SRL - Serial number - length - 16 - over 14
+R5R01R $R5REF - Diary note reference - length - 16 - over 14
+RCR10R $RCRED - Region code description - length - 35 - description
+RCR10R $RCRED - Region code description - length - 35 - over 14
+RIR10R $RIRELD - Relationship description - length - 35 - description
+RIR10R $RIRELD - Relationship description - length - 35 - over 14
+RJR20R File - RJ99LF used
+RKR10R RKR10R Greater than 127 - Ensure DSCCN_A is used
+RKR10R File - RK99LF used
+SAR50R SAR50R Greater than 127 - Ensure DSCCN_A is used
+SCR10R $R76SN - Account short name - length - 15 - name
+SCR10R $R76SN - Account short name - length - 15 - over 14
+STR10R $STDES - Status code description - length - 20 - description
+STR10R $STDES - Status code description - length - 20 - over 14
+SXR01R SXR01R Greater than 127 - Ensure DSCCN_A is used
+SXR01R $SXNA1S - Address line 1 - length - 35 - over 14
+SXR01R $SXNA2S - Address line 2 - length - 35 - over 14
+SXR01R $SXNA3S - Address line 3 - length - 35 - over 14
+SXR01R $SXNA4S - Address line 4 - length - 35 - over 14
+SXR01R $SXNA5S - Address line 5 - length - 35 - over 14
+SYR01R $NA1S - Address line 1 - length - 35 - over 14
+SYR01R $NA2S - Address line 2 - length - 35 - over 14
+SYR01R $NA3S - Address line 3 - length - 35 - over 14
+SYR01R $NA4S - Address line 4 - length - 35 - over 14
+SYR01R $NA5S - Address line 5 - length - 35 - over 14
+T0R10R $T0PBRD - Base rate description - length - 35 - description
+T0R10R $T0PBRD - Base rate description - length - 35 - over 14
+T8R10R $T8PDRD - Differential Rate Desc - length - 35 - description
+T8R10R $T8PDRD - Differential Rate Desc - length - 35 - over 14
+T9R10R File - T910LF used
+T9R10R $T9LSD - Loan status code desc - length - 35 - description
+T9R10R $T9LSD - Loan status code desc - length - 35 - over 14
+TAR52R $TAGRP - Group name - length - 6 - name
+TAR52R $TAGRD - Group description - length - 35 - description
+TAR52R $TAGRD - Group description - length - 35 - over 14
+TG1R10R $TG1DSC - Interface group description - length - 35 - description
+TG1R10R $TG1DSC - Interface group description - length - 35 - over 14
+TG1R10R $TG1FLN - Field name in XVPF - length - 6 - name
+TG2R10R $TG2DSC - Interface code description - length - 35 - description
+TG2R10R $TG2DSC - Interface code description - length - 35 - over 14
+UTU37R $HACFK - System dictionary code - length - 5 - narrative
+WCR01R $WCGRD - Group description - length - 35 - description
+WCR01R $WCGRD - Group description - length - 35 - over 14
+WDR01R WDR01R Greater than 127 - Ensure DSCCN_A is used
+WDR01R File - WD99LF used
+WDR01R $WDBRN - Branch name - length - 35 - name
+WDR01R $WDBRN - Branch name - length - 35 - over 14
+WFR01R $WFCOD - Description - length - 35 - description
+WFR01R $WFCOD - Description - length - 35 - over 14
+WGR01R $WGDSC - Description - length - 35 - description
+WGR01R $WGDSC - Description - length - 35 - over 14
+WIR01R $WIATD - OPICS accounting type des - length - 35 - description
+WIR01R $WIATD - OPICS accounting type des - length - 35 - over 14
+WJR10R $WJCPD - Customer payment type desc - length - 35 - description
+WJR10R $WJCPD - Customer payment type desc - length - 35 - over 14
+WKR10R $WKTID - Template ID description - length - 35 - description
+WKR10R $WKTID - Template ID description - length - 35 - over 14
+WMR10R $WMRGN1 - Reporting group name - length - 6 - name
+WMR10R $WMRGD - Reporting group description - length - 15 - description
+WMR10R $WMRGD - Reporting group description - length - 15 - over 14
+X0R01R $X0TREF - Transfer reference - length - 16 - over 14
+XDR10R $XDDES - Description - length - 35 - description
+XDR10R $XDDES - Description - length - 35 - over 14
+XDR10R $XDPFN - Parm file name - length - 10 - name
+XDR10R $XDFLN - Field name in file - length - 6 - name
+XDR10R $XDPHY - Data file name - length - 10 - name
+XZR01R $XZDSC - Description - length - 35 - description
+XZR01R $XZDSC - Description - length - 35 - over 14
+Z2R01R $Z2DSC - Commercial Paper Description - length - 35 - description
+Z2R01R $Z2DSC - Commercial Paper Description - length - 35 - over 14
+Z4R01R $Z4DSC - Method Description - length - 35 - description
+Z4R01R $Z4DSC - Method Description - length - 35 - over 14
+Z5R01R $Z5DSC - Paper Type Description - length - 35 - description
+Z5R01R $Z5DSC - Paper Type Description - length - 35 - over 14
+Z6R01R $Z6DSC - Purpose Description - length - 35 - description
+Z6R01R $Z6DSC - Purpose Description - length - 35 - over 14
+Z8R01R $Z8NAM - Debtor/Drawer Name - length - 35 - name
+Z8R01R $Z8NAM - Debtor/Drawer Name - length - 35 - over 14
+ZMMR01R $ZMMDES - Charge description - length - 35 - description
+ZMMR01R $ZMMDES - Charge description - length - 35 - over 14
+ZXXR01R $ZXXGRD - Group description - length - 35 - description
+ZXXR01R $ZXXGRD - Group description - length - 35 - over 14
+ZZR01R $ZZCHQN - Cheque Number - length - 15 - over 14
+ZZR02R $R76SN - Account short name - length - 15 - name
+ZZR02R $R76SN - Account short name - length - 15 - over 14
+ZZR03R $GFDAS - Customer short name - length - 15 - name
+ZZR03R $GFDAS - Customer short name - length - 15 - over 14
+ZZR05R $SCEAN - External Account Number - length - 20 - over 14

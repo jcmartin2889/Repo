@@ -1,0 +1,353 @@
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/repos/bfeq_src/!svn/ver/17701/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp
+END
+main.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/main.jsp
+END
+webfacing.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/webfacing.jsp
+END
+uxpError.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/repos/bfeq_src/!svn/ver/17345/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/uxpError.jsp
+END
+header.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/header.jsp
+END
+tabs.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/tabs.jsp
+END
+bottombar.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/bottombar.jsp
+END
+tabBar.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/repos/bfeq_src/!svn/ver/17343/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/tabBar.jsp
+END
+toolbar.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/toolbar.jsp
+END
+console.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/console.jsp
+END
+comment.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/comment.jsp
+END
+getPassword.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/repos/bfeq_src/!svn/ver/17139/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/getPassword.jsp
+END
+supervisor2.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/supervisor2.jsp
+END
+popup.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/popup.jsp
+END
+supervisor3.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/supervisor3.jsp
+END
+supervisor4.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/supervisor4.jsp
+END
+splitter.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/repos/bfeq_src/!svn/ver/16960/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/splitter.jsp
+END
+blankInLogin.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/blankInLogin.jsp
+END
+navigatorToolbar.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/navigatorToolbar.jsp
+END
+processLRPAuth.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/repos/bfeq_src/!svn/ver/17370/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/processLRPAuth.jsp
+END
+globalpromptlink.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/globalpromptlink.jsp
+END
+supervisor.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/supervisor.jsp
+END
+saveas.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/repos/bfeq_src/!svn/ver/17701/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/saveas.jsp
+END
+uxpComments.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/repos/bfeq_src/!svn/ver/16960/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/uxpComments.jsp
+END
+system.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/system.jsp
+END
+function.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/repos/bfeq_src/!svn/ver/17489/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/function.jsp
+END
+navigatorView.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/navigatorView.jsp
+END
+referrals.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/referrals.jsp
+END
+equxpinit.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/repos/bfeq_src/!svn/ver/17516/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/equxpinit.jsp
+END
+blank.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/blank.jsp
+END
+confirmation.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/confirmation.jsp
+END
+navigator.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/navigator.jsp
+END
+info.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/repos/bfeq_src/!svn/ver/16960/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/info.jsp
+END
+eqwfLogin.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/eqwfLogin.jsp
+END
+eqSpooledFile.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/eqSpooledFile.jsp
+END
+welcome.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/repos/bfeq_src/!svn/ver/17345/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/welcome.jsp
+END
+eqwfWrap.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/repos/bfeq_src/!svn/ver/16960/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/eqwfWrap.jsp
+END
+splitterv.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/repos/bfeq_src/!svn/ver/16960/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/splitterv.jsp
+END
+footer.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/footer.jsp
+END
+input.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/repos/bfeq_src/!svn/ver/17655/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/input.jsp
+END
+relogin.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/relogin.jsp
+END
+buttonbar.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/buttonbar.jsp
+END
+blankInCont.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/blankInCont.jsp
+END
+eqJobLog.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/eqJobLog.jsp
+END
+messages.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/messages.jsp
+END
+login.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/login.jsp
+END
+passwordChange.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/passwordChange.jsp
+END
+popupPV.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/popupPV.jsp
+END
+eqMessageFile.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/eqMessageFile.jsp
+END
+toolbarGblProc.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/toolbarGblProc.jsp
+END
+joblog.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/joblog.jsp
+END
+loginMain.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/loginMain.jsp
+END
+blankSpooledFile.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/blankSpooledFile.jsp
+END
+spooledfileHeader.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/spooledfileHeader.jsp
+END
+globalprocessingconsole.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/globalprocessingconsole.jsp
+END
+spooledfileFrame.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/spooledfileFrame.jsp
+END
+eqMsgQueue.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/eqMsgQueue.jsp
+END
+classic.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/classic.jsp
+END
+container.jsp
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/equation/jsp/container.jsp
+END

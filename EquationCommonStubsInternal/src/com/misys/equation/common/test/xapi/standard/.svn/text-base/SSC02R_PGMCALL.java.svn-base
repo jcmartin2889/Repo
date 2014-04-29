@@ -1,0 +1,124 @@
+/*
+ * This sample code is provided by Misys for illustrative purposes only.
+ * 
+ * These examples have not been thoroughly tested under all conditions.
+ * 
+ * Misys, therefore, cannot guarantee or imply reliability, serviceability, or function of these programs.
+ * 
+ * All programs contained herein are provided to you "AS IS" without any warranties of any kind. The implied warranties of
+ * non-infringement, merchantability and fitness for a particular purpose are expressly disclaimed.
+ */
+package com.misys.equation.common.test.xapi.standard;
+
+import com.ibm.as400.access.AS400;
+import com.ibm.as400.access.AS400Text;
+import com.ibm.as400.access.ProgramCall;
+import com.ibm.as400.access.ProgramParameter;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.test.TestEnvironment;
+
+// *************************************************************************************************
+/**
+ * 
+ * 
+ */
+// *************************************************************************************************
+public class SSC02R_PGMCALL
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	EquationStandardSession session;
+	// Input branch mnemonic
+	String service = "SSC02R";
+	String sab = "0000";
+	String san = "      ";
+	String sas = "   ";
+	String sccy = "CNY";
+	String sdhp = "SP250";
+	String fshn = "               ";
+	String sccys = "   ";
+	String dsepms = "                                   ";
+	String inputBrnmStr = "0000";
+	// *********************************************************************************************
+	/**
+	 * 
+	 */
+	// *********************************************************************************************
+	private SSC02R_PGMCALL()
+	{
+		try
+		{
+			session = TestEnvironment.getTestEnvironment().getStandardSession();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+	public static void main(String[] inputParameters)
+	{
+		SSC02R_PGMCALL test = new SSC02R_PGMCALL();
+		test.test();
+	}
+	// *********************************************************************************************
+	/**
+	 * 
+	 */
+	// *********************************************************************************************
+	public void test()
+	{
+		// Have a bash...
+		try
+		{
+			// Debit
+			AS400 drAS400 = session.getUnit().getEquationSystem().getAS400();
+			ProgramCall drSSC02R = new ProgramCall(drAS400);
+			int drCCSID = session.getUnit().getCcsid();
+
+			// the same parms can be used for both debit and credit accounts
+			ProgramParameter pSAB = new ProgramParameter(4);
+			ProgramParameter pSAN = new ProgramParameter(6);
+			ProgramParameter pSAS = new ProgramParameter(3);
+			ProgramParameter pSCCY = new ProgramParameter(3);
+			ProgramParameter pSCCYS = new ProgramParameter(3);
+			ProgramParameter pSDHP = new ProgramParameter(6);
+			ProgramParameter pSFSHN = new ProgramParameter(15);
+			ProgramParameter[] parms = { pSAB, pSAN, pSAS, pSCCY, pSCCYS, pSDHP, pSFSHN };
+
+			// ********************************
+			// Lets do the DEBIT side first...
+			// ********************************
+			byte[] bSAB = (new AS400Text(4, drCCSID)).toBytes("O543");
+			byte[] bSAN = (new AS400Text(6, drCCSID)).toBytes("      ");
+			byte[] bSAS = (new AS400Text(3, drCCSID)).toBytes("   ");
+			byte[] bSCCY = (new AS400Text(3, drCCSID)).toBytes("GBP");
+			byte[] bSCCYS = (new AS400Text(3, drCCSID)).toBytes("   ");
+			byte[] bSDHP = (new AS400Text(6, drCCSID)).toBytes("SP109 ");
+			byte[] bSFSHN = (new AS400Text(15, drCCSID)).toBytes("               ");
+
+			// Set the parms from the bytes
+			pSAB.setInputData(bSAB);
+			pSAN.setInputData(bSAN);
+			pSAS.setInputData(bSAS);
+			pSCCY.setInputData(bSCCY);
+			pSCCYS.setInputData(bSCCYS);
+			pSDHP.setInputData(bSDHP);
+			pSFSHN.setInputData(bSFSHN);
+			drSSC02R.setProgram("/QSYS.LIB/EQLIB39.LIB/SSC02R.PGM", parms);
+
+			// Call the program
+			drSSC02R.run();
+
+			// process return
+			String s1 = (String) (new AS400Text(4, drCCSID)).toObject(pSAB.getOutputData());
+			String s2 = (String) (new AS400Text(6, drCCSID)).toObject(pSAN.getOutputData());
+			String s3 = (String) (new AS400Text(3, drCCSID)).toObject(pSAS.getOutputData());
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.toString());
+			// Rollback any transactions for the unit
+		}
+	}
+}

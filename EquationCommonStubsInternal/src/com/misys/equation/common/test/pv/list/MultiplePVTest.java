@@ -1,0 +1,173 @@
+package com.misys.equation.common.test.pv.list;
+
+import java.util.ArrayList;
+
+import com.misys.equation.common.access.EquationPVData;
+import com.misys.equation.common.access.EquationStandardMultipleValidation;
+import com.misys.equation.common.access.EquationStandardValidation;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.test.EquationTestCase;
+import com.misys.equation.common.utilities.EqTimingTest;
+
+public class MultiplePVTest extends EquationTestCase
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: MultiplePVTest.java 11310 2011-06-27 12:20:21Z ESTHER.WILLIAMS $";
+	String decode = "";
+	String blankAllowed = "N";
+	String newCode = "N";
+
+	ArrayList<EquationStandardValidation> equationStandardValidations = new ArrayList<EquationStandardValidation>();
+	EquationStandardMultipleValidation equationStandardMultipleValidation = new EquationStandardMultipleValidation();
+
+	public void test()
+	{
+		// Have a bash...
+		try
+		{
+			setupPVList();
+			runPV();
+			runConsolidatedPV();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.toString());
+			assertEquals(true, false);
+		}
+	}
+
+	private void setupPVList() throws EQException
+	{
+		EquationStandardValidation equationStandardValidation;
+		EquationPVData equationPVData;
+
+		// 1
+		equationPVData = new EquationPVData(session.getUnit().getPVMetaData("SN301RW"), session.getCcsid());
+		equationPVData.setFieldValue("$3RREQ", "1");
+		equationPVData.setFieldValue("$3CCYF", "GBP");
+		equationPVData.setFieldValue("$3CCYT", "USD");
+		equationPVData.setFieldValue("$3AMTF", "000000000000000100000");
+		equationStandardValidation = new EquationStandardValidation(decode, equationPVData.getPvMetaData().getId(), equationPVData
+						.parseFieldsIntoDSCCN("N"), blankAllowed, newCode);
+		equationStandardValidations.add(equationStandardValidation);
+		equationStandardMultipleValidation.add(decode, equationPVData.getPvMetaData().getId(), equationPVData
+						.parseFieldsIntoDSCCN("N"), blankAllowed, newCode);
+
+		// 2
+		equationPVData = new EquationPVData(session.getUnit().getPVMetaData("SN301RW"), session.getCcsid());
+		equationPVData.setFieldValue("$3RREQ", "1");
+		equationPVData.setFieldValue("$3CCYF", "GBP");
+		equationPVData.setFieldValue("$3CCYT", "USD");
+		equationPVData.setFieldValue("$3AMTF", "000000000000000100000");
+		equationStandardValidation = new EquationStandardValidation(decode, equationPVData.getPvMetaData().getId(), equationPVData
+						.parseFieldsIntoDSCCN("N"), blankAllowed, newCode);
+		equationStandardValidations.add(equationStandardValidation);
+		equationStandardMultipleValidation.add(decode, equationPVData.getPvMetaData().getId(), equationPVData
+						.parseFieldsIntoDSCCN("N"), blankAllowed, newCode);
+
+		// 3
+		equationPVData = new EquationPVData(session.getUnit().getPVMetaData("SN301RW"), session.getCcsid());
+		equationPVData.setFieldValue("$3RREQ", "1");
+		equationPVData.setFieldValue("$3CCYF", "GBP");
+		equationPVData.setFieldValue("$3CCYT", "USD");
+		equationPVData.setFieldValue("$3AMTF", "000000000000000100000");
+		equationStandardValidation = new EquationStandardValidation(decode, equationPVData.getPvMetaData().getId(), equationPVData
+						.parseFieldsIntoDSCCN("N"), blankAllowed, newCode);
+		equationStandardValidations.add(equationStandardValidation);
+		equationStandardMultipleValidation.add(decode, equationPVData.getPvMetaData().getId(), equationPVData
+						.parseFieldsIntoDSCCN("N"), blankAllowed, newCode);
+
+		// 4
+		equationPVData = new EquationPVData(session.getUnit().getPVMetaData("SN301RW"), session.getCcsid());
+		equationPVData.setFieldValue("$3RREQ", "1");
+		equationPVData.setFieldValue("$3CCYF", "GBP");
+		equationPVData.setFieldValue("$3CCYT", "USD");
+		equationPVData.setFieldValue("$3AMTF", "000000000000000100000");
+		equationStandardValidation = new EquationStandardValidation(decode, equationPVData.getPvMetaData().getId(), equationPVData
+						.parseFieldsIntoDSCCN("N"), blankAllowed, newCode);
+		equationStandardValidations.add(equationStandardValidation);
+		equationStandardMultipleValidation.add(decode, equationPVData.getPvMetaData().getId(), equationPVData
+						.parseFieldsIntoDSCCN("N"), blankAllowed, newCode);
+
+		// 5
+		equationPVData = new EquationPVData(session.getUnit().getPVMetaData("SN301RW"), session.getCcsid());
+		equationPVData.setFieldValue("$3RREQ", "1");
+		equationPVData.setFieldValue("$3CCYF", "GBP");
+		equationPVData.setFieldValue("$3CCYT", "USD");
+		equationPVData.setFieldValue("$3AMTF", "000000000000000100000");
+		equationStandardValidation = new EquationStandardValidation(decode, equationPVData.getPvMetaData().getId(), equationPVData
+						.parseFieldsIntoDSCCN("N"), blankAllowed, newCode);
+		equationStandardValidations.add(equationStandardValidation);
+		equationStandardMultipleValidation.add(decode, equationPVData.getPvMetaData().getId(), equationPVData
+						.parseFieldsIntoDSCCN("N"), blankAllowed, newCode);
+
+		// 6
+		equationPVData = new EquationPVData(session.getUnit().getPVMetaData("C8R01R"), session.getCcsid());
+		equationPVData.setFieldValue("C8@CCY", "JPY");
+		equationStandardValidation = new EquationStandardValidation(decode, equationPVData.getPvMetaData().getId(), equationPVData
+						.parseFieldsIntoDSCCN("N"), blankAllowed, newCode);
+		equationStandardValidations.add(equationStandardValidation);
+		equationStandardMultipleValidation.add(decode, equationPVData.getPvMetaData().getId(), equationPVData
+						.parseFieldsIntoDSCCN("N"), blankAllowed, newCode);
+
+		// 7
+		equationPVData = new EquationPVData(session.getUnit().getPVMetaData("C8R01R"), session.getCcsid());
+		equationPVData.setFieldValue("C8@CCY", "USD");
+		equationStandardValidation = new EquationStandardValidation(decode, equationPVData.getPvMetaData().getId(), equationPVData
+						.parseFieldsIntoDSCCN("N"), blankAllowed, newCode);
+		equationStandardValidations.add(equationStandardValidation);
+		equationStandardMultipleValidation.add(decode, equationPVData.getPvMetaData().getId(), equationPVData
+						.parseFieldsIntoDSCCN("N"), blankAllowed, newCode);
+
+		// 8
+		equationPVData = new EquationPVData(session.getUnit().getPVMetaData("C8R01R"), session.getCcsid());
+		equationPVData.setFieldValue("C8@CCY", "GBP");
+		equationStandardValidation = new EquationStandardValidation(decode, equationPVData.getPvMetaData().getId(), equationPVData
+						.parseFieldsIntoDSCCN("N"), blankAllowed, newCode);
+		equationStandardValidations.add(equationStandardValidation);
+		equationStandardMultipleValidation.add(decode, equationPVData.getPvMetaData().getId(), equationPVData
+						.parseFieldsIntoDSCCN("N"), blankAllowed, newCode);
+
+		// 9
+		equationPVData = new EquationPVData(session.getUnit().getPVMetaData("GWR76R"), session.getCcsid());
+		equationPVData.setFieldValue("$R76AB", "0000");
+		equationPVData.setFieldValue("$R76AN", "000001");
+		equationPVData.setFieldValue("$R76AS", "001");
+		equationStandardValidation = new EquationStandardValidation(decode, equationPVData.getPvMetaData().getId(), equationPVData
+						.parseFieldsIntoDSCCN("N"), blankAllowed, newCode);
+		equationStandardValidations.add(equationStandardValidation);
+		equationStandardMultipleValidation.add(decode, equationPVData.getPvMetaData().getId(), equationPVData
+						.parseFieldsIntoDSCCN("N"), blankAllowed, newCode);
+
+	}
+
+	private void runPV() throws EQException
+	{
+		EqTimingTest.printStartTime("1", "Running PV individually");
+		for (EquationStandardValidation equationStandardValidation : equationStandardValidations)
+		{
+			System.out.println("before: " + equationStandardValidation.getDataInput());
+			session.executeValidate(equationStandardValidation);
+			System.out.println("after: " + equationStandardValidation.getDataOutput());
+			System.out.println();
+		}
+		EqTimingTest.printTime("1", "Running PV individually");
+	}
+
+	private void runConsolidatedPV() throws EQException
+	{
+		EqTimingTest.printStartTime("1", "Running PV multiple");
+		session.executeMultipleValidate(equationStandardMultipleValidation);
+
+		for (EquationStandardValidation equationStandardValidation : equationStandardMultipleValidation
+						.getEquationStandardValidations())
+		{
+			System.out.println("before: " + equationStandardValidation.getDataInput());
+			System.out.println("after: " + equationStandardValidation.getDataOutput());
+			System.out.println();
+		}
+		EqTimingTest.printTime("1", "Running PV multiple");
+	}
+
+}

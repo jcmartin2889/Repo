@@ -1,0 +1,95 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseMaintain;
+
+/**
+ * Equation test cases for Maintain function
+ */
+public class DMC_customer extends EquationTestCaseMaintain
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	String programName = "D24JRR";
+	String optionId = "DMC";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZCUS", "ZZZZZZ"); // Customer mnemonic (6A)
+		transaction.setFieldValue("GZCLC", "YYY"); // Customer location (3A)
+		transaction.setFieldValue("GZSFX", "999"); // Account suffix (3A)
+		transaction.setFieldValue("GZBRNM", "XXXX"); // Branch mnemonic (4A)
+		transaction.setFieldValue("GZONAM", "Zzzzzzzzzzz"); // Originator's name (20A)
+		transaction.setFieldValue("GZOID", "Yyyyyyyyy"); // Originator's identifier (10A)
+		transaction.setFieldValue("GZOREF", "Xxxxxxxxxxx"); // DD originator's reference (20A)
+		transaction.setFieldValue("GZREF", "9999000105000014"); // Internal reference (16A)
+	}
+
+	/**
+	 * Setup an existing key fields
+	 */
+	@Override
+	public void setupExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZCUS", "LENDER"); // Customer mnemonic (6A)
+		transaction.setFieldValue("GZCLC", ""); // Customer location (3A)
+		transaction.setFieldValue("GZSFX", "107"); // Account suffix (3A)
+		transaction.setFieldValue("GZBRNM", "LOND"); // Branch mnemonic (4A)
+		transaction.setFieldValue("GZONAM", "Smart"); // Originator's name (20A)
+		transaction.setFieldValue("GZOID", "Smart"); // Originator's identifier (10A)
+		transaction.setFieldValue("GZOREF", "Smart001"); // DD originator's reference (20A)
+		transaction.setFieldValue("GZREF", "0543000105000014"); // Internal reference (16A)
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	@Override
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+
+	}
+
+}

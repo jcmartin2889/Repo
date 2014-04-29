@@ -1,0 +1,317 @@
+package com.misys.equation.function.linkage;
+
+import java.util.Map;
+
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.function.beans.DisplayAttributes;
+import com.misys.equation.function.beans.DisplayAttributesSet;
+import com.misys.equation.function.beans.DisplayGroup;
+import com.misys.equation.function.beans.DisplayItemList;
+import com.misys.equation.function.beans.Element;
+import com.misys.equation.function.beans.IDisplayItem;
+import com.misys.equation.function.beans.Layout;
+
+public class ServiceLinkageDisplayAttributesSet extends AbstractServiceLinkage
+{
+
+	//This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	// the linked layout
+	protected Layout linkedLayout;
+
+	// the list of display attributes in the service
+	protected Map<String, IDisplayItem> displayAttributesMap;
+
+	// the list of display group in the service
+	protected Map<String, IDisplayItem> displayGroupsMap;
+
+	// the list of other display items in the service
+	protected Map<String, IDisplayItem> displayItemsMap;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param linkedFunction
+	 *            - the linked function
+	 * @param inputFieldsMap
+	 *            - the list of fields in other input field sets
+	 * @param loadAPIsMap
+	 *            - the list of load APIs in other field sets
+	 * 
+	 * @throws EQException
+	 */
+	public ServiceLinkageDisplayAttributesSet(Layout linkedLayout, Map<String, IDisplayItem> displayGroupsMap,
+					Map<String, IDisplayItem> displayAttributesMap, Map<String, IDisplayItem> displayItemsMap) throws EQException
+	{
+		this.linkedLayout = linkedLayout;
+		this.displayAttributesMap = displayAttributesMap;
+		this.displayGroupsMap = displayGroupsMap;
+		this.displayItemsMap = displayItemsMap;
+	}
+
+	/**
+	 * Link
+	 * 
+	 * @param secondaryLayout
+	 *            - the secondary layout
+	 * @param secondaryDisplayAttributesSet
+	 *            - the secondary display attributes set to be added to the linked layout
+	 * 
+	 * @return the display attribute set
+	 * 
+	 * @throws EQException
+	 */
+	protected DisplayAttributesSet link(Layout secondaryLayout, DisplayAttributesSet secondaryDisplayAttributesSet)
+					throws EQException
+	{
+		// Add the input field set to the linked function if needed
+		DisplayAttributesSet targetDisplayAttributesSet = addDisplayAttributesSet(secondaryDisplayAttributesSet);
+
+		// Add the fields
+		addDisplayItems(targetDisplayAttributesSet.getDisplayItems(), secondaryDisplayAttributesSet.getDisplayItems(),
+						secondaryLayout.getId(), secondaryDisplayAttributesSet.getId());
+
+		// Return the input field set
+		return targetDisplayAttributesSet;
+	}
+
+	/**
+	 * Add the display attribute set to the linked function if not existing
+	 * 
+	 * @param inputFieldSet
+	 *            - the input field set
+	 * 
+	 * @return the input field set added (or the input field set from the linked function if already existing)
+	 * 
+	 * @throws EQException
+	 */
+	protected DisplayAttributesSet addDisplayAttributesSet(DisplayAttributesSet displayAttributesSet) throws EQException
+	{
+		// Determine if the field set already exists in the primary field set
+		DisplayAttributesSet newDisplayAttributesSet = linkedLayout.getDisplayAttributesSet(displayAttributesSet.getId());
+
+		if (newDisplayAttributesSet == null)
+		{
+			newDisplayAttributesSet = new DisplayAttributesSet(displayAttributesSet);
+			newDisplayAttributesSet.getDisplayItems().clear();
+			linkedLayout.addDisplayAttributesSet(newDisplayAttributesSet);
+		}
+
+		return newDisplayAttributesSet;
+	}
+
+	/**
+	 * Add the list of items in the display attributes set from the source to the target
+	 * 
+	 * @param targetDisplayAttributesSet
+	 *            - the target display attribute sets
+	 * @param sourceLayoutId
+	 *            - the layout id
+	 * @param sourceDisplayAttributeId
+	 *            - the display attribute set id
+	 * 
+	 * @throws EQException
+	 */
+	protected void addDisplayItems(DisplayItemList targetDisplayItems, DisplayItemList sourceDisplayItems, String sourceLayoutId,
+					String sourceDisplayAttributeId) throws EQException
+	{
+		// Re-add unique fields
+		for (IDisplayItem displayItem : sourceDisplayItems)
+		{
+			addDisplayItem(targetDisplayItems, displayItem, sourceLayoutId, sourceDisplayAttributeId);
+		}
+	}
+
+	/**
+	 * Add the item to the target
+	 * 
+	 * @param targetDisplayItems
+	 *            - the list of items where the new item will be added
+	 * @param sourceDisplayItem
+	 *            - the item to be added
+	 * @param sourceLayoutId
+	 *            - the layout id
+	 * @param sourceDisplayAttributeId
+	 *            - the display attribute set id
+	 * 
+	 * @throws EQException
+	 */
+	protected void addDisplayItem(DisplayItemList targetDisplayItems, IDisplayItem sourceDisplayItem, String sourceLayoutId,
+					String sourceDisplayAttributeId) throws EQException
+	{
+		// Display group?
+		if (sourceDisplayItem instanceof DisplayGroup)
+		{
+			addDisplayGroup(targetDisplayItems, sourceDisplayItem, sourceLayoutId, sourceDisplayAttributeId);
+		}
+
+		// Display item?
+		else if (sourceDisplayItem instanceof DisplayAttributes)
+		{
+			addDisplayAtributes(targetDisplayItems, sourceDisplayItem, sourceLayoutId, sourceDisplayAttributeId);
+		}
+
+		// This is a catch-all for all type of Display Items, which must also be an Element
+		else if (sourceDisplayItem instanceof Element)
+		{
+			addDisplayElement(targetDisplayItems, sourceDisplayItem, sourceLayoutId, sourceDisplayAttributeId);
+		}
+
+		// This should not happen
+		else
+		{
+			addMessage("Language.LinkageUnknownDisplayItemError", sourceLayoutId, sourceDisplayAttributeId, "", "", "");
+		}
+
+	}
+
+	/**
+	 * Add a display item
+	 * 
+	 * @param targetDisplayItemList
+	 *            - the target list where the item is to be added
+	 * @param sourceDisplayItem
+	 *            - the display item to be added
+	 * @param sourceLayoutId
+	 *            - the layout id
+	 * @param sourceDisplayAttributeId
+	 *            - the display attribute set id
+	 */
+	protected void addDisplayElement(DisplayItemList targetDisplayItemList, IDisplayItem sourceDisplayItem, String sourceLayoutId,
+					String sourceDisplayAttributeId)
+	{
+		Element sourceElement = (Element) sourceDisplayItem;
+
+		IDisplayItem targetDisplayItem = displayItemsMap.get(sourceElement.getId());
+		Element targetElement = (Element) targetDisplayItem;
+
+		// Not existing, then add it
+		if (targetElement == null)
+		{
+			targetDisplayItemList.add(sourceDisplayItem);
+			displayItemsMap.put(sourceElement.getId(), sourceDisplayItem);
+		}
+
+		// Existing, make sure same type
+		else
+		{
+			ServiceLinkageDisplayItem serviceLinkageDisplayItem = new ServiceLinkageDisplayItem(targetDisplayItem);
+			serviceLinkageDisplayItem.link(sourceDisplayItem, sourceLayoutId, sourceDisplayAttributeId);
+			messageContainer.addMessages(serviceLinkageDisplayItem.getMessageContainer());
+		}
+	}
+
+	/**
+	 * Add a display attribute
+	 * 
+	 * @param targetDisplayItemList
+	 *            - the target list where the item is to be added
+	 * @param sourceDisplayItem
+	 *            - the display item to be added
+	 * @param sourceLayoutId
+	 *            - the layout id
+	 * @param sourceDisplayAttributeId
+	 *            - the display attribute set id
+	 */
+	protected void addDisplayAtributes(DisplayItemList targetDisplayItemList, IDisplayItem sourceDisplayItem,
+					String sourceLayoutId, String sourceDisplayAttributeId)
+	{
+		DisplayAttributes sourceDisplayAttribute = (DisplayAttributes) sourceDisplayItem;
+		DisplayAttributes targetDisplayAttribute = (DisplayAttributes) displayAttributesMap.get(sourceDisplayAttribute.getId());
+
+		// Not existing, then add it
+		if (targetDisplayAttribute == null)
+		{
+			targetDisplayItemList.add(sourceDisplayItem);
+			displayAttributesMap.put(sourceDisplayAttribute.getId(), sourceDisplayAttribute);
+		}
+
+		// Existing, make sure same type
+		else
+		{
+			ServiceLinkageDisplayAttributes serviceLinkageDisplayAttributes = new ServiceLinkageDisplayAttributes(
+							targetDisplayAttribute);
+			serviceLinkageDisplayAttributes.link(sourceDisplayAttribute, sourceLayoutId, sourceDisplayAttributeId);
+			messageContainer.addMessages(serviceLinkageDisplayAttributes.getMessageContainer());
+		}
+	}
+
+	/**
+	 * Add a display group
+	 * 
+	 * @param targetDisplayItemList
+	 *            - the target list where the item is to be added
+	 * @param sourceDisplayItem
+	 *            - the display item to be added
+	 * @param sourceLayoutId
+	 *            - the layout id
+	 * @param sourceDisplayAttributeId
+	 *            - the display attribute set id
+	 * 
+	 * @throws EQException
+	 */
+	protected void addDisplayGroup(DisplayItemList targetDisplayItemList, IDisplayItem sourceDisplayItem, String sourceLayoutId,
+					String sourceDisplayAttributeId) throws EQException
+	{
+		DisplayGroup sourceDisplayGroup = (DisplayGroup) sourceDisplayItem;
+
+		// Search the display group from within the target display item list and see if it is existing
+		IDisplayItem targetDisplayItem = getDisplayGroup(targetDisplayItemList, sourceDisplayGroup.getId());
+		DisplayGroup targetDisplayGroup;
+
+		// Not existing, then create and add a new target group into the target list
+		if (targetDisplayItem == null)
+		{
+			// Create and add the display group
+			targetDisplayGroup = new DisplayGroup(sourceDisplayGroup);
+			targetDisplayGroup.getDisplayItems().clear();
+			targetDisplayItemList.add(targetDisplayGroup);
+
+			// Get the list
+			targetDisplayItem = targetDisplayGroup;
+		}
+
+		// Existing, then this is the target group
+		else
+		{
+			targetDisplayGroup = (DisplayGroup) targetDisplayItem;
+
+		}
+
+		// add the fields to this target group
+		addDisplayItems(targetDisplayGroup.getDisplayItems(), sourceDisplayGroup.getDisplayItems(), sourceLayoutId,
+						sourceDisplayAttributeId);
+
+		// no items in the group, then delete it
+		if (targetDisplayGroup.getDisplayItems().size() == 0)
+		{
+			targetDisplayItemList.remove(targetDisplayGroup);
+		}
+	}
+
+	/**
+	 * Search for a group id in the list
+	 * 
+	 * @param displayItemList
+	 *            - the list to be searched
+	 * @param groupId
+	 *            - the group id
+	 * 
+	 * @return the display group
+	 */
+	private IDisplayItem getDisplayGroup(DisplayItemList displayItemList, String groupId)
+	{
+		for (IDisplayItem displayItem : displayItemList)
+		{
+			if (displayItem instanceof DisplayGroup)
+			{
+				if (((DisplayGroup) displayItem).getId().equals(groupId))
+				{
+					return displayItem;
+				}
+			}
+		}
+		return null;
+	}
+
+}

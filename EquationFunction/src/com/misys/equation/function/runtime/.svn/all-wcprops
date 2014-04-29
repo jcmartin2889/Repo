@@ -1,0 +1,287 @@
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/repos/bfeq_src/!svn/ver/17834/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime
+END
+FunctionBankFusionSrv.java
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/17190/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/FunctionBankFusionSrv.java
+END
+ScreenSetDummy.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/ScreenSetDummy.java
+END
+UserData.java
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/repos/bfeq_src/!svn/ver/17190/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/UserData.java
+END
+FunctionPrinterFormatter.java
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/FunctionPrinterFormatter.java
+END
+FunctionTransactions.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/FunctionTransactions.java
+END
+UserExitDetails.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/UserExitDetails.java
+END
+FunctionAPI.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/FunctionAPI.java
+END
+DisplayGroupHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/DisplayGroupHandler.java
+END
+UserModifyData.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/repos/bfeq_src/!svn/ver/17341/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/UserModifyData.java
+END
+ScreenSetAC2.java
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/ScreenSetAC2.java
+END
+FunctionKeys.java
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/FunctionKeys.java
+END
+EquationStandardService.java
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/EquationStandardService.java
+END
+FunctionCommonData.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/FunctionCommonData.java
+END
+FunctionUpdate.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/repos/bfeq_src/!svn/ver/17761/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/FunctionUpdate.java
+END
+ScreenSetCRM.java
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/ScreenSetCRM.java
+END
+RepeatingGroupStatusHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/RepeatingGroupStatusHandler.java
+END
+ScreenSetSupervisor.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/ScreenSetSupervisor.java
+END
+FunctionAdaptorHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/FunctionAdaptorHandler.java
+END
+FunctionValidate.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/17613/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/FunctionValidate.java
+END
+SecurityLevel.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/SecurityLevel.java
+END
+ConversionRules.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/17270/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/ConversionRules.java
+END
+FunctionInfo.java
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/FunctionInfo.java
+END
+LoadFieldSetStatusHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/LoadFieldSetStatusHandler.java
+END
+UserRepeatingDataManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/UserRepeatingDataManager.java
+END
+FunctionEquationStandardObjectHelper.java
+K 25
+svn:wc:ra_dav:version-url
+V 158
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/FunctionEquationStandardObjectHelper.java
+END
+FunctionBankFusionLinkService.java
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/repos/bfeq_src/!svn/ver/17227/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/FunctionBankFusionLinkService.java
+END
+FunctionBankFusion.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/17834/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/FunctionBankFusion.java
+END
+FunctionExcel.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/FunctionExcel.java
+END
+FunctionDebugInfo.java
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/FunctionDebugInfo.java
+END
+ShutterGroupHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/ShutterGroupHandler.java
+END
+UserModifyRepeatingDataManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/UserModifyRepeatingDataManager.java
+END
+ShutterGroup.java
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/ShutterGroup.java
+END
+FunctionMessages.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/FunctionMessages.java
+END
+FunctionHandlerData.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/17190/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/FunctionHandlerData.java
+END
+ScreenSetAC1.java
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/ScreenSetAC1.java
+END
+ScreenSetAC3.java
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/ScreenSetAC3.java
+END
+FunctionHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/17343/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/FunctionHandler.java
+END
+ScreenSetRepeatFields.java
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/ScreenSetRepeatFields.java
+END
+LayoutAdaptorHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/LayoutAdaptorHandler.java
+END
+FunctionMsgManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/FunctionMsgManager.java
+END
+FunctionContextHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/FunctionContextHandler.java
+END
+FunctionPrinter.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/FunctionPrinter.java
+END
+FunctionSession.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/FunctionSession.java
+END
+ScreenSetHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/ScreenSetHandler.java
+END
+FunctionMessage.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/FunctionMessage.java
+END
+FunctionHandlerTable.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16960/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/FunctionHandlerTable.java
+END
+ScreenSet.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/17356/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/runtime/ScreenSet.java
+END

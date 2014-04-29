@@ -1,0 +1,263 @@
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/repos/bfeq_src/!svn/ver/17762/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors
+END
+UpdateEsfStatusRqHeaderDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 169
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/UpdateEsfStatusRqHeaderDescriptor.java
+END
+OrigDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/17759/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/OrigDescriptor.java
+END
+UpdateEsfStatusRsHeaderDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 169
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/UpdateEsfStatusRsHeaderDescriptor.java
+END
+StartEsfRqProcessHeaderDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 169
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/StartEsfRqProcessHeaderDescriptor.java
+END
+StartEsfRsProcessHeaderDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 169
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/StartEsfRsProcessHeaderDescriptor.java
+END
+ServiceRequestDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 160
+/svn/repos/bfeq_src/!svn/ver/17762/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/ServiceRequestDescriptor.java
+END
+TaskBasicDetailsDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 162
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/TaskBasicDetailsDescriptor.java
+END
+ServiceRqHeaderDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 161
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/ServiceRqHeaderDescriptor.java
+END
+TaskEsfRqHeaderDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 161
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/TaskEsfRqHeaderDescriptor.java
+END
+EqProcessHeaderDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 161
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/EqProcessHeaderDescriptor.java
+END
+ServiceRsHeaderDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 161
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/ServiceRsHeaderDescriptor.java
+END
+TaskEsfRsHeaderDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 161
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/TaskEsfRsHeaderDescriptor.java
+END
+ServiceResponseDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 161
+/svn/repos/bfeq_src/!svn/ver/17762/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/ServiceResponseDescriptor.java
+END
+UiControlRqDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 157
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/UiControlRqDescriptor.java
+END
+SearchRqHeaderDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 160
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/SearchRqHeaderDescriptor.java
+END
+UiControlRsDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 157
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/UiControlRsDescriptor.java
+END
+SearchRsHeaderDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 160
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/SearchRsHeaderDescriptor.java
+END
+JournalKeyDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 156
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/JournalKeyDescriptor.java
+END
+StartLRPProcessRqHeaderDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 169
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/StartLRPProcessRqHeaderDescriptor.java
+END
+StartLRPProcessRsHeaderDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 169
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/StartLRPProcessRsHeaderDescriptor.java
+END
+RqHeaderDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/RqHeaderDescriptor.java
+END
+RsHeaderDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/RsHeaderDescriptor.java
+END
+EnquiryRqDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/17312/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/EnquiryRqDescriptor.java
+END
+EnquiryRsDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/17312/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/EnquiryRsDescriptor.java
+END
+OverridesDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/OverridesDescriptor.java
+END
+ServiceUserExitRqHeaderDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 169
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/ServiceUserExitRqHeaderDescriptor.java
+END
+ServiceUserExitRsHeaderDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 169
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/ServiceUserExitRsHeaderDescriptor.java
+END
+CrmMessagesDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 157
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/CrmMessagesDescriptor.java
+END
+ExtensionDataRqDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 161
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/ExtensionDataRqDescriptor.java
+END
+FormattingDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 156
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/FormattingDescriptor.java
+END
+EqMessageDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/EqMessageDescriptor.java
+END
+ExtensionDataRsDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 161
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/ExtensionDataRsDescriptor.java
+END
+FieldLocationDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 159
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/FieldLocationDescriptor.java
+END
+TaskRqHeaderDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 158
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/TaskRqHeaderDescriptor.java
+END
+BranchLimitParametersDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 167
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/BranchLimitParametersDescriptor.java
+END
+TaskRsHeaderDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 158
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/TaskRsHeaderDescriptor.java
+END
+LayoutUserExitRqHeaderDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 168
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/LayoutUserExitRqHeaderDescriptor.java
+END
+LayoutUserExitRsHeaderDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 168
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/LayoutUserExitRsHeaderDescriptor.java
+END
+ServiceStackDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 158
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/ServiceStackDescriptor.java
+END
+CrmMessageDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 156
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/CrmMessageDescriptor.java
+END
+EsfKeyDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/EsfKeyDescriptor.java
+END
+MessageStatusDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 159
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/MessageStatusDescriptor.java
+END
+BranchKeysDescriptor.java
+K 25
+svn:wc:ra_dav:version-url
+V 156
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/descriptors/BranchKeysDescriptor.java
+END

@@ -1,0 +1,125 @@
+package com.misys.equation.global.test;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
+import junit.framework.TestCase;
+
+import com.misys.equation.common.access.EquationStandardListEnquiry;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationUnit;
+import com.misys.equation.common.access.GlobalProcessingApiExecuter;
+import com.misys.equation.common.test.TestEnvironment;
+import com.misys.equation.common.utilities.EquationLogger;
+
+/**
+ * This test is going to test the execution of the H70DER program in a global processing environment. It will execute this API using
+ * all predefined global processing sessions.
+ * 
+ * @author deroset
+ * 
+ */
+public class GlobalProcessingApiH70DERTest extends TestCase
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: GlobalProcessingApiH70DERTest.java 11310 2011-06-27 12:20:21Z ESTHER.WILLIAMS $";
+	private final EquationLogger LOG = new EquationLogger(this.getClass());
+	private EquationUnit unit;
+	protected EquationStandardSession session;
+	private GlobalProcessingApiExecuter globalProcessingApiExecuter;
+	private HashMap<String, String> apiFields;
+	private final String apiName = "H70DER";
+	private final String unitToBeUsed = "GP4";
+	private final int expectedNumberOfSession = 2;
+	private String sessionIdentifier;
+
+	@Override
+	public void setUp() throws Exception
+	{
+		createApiFields();
+		setUpTestingEnvironment();
+		globalProcessingApiExecuter = new GlobalProcessingApiExecuter(session);
+		globalProcessingApiExecuter.setApiFields(apiFields);
+		globalProcessingApiExecuter.setApiName(apiName);
+		globalProcessingApiExecuter.setSystemAndUnitToBeUsed("SLOUGH1", "GP5");
+	}
+
+	/**
+	 * This method set Session and EqUnit.
+	 */
+	public void setUpTestingEnvironment()
+	{
+		try
+		{
+			TestEnvironment.setTestEnvironment();
+			unit = TestEnvironment.getTestEnvironment().getEquationUnit();
+			session = TestEnvironment.getTestEnvironment().getStandardSession();
+
+		}
+		catch (Exception exception)
+		{
+			if (LOG.isErrorEnabled())
+			{
+				StringBuilder message = new StringBuilder("There was an error in ");
+				message.append(this.getClass().getSimpleName());
+				message.append(" :setUpTestingEnvironment() ");
+				LOG.error(message.toString(), exception);
+			}
+		}
+	}
+
+	/**
+	 * This method will set all H70DER fields.
+	 */
+	private void createApiFields()
+	{
+		apiFields = new HashMap<String, String>();
+
+		// apiFields.put("HZCUS", "D00001"); // Customer mnemonic (6A)
+		// apiFields.put("HZCLC", ""); // / Customer location (3A)#
+		apiFields.put("HZAN", "123456");
+		// apiFields.put("HZCCYR", "DTA");
+
+		// LOC MNEMONIC
+		// DEP CONTRL GP4 --> yes
+		// 001 CP0002 GP4 --> yes
+		// "" D00001 GP4--> yes
+		// "" D00001 GP5--> yes
+
+	}
+
+	/**
+	 * This method will test all predefined global processing sessions.
+	 */
+	public void testSession()
+	{
+		List<EquationStandardSession> equationStandardSessions;
+
+		equationStandardSessions = globalProcessingApiExecuter.getEquationStandardSessions();
+		assertNotNull(equationStandardSessions);
+		assertEquals(equationStandardSessions.size(), expectedNumberOfSession);
+	}
+
+	/***
+	 * This method will assert the result of the execution. if there is any message error the test will fail.
+	 */
+	public void testProgramExecution()
+	{
+		globalProcessingApiExecuter.executeAPI();
+
+		Iterator<String> iterator = globalProcessingApiExecuter.getResults().keySet().iterator();
+		String unitId = null;
+		EquationStandardListEnquiry equationStandardListEnquiry = null;
+
+		while (iterator.hasNext())
+		{
+			unitId = iterator.next();
+			equationStandardListEnquiry = (EquationStandardListEnquiry) globalProcessingApiExecuter.getResults().get(unitId);
+			assertNotNull(equationStandardListEnquiry);
+			System.out.println("AAA" + equationStandardListEnquiry);
+		}
+
+	}
+}

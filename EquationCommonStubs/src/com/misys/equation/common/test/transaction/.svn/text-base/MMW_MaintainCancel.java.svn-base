@@ -1,0 +1,95 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseMaintainCancel;
+
+/**
+ * Equation test cases for Maintain Manual Cashflow
+ */
+public class MMW_MaintainCancel extends EquationTestCaseMaintainCancel
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	String programName = "B40FRR";
+	String optionId = "MMW";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		retrieveBeforeCancel = false;
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup an existing key fields only
+	 */
+	@Override
+	public void setupExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZBRNM", "LOND"); // Deal branch mnemonic (4A)
+		transaction.setFieldValue("GZDLP", "GDT"); // Deal type (3A)
+		transaction.setFieldValue("GZDLR", "GDA103"); // Deal reference (13A)
+		transaction.setFieldValue("GZOCDT", "1000305"); // Database date; cyymmdd (7S,0)
+		transaction.setFieldValue("GZOAMT", "10000"); // Amount larger than one transaction (15P,0)
+		transaction.setFieldValue("GZOCTP", "I"); // Movement type; I=Interest, P=Principal (1A)
+		transaction.setFieldValue("GZOUCT", "UA"); // User def. cashflow type (2A)
+		// transaction.setFieldValue("GZNS3", "001"); // Sequence number (3P,0)
+	}
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZBRNM", "KBSL"); // Deal branch mnemonic (4A)
+		transaction.setFieldValue("GZDLP", "GD1"); // Deal type (3A)
+		transaction.setFieldValue("GZDLR", "XXXXXX"); // Deal reference (13A)
+	}
+
+	/**
+	 * Setup the mandatory fields (maintain mode)
+	 */
+	@Override
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZYNPG", "Y"); // Postings generated? (1A)
+	}
+
+	@Override
+	public void test01300Cancel_Validate_ExistingRecord() throws Exception
+	{
+	}
+}

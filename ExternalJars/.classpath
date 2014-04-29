@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="lib" path="lib/activation.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/aspectjrt.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/axis.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-betwixt-0.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/db2jcc_license_cisuz.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/db2jcc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/itext-2.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jaxrpc.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jms.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jt400.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/mail.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/saaj.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/wsif.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/bsf-2.3.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-chain-1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-fileupload-1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-validator-1.3.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jstl-1.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/standard-1.0.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/struts-core-1.3.10.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/struts-el-1.3.10.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/struts-extras-1.3.10.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/struts-faces-1.3.10.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/struts-mailreader-dao-1.3.10.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/struts-scripting-1.3.10.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/struts-taglib-1.3.10.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/struts-tiles-1.3.10.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/el-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jasper-el.jar"/>
+	<classpathentry kind="lib" path="lib/ant.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/BankFusionBPD.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/BankFusionCommonSupport.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/BankFusionMessaging.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/BankFusionServer.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/BankFusionWorkBench.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/BankFusionClient.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/BankFusionDeviceService.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/BankFusionCommander.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/BankFusionEncryption.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-lang-2.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-collections-3.2.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/junit-3.8.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/wsdl4j-1.6.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/BF_castor-xml-1.3.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/BF_castor-codegen-1.3.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/castor-core-1.3.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/castor-xml-schema-1.3.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/poi-3.6-20091214.jar"/>
+	<classpathentry kind="lib" path="lib/tomcat-dbcp.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/connector-api-1.5.jar"/>
+	<classpathentry kind="lib" path="lib/WebSphere/was_public.jar"/>
+	<classpathentry kind="lib" path="lib/antlr-2.7.6.jar"/>
+	<classpathentry kind="lib" path="lib/commons-discovery-0.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-io-1.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/log4j-1.2.15.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xercesImpl-2.9.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/BFPCommon.jar"/>
+	<classpathentry kind="lib" path="lib/serializer-2.7.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/tools-1.6.0_11.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.core-3.0.5.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.jdbc-3.0.5.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.transaction-3.0.5.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.beans-3.0.5.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.web-3.0.5.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.context-3.0.5.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.asm-3.0.5.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/org.springframework.expression-3.0.5.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/velocity-1.6.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/DBLoaderCommon.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/DBLoaderExport.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/FusionBundler.jar" sourcepath="lib/FusionBundler.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/FusionUtils.jar" sourcepath="lib/FusionBundler.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-beanutils-1.8.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-digester-2.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sequence-library-1.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/antlr-runtime-3.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sqljet-1.1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/svnkit.jar" sourcepath="lib/svnkit.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/cas-server-core-3.4.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-codec-1.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/UXPFramework.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/UXPFrameworkAPI.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/gson-1.7.1.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

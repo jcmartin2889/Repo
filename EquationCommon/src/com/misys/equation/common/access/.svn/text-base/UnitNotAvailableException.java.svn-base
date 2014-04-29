@@ -1,0 +1,50 @@
+package com.misys.equation.common.access;
+
+public class UnitNotAvailableException extends Exception
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private static final long serialVersionUID = -2016415943173295283L;
+
+	/** The ID of the system the unavailable unit resides within */
+	private final String system;
+	/** The mnemonic of the unavailable unit */
+	private final String unit;
+
+	/**
+	 * Construct a new {@link UnitNotAvailableException}
+	 * 
+	 * @param system
+	 *            - he system the unavailable unit resides within
+	 * @param unit
+	 *            - the unavailable unit
+	 */
+	public UnitNotAvailableException(String system, String unit)
+	{
+		super();
+		this.system = system;
+		this.unit = unit;
+	}
+
+	/**
+	 * @return the system the unavailable unit resides within
+	 */
+	public String getSystem()
+	{
+		return system;
+	}
+
+	/**
+	 * @return the unavailable unit's mnemonic
+	 */
+	public String getUnit()
+	{
+		return unit;
+	}
+
+	@Override
+	public String toString()
+	{
+		return system + "/" + unit;
+	}
+}

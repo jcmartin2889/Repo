@@ -1,0 +1,885 @@
+// ------------------------------------------------------------------------------
+// Copyright Misys IBS
+//
+// Owner: Des Middlemass
+//
+// Interface: EQSession: Handles Equation connection
+// ------------------------------------------------------------------------------
+package com.misys.equation.common.internal.eapi.core;
+
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import com.misys.equation.common.internal.eapi.dataaccesslibrary.LogoffDataAccess;
+import com.misys.equation.common.internal.eapi.dataaccesslibrary.LogonDataAccess;
+import com.misys.equation.common.internal.eapi.datamanager.DataManagerException;
+import com.misys.equation.common.internal.eapi.datamanager.IDataManager;
+import com.misys.equation.common.internal.eapi.encryption.EQBlowfish;
+import com.misys.equation.common.utilities.EQCommonConstants;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.Toolbox;
+
+/***********************************************************************************************************************************
+ * Maintains the database connection and specifies how commitment control will be carried out.
+ * <P>
+ * This API set uses SQL Stored Procedures over a JDBC Connection to invoke business objects on the Equation host and perform
+ * database enquiries and updates.
+ * <P>
+ * This object handles the java.sql.Connection with the host.
+ * <P>
+ * Great care should be taken if the application intends to share connections between different users; only one logical transaction
+ * at a time should ever be processed on a connection.
+ * <P>
+ * Note that invocations of Equation on this connection are synchronous.
+ * <P>
+ * The EQSession object also supports methods for handling commitment control.
+ * <p>
+ * If a connection is supplied and XA is not used then the EQSession commit method must be used. StartTrans and setAutoCommit
+ * methods are not appropriate in this case.
+ * <P>
+ * If a connection is not supplied, by default commitment control is handled automatically. However, if the application wishes to
+ * handle commit and rollback operations, it must call setAutoCommit with false, and then use the startTrans, commit and rollback
+ * methods appropriately.
+ * <P>
+ * See the EQSample for usage.
+ * <P>
+ * 
+ * @see com.misys.equation.ebs.samples.EQSample <P>
+ * @author Misys International Banking Systems Ltd.
+ */
+// ******************************************************************************
+/**
+ * A connection (session) with a specific Equation unit. Equation APIs are executed and results are returned within the context of
+ * an EQSession. The implementations of this class along with the Equation documentation will be able to provide information
+ * describing its capabilities. This information is obtained with the <code>getMetaData  </code> method.
+ * <P>
+ * Note: By default an <code>EQSession</code> object is in the auto-commit mode of the underlying JDBC <code>Connection</code>
+ * object.
+ */
+// ******************************************************************************
+public class EQSessionImpl implements EQSession
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EQSessionImpl.java 13179 2012-04-03 23:23:51Z jonathan.perkins $";
+	/*******************************************************************************************************************************
+	 * Copyright <a href="http://www.misys.com"> Misys International Banking Systems Ltd, 2006 </a>
+	 */
+	public static final String copyright = "Copyright Misys International Banking Systems Ltd, 2006";
+	private static final EquationLogger LOG = new EquationLogger(EQSessionImpl.class);
+	private static final int PARAM_EQKEYEXC_KEY = 1;
+	private static final int PARAM_EQKEYEXC_CALLSTATUS = 2;
+	private static final int paddedPwdLength = 24;
+	private static final String storedProcedureCallEQKEYGEN = "CALL EQKEYGEN(?,?)";
+	private static final int PARAM_EQTXM_CMD = 1;
+	private static final int PARAM_EQTXM_CALLSTATUS = 2;
+	private static final int PARAM_EQTXM_MESSAGE_ID = 3;
+	private static final int PARAM_EQTXM_MESSAGE_TEXT = 4;
+	private static final String storedProcedureCallEQTXM = "CALL EQTXM(?,?,?,?)";
+	private static final String CMD_COMMIT = "COMMIT    ";
+	private static final String CMD_EXTCOMMIT = "EXTCOMMIT ";
+	// private static final String CMD_END_TRANS = "USERBNDOFF";
+	private static final String CMD_RESET_JOB = "RESETJOB  ";
+	// CC API commands all 10 chars long
+	// private static final String CMD_STARTCC = "EQCCSTR ";
+	// private static final String CMD_ENDCC = "EQCCEND ";
+	private static final String CMD_ROLLBACK = "ROLLBACK  ";
+	private static final String CMD_START_TRANS = "USERBNDON ";
+	private static final String CMD_PROCESS_DATE = "PROCESSDTE";
+	private String equationUserIdentifier;
+	private EQSessionProperties properties;
+	private boolean autoEQCommit;
+	private final boolean connectionSupplied;
+	private Connection jdbcConnection;
+	private boolean loggedOn;
+	private String strCCSID;
+	private String strJobNumber;
+	private String strUserLanguage;
+	private char chPromptChar;
+	private char chSinglePromptChar;
+	// transaction state, only used if autoCommit is off
+	private boolean txStarted;
+	private final EQGAEMetaData metaDataMap;
+	private final String systemName;
+	private final String unitMnemonic;
+	/*******************************************************************************************************************************
+	 * Create a session using an existing connection.
+	 * <P>
+	 * The credentials for Equation must be provided
+	 * <P>
+	 * 
+	 * @throws EQException
+	 *             if the connection cannot be established.
+	 */
+	protected EQSessionImpl(Connection connection, EQSessionProperties properties, String equationUserIdentifier,
+					char[] equationUserPassword) throws EQException
+	{
+		connectionSupplied = true;
+		this.properties = (EQSessionProperties) properties.clone();
+		systemName = properties.getSystemName();
+		unitMnemonic = properties.getUnitMnemonic();
+		this.equationUserIdentifier = equationUserIdentifier;
+		this.jdbcConnection = connection;
+		autoEQCommit = false;
+		try
+		{
+			connection.setAutoCommit(false);
+		}
+		catch (SQLException e)
+		{
+			LOG.error("EQSessionImpl: Unable to disable SQL Connection AutoCommit." + Toolbox.getExceptionMessage(e)
+							+ e.getSQLState() + e.getErrorCode());
+		}
+		logOn(equationUserIdentifier, equationUserPassword);
+		metaDataMap = new EQGAEMetaData();
+	}
+	/*******************************************************************************************************************************
+	 * Create a session and new connection to the host.
+	 * <P>
+	 * The connection will be established using the DB parameters configured in the application config file, which is found on the
+	 * CLASSPATH. The credentials for the connection and Equation must be provided
+	 * <P>
+	 * 
+	 * @throws EQException
+	 *             if the connection cannot be established.
+	 */
+	protected EQSessionImpl(EQSessionProperties properties, String DBUserIdentifier, char[] DBUserPassword,
+					String equationUserIdentifier, char[] equationUserPassword) throws EQException
+	{
+		Connection connection = null;
+		try
+		{
+			EQEnvironment app = EQEnvironment.getAppEnvironment();
+			String strDMImpl = app.getProperty("DataManagerImplementation");
+			Class cls = EQClassLoader.load(strDMImpl);
+			IDataManager idm = (IDataManager) cls.newInstance();
+			connection = idm.getDatabaseConnection(DBUserIdentifier, DBUserPassword);
+		}
+		catch (DataManagerException ex)
+		{
+			throw new EQException("Failed to connect to host");
+		}
+		catch (IllegalAccessException ex)
+		{
+			throw new EQException("No Access :" + Toolbox.getExceptionMessage(ex));
+		}
+		catch (InstantiationException ex)
+		{
+			throw new EQException("Cannot Instantiate Class :" + Toolbox.getExceptionMessage(ex));
+		}
+		connectionSupplied = false;
+		this.properties = (EQSessionProperties) properties.clone();
+		systemName = properties.getSystemName();
+		unitMnemonic = properties.getUnitMnemonic();
+		this.equationUserIdentifier = equationUserIdentifier;
+		this.jdbcConnection = connection;
+		if (properties.getTransactionIsolationLevel() == EQSessionProperties.TRANSACTION_ISOLATION_EQUATION_ONLY)
+		{
+			setAutoEQCommit(properties.isAutoEQCommit());
+		}
+		else
+		{
+			autoEQCommit = false;
+		}
+		try
+		{
+			jdbcConnection.setAutoCommit(false);
+		}
+		catch (java.sql.SQLException e)
+		{
+			LOG.error("EQSessionImpl: Unable to disable SQL Connection AutoCommit." + Toolbox.getExceptionMessage(e)
+							+ e.getSQLState() + e.getErrorCode());
+		}
+		logOn(equationUserIdentifier, equationUserPassword);
+		metaDataMap = new EQGAEMetaData();
+	}
+	// Implement the call to the stored procedure
+	// returns an exception if the call fails, null otherwise
+	private String callCCAPI(String cmd) throws SQLException, EQException
+	{
+		CallableStatement cs = null;
+		cs = jdbcConnection.prepareCall(storedProcedureCallEQTXM);
+		cs.setString(PARAM_EQTXM_CMD, cmd);
+		cs.registerOutParameter(PARAM_EQTXM_CALLSTATUS, java.sql.Types.CHAR);
+		cs.registerOutParameter(PARAM_EQTXM_MESSAGE_ID, java.sql.Types.CHAR);
+		cs.registerOutParameter(PARAM_EQTXM_MESSAGE_TEXT, java.sql.Types.CHAR);
+		// Execute the call statement
+		cs.execute();
+		String strCallStatus = cs.getString(PARAM_EQTXM_CALLSTATUS).trim();
+		String strMessageId = null;
+		String strMessageText = null;
+		strMessageText = cs.getString(PARAM_EQTXM_MESSAGE_TEXT);
+		if (!strCallStatus.equals("0"))
+		{
+			strMessageId = cs.getString(PARAM_EQTXM_MESSAGE_ID);
+			String msg = cmd + " failed. " + strMessageId + " " + strMessageText;
+			LOG.error("EQSession: callCCAPI cmd " + msg);
+			throw new EQException(msg);
+		}
+		return strMessageText;
+	}
+	// helper method for key exchange with the server
+	private void callKeyExcAPI(byte[] clientKey, byte[] serverKey) throws EQException
+	{
+		CallableStatement cs = null;
+		try
+		{
+			cs = jdbcConnection.prepareCall(storedProcedureCallEQKEYGEN);
+			cs.setBytes(PARAM_EQKEYEXC_KEY, clientKey);
+			cs.registerOutParameter(PARAM_EQKEYEXC_KEY, java.sql.Types.CHAR);
+			cs.registerOutParameter(PARAM_EQKEYEXC_CALLSTATUS, java.sql.Types.CHAR);
+			// Execute the call statement
+			cs.execute();
+			String strCallStatus = cs.getString(PARAM_EQKEYEXC_CALLSTATUS).trim();
+			if (!strCallStatus.equals("0"))
+			{
+				throw new EQException("key exchange failed.");
+			}
+			// Extract the remote key
+			byte[] remoteKey = cs.getBytes(PARAM_EQKEYEXC_KEY);
+			if (remoteKey.length != 16)
+			{
+				throw new EQException("key exchange returned invalid key");
+			}
+			System.arraycopy(remoteKey, 0, serverKey, 0, 16);
+		}
+		catch (java.sql.SQLException e)
+		{
+			LOG.error("EQSession::callKeyExcAPI: SQL error:" + Toolbox.getExceptionMessage(e) + e.getSQLState() + e.getErrorCode());
+			throw new EQException(e);
+		}
+	}
+	/*******************************************************************************************************************************
+	 * Commitment control - commit transaction.
+	 */
+	public void commit() throws SQLException, EQException
+	{
+		if (properties.getTransactionIsolationLevel() == EQSessionProperties.TRANSACTION_ISOLATION_XA)
+		{
+			throw new EQException("EQSession: commit must be executed on the SQL Connection");
+		}
+		if (connectionSupplied == false)
+		{
+			if (autoEQCommit)
+			{
+				throw new EQException("EQSession: commit cannot be used with automatic commitment control enabled");
+			}
+			if (!txStarted)
+			{
+				throw new EQException("EQSession: commit called before transaction started");
+			}
+			// we assume that Equation will set USRBNDOFF
+			callCCAPI(CMD_COMMIT);
+		}
+		else
+		{
+			// we assume that Equation will set USRBNDOFF
+			callCCAPI(CMD_EXTCOMMIT);
+		}
+		// mark us with no transaction
+		txStarted = false;
+	}
+	/**
+	 * Creates an EQObject for a given identifier.
+	 * <P>
+	 * 
+	 * @param identifier
+	 *            a String that is the unique identifier for the Equation object.
+	 * @return the EQObject that was created.
+	 * @throws EQException
+	 *             - if an error occurs during processing
+	 */
+	public EQObject createEQObject(String identifier) throws EQException
+	{
+		EQObjectMetaData metaData = initialiseMetaData(identifier);
+		return createEQObject(metaData);
+	}
+	/**
+	 * Creates an EQObject for a given API map. This EQObject should be cast to an EQTransaction, EQEnquiry, or EQPrompt for use.
+	 * <P>
+	 * 
+	 * @param map
+	 *            an EQObjectMetaData for the Equation object.
+	 * @return the EQObject that was created.
+	 */
+	private EQObject createEQObject(EQObjectMetaData map)
+	{
+		Class classObj = null;
+		EQObject eqObj = null;
+		if (map.getFunctionType() == EQObjectMetaData.API_TYPE_FIXED_TRANSACTION
+						|| map.getFunctionType() == EQObjectMetaData.API_TYPE_LIST_TRANSACTION)
+		{
+			try
+			{
+				classObj = EQClassLoader.load("com.misys.equation.ebs.transactions." + map.getIdentifier().trim() + "Transaction");
+				eqObj = (EQObject) classObj.newInstance();
+				((EQTransactionImpl) eqObj).initialise(map);
+			}
+			catch (Exception e1)
+			{
+				try
+				{
+					classObj = EQClassLoader.load("com.misys.equation.common.core.EQTransactionImpl");
+					eqObj = (EQObject) classObj.newInstance();
+					((EQTransactionImpl) eqObj).initialise(map);
+				}
+				catch (Exception e11)
+				{
+					LOG.fatal("EQSessionImpl:CreateObject failed: " + e11);
+				}
+			}
+		}
+		else
+		{
+			if (map.getFunctionType() == EQObjectMetaData.API_TYPE_FIXED_ENQUIRY
+							|| map.getFunctionType() == EQObjectMetaData.API_TYPE_LIST_ENQUIRY)
+			{
+				try
+				{
+					classObj = EQClassLoader.load("com.misys.equation.ebs.enquiries." + map.getIdentifier().trim() + "Enquiry");
+					eqObj = (EQObject) classObj.newInstance();
+					((EQEnquiryImpl) eqObj).initialise(map);
+				}
+				catch (Exception e2)
+				{
+					try
+					{
+						classObj = EQClassLoader.load("com.misys.equation.common.core.EQEnquiryImpl");
+						eqObj = (EQObject) classObj.newInstance();
+						((EQEnquiryImpl) eqObj).initialise(map);
+					}
+					catch (Exception e21)
+					{
+						LOG.fatal("EQSessionImpl:CreateObject failed: " + e21);
+					}
+				}
+			}
+			else
+			{
+				if (map.getFunctionType() == EQObjectMetaData.API_TYPE_PROMPT)
+				{
+					try
+					{
+						classObj = EQClassLoader.load("com.misys.equation.ebs.prompts." + map.getIdentifier().trim() + "Prompt");
+						eqObj = (EQObject) classObj.newInstance();
+						((EQPromptImpl) eqObj).initialise(map);
+					}
+					catch (Exception e3)
+					{
+						try
+						{
+							classObj = EQClassLoader.load("com.misys.equation.common.core.EQPromptImpl");
+							eqObj = (EQObject) classObj.newInstance();
+							((EQPromptImpl) eqObj).initialise(map);
+						}
+						catch (Exception e31)
+						{
+							LOG.fatal("EQSessionImpl:CreateObject failed: " + e31);
+						}
+					}
+				}
+				else
+				{
+					if (LOG.isDebugEnabled())
+					{
+						LOG.debug("Not a transaction/enquiry/prompt, trying full class name.");
+						try
+						{
+							classObj = EQClassLoader.load(map.getIdentifier().trim().trim());
+							eqObj = (EQObject) classObj.newInstance();
+						}
+						catch (Exception e4)
+						{
+							LOG.fatal("EQSessionImpl:CreateObject failed: " + e4);
+						}
+					}
+				}
+			}
+		}
+		return eqObj;
+	}
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.misys.equation.common.core.EQSession#createTransaction(java.lang.String)
+	 */
+	private EQUnit createUnit(String systemName, String unit) throws EQException
+	{
+		// If we haven't already got meta data for this API then create
+		// a new one
+		EQEnvironment env = EQEnvironment.getAppEnvironment();
+		// If we haven't already got an instance for this unit then create
+		// a new one
+		if (!env.hasUnit(systemName, unit))
+		{
+			// We need a new control for a new system
+			EQUnit eqUnit = new EQUnit(systemName, unit);
+			// Find out if the connection user is authorised to Equation
+			env.addUnit(eqUnit);
+			return eqUnit;
+		}
+		else
+		{
+			return env.getUnit(systemName, unit);
+		}
+	}
+	/*******************************************************************************************************************************
+	 * Logoff the user from Equation using an existing connection.
+	 */
+	public void logOff() throws EQException
+	{
+		try
+		{
+			if (getConnection().isClosed() || getConnection().isReadOnly())
+			{
+				throw new EQException("EQSession:doLogoff: invalid connection state, closed or read-only.");
+			}
+		}
+		catch (SQLException e)
+		{
+			throw new EQException("EQSession:doLogoff: error accesing connection " + Toolbox.getExceptionMessage(e));
+		}
+		LogoffDataAccess logoffDA = new LogoffDataAccess();
+		int retVal = logoffDA.equationSignOff(getConnection());
+		if (retVal != 0)
+		{
+			String[] errors = new String[2];
+			errors[0] = "Logoff failed: job(" + strJobNumber + ") Return Value=" + String.valueOf(retVal);
+			errors[1] = logoffDA.getMessageId() + ": " + logoffDA.getMessageText();
+			throw new EQException(errors);
+		}
+		// mark the connection as disabled
+		try
+		{
+			if (!connectionSupplied)
+			{
+				getConnection().close();
+			}
+		}
+		catch (SQLException e)
+		{
+			throw new EQException("EQSession:doLogoff: error accesing connection " + Toolbox.getExceptionMessage(e));
+		}
+		loggedOn = false;
+	}
+	/*******************************************************************************************************************************
+	 * Log a user onto an Equation unit using an existing connection.
+	 * <p>
+	 * This method is provided for applications which wish to create their own SQL connections to the host.
+	 * <p>
+	 * 
+	 * @param equationUserIdentifier
+	 *            Equation user id
+	 * @param equationUserPassword
+	 *            the user's password for their Equation profile, this is encrypted before being sent to the host
+	 * 
+	 * @throws EQException
+	 *             if any connection, authentication or configuration error occurs
+	 */
+	private void logOn(String equationUserIdentifier, char[] equationUserPassword) throws EQException
+	{
+		this.equationUserIdentifier = equationUserIdentifier;
+		try
+		{
+			if (getConnection().isClosed() || getConnection().isReadOnly())
+			{
+				throw new EQException("Invalid connection state, closed or read-only.");
+			}
+		}
+		catch (SQLException e)
+		{
+			throw new EQException("Error accessing connection " + Toolbox.getExceptionMessage(e));
+		}
+		LogonDataAccess logonDA = new LogonDataAccess();
+		int retVal = logonDA.equationSignOn(getConnection(), properties.getApplication(), equationUserIdentifier,
+						encryptPassword(equationUserPassword), properties.getUnitMnemonic().toUpperCase(), properties
+										.getIseriesWorkstation(), properties.getWorkstationIPAddr(), properties
+										.getTransactionIsolationLevel(), properties.addToActiveUsersList(), connectionSupplied);
+		if (retVal != 0)
+		{
+			String[] errors = new String[2];
+			errors[0] = "Logon failed: job(" + logonDA.getJobNumber() + ") Return Value=" + String.valueOf(retVal);
+			errors[1] = logonDA.getMessageId() + ": " + logonDA.getMessageText();
+			throw new EQException(errors);
+		}
+		if (LOG.isDebugEnabled())
+		{
+			LOG.debug("####### Logon complete.  Job number is " + logonDA.getJobNumber());
+		}
+		// User Logged in
+		this.strJobNumber = logonDA.getJobNumber();
+		this.strUserLanguage = logonDA.getUserLanguage();
+		this.strCCSID = logonDA.getCCSID();
+		this.chPromptChar = logonDA.getPromptMultipleSubstitutionCharacter();
+		this.chSinglePromptChar = logonDA.getPromptSingleSubstitutionCharacter();
+		// mark the connection as ready for use
+		loggedOn = true;
+	}
+	/*******************************************************************************************************************************
+	 * Determine if Equation automatic commitment control is being used.
+	 */
+	public boolean isAutoEQCommit()
+	{
+		return autoEQCommit;
+	}
+	/*******************************************************************************************************************************
+	 * Get the Equation user's CCSID on the host.
+	 * <P>
+	 * This is the effective CCSID running in the job on the host.
+	 * <P>
+	 * 
+	 * @return the CCSID as a string
+	 */
+	public String getCCSID()
+	{
+		return strCCSID;
+	}
+	/*******************************************************************************************************************************
+	 * Get the host job number.
+	 * <P>
+	 * Each connection has a unique job (process) on the host. This method returns the number the host associates with that job
+	 * (c.f. PID).
+	 * <P>
+	 * 
+	 * @return the job number for the connection on the host.
+	 */
+	public String getJobNumber()
+	{
+		return strJobNumber;
+	}
+	/*******************************************************************************************************************************
+	 * Get the user's lamguage.
+	 * <P>
+	 * Get the language code for the user as returned at logon. This is condifured on the host for the user's profile.
+	 * <P>
+	 * 
+	 * @return the user's language code.
+	 */
+	public String getLanguage()
+	{
+		return strUserLanguage;
+	}
+	/*******************************************************************************************************************************
+	 * Get the Equation unit's processing date.
+	 * <P>
+	 * This is the date under which transactions are processed.
+	 * <P>
+	 * 
+	 * @return the date in ISO format (yyyy-mm-dd).
+	 */
+	public String getProcessingDate() throws SQLException, EQException
+	{
+		return EQCommonConstants.getIsoDate(callCCAPI(CMD_PROCESS_DATE));
+	}
+	/*******************************************************************************************************************************
+	 * Get the user's multi-character prompt character.
+	 * <P>
+	 * This returns the character which has been configured on Equation to represent a multi-character wildstring when prompting.
+	 * <P>
+	 * 
+	 * @return the user's multi-character wildstring.
+	 */
+	public char getPromptCharacter()
+	{
+		return chPromptChar;
+	}
+	/*******************************************************************************************************************************
+	 * Get the user's single-character prompt character.
+	 * <P>
+	 * This returns the character which has been configured on Equation to represent a single-character wildstring when prompting.
+	 * <P>
+	 * 
+	 * @return the user's single-character wildstring.
+	 */
+	public char getSinglePromptCharacter()
+	{
+		return chSinglePromptChar;
+	}
+	/**
+	 * Get the underlying JDBC Connection to the database.
+	 */
+	public java.sql.Connection getConnection()
+	{
+		return jdbcConnection;
+	}
+	/*******************************************************************************************************************************
+	 * Determines if a transaction is in progress on this connection.
+	 */
+	public boolean isTransactionStarted()
+	{
+		return txStarted;
+	}
+	/**
+	 * Creates an EQObjectMetaData for a given option identifier.
+	 */
+	public EQObjectMetaData initialiseMetaData(String identifier) throws EQException
+	{
+		// If we haven't already got meta data for this API then create
+		// a new one
+		EQUnit unit = createUnit(properties.getSystemName(), properties.getUnitMnemonic());
+		if (!unit.hasMap(identifier))
+		{
+			EQEnquiry mapEnquiry = (EQEnquiry) createEQObject(metaDataMap);
+			mapEnquiry.setFieldValue("ZLAID", identifier);
+			mapEnquiry.setFieldValue("ZLDOC", "N");
+			mapEnquiry.setAuditUserID("getMap");
+			mapEnquiry.getList().setPageSize(99999);
+			mapEnquiry.retrieve(this);
+			if (mapEnquiry.getStatus() != EQObject.STATUS_DATA_RETRIEVED)
+			{
+				throw new EQException("EQSessionImpl: format for API " + identifier + " could not be determined.");
+			}
+			EQObjectMetaData eqMetaData = new EQObjectMetaData(mapEnquiry);
+			// Find out if the connection user is authorised to Equation
+			unit.addMap(eqMetaData);
+			return eqMetaData;
+		}
+		else
+		{
+			return unit.getMap(identifier);
+		}
+	}
+	/**
+	 * is the specified Connection already initialised for Equation processing. This method is intended to be used to improve the
+	 * performace of <code>isConnectionValid</code>.
+	 * <P>
+	 * 
+	 * @return true if the Connection has already been initialised, false if not
+	 * 
+	 */
+	private boolean isConnectionInitialised(Connection jdbcConnection)
+	{
+		// If DAJOBCTLE exists in QTEMP then this can be taken as proof of
+		// initialisation
+		return true;
+	}
+	/*******************************************************************************************************************************
+	 * is the specified Connection valid for Equation processing.
+	 * <P>
+	 * 
+	 * @return true if the Connection can be used for processing in Equation, false if not. Errors are stored and accessed by the
+	 *         <code>getConnectionError</code> method.
+	 * 
+	 */
+	protected boolean isConnectionValid(Connection jdbcConnection)
+	{
+		// Clear previous errors
+		// connectionError = null;
+		// Can't be null
+		if (jdbcConnection == null)
+		{
+			// connectionError = new EQException("Connection null");
+			return false;
+		}
+		// If the connection has already been initialised then we don't need to
+		// bother with the rest
+		if (isConnectionInitialised(jdbcConnection))
+		{
+			return true;
+		}
+		// Is Equation installed
+		// Is the connection user authorised to the system
+		return true;
+	}
+	/*******************************************************************************************************************************
+	 * Determine if the connection is ready for use for API calls.
+	 */
+	public boolean isLoggedOn()
+	{
+		return loggedOn;
+	}
+	/**
+	 * Commitment control - prepare transaction.
+	 */
+	public void prepare()
+	{
+		// This must be implemented. (XA)
+	}
+	/*******************************************************************************************************************************
+	 * Reset the connection for next XA transaction.
+	 * <P>
+	 * Reset of the connection should only be necessary for XA connections.
+	 * <P>
+	 * 
+	 * @throws SQLException
+	 *             if a SQL error occurs.
+	 * @throws EQException
+	 *             if called in autoCommit mode, or if startTrans has not been called previously.
+	 */
+	// if reset is necessary add to interface otherwise remove this method
+	public void reset() throws SQLException, EQException
+	{
+		if (properties.getTransactionIsolationLevel() != EQSessionProperties.TRANSACTION_ISOLATION_XA)
+		{
+			throw new EQException("EQSession: resetJob is only appropriate for XA connections");
+		}
+		callCCAPI(CMD_RESET_JOB);
+	}
+	/*******************************************************************************************************************************
+	 * Commitment control - rollback transaction.
+	 */
+	public void rollback() throws SQLException, EQException
+	{
+		if (isAutoEQCommit())
+		{
+			throw new EQException("EQSession: rollback cannot be used with automatic commitment control enabled");
+		}
+		if (properties.getTransactionIsolationLevel() == EQSessionProperties.TRANSACTION_ISOLATION_XA)
+		{
+			throw new EQException("EQSession: rollback must be executed on the SQL Connection");
+		}
+		callCCAPI(CMD_ROLLBACK);
+		// mark us with no transaction
+		txStarted = false;
+	}
+	/*******************************************************************************************************************************
+	 * Specifies whether Equation automatic commitment control is applied.
+	 */
+	public void setAutoEQCommit(boolean autoCommit) throws EQException
+	{
+		if (connectionSupplied)
+		{
+			throw new EQException("EQSession: setAutoEQCommit() cannot be used as the connection was supplied");
+		}
+		if (properties.getTransactionIsolationLevel() != EQSessionProperties.TRANSACTION_ISOLATION_EQUATION_ONLY)
+		{
+			throw new EQException(
+							"EQSession: setAutoEQCommit() cannot be used as the transaction isolation level is not EQUATION_ONLY");
+		}
+		this.autoEQCommit = autoCommit;
+	}
+	/**
+	 * Set the underlying JDBC Connection.
+	 * <P>
+	 * 
+	 * @param jdbcConnection
+	 *            the underlying jdbc connection for the session
+	 * 
+	 */
+	public void setConnection(Connection jdbcConnection)
+	{
+		this.jdbcConnection = jdbcConnection;
+	}
+	/*******************************************************************************************************************************
+	 * Starts a new transaction boundary.
+	 */
+	public void startTrans() throws SQLException, EQException
+	{
+		if (connectionSupplied)
+		{
+			throw new EQException("EQSession: startTrans() cannot be used as the connection was supplied");
+		}
+		if (properties.getTransactionIsolationLevel() != EQSessionProperties.TRANSACTION_ISOLATION_EQUATION_ONLY)
+		{
+			throw new EQException("EQSession: startTrans() cannot be used as the transaction isolation level is not EQUATION_ONLY");
+		}
+		if (isAutoEQCommit())
+		{
+			throw new EQException("EQSession: startTrans() cannot be used with automatic commitment control enabled");
+		}
+		// if we have already started a transaction rollback
+		if (txStarted)
+		{
+			rollback();
+		}
+		callCCAPI(CMD_START_TRANS);
+		// mark us with a started transaction boundary
+		txStarted = true;
+	}
+	// additionallly added support for password encryption.
+	// this is here because a key exchnage has to occur over the connection
+	protected byte[] encryptPassword(char[] strPassword) throws EQException
+	{
+		byte[] key = null;
+		// Encrypt the password
+		// create our half of the key
+		byte[] clientKey = new byte[16];
+		byte[] serverKey = new byte[16];
+		EQBlowfish.generateKey(clientKey);
+		key = new byte[32];
+		// exchange with the server
+		callKeyExcAPI(clientKey, serverKey);
+		// create full key
+		System.arraycopy(clientKey, 0, key, 0, 16);
+		System.arraycopy(serverKey, 0, key, 16, 16);
+		// to overwrite before gc runs
+		EQBlowfish.generateKey(clientKey);
+		EQBlowfish.generateKey(serverKey);
+		// firstly encrypt the password, and overwrite the passed in char array
+		EQBlowfish cipher = new EQBlowfish(key);
+		EQBlowfish.generateKey(key); // to overwrite
+		// pad the password to 24 chars (48 bytes) as the encryption pads with at least 8 bytes
+		// and we prefix with 8 bytes for the CBCIV and we want to pass 64 bytes to equation
+		char[] paddedPwd = new char[paddedPwdLength];
+		int nChars = strPassword.length;
+		for (int i = 0; i < paddedPwdLength && i < nChars; i++)
+		{
+			paddedPwd[i] = strPassword[i];
+		}
+		for (int i = nChars; i < paddedPwdLength; i++)
+		{
+			paddedPwd[i] = ' ';
+		}
+		byte[] encryptedPassword = cipher.encryptStringToBytes(paddedPwd);
+		// overwrite passed password
+		for (int i = 0; i < nChars; i++)
+		{
+			strPassword[i] = '*';
+		}
+		// overwrite padded password
+		for (int i = 0; i < paddedPwdLength; i++)
+		{
+			paddedPwd[i] = '*';
+		}
+		cipher.destroy();
+		if (encryptedPassword.length < 56)
+		{
+			LOG.error("Encryption failed");
+		}
+		return encryptedPassword;
+	}
+	/*******************************************************************************************************************************
+	 * Get the properties of this session.
+	 * <P>
+	 * Returns a clone of the EQSessionProperties object associated with the session.
+	 * <P>
+	 * 
+	 * @return Equation session properties
+	 */
+	public EQSessionProperties getProperties()
+	{
+		return (EQSessionProperties) properties.clone();
+	}
+	/*******************************************************************************************************************************
+	 * Get the Equation user identifier.
+	 */
+	public String getEquationUserIdentifier()
+	{
+		return equationUserIdentifier;
+	}
+	/**
+	 * Get system name.
+	 */
+	public String getSystemName()
+	{
+		return systemName;
+	}
+	/**
+	 * Get unit mmemonic.
+	 */
+	public String getUnitMnemonic()
+	{
+		return unitMnemonic;
+	}
+	/**
+	 * Set the session properties.
+	 * <P>
+	 * 
+	 * @param properties
+	 *            the EQSessionProperties object to be used.
+	 */
+	public void setProperties(EQSessionProperties properties)
+	{
+		this.properties = properties;
+	}
+}

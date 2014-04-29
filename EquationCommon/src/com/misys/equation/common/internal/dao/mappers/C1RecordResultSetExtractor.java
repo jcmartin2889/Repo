@@ -1,0 +1,31 @@
+package com.misys.equation.common.internal.dao.mappers;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
+
+import com.misys.equation.common.dao.beans.C1RecordDataModel;
+
+public class C1RecordResultSetExtractor implements ResultSetExtractor
+{
+	//This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: C1RecordResultSetExtractor.java 11229 2011-06-17 12:11:19Z rpatrici $";
+	public Object extractData(ResultSet resultSet) throws SQLException, DataAccessException
+	{
+		C1RecordDataModel record = new C1RecordDataModel();
+		record.setDateLastMaintainedDay(resultSet.getString(1));
+		record.setDateLastMaintainedMonth(resultSet.getString(2));
+		record.setDateLastMaintainedYear(resultSet.getString(3));
+		record.setIllegalMaintenanceIndicator(resultSet.getString(4));
+		record.setNarrativeType(resultSet.getString(5));
+		record.setLanguageName(resultSet.getString(6));
+		record.setLanguageNumber(resultSet.getString(7));
+		record.setIsMaintenanceIllegalOnThisField(resultSet.getString(8));
+		record.setUpdateLevelNumber(resultSet.getString(9));
+		record.setLanguageMnemonic(resultSet.getString(10));
+		record.setRightToLeftTextOrientation(resultSet.getString(11));
+		return record;
+	}
+}

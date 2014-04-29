@@ -1,0 +1,484 @@
+package com.misys.equation.common.access;
+
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+
+import org.springframework.jdbc.support.nativejdbc.WebSphereNativeJdbcExtractor;
+
+import com.ibm.as400.access.AS400JDBCConnection;
+import com.ibm.as400.access.AS400JDBCConnectionHandle;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EquationControl;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.dataaccess.connectionpooling.ConnectionAccess;
+import com.misys.equation.dataaccess.connectionpooling.EQDataAccessException;
+
+/**
+ * This class is going to wrap the database connection and provide a connection associated with the current session. <BR>
+ * Use this class in preference to the actual connection for doing transaction processing. <BR>
+ * Use this class for obtaining iSeries job attributes.
+ * 
+ */
+public class EquationConnectionWrapper implements DataSource
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	private final Connection connection;
+	private final AbstractEquationSessionPool eqSessionPool;
+	private static final EquationLogger LOG = new EquationLogger(EquationConnectionWrapper.class);
+	private boolean isXA = false;
+	private boolean transactionConnection = false;
+	private final String jobId;
+	private final int ccsid;
+	private int jobNumber;
+	private String jobDescription;
+
+	/**
+	 * Construct a connection wrapper
+	 * 
+	 * @param connection
+	 *            - a connection
+	 * @param eqSessionPool
+	 *            - the Equation session pool
+	 * @param isXA
+	 *            - is an XA connection to be used
+	 */
+	public EquationConnectionWrapper(Connection connection, AbstractEquationSessionPool eqSessionPool, boolean isXA,
+					boolean transactionConnection)
+	{
+		this.connection = connection;
+		this.eqSessionPool = eqSessionPool;
+		this.isXA = isXA;
+		this.transactionConnection = transactionConnection;
+		this.jobId = initialiseJobId();
+		this.ccsid = initialiseCCSID();
+		initialiseJobNumberAndDescription();
+	}
+
+	/* ------------------ DataSource's methods ------------------ */
+
+	/**
+	 * Return the log writer
+	 * 
+	 * @return the log writer
+	 * 
+	 * @throws SQLException
+	 */
+	public PrintWriter getLogWriter() throws SQLException
+	{
+		return eqSessionPool.getLogWriter();
+	}
+
+	/**
+	 * Return the login timeout
+	 * 
+	 * @return the login timeout
+	 */
+	public int getLoginTimeout() throws SQLException
+	{
+		return eqSessionPool.getLoginTimeout();
+	}
+
+	/**
+	 * Set the log writer
+	 * 
+	 * @param printWriter
+	 *            - the log writer
+	 * 
+	 * @throws SQLException
+	 */
+	public void setLogWriter(PrintWriter printWriter) throws SQLException
+	{
+		eqSessionPool.setLogWriter(printWriter);
+	}
+
+	/**
+	 * Set the timeout
+	 * 
+	 * @param timeout
+	 *            - the login timeout
+	 * 
+	 * @throws SQLException
+	 */
+	public void setLoginTimeout(int timeout) throws SQLException
+	{
+		eqSessionPool.setLoginTimeout(timeout);
+	}
+
+	/**
+	 * @deprecated Given that EQ4 environment the connection was already created and contained in pool.<br>
+	 *             The implementation of this method is been deprecated.
+	 * 
+	 *             This method will return a as400 connection from the connection pool.
+	 * 
+	 * @param username
+	 *            - this is user name which will be used to get as400 connection.
+	 * @param password
+	 *            - this is password which will be used to get as400 connection.
+	 * 
+	 * @return as400 connection from the connection pool.
+	 */
+	@Deprecated
+	public Connection getConnection(String username, String password)
+	{
+		return connection;
+	}
+
+	/**
+	 * This method will return the connection related to the current <code>EquationStandardSession</code>
+	 */
+	public Connection getConnection()
+	{
+		return connection;
+	}
+
+	/**
+	 * This method returns a global connection from the global connection pool. This connection only allows the developer to access
+	 * tables which are in the global layer.
+	 * 
+	 * @return Connection - Global connection returned from the ConnectionAccess class.
+	 */
+	public Connection getGlobalConnection()
+	{
+		try
+		{
+			return ConnectionAccess.getGlobalConnectionPool().getConnection();
+		}
+		catch (EQDataAccessException e)
+		{
+			LOG.error("Failed to retrieve a global connection.", e);
+			return null;
+		}
+	}
+
+	/**
+	 * This method returns the global connection DataSource. The connections returned from this datasource only allow the developer
+	 * to access tables which are in the global layer.
+	 * 
+	 * @return DataSource - The DataSource for retrieving connections from the Global Layer
+	 */
+	public DataSource getGlobalConnectionDataSource()
+	{
+		try
+		{
+			return ConnectionAccess.getGlobalConnectionPool().getDataSource();
+		}
+		catch (EQDataAccessException e)
+		{
+			LOG.error("Failed to retrieve a global connection.", e);
+			return null;
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.sql.Wrapper#isWrapperFor(java.lang.Class)
+	 */
+	public boolean isWrapperFor(Class<?> arg0)
+	{
+		return (arg0.equals(EquationConnectionWrapper.class));
+	}
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.sql.Wrapper#unwrap(java.lang.Class)
+	 */
+	public <T> T unwrap(Class<T> arg0)
+	{
+		return null;
+	}
+
+	/**
+	 * Return true if the connection is closed
+	 * 
+	 * @return true if the connection is closed
+	 */
+	public boolean isClosed()
+	{
+		boolean isClosed = false;
+
+		try
+		{
+			isClosed = connection.isClosed();
+		}
+		catch (SQLException sqlException)
+		{
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error("There was an error trying to check is the connection was closed.", sqlException);
+			}
+		}
+		return isClosed;
+	}
+	/**
+	 * This method will execute commit on the connection. It will be done only if not an XA connection.
+	 * 
+	 * @throws SQLException
+	 *             if the transaction level set in the properties is different to EQ transaction a <code>EQException</code> will be
+	 *             thrown.
+	 */
+	public void commit() throws SQLException
+	{
+		// Commit on connection directly only allowed if not XA
+		if (!isXA)
+		{
+			connection.commit();
+		}
+	}
+	/**
+	 * This method will execute rollback on the connection if not an XA transaction. For an XA transaction, Transaction Manager
+	 * setRollbackOnly will be executed.
+	 * 
+	 * @throws SQLException
+	 * @throws SystemException
+	 * @throws IllegalStateException
+	 * @throws NamingException
+	 * @throws EQException
+	 */
+	public void rollback() throws SQLException, IllegalStateException, EQException, NamingException
+	{
+		// Rollback on connection only if not XA
+		if (!isXA)
+		{
+			connection.rollback();
+		}
+		else
+		{
+			EquationTransactionManager txnManager = new EquationTransactionManager();
+			txnManager.setRollbackOnly();
+		}
+	}
+
+	/**
+	 * This method will execute Equation logoff.
+	 * 
+	 * @throws EQException
+	 */
+	public void cleanupXAConnection() throws EQException
+	{
+		EquationUnit unitObj = eqSessionPool.getUnit();
+		String unit = unitObj.getUnitId();
+		try
+		{
+			EquationControl.logOffFromEquation(connection, unitObj.getSystem().getSystemId(), unit);
+		}
+		catch (EQException e)
+		{
+			throw new EQException("There was an error trying to cleanup the XA connection.", e.getCause());
+		}
+	}
+
+	/**
+	 * Retrieve the job id of an AS400 connection
+	 * 
+	 * @return the job id
+	 */
+	private String initialiseJobId()
+	{
+		try
+		{
+			if (connection instanceof AS400JDBCConnection)
+			{
+				AS400JDBCConnection as400JDBC = (AS400JDBCConnection) connection;
+				return as400JDBC.getServerJobIdentifier();
+			}
+			if (connection instanceof AS400JDBCConnectionHandle)
+			{
+				AS400JDBCConnectionHandle as400JDBC = (AS400JDBCConnectionHandle) connection;
+				return as400JDBC.getServerJobIdentifier();
+			}
+			if (connection.getMetaData().getConnection() instanceof AS400JDBCConnection)
+			{
+				return ((AS400JDBCConnection) connection.getMetaData().getConnection()).getServerJobIdentifier();
+			}
+
+			AS400JDBCConnectionHandle nativeConnection = null;
+			WebSphereNativeJdbcExtractor jdbcExtractor = new WebSphereNativeJdbcExtractor();
+			nativeConnection = (AS400JDBCConnectionHandle) jdbcExtractor.getNativeConnection(connection);
+			if (nativeConnection != null)
+			{
+				return nativeConnection.getServerJobIdentifier();
+			}
+			else
+			{
+				return "";
+			}
+		}
+		catch (SQLException e)
+		{
+			LOG.error("There was an error trying to retrieve the Job Id from the connection.", e);
+			return "";
+		}
+	}
+
+	/**
+	 * Retrieve the connection's CCSID
+	 * 
+	 * @return the CCSID
+	 */
+	private int initialiseCCSID()
+	{
+		try
+		{
+			if (connection instanceof AS400JDBCConnection)
+			{
+				AS400JDBCConnection as400JDBC = (AS400JDBCConnection) connection;
+				return as400JDBC.getSystem().getCcsid();
+			}
+			if (connection instanceof AS400JDBCConnectionHandle)
+			{
+				AS400JDBCConnectionHandle as400JDBC = (AS400JDBCConnectionHandle) connection;
+				return as400JDBC.getSystem().getCcsid();
+			}
+
+			if (connection.getMetaData().getConnection() instanceof AS400JDBCConnection)
+			{
+				return ((AS400JDBCConnection) connection.getMetaData().getConnection()).getSystem().getCcsid();
+			}
+
+			AS400JDBCConnectionHandle nativeConnection = null;
+			WebSphereNativeJdbcExtractor jdbcExtractor = new WebSphereNativeJdbcExtractor();
+			nativeConnection = (AS400JDBCConnectionHandle) jdbcExtractor.getNativeConnection(connection);
+			if (nativeConnection != null)
+			{
+
+				return nativeConnection.getSystem().getCcsid();
+			}
+			else
+			{
+				return eqSessionPool.getUnit().getCcsid();
+			}
+		}
+		catch (SQLException e)
+		{
+			return eqSessionPool.getUnit().getCcsid();
+		}
+	}
+
+	/**
+	 * Return the connection's job id
+	 * 
+	 * @return the connection's job id
+	 * @equation.external
+	 */
+	public String getJobId()
+	{
+		return jobId;
+	}
+
+	/**
+	 * Return the workstation id part of the job id
+	 * 
+	 * @return the workstation id part of the job id
+	 */
+	public String getJobWorkstationId()
+	{
+		if (jobId.length() > 10)
+		{
+			String jobName = jobId.substring(0, 10);
+			return jobName;
+		}
+		else
+		{
+			return jobId;
+		}
+	}
+
+	/**
+	 * Return the workstation id part of the job id
+	 * 
+	 * @return the workstation id part of the job id
+	 */
+	public String getJobUser()
+	{
+		if (jobId.length() > 20)
+		{
+			return jobId.substring(10, 20);
+		}
+		else if (jobId.length() > 10)
+		{
+			return jobId.substring(9);
+		}
+		else
+		{
+			return "";
+		}
+	}
+
+	/**
+	 * Return the connection's ccsid
+	 * 
+	 * @return the connection's ccsid
+	 */
+	public int getCCSID()
+	{
+		return ccsid;
+	}
+
+	/**
+	 * Determine whether connection is an XA connection
+	 * 
+	 * @return whether connection is an XA connection
+	 */
+	public boolean isXA()
+	{
+		return isXA;
+	}
+
+	/**
+	 * Determine whether the connection is created per Transaction
+	 * 
+	 * @return whether the connection is created per Transaction
+	 */
+	public boolean isTransactionConnection()
+	{
+		return transactionConnection;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString()
+	{
+		return jobId;
+	}
+
+	/**
+	 * Initialise the job number and description
+	 */
+	private void initialiseJobNumberAndDescription()
+	{
+		// Get Job Details
+		String[] jobDetails = jobId.split(" ");
+		// Set Jobd
+		jobDescription = jobDetails[0].substring(0, 10);
+		// Get Job Number
+		String jobNumberS = jobDetails[jobDetails.length - 1];
+		// Set Job Number
+		jobNumber = Integer.parseInt(jobNumberS.trim());
+	}
+
+	public String getJobDescription()
+	{
+		return jobDescription;
+	}
+
+	/**
+	 * Return the job number part of the job id
+	 * 
+	 * @return the job number part of the job id
+	 */
+	public int getJobNumber()
+	{
+		return jobNumber;
+	}
+}

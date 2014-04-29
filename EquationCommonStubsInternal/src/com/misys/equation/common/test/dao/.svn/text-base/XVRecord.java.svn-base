@@ -1,0 +1,175 @@
+package com.misys.equation.common.test.dao;
+
+import com.misys.equation.common.dao.IXVRecordDao;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.dao.beans.XVRecordDataModel;
+import com.misys.equation.common.test.EquationTestCaseDao;
+import com.misys.equation.common.utilities.EquationLogger;
+
+/**
+ * This is a unit-test which will test XVIRecord services.
+ * 
+ * @author deroset
+ * 
+ */
+public class XVRecord extends EquationTestCaseDao
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private static final EquationLogger LOG = new EquationLogger(XVRecord.class);
+
+	public XVRecord()
+	{
+
+	}
+
+	/**
+	 * 
+	 * This method is going to retrieve the Dao from the bean repository and set it as local attribute.
+	 */
+	@Override
+	protected void setDao()
+	{
+		dao = daoFactory.getXVDao(session, dataModel);
+	}
+
+	/**
+	 * This method will test if the record has been already inserted in the dataBase.
+	 */
+	@Override
+	public void isRecord(boolean assertValue)
+	{
+		boolean result;
+
+		result = checkIfThisRecordIsInTheDB();
+		if (assertValue)
+		{
+			assertTrue(result);
+		}
+		else
+		{
+			assertFalse(result);
+		}
+
+	}
+
+	/**
+	 * This method is going to check the getRecord dao's service.<br>
+	 * The obtained result should be the same than the preset in the dao data-model.
+	 * 
+	 */
+	@Override
+	public XVRecordDataModel getRecord()
+	{
+
+		XVRecordDataModel XVRecord = null;
+		XVRecord = ((IXVRecordDao) dao).getXVRecord();
+		assertDataModel(XVRecord);
+		return XVRecord;
+	}
+
+	/**
+	 * This method will test the update dao's service.
+	 */
+	@Override
+	public void updateRecord()
+	{
+		// this method should not be implemented for this record.
+		// insert, update and delete are not used for XVPF.
+	}
+
+	@Override
+	protected void assertDataModel(AbsRecord dataModel)
+	{
+
+		XVRecordDataModel record = (XVRecordDataModel) dataModel;
+
+		assertEquals(getMyModel().getFieldName(), record.getFieldName());
+		assertEquals(getMyModel().getSysProgram(), record.getSysProgram());
+
+	}
+
+	@Override
+	protected boolean checkIfThisRecordIsInTheDB()
+	{
+		boolean result;
+		result = ((IXVRecordDao) dao).checkIfThisXVRecordIsInTheDB();
+		return result;
+	}
+
+	@Override
+	protected void setDataModel()
+	{
+		XVRecordDataModel record = new XVRecordDataModel("A01AVR", "ZLAUID");
+		record.setLibrary(kFilLibName);
+		this.dataModel = record;
+
+	}
+
+	/**
+	 * This test in going to test all XVRecordDao services get
+	 * <ul>
+	 * <li>1)Get this record and evaluate if it is equals to the data-model</li>.
+	 * </ul>
+	 */
+	@Override
+	public void testRecordDaoServices()
+	{
+
+		// this method should not be implemented for this record.
+		// insert, update and delete are not used for XVPF.
+
+		try
+		{
+
+			isRecord(true);
+			getRecord();
+
+		}
+		catch (Exception exception)
+		{
+			exception.printStackTrace();
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error("There was a problem when the testAAIRecordDao() was executed ", exception);
+			}
+		}
+	}
+
+	/**
+	 * This method is going to return a casted data model.
+	 * 
+	 * @return a casted data model
+	 */
+	public XVRecordDataModel getMyModel()
+	{
+
+		XVRecordDataModel XVRecordDataModel = null;
+
+		if (dataModel instanceof XVRecordDataModel)
+		{
+
+			XVRecordDataModel = (XVRecordDataModel) dataModel;
+
+		}
+		else
+		{
+			throw new IllegalArgumentException("The set data-model does not correspond to the expected one.");
+		}
+
+		return XVRecordDataModel;
+	}
+
+	/**
+	 * This is method is going to set part of the kFilLibName.<br>
+	 * This method can be overwritten if other lib nedds to used.<br>
+	 * <code>kFilLibName=  kFilLibName + unitName</code>
+	 */
+	@Override
+	public void setKLibName()
+	{
+		setKLibName("KLIB");
+	}
+
+}

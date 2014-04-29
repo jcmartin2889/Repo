@@ -1,0 +1,149 @@
+package com.misys.equation.common.test.dao;
+
+import com.misys.equation.common.dao.IINORHRecordDao;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.dao.beans.INORHRecordDataModel;
+import com.misys.equation.common.test.EquationTestCaseDao;
+
+/**
+ * This is a unit-test which will test INORHRecord services.
+ * 
+ * @author deroset
+ * 
+ */
+public class INORHRecord extends EquationTestCaseDao
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: INORHRecord.java 11310 2011-06-27 12:20:21Z ESTHER.WILLIAMS $";
+	public INORHRecord()
+	{
+
+	}
+
+	/**
+	 * This method is going to check the getRecord dao's service.<br>
+	 * The obtained result should be the same than the preset in the dao data-model.
+	 * 
+	 */
+	@Override
+	public INORHRecordDataModel getRecord()
+	{
+
+		INORHRecordDataModel INORHRecordDataModel = null;
+		INORHRecordDataModel = ((IINORHRecordDao) dao).getINORHRecord();
+		assertDataModel(INORHRecordDataModel);
+
+		return INORHRecordDataModel;
+	}
+	/**
+	 * This method will test the update dao's service.
+	 */
+	@Override
+	public void updateRecord()
+	{
+
+		INORHRecordDataModel INORHRecordDataModel = null;
+
+		getMyModel().setOrderNumber("1");
+		dao.updateRecord();
+		INORHRecordDataModel = getRecord();
+		assertEquals(getMyModel().getOrderNumber(), INORHRecordDataModel.getOrderNumber());
+	}
+
+	/**
+	 * This method will test the add dao's service.
+	 */
+	@Override
+	public void insertRecord()
+	{
+
+		dao.insertRecord();
+	}
+
+	/**
+	 * This method will test the delete dao's service.
+	 */
+	@Override
+	public void deleteRecord()
+	{
+
+		dao.deleteRecord();
+	}
+
+	@Override
+	protected void assertDataModel(AbsRecord dataModel)
+	{
+		INORHRecordDataModel record = (INORHRecordDataModel) dataModel;
+		INORHRecordDataModel myDataModel = getMyModel();
+
+		assertEquals(getMyModel().getOrderNumber(), record.getOrderNumber());
+		assertEquals(getMyModel().getCustomerCode(), record.getCustomerCode());
+		assertEquals(getMyModel().getDespatchDate(), record.getDespatchDate());
+		assertEquals(getMyModel().getCutDate(), record.getCutDate());
+		assertEquals(getMyModel().getDespatchType(), record.getDespatchType());
+		assertEquals(getMyModel().getCustomerOrderNumber(), record.getCustomerOrderNumber());
+		assertEquals(getMyModel().getMediaType(), record.getMediaType());
+		assertEquals(getMyModel().getDestination(), record.getDestination());
+		assertEquals(getMyModel().getDespatchMethod(), record.getDespatchMethod());
+		assertEquals(getMyModel().getGenerateSource(), record.getGenerateSource());
+		assertEquals(getMyModel().getAs400TargetRelease(), record.getAs400TargetRelease());
+		assertEquals(getMyModel().getOrderText(), record.getOrderText());
+		assertEquals(getMyModel().getParentOrder(), record.getParentOrder());
+		assertEquals(getMyModel().getMediaText(), record.getMediaText());
+		assertEquals(getMyModel().getDespatchTypeText(), record.getDespatchTypeText());
+		assertEquals(getMyModel().getDespatchCode(), record.getDespatchCode());
+		assertEquals(getMyModel().getLicenceType(), record.getLicenceType());
+		assertEquals(getMyModel().getCurrentNumberOfObjects(), record.getCurrentNumberOfObjects());
+		assertEquals(getMyModel().getSizeMB(), record.getSizeMB());
+
+	}
+
+	@Override
+	protected boolean checkIfThisRecordIsInTheDB()
+	{
+		boolean result;
+		result = ((IINORHRecordDao) dao).checkIfThisINORHRecordIsInTheDB();
+
+		return result;
+	}
+
+	/**
+	 * 
+	 * This method is going to retrieve the Dao from the bean repository and set it as local attribute.
+	 */
+	@Override
+	protected void setDao()
+	{
+		dao = daoFactory.getINORHDao(session, dataModel);
+	}
+
+	@Override
+	protected void setDataModel()
+	{
+		dataModel = new INORHRecordDataModel("1", "2", 3, 4, "5", "6", "7", "8", "9", "1", "11", "12", "13", "1", "15", "16", "1",
+						18, 19);
+	}
+	/**
+	 * This method is going to return a casted data model.
+	 * 
+	 * @return a casted data model
+	 */
+	public INORHRecordDataModel getMyModel()
+	{
+
+		INORHRecordDataModel iNORHRecordDataModel = null;
+
+		if (dataModel instanceof INORHRecordDataModel)
+		{
+			iNORHRecordDataModel = (INORHRecordDataModel) dataModel;
+
+		}
+		else
+		{
+			throw new IllegalArgumentException("The set data-model does not correspond to the expected one.");
+		}
+
+		return iNORHRecordDataModel;
+	}
+}

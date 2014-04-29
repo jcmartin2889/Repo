@@ -1,0 +1,599 @@
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/repos/bfeq_src/!svn/ver/17808/branches/BFEQ_Branch_3-1/ExternalJars/lib
+END
+axis.jar
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/axis.jar
+END
+BankFusionCommonSupport.jar
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/repos/bfeq_src/!svn/ver/17336/branches/BFEQ_Branch_3-1/ExternalJars/lib/BankFusionCommonSupport.jar
+END
+db2jcc_license_cisuz.jar
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/db2jcc_license_cisuz.jar
+END
+jstl-1.0.2.jar
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/jstl-1.0.2.jar
+END
+gson-1.7.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/gson-1.7.1.jar
+END
+struts-core-1.3.10.jar
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/struts-core-1.3.10.jar
+END
+wsif.jar
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/wsif.jar
+END
+serializer-2.7.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/serializer-2.7.1.jar
+END
+commons-digester-2.0.jar
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/commons-digester-2.0.jar
+END
+org.springframework.beans-3.0.5.RELEASE.jar
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/org.springframework.beans-3.0.5.RELEASE.jar
+END
+DBLoaderExport.jar
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/repos/bfeq_src/!svn/ver/16628/branches/BFEQ_Branch_3-1/ExternalJars/lib/DBLoaderExport.jar
+END
+jta.jar
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/repos/bfeq_src/!svn/ver/17808/branches/BFEQ_Branch_3-1/ExternalJars/lib/jta.jar
+END
+commons-discovery-0.4.jar
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/commons-discovery-0.4.jar
+END
+saxon9.jar
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/saxon9.jar
+END
+BankFusionMicroFlow.jar
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/repos/bfeq_src/!svn/ver/17354/branches/BFEQ_Branch_3-1/ExternalJars/lib/BankFusionMicroFlow.jar
+END
+ant.jar
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/ant.jar
+END
+jasper-el.jar
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/jasper-el.jar
+END
+FusionUtils.jar
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/repos/bfeq_src/!svn/ver/16628/branches/BFEQ_Branch_3-1/ExternalJars/lib/FusionUtils.jar
+END
+castor-xml-schema-1.3.2.jar
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/castor-xml-schema-1.3.2.jar
+END
+org.springframework.jdbc-3.0.5.RELEASE.jar
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/org.springframework.jdbc-3.0.5.RELEASE.jar
+END
+db2jcc.jar
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/db2jcc.jar
+END
+jaxrpc.jar
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/jaxrpc.jar
+END
+was_public.jar
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/was_public.jar
+END
+commons-chain-1.2.jar
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/commons-chain-1.2.jar
+END
+UXPFramework.jar
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/UXPFramework.jar
+END
+poi-3.6-20091214.jar
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/poi-3.6-20091214.jar
+END
+sqljet-1.1.0.jar
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/sqljet-1.1.0.jar
+END
+BankFusionClient.jar
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/repos/bfeq_src/!svn/ver/17336/branches/BFEQ_Branch_3-1/ExternalJars/lib/BankFusionClient.jar
+END
+aspectjrt.jar
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/aspectjrt.jar
+END
+struts-tiles-1.3.10.jar
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/struts-tiles-1.3.10.jar
+END
+struts-faces-1.3.10.jar
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/struts-faces-1.3.10.jar
+END
+log4j-1.2.15.jar
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/log4j-1.2.15.jar
+END
+velocity-1.6.4.jar
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/velocity-1.6.4.jar
+END
+connector-api-1.5.jar
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/connector-api-1.5.jar
+END
+BF_castor-codegen-1.3.2.jar
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/repos/bfeq_src/!svn/ver/16796/branches/BFEQ_Branch_3-1/ExternalJars/lib/BF_castor-codegen-1.3.2.jar
+END
+batik-util.jar
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/batik-util.jar
+END
+BankFusionMicroFlow.edit.jar
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/repos/bfeq_src/!svn/ver/17354/branches/BFEQ_Branch_3-1/ExternalJars/lib/BankFusionMicroFlow.edit.jar
+END
+cas-server-core-3.4.7.jar
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/cas-server-core-3.4.7.jar
+END
+bsf-2.3.0.jar
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/bsf-2.3.0.jar
+END
+BankFusionEncryption.jar
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/repos/bfeq_src/!svn/ver/17336/branches/BFEQ_Branch_3-1/ExternalJars/lib/BankFusionEncryption.jar
+END
+saxon9-dom-9.0.0.6j.jar
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/saxon9-dom-9.0.0.6j.jar
+END
+xercesImpl-2.9.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/xercesImpl-2.9.1.jar
+END
+struts-el-1.3.10.jar
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/struts-el-1.3.10.jar
+END
+BFPCommon.jar
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/repos/bfeq_src/!svn/ver/17336/branches/BFEQ_Branch_3-1/ExternalJars/lib/BFPCommon.jar
+END
+castor-core-1.3.2.jar
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/castor-core-1.3.2.jar
+END
+struts-taglib-1.3.10.jar
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/struts-taglib-1.3.10.jar
+END
+mail.jar
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/mail.jar
+END
+DBLoaderCommon.jar
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/repos/bfeq_src/!svn/ver/16628/branches/BFEQ_Branch_3-1/ExternalJars/lib/DBLoaderCommon.jar
+END
+struts-mailreader-dao-1.3.10.jar
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/struts-mailreader-dao-1.3.10.jar
+END
+BankFusionServer.jar
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/repos/bfeq_src/!svn/ver/17336/branches/BFEQ_Branch_3-1/ExternalJars/lib/BankFusionServer.jar
+END
+jms.jar
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/jms.jar
+END
+commons-logging-1.1.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/commons-logging-1.1.1.jar
+END
+tomcat-dbcp.jar
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/tomcat-dbcp.jar
+END
+BankFusionMessaging.jar
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/repos/bfeq_src/!svn/ver/17336/branches/BFEQ_Branch_3-1/ExternalJars/lib/BankFusionMessaging.jar
+END
+junit-3.8.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/junit-3.8.1.jar
+END
+BankFusionWorkBenchCore.edit.jar
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/repos/bfeq_src/!svn/ver/17336/branches/BFEQ_Branch_3-1/ExternalJars/lib/BankFusionWorkBenchCore.edit.jar
+END
+BankFusionDeviceService.jar
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/repos/bfeq_src/!svn/ver/17336/branches/BFEQ_Branch_3-1/ExternalJars/lib/BankFusionDeviceService.jar
+END
+jt400.jar
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/jt400.jar
+END
+activation.jar
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/activation.jar
+END
+resolver.jar
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/resolver.jar
+END
+commons-betwixt-0.8.jar
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/commons-betwixt-0.8.jar
+END
+BankFusionWorkBench.jar
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/repos/bfeq_src/!svn/ver/17336/branches/BFEQ_Branch_3-1/ExternalJars/lib/BankFusionWorkBench.jar
+END
+org.springframework.web-3.0.5.RELEASE.jar
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/org.springframework.web-3.0.5.RELEASE.jar
+END
+commons-beanutils-1.8.3.jar
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/commons-beanutils-1.8.3.jar
+END
+org.springframework.asm-3.0.5.RELEASE.jar
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/org.springframework.asm-3.0.5.RELEASE.jar
+END
+sequence-library-1.0.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/sequence-library-1.0.1.jar
+END
+el-api.jar
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/el-api.jar
+END
+iTextAsian.jar
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/iTextAsian.jar
+END
+org.springframework.context-3.0.5.RELEASE.jar
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/org.springframework.context-3.0.5.RELEASE.jar
+END
+wsdl4j-1.6.2.jar
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/wsdl4j-1.6.2.jar
+END
+org.springframework.transaction-3.0.5.RELEASE.jar
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/org.springframework.transaction-3.0.5.RELEASE.jar
+END
+org.springframework.core-3.0.5.RELEASE.jar
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/org.springframework.core-3.0.5.RELEASE.jar
+END
+FusionBundler.jar
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/repos/bfeq_src/!svn/ver/16628/branches/BFEQ_Branch_3-1/ExternalJars/lib/FusionBundler.jar
+END
+batik-css.jar
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/batik-css.jar
+END
+commons-io-1.4.jar
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/commons-io-1.4.jar
+END
+struts-scripting-1.3.10.jar
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/struts-scripting-1.3.10.jar
+END
+org.springframework.expression-3.0.5.RELEASE.jar
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/org.springframework.expression-3.0.5.RELEASE.jar
+END
+UXPFrameworkAPI.jar
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/UXPFrameworkAPI.jar
+END
+BankFusionBPD.jar
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/repos/bfeq_src/!svn/ver/17336/branches/BFEQ_Branch_3-1/ExternalJars/lib/BankFusionBPD.jar
+END
+struts-extras-1.3.10.jar
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/struts-extras-1.3.10.jar
+END
+commons-collections-3.2.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/commons-collections-3.2.1.jar
+END
+commons-httpclient-3.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/commons-httpclient-3.1.jar
+END
+commons-validator-1.3.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/commons-validator-1.3.1.jar
+END
+BF_castor-xml-1.3.2.jar
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/repos/bfeq_src/!svn/ver/17336/branches/BFEQ_Branch_3-1/ExternalJars/lib/BF_castor-xml-1.3.2.jar
+END
+standard-1.0.6.jar
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/standard-1.0.6.jar
+END
+tools-1.6.0_11.jar
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/tools-1.6.0_11.jar
+END
+antlr-runtime-3.4.jar
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/antlr-runtime-3.4.jar
+END
+sac.jar
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/sac.jar
+END
+BankFusionWorkBenchCore.jar
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/repos/bfeq_src/!svn/ver/17336/branches/BFEQ_Branch_3-1/ExternalJars/lib/BankFusionWorkBenchCore.jar
+END
+saaj.jar
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/saaj.jar
+END
+svnkit.jar
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/svnkit.jar
+END
+BankFusionCommander.jar
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/repos/bfeq_src/!svn/ver/17336/branches/BFEQ_Branch_3-1/ExternalJars/lib/BankFusionCommander.jar
+END
+commons-codec-1.4.jar
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/commons-codec-1.4.jar
+END
+BankFusionMessageTransformer.jar
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/repos/bfeq_src/!svn/ver/17336/branches/BFEQ_Branch_3-1/ExternalJars/lib/BankFusionMessageTransformer.jar
+END
+antlr-2.7.6.jar
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/antlr-2.7.6.jar
+END
+itext-2.0.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/itext-2.0.1.jar
+END
+commons-lang-2.4.jar
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/commons-lang-2.4.jar
+END
+commons-fileupload-1.2.jar
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/commons-fileupload-1.2.jar
+END
+quartz-all-1.6.1.jar
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/quartz-all-1.6.1.jar
+END

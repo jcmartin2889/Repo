@@ -1,0 +1,8 @@
+package com.misys.equation.common.test.pv;
+
+public class JYR04R_SeeComment
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	// This is a validation only function. See validation stubs.
+}

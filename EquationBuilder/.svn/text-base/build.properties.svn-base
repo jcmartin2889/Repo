@@ -1,0 +1,129 @@
+###########################################################
+# Copy this file under your project root folder and 
+# change its name to build.properties
+###########################################################
+
+# User-defined properties
+
+# NAME OF THE PROJECT
+PROJECT_NAME=Equation builder
+#This is the user name 
+USER_NAME=deroset
+# This is the name which will be used as a jar name.
+JAR_NAME=equation-builder
+#jar version.
+VERSION=3.1.2
+# This is the directory that contains all compiled classes.
+CLASSES=bin
+# This is the source directory which contains all java source files and others. 
+SRC=src
+#This is the project that contains all jars to be included in the classpath.
+CLASSPATH=../ExternalJars
+EXTERNAL_JARS=../ExternalJars
+
+#This is the resource directory which contains all property / confg files. 
+RESOURCES=resources
+# This is the target directory name. 
+TARGET=equation-builder
+DIST=dist
+# This property used to set the deliverable directory.
+DELIVERABLE=#deliverable
+# This property used to set the release directory.
+RELEASE=#release
+# This property is to decide if the javadoc are going to be generated.
+CREATE_JAVA_DOCS=true
+# This is the name of the java doc directory.
+JAVA_DOCS_NAME=javadocs
+# Directory to which the packaged .jar file is to be copied.
+DEPLOY_DIR=../ExternalJars/lib
+
+# Projects
+EQUATION_BUILDER=../EquationBuilder
+BUILDER_TEMP=#temp
+DELIVERABLE_DIR=#deliverable
+EQUATION_COMMON=../EquationCommon
+EQUATION_GLOBAL_PROCESSING_BUSINESS=../EquationGlobalProcessingBusiness
+EQUATION_ECLIPSE_COMMON=../EquationEclipseCommon
+EQUATION_FUNCTION=../EquationFunction
+EQUATION_INSTALLER=../EquationInstaller
+EQUATION_BUNDLER=../EquationBundler
+EQUATION_BANK_FUSION_CLIENT=../EquationBankFusionClient
+EQUATION_BANK_FUSION_SERVER=../EquationBankFusionServer
+EQUATION_DESKTOP=../EquationDesktop
+EQUATION_FUNCTION_WIZARD=../EquationFunctionWizard
+EQUATION_COMMON_STUBS=../EquationCommonStubs
+EQUATION_FUNCTION_STUBS=../EquationFunctionStubs
+EQUATION_SERVICE_COMPOSER_HELP=../EquationServiceComposerHelp
+EQUATION_SAMPLES=../EquationSamples
+EQUATION_WAS_CONFIG=../EquationWASConfig
+EQUATION_BUNDLEDATA=../EquationBundleData
+
+
+#TOMCAT_JARS- This path is not relative please  add your tomcat location.
+TOMCAT_HOME_LIB_PATH=../ExternalJars/lib/tomcat_libs
+#This is the path  of eclipse plug-in lib- This path is not relative please  add your plugings location. 
+ECLIPSE_PLUGIN_LIBS_PATH=../ExternalJars/lib/eclipse_libs
+#This is the META-INF directory.
+META_INF=META-INF
+
+#-----------------------EQUATION VERSION NUMBER------------------------------------# 
+
+
+#If the value is "AUTOMATIC" will EQ version number will be calculated. 
+#In other case a custom EQ number can be provided. 
+OVERWRITE_EQUATION_VERSION=AUTOMATIC
+
+#These are the properties files which contains the version attribute to be updated.
+#for exmaple VERSION=1.2.1  
+EQUATION_VERSION_NUMBER_ATTRIBUTE=../EquationBuilder/build.properties,\
+../EquationBankFusionClient/build.properties,\
+../EquationBankFusionServer/build.properties,\
+../EquationCommon/build.properties,\
+../EquationCommonStubs/build.properties,\
+../EquationDesktop/build.properties,\
+../EquationEclipseCommon/build.properties,\
+../EquationFunction/build.properties,\
+../EquationFunctionStubs/build.properties,\
+../EquationFunctionWizard/build.properties,\
+../EquationGlobalProcessingBusiness/build.properties,\
+../EquationGlobalProcessingStubs/build.properties,\
+../EquationInstaller/build.properties,\
+../EquationSamples/build.properties,\
+../EquationServiceComposerHelp/build.properties,\
+../EquationCommonStubsInternal/build.properties,\
+../EquationWASConfig/build.properties
+
+#This property contains the file path of the file whose jar names need to be updated. These jar names with a hardcoded equation version number.
+#for example equation-bankfusionclient-1.2.1.jar. EQUATION_VERSION_NUMBER_IN_JARS_NAMES can be a list of properties files.
+EQUATION_VERSION_NUMBER_IN_JARS_NAMES=../ExternalJars/build.properties,\
+../EquationEclipseCommon/build.properties,\
+../EquationFunctionWizard/build.properties
+
+#This is a list of eclipse all .classpath files that must be updated with the new EQ version number.
+EQUATION_VERSION_NUMBER_ECLIPSE_CLASSPATH=../EquationFunctionWizard/.classpath,\
+../EquationEclipseCommon/.classpath,\
+../EquationSamples/.classpath,\
+../EquationInstaller/.classpath,\
+../EquationCommonStubs/.classpath
+
+#This is list of MANIFEST files that contain the version number
+EQUATION_VERSION_NUMBER_IN_MANIFEST=../EquationEclipseCommon/META-INF/MANIFEST.MF,\
+../EquationFunctionWizard/META-INF/MANIFEST.MF,\
+../EquationServiceComposerHelp/META-INF/MANIFEST.MF,\
+../EquationInstaller/META-INF/MANIFEST.MF
+
+#This is a list of java source files that contain the plugin version number
+EQUATION_VERSION_NUMBER_IN_JAVA_SOURCE=../EquationCommon/src/com/misys/equation/common/access/EquationCommonContext.java,\
+../EquationFunctionWizard/src/com/misys/equation/fb/tools/ImportToolbox.java
+
+#This is the property file which contains the the file location of the eclipse plugin.xml. This file have some hadcoded equation version numbers.
+EQUATION_VERSION_NUMBER_IN_ECLIPSE_PLUGIN=../EquationFunctionWizard/plugin.xml
+
+#-----------------------EQUATION PLUGIN SITE------------------------------------# 
+
+BUILDERPROJECTPROPERTYFILE=../EquationBuilder/build.properties
+UPDATESITEPATH=../EquationBuilder/dist
+PLUGINPROJECTMANIFESTS=../EquationFunctionWizard/META-INF/MANIFEST.MF,\
+../EquationServiceComposerHelp/META-INF/MANIFEST.MF
+PLUGINJARFOLDERS=../EquationBuilder/dist/equation-function-wizard/lib,\
+../EquationBuilder/dist/equation-service-composer-help\\lib

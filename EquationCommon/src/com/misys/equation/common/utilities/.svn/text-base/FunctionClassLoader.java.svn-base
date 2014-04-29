@@ -1,0 +1,394 @@
+package com.misys.equation.common.utilities;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.dao.DaoFactory;
+import com.misys.equation.common.dao.IGAZRecordDao;
+import com.misys.equation.common.dao.beans.GAZRecordDataModel;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.internal.eapi.core.EQRuntimeException;
+import com.misys.equation.common.language.LanguageResources;
+
+public class FunctionClassLoader extends ClassLoader
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(FunctionClassLoader.class);
+
+	/** A lookup map that uses a key built from the set of key fields to store class names */
+	private final Map<String, String> classNames = new HashMap<String, String>();
+
+	private final DaoFactory daoFactory = new DaoFactory();
+
+	/**
+	 * Construct a function class loader
+	 * 
+	 * @param parent
+	 *            - a parent class loader
+	 */
+	public FunctionClassLoader(ClassLoader parent)
+	{
+		super(parent);
+	}
+
+	/**
+	 * Load a class
+	 * 
+	 * @param session
+	 *            an EquationStandardSession
+	 * @param optionId
+	 *            - the option id
+	 * @param fieldId
+	 *            - the field Id
+	 * @param pvId
+	 *            - the PV id
+	 * @param type
+	 *            the class type
+	 * 
+	 * @return the class
+	 * 
+	 * @throws EQException
+	 */
+	public Class loadClass(EquationStandardSession session, String optionId, String fieldId, String pvId, String type)
+					throws EQException
+	{
+		Class<?> aclass = null;
+		if (LOG.isDebugEnabled())
+		{
+			LOG.debug("loadClass - attempting to load class definition [" + optionId + "], field [" + fieldId + "] , pvid [" + pvId
+							+ "], type [" + type + "]");
+		}
+
+		String keyString = getKeyString(optionId, fieldId, pvId, type);
+
+		try
+		{
+			// See if we have already loaded this class:
+			String className = classNames.get(keyString);
+
+			if (className != null)
+			{
+				// If an entry exists in the map, we've already tried to load a class for this set of keys.
+				// If the value in the map is empty, this signifies that there was no class to load, so
+				// waste no time trying again (drop through). However, if the value was not empty, then
+				// we know the actual class name, and should be able to reload it.
+				if (className.length() != 0)
+				{
+					// In this case, should always find the class...because the map tells us that
+					// this classloader instance has previously loaded the class:
+					aclass = findLoadedClass(className);
+					if (aclass == null)
+					{
+						throw new EQException("Previously loaded class not obtained");
+					}
+					if (LOG.isDebugEnabled())
+					{
+						LOG.debug("loadClass - class definition for keys [" + optionId + "], field [" + fieldId + "], pvid ["
+										+ pvId + "], type [" + type + "] loaded from the classloader cache");
+					}
+				}
+				else
+				{
+					if (LOG.isDebugEnabled())
+					{
+						LOG.debug("loadClass - class definition for keys [" + optionId + "], field [" + fieldId + "], pvid ["
+										+ pvId + "], type [" + type + "] is known to not exist.");
+					}
+				}
+			}
+			else
+			{
+				// We don't know whether this class exists or not...let's find out
+				aclass = loadClassFromDB(session, optionId, fieldId, pvId, type, keyString);
+			}
+		}
+		catch (Exception e)
+		{
+			LOG.error("loadClass", e);
+			if (e instanceof EQException)
+			{
+				throw (EQException) e;
+			}
+			else
+			{
+				throw new EQException(e);
+			}
+		}
+
+		return aclass;
+	}
+
+	/**
+	 * Attempts to load a class from the database (GAZPF). As well as loading the class (if found), this method will update the
+	 * classNames collection so that the status of this class will be known.
+	 * 
+	 * Note that this method is synchronized; any other threads attempting to load any class will be blocked until this thread has
+	 * completed.
+	 * 
+	 * @param session
+	 *            an EquationStandardSession
+	 * @param optionId
+	 *            the option id
+	 * @param fieldId
+	 *            the field Id
+	 * @param pvId
+	 *            the PV id
+	 * @param type
+	 *            the class type
+	 * @param keyString
+	 *            the generated key for the map of class names
+	 * 
+	 * @return the loaded class if found, otherwise null
+	 * @throws EQException
+	 */
+	private synchronized Class<?> loadClassFromDB(EquationStandardSession session, String optionId, String fieldId, String pvId,
+					String type, String keyString) throws EQException
+	{
+		Class<?> result = null;
+		String actualClassName = "";
+		// First, check whether another thread has just loaded this class
+		if (!classNames.containsKey(keyString))
+		{
+			// We don't know whether this class exists or not...let's find out
+			if (LOG.isDebugEnabled())
+			{
+				LOG.debug("loadClass - attempting to load class definition [" + optionId + "], field [" + fieldId + "], pvid ["
+								+ pvId + "], type [" + type + "] from the GAZPF");
+			}
+
+			// retrieve the GAZ record
+			GAZRecordDataModel gazRecord = new GAZRecordDataModel(optionId, fieldId, pvId, type);
+			IGAZRecordDao dao = daoFactory.getGAZDao(session, gazRecord);
+			gazRecord = dao.getGAZRecord();
+			if (gazRecord != null)
+			{
+				actualClassName = gazRecord.getClassName();
+				// only load it if a class of the same name does not exist
+				if (!classNames.containsValue(actualClassName))
+				{
+					try
+					{
+						result = defineClass(actualClassName, gazRecord.getClassByte(), 0, gazRecord.getClassByte().length);
+					}
+					catch (ClassFormatError e)
+					{
+						if (LOG.isFatalEnabled())
+						{
+							LOG.fatal("unable to load class definition [" + optionId + "], field [" + fieldId + "], pvid [" + pvId
+											+ "], type [" + type + "] from the GAZPF");
+						}
+						throw new EQException(LanguageResources.getFormattedString("LoadClass.ClassFormatError", optionId));
+					}
+					catch (NoClassDefFoundError e)
+					{
+						LOG.fatal("unable to load class definition [" + optionId + "], field [" + fieldId + "], pvid [" + pvId
+										+ "], type [" + type + "] from the GAZPF due to [" + e.getMessage()
+										+ "] NoClassDefFoundError ");
+						// re-throw the error
+						throw e;
+					}
+
+					if (LOG.isDebugEnabled())
+					{
+						LOG.debug("Found and loaded a class definition from the GAZPF for keys [" + optionId + "], field ["
+										+ fieldId + "], pvid [" + pvId + "], type [" + type + "] from the GAZPF");
+					}
+				}
+				else
+				{
+					throw new EQException("Class already exists");
+				}
+			}
+			else
+			{
+				if (LOG.isDebugEnabled())
+				{
+					LOG.debug("loadClass - a record for keys [" + optionId + "], field [" + fieldId + "], pvid [" + pvId
+									+ "], type [" + type + "] did not exist on the GAZPF");
+				}
+			}
+
+			// Use the key string to store EITHER the class name if successfully loaded,
+			// OR a blank string to indicate not found in the Map.
+
+			// Note: This is done LAST; even if another thread attempts to load the
+			// same class before this thread exits this method, the actual class is
+			// already defined (see above defineClass call).
+			if (!classNames.containsKey(keyString))
+			{
+				classNames.put(keyString, actualClassName);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Creates a single string from all the GAZPF key fields that will be unique
+	 * <p>
+	 * The returned value is intended to be used as a key to a cache.
+	 * 
+	 * @param optionId
+	 *            GAZPF option
+	 * @param fieldId
+	 *            GAZPF field name
+	 * @param pvId
+	 *            GAZPF PV field name
+	 * @param type
+	 *            GAZPF type
+	 * 
+	 * @return a String which concatenates the key fields using '#' as the delimiter.
+	 */
+	private String getKeyString(String optionId, String fieldId, String pvId, String type)
+	{
+		StringBuffer buffer = new StringBuffer(type.length() == 0 ? "_" : type);
+		buffer.append("#");
+		buffer.append(optionId);
+		buffer.append("#");
+		buffer.append(fieldId);
+		buffer.append("#");
+		buffer.append(pvId);
+		return buffer.toString();
+	}
+
+	/**
+	 * Loads a class from the GAZPF using the class name as the key.
+	 * 
+	 * Note that this method will throw a ClassNotFoundException if no GAZPF record exists. This is because this is intended to be
+	 * called for RPG User Exits, and the RPG should only be calling out to the Java application server if it is known that there is
+	 * java code to execute for the RPG function.
+	 * 
+	 * @param session
+	 *            an EquationStandardSession instance
+	 * @param programName
+	 *            The name of the RPG validation program
+	 * 
+	 * @return the class
+	 * 
+	 * @throws ClassNotFoundException
+	 */
+	public synchronized Class<?> loadRPGExitClass(EquationStandardSession session, String programName)
+					throws ClassNotFoundException
+	{
+		Class<?> result;
+		try
+		{
+			result = loadClass(session, "", programName, "", GAZRecordDataModel.TYP_RPGUSEREXIT);
+		}
+		catch (EQException e)
+		{
+			throw new EQRuntimeException(e);
+		}
+		if (result == null)
+		{
+			throw new ClassNotFoundException("Error when loading class for program [" + programName + "]");
+		}
+		return result;
+	}
+
+	/**
+	 * Expose the findLoadedClass method
+	 * 
+	 * This allows the caller to check whether this instance has loaded a class. This is used to determine whether it is necessary
+	 * to re-create this class loader when invalidating a class, and to avoid the overhead of obtaining an EqSession object at
+	 * runtime.
+	 * 
+	 * @param className
+	 * @return Class<?> The class definition if found, otherwise null
+	 */
+	public Class<?> getLoadedClass(String className)
+	{
+		return findLoadedClass(className);
+	}
+
+	/**
+	 * Load a class
+	 * 
+	 * @param className
+	 *            - the full name of the class
+	 * 
+	 * @return the class
+	 * 
+	 * @throws ClassNotFoundException
+	 */
+	@Override
+	public Class<?> loadClass(String className) throws ClassNotFoundException
+	{
+		// See if we have already loaded this class:
+		if (classNames.containsValue(className))
+		{
+			return findLoadedClass(className);
+		}
+		else
+		{
+			return super.loadClass(className);
+		}
+	}
+
+	/**
+	 * Load a class from the database but check if it is in the classpath
+	 * 
+	 * @param session
+	 *            an EquationStandardSession
+	 * @param optionId
+	 *            - the option id
+	 * @param fieldId
+	 *            - the field Id
+	 * @param pvId
+	 *            - the PV id
+	 * @param type
+	 *            the class type
+	 * @param fullClassName
+	 *            - the full class name
+	 * 
+	 * @return the class
+	 * 
+	 * @throws EQException
+	 */
+	public Class loadClassWithCheckClassPath(EquationStandardSession session, String optionId, String fieldId, String pvId,
+					String type, String fullClassName) throws EQException
+	{
+		Class<?> aclass = null;
+		String keyString = getKeyString(optionId, fieldId, pvId, type);
+
+		try
+		{
+			// See if we have already loaded this class:
+			String className = classNames.get(keyString);
+
+			if (className != null)
+			{
+				aclass = loadClass(session, optionId, fieldId, pvId, type);
+			}
+			else
+			{
+				try
+				{
+					// try to load from classpath if exist
+					aclass = Class.forName(fullClassName);
+				}
+				catch (ClassNotFoundException e)
+				{
+					aclass = loadClass(session, optionId, fieldId, pvId, type);
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			LOG.error("loadClass", e);
+			if (e instanceof EQException)
+			{
+				throw (EQException) e;
+			}
+			else
+			{
+				throw new EQException(e);
+			}
+		}
+
+		return aclass;
+	}
+
+}

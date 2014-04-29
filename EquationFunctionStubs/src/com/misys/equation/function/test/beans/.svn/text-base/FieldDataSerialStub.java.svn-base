@@ -1,0 +1,70 @@
+package com.misys.equation.function.test.beans;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationUnit;
+import com.misys.equation.common.internal.eapi.core.EQMessage;
+import com.misys.equation.common.test.TestEnvironment;
+import com.misys.equation.common.utilities.EqBeanFactory;
+import com.misys.equation.function.beans.FieldData;
+import com.misys.equation.function.runtime.FunctionMessage;
+
+public class FieldDataSerialStub
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	EquationUnit unit;
+	EquationStandardSession session;
+
+	public FieldDataSerialStub()
+	{
+		unit = TestEnvironment.getTestEnvironment().getEquationUnit();
+		session = TestEnvironment.getTestEnvironment().getStandardSession();
+	}
+
+	public static void main(String[] inputParameters)
+	{
+		FieldDataSerialStub test = new FieldDataSerialStub();
+		test.test();
+	}
+
+	private void test()
+	{
+		// Have a bash...
+		try
+		{
+			// message
+			String messageText = "DSM0001";
+			EQMessage eqMessage = session.getMessage(messageText);
+
+			// create a function message
+			FunctionMessage functionMessage = new FunctionMessage(1, 1, "FieldName", 0, eqMessage, "prefixText", "suffixText");
+
+			// field data
+			FieldData fieldData = new FieldData();
+			fieldData.setDbValue("DBValue");
+			fieldData.setFieldDecimal(9);
+			fieldData.setFieldLength(15);
+			fieldData.setFieldName("FieldName");
+			fieldData.setFieldType("A");
+			fieldData.setInputValue("inputValue");
+			fieldData.setOutputValue("outputValue");
+			fieldData.addMessage(functionMessage);
+
+			// print the field values
+			EqBeanFactory eqBeanFactory = EqBeanFactory.getEqBeanFactory();
+			String xml = eqBeanFactory.serialiseBeanAsXML(fieldData);
+			System.out.println(xml);
+
+			// convert to another function data
+			System.err.println("====================");
+			FieldData copy = (FieldData) eqBeanFactory.deserialiseXMLAsBean(xml, FieldData.class);
+			String xml2 = eqBeanFactory.serialiseBeanAsXML(copy);
+			System.out.println(xml2);
+			System.out.println(EqBeanFactory.getEqBeanFactory().serialiseBeanAsXSD(copy));
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+}

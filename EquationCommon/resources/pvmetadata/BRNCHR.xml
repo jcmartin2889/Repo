@@ -1,0 +1,49 @@
+<EquationPVMetaData PFile="CA02LF" description="BRNCHR" id="BRNCHR" globalConsolidatedPrompt="true" globalLibraryPrompt="false"  label="BRNCH" packageName="com.misys.pvs">
+  <databaseXref/>
+  <decodeMetaData>
+    <decodeMetaData decode=" " description="Default Decode" index="0" length="0" pFile="CA02LF" sqlSelect="SELECT CABRNM, HVBNM, HVBBN"
+		sqlFrom="
+			 (SELECT COALESCE(CABRNM, HVBRNM) AS CABRNM, COALESCE(CABRN, HVBNM) AS HVBNM, COALESCE(CABBN,HVBBN) AS HVBBN, HVLNM
+			  FROM CA02LF LEFT JOIN HV20LF ON CA02LF.CABBN=HV20LF.HVBBN AND HVLNM = &apos;&apos;) TBL
+    	">
+      <keyFields>
+        <keyField>HVBBN</keyField>
+      </keyFields>
+      <pvFields>
+ 		<pvField>CABRNM</pvField>
+ 		<pvField>HVBNM</pvField>
+ 		<pvField>HVBBN</pvField> 	
+      </pvFields>
+    </decodeMetaData>
+  </decodeMetaData>
+  <fieldMetaData>
+    <fieldMetaData alpha="false" composite="false" decimal="0" description="System" header="System" id="SYSTEM" index="0" key="false" length="8" numericField="false" packed="false" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" decimal="0" description="UNIT" header="UNIT" id="UNIT" index="0" key="false" label="UNIT" length="3" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" decimal="0" description="UNITDESC" header="UNITDESC" id="UNITDESC" index="3" key="false" label="UNITDESC" length="20" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="CABRNM" decimal="0" description="Branch mnemonic" header="Branch mnemonic" id="CABRNM" index="23" key="false" length="4" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="HVBNM" decimal="0" description="Branch name" header="Branch name" id="HVBNM" index="27" key="false" length="35" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="HVBBN" decimal="0" description="Branch number" header="Branch number" id="HVBBN" index="61" key="true" length="4" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+  </fieldMetaData>
+  <hdrNames>
+  	<hdrName>SERVER</hdrName>
+  	<hdrName>UNIT</hdrName>
+    <hdrName>UNITDESC</hdrName>    
+    <hdrName>CABRNM</hdrName>
+    <hdrName>HVBNM</hdrName>
+    <hdrName>HVBBN</hdrName>
+  </hdrNames>
+  <hdrPositions>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+  </hdrPositions>
+  <pvDvals>
+    <pvDval>HVBBN</pvDval>
+  </pvDvals>
+  <pvOvals>
+    <pvOval>HVBBN</pvOval>
+  </pvOvals>
+</EquationPVMetaData>

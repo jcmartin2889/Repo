@@ -1,0 +1,28 @@
+package com.misys.equation.function.runtime;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.function.adaptor.FunctionAdaptor;
+
+public class FunctionAdaptorHandler
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/**
+	 * Return a Function Reflection of the option
+	 * 
+	 * @param session
+	 *            - the Equation standard session
+	 * @param optionId
+	 *            - the option Id
+	 * 
+	 * @return the function reflection of the option
+	 */
+	public FunctionAdaptor getFunctionAdaptor(EquationStandardSession session, String optionId) throws EQException
+	{
+		FunctionAdaptor fr = new FunctionAdaptor(session, optionId, "");
+		return fr;
+	}
+
+}

@@ -1,0 +1,377 @@
+package com.misys.equation.function.comparator;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.List;
+
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.function.beans.Element;
+import com.misys.equation.function.beans.FieldSet;
+import com.misys.equation.function.beans.Function;
+import com.misys.equation.function.beans.InputField;
+import com.misys.equation.function.beans.InputFieldSet;
+
+public class ElementComparatorToolbox
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: ElementComparatorToolbox.java 10939 2011-05-11 21:46:29Z perkinj1 $";
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(ElementComparatorToolbox.class);
+
+	public static final String TEXT_EXCEPTION = "** exception **";
+	public static final String TEXT_NEW = "** added **";
+	public static final String TEXT_MISSING = "** deleted **";
+	public static final String TEXT_INDEX = "** index **";
+	public static final String DOT = ".";
+
+	public static final String TYPE_FUNCTION = "Function";
+	public static final String TYPE_SUBFIELD = "Field";
+	public static final String TYPE_INPUTFIELD = "InputField";
+
+	public static final String TYPE_FIELDSET = "FieldSet";
+	public static final String TYPE_PVFIELDSET = "PVFieldSet";
+	public static final String TYPE_INPUTFIELDSET = "InputFieldSet";
+	public static final String TYPE_LOADAPI = "LoadAPIFieldSet";
+	public static final String TYPE_UPDATEAPI = "UpdateAPIFieldSet";
+
+	/**
+	 * Compare 2 elements
+	 * 
+	 * @param element1
+	 *            - the first element
+	 * @param element2
+	 *            - the second element
+	 * @param tag
+	 *            - the type of element being compared
+	 * @param copyDirection
+	 *            - copy direction
+	 */
+	public static ElementDifference compare(Element element1, Element element2, String tag, int copyDirection)
+	{
+		ElementDifference elementDifference = null;
+
+		// Function?
+		if (element1 instanceof Function && element2 instanceof Function)
+		{
+			FunctionComparator comparator = new FunctionComparator();
+			comparator.setCopyDirection(copyDirection);
+			elementDifference = comparator.compare((Function) element1, (Function) element2, tag);
+		}
+
+		// Input Field Set?
+		else if (element1 instanceof InputFieldSet && element2 instanceof InputFieldSet)
+		{
+			InputFieldSetComparator comparator = new InputFieldSetComparator();
+			comparator.setCopyDirection(copyDirection);
+			elementDifference = comparator.compare((InputFieldSet) element1, (InputFieldSet) element2, tag);
+		}
+
+		// Field set?
+		else if (element1 instanceof FieldSet && element2 instanceof FieldSet)
+		{
+			FieldSetComparator comparator = new FieldSetComparator();
+			comparator.setCopyDirection(copyDirection);
+			elementDifference = comparator.compare((FieldSet) element1, (FieldSet) element2, tag);
+		}
+
+		// Input Field?
+		else if (element1 instanceof InputField && element2 instanceof InputField)
+		{
+			InputFieldComparator comparator = new InputFieldComparator();
+			comparator.setCopyDirection(copyDirection);
+			elementDifference = comparator.compare((InputField) element1, (InputField) element2, tag);
+		}
+
+		// Element
+		else
+		{
+			ElementComparator comparator = new ElementComparator();
+			comparator.setCopyDirection(copyDirection);
+			elementDifference = comparator.compare(element1, element2, tag);
+		}
+
+		return elementDifference;
+	}
+
+	/**
+	 * Determine whether a method is a getter method (as defined by a Bean model) returning a primitive type
+	 * 
+	 * @param method
+	 *            - the method
+	 * 
+	 * @return true if method is a getter method returning primitive type
+	 */
+	public static boolean isGetterPrimitive(Method method)
+	{
+		boolean getter = isGetter(method.getName());
+		if (getter)
+		{
+			// non-static method only
+			if (Modifier.isStatic(method.getModifiers()))
+			{
+				return false;
+			}
+			// return type is String
+			else if (method.getReturnType().getName().equals("java.lang.String"))
+			{
+				return true;
+			}
+			return method.getReturnType().isPrimitive();
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	/**
+	 * Determine whether a method is a getter method as defined by a Bean model
+	 * 
+	 * @param methodName
+	 *            - the method name
+	 * 
+	 * @return true if the method name is a getter method as defined by a Bean model
+	 */
+	public static boolean isGetter(String methodName)
+	{
+		// excluded methods
+		if (methodName.equals("getClass"))
+		{
+			return false;
+		}
+		else
+		{
+			return methodName.startsWith("get") || methodName.startsWith("is");
+		}
+	}
+
+	/**
+	 * Determine if the property differs
+	 * 
+	 * @param method
+	 *            - the property to be compared
+	 * @param element1
+	 *            - element 1
+	 * @param element2
+	 *            - element 2
+	 * @param tag
+	 *            - tag
+	 * 
+	 * @return the difference
+	 */
+	public static PropertyDifference compareProperty(Method method, Element element1, Element element2, String tag)
+	{
+		LOG.debug("Comparing: " + method.getName());
+		PropertyDifference pd = null;
+		try
+		{
+			Object object1 = method.invoke(element1);
+			Object object2 = method.invoke(element2);
+			pd = comparePropertyValue(method.getName(), object1, object2);
+		}
+		catch (Exception e)
+		{
+			pd = new PropertyDifference(method.getName(), ElementComparatorToolbox.TEXT_EXCEPTION,
+							ElementComparatorToolbox.TEXT_EXCEPTION, PropertyDifference.FLAG_EXCEPTION);
+			LOG.debug("Property diff: " + method.getName() + " [" + ElementComparatorToolbox.TEXT_EXCEPTION + "] ["
+							+ ElementComparatorToolbox.TEXT_EXCEPTION + "]");
+		}
+
+		return pd;
+	}
+
+	/**
+	 * Set the value of an an element
+	 * 
+	 * @param method
+	 *            - the property to be compared
+	 * @param element
+	 *            - element to be changed
+	 * @param value
+	 *            - the value to set
+	 * 
+	 * @return true if successfully set
+	 */
+	public static boolean setProperty(Method method, Element element, Object value)
+	{
+		LOG.debug("Setting: " + method.getName());
+		// PropertyDifference pd = null;
+		try
+		{
+			method.invoke(element, value);
+			return true;
+		}
+		catch (Exception e)
+		{
+			LOG.debug("Set value: " + method.getName() + " failed ");
+			return false;
+		}
+	}
+
+	/**
+	 * Determine if the property differs
+	 * 
+	 * @param propertyName
+	 *            - the property id
+	 * @param object1
+	 *            - the object value 1
+	 * @param object2
+	 *            - the object value 2
+	 * 
+	 * @return the difference
+	 */
+	public static PropertyDifference comparePropertyValue(String propertyName, Object object1, Object object2)
+	{
+		String value1 = "";
+		String value2 = "";
+		PropertyDifference pd = null;
+
+		// get value 1
+		if (object1 == null)
+		{
+			value1 = "<null>";
+		}
+		else
+		{
+			value1 = object1.toString();
+		}
+
+		// get value 2
+		if (object2 == null)
+		{
+			value2 = "<null>";
+		}
+		else
+		{
+			value2 = object2.toString();
+		}
+
+		// not the same
+		if (!value1.equals(value2))
+		{
+			pd = new PropertyDifference(propertyName, value1, value2, PropertyDifference.FLAG_CHANGED);
+			pd.setObject1(object1);
+			pd.setObject2(object2);
+			LOG.debug("Property diff: " + propertyName + " [" + value1 + "] [" + value2 + "]");
+		}
+		else
+		{
+			LOG.debug("Property same: " + propertyName + " [" + value1 + "] [" + value2 + "]");
+		}
+
+		return pd;
+	}
+
+	/**
+	 * Generic comparison for 2 list of elements
+	 * 
+	 * @param property
+	 *            - to contain the differences
+	 * @param listKey1
+	 *            - the first list containing the list of keys
+	 * @param listKey2
+	 *            - the second list containing the list of keys
+	 * @param list1
+	 *            - the first list
+	 * @param list2
+	 *            - the second list
+	 * @param copyDirection
+	 *            - copy direction
+	 */
+	public static void compareListOfSubElements(ElementDifference property, List<String> listKey1, List<String> listKey2,
+					List<? extends Element> list1, List<? extends Element> list2, String tag, int copyDirection)
+	{
+		compareListOfSubElementsNew(property, listKey1, listKey2, list1, list2, tag, copyDirection);
+		compareListOfSubElementsMissing(property, listKey1, listKey2, tag);
+	}
+
+	/**
+	 * Generic comparison for 2 list to determine the new/modified entries in list 1
+	 * 
+	 * @param property
+	 *            - to contain the differences
+	 * @param listKey1
+	 *            - the first list containing the list of keys
+	 * @param listKey2
+	 *            - the second list containing the list of keys
+	 * @param list1
+	 *            - the first list
+	 * @param list2
+	 *            - the second list
+	 * @param copyDirection
+	 *            - copy direction
+	 */
+	private static void compareListOfSubElementsNew(ElementDifference property, List<String> listKey1, List<String> listKey2,
+					List<? extends Element> list1, List<? extends Element> list2, String tag, int copyDirection)
+	{
+		// read all the elements from list 1
+		for (int i = 0; i < listKey1.size(); i++)
+		{
+			// get the element in list 1
+			String id1 = listKey1.get(i);
+			ElementDifference elementDifference = new ElementDifference(id1, tag);
+
+			// does the element also exists in list 2?
+			if (listKey2.contains(id1))
+			{
+				// check if same position
+				int j = listKey2.indexOf(id1);
+				if (i != j)
+				{
+					elementDifference.addPropertyDifference(new PropertyDifference("", String.valueOf(i), String.valueOf(j),
+									PropertyDifference.FLAG_INDEX));
+				}
+
+				// check for field set difference
+				if (list1 != null && list2 != null)
+				{
+					Element element1 = list1.get(i);
+					Element element2 = list2.get(j);
+					ElementDifference ed = ElementComparatorToolbox.compare(element1, element2, tag, copyDirection);
+					elementDifference.addPropertyDifference(ed);
+				}
+			}
+
+			// element does not exists in list 2
+			else
+			{
+				elementDifference.addPropertyDifference(new PropertyDifference("", ElementComparatorToolbox.TEXT_NEW,
+								ElementComparatorToolbox.TEXT_MISSING, PropertyDifference.FLAG_INSERTED));
+			}
+
+			// add the difference
+			if (elementDifference.isDiffer())
+			{
+				property.addSubElementDifference(tag + id1, elementDifference);
+			}
+		}
+	}
+
+	/**
+	 * Generic comparison for 2 list to determine the deleted entries in list 1
+	 * 
+	 * @param property
+	 *            - to contain the differences
+	 * @param listKey1
+	 *            - the first list containing the list of keys
+	 * @param listKey2
+	 *            - the second list containing the list of keys
+	 */
+	private static void compareListOfSubElementsMissing(ElementDifference property, List<String> listKey1, List<String> listKey2,
+					String tag)
+	{
+		// check for missing fields - only interested in field missing from field set 1
+		for (String id2 : listKey2)
+		{
+			if (!listKey1.contains(id2))
+			{
+				ElementDifference elementDifference = new ElementDifference(id2, tag);
+				elementDifference.addPropertyDifference(new PropertyDifference("", ElementComparatorToolbox.TEXT_MISSING,
+								ElementComparatorToolbox.TEXT_NEW, PropertyDifference.FLAG_DELETED));
+				property.addSubElementDifference(tag + id2, elementDifference);
+			}
+		}
+	}
+
+}

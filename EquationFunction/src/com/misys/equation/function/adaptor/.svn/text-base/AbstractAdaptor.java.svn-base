@@ -1,0 +1,33 @@
+package com.misys.equation.function.adaptor;
+
+import com.misys.equation.function.useraccess.UserExitMessages;
+
+public abstract class AbstractAdaptor
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	// list of messages
+	private UserExitMessages returnMessages = new UserExitMessages();
+
+	/**
+	 * Return the messages
+	 * 
+	 * @return the list of messages
+	 * @equation.external
+	 */
+	public UserExitMessages getReturnMessages()
+	{
+		return returnMessages;
+	}
+
+	/**
+	 * Clear the messages
+	 * 
+	 * @equation.external
+	 */
+	public void clearMessages()
+	{
+		returnMessages.getReturnMessages().clear();
+	}
+}

@@ -1,0 +1,162 @@
+package com.misys.equation.function.test.run;
+
+import java.util.Calendar;
+
+import com.misys.equation.common.files.JournalHeader;
+import com.misys.equation.common.utilities.Toolbox;
+import com.misys.equation.function.beans.FunctionData;
+import com.misys.equation.function.runtime.FunctionHandler;
+import com.misys.equation.function.tools.SupervisorToolbox;
+
+/**
+ * FunctionHandler Stub 1
+ * 
+ * This is how to use the Function Handler with validate and update processing done separately
+ * 
+ */
+public class FunctionHandlerStub14RL2 extends FunctionHandlerStubTestCase
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: FunctionHandlerStub14RL2.java 6793 2010-03-31 12:10:20Z deroset $";
+	public FunctionHandlerStub14RL2()
+	{
+		try
+		{
+			setUp();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] inputParameters)
+	{
+		FunctionHandlerStub14RL2 test = new FunctionHandlerStub14RL2();
+		test.test();
+	}
+
+	public boolean test()
+	{
+		// Have a bash...
+		FunctionHandler functionHandler = null;
+		try
+		{
+			System.out.println("------------------------------- 1");
+			functionHandler = FunctionToolboxStub.getFunctionHandler(user, "SESSIONID", "");
+			functionHandler.doNewTransaction("RL2", "");
+			FunctionData functionData = functionHandler.getFhd().getScreenSetHandler().rtvScrnSetCurrent().getFunctionData();
+
+			String LNR = Toolbox.formatDate(Calendar.getInstance(), Toolbox.TIMESTAMP_FORMAT).replaceAll(" ", "").replaceAll(":",
+							"");
+			String LNR2 = LNR.substring(LNR.length() - 13);
+
+			if (externalInputTest)
+			{
+				LNR2 = "7.08150442515";
+			}
+
+			functionData.chgFieldInputValue("LNP", "CR2");
+			functionData.chgFieldInputValue("LNR", LNR2);
+			// functionData.chgFieldInputValue("BRNM", "");
+			functionData.chgFieldInputValue("CUS", "134103");
+			functionData.chgFieldInputValue("CLC", "323");
+			functionData.chgFieldInputValue("CCY", "GBP");
+			functionData.chgFieldInputValue("DLA", "10T");
+			functionData.chgFieldInputValue("SDT", "011299");
+			functionData.chgFieldInputValue("CTRD", "011299");
+
+			functionData.chgFieldInputValue("RAT", "10");
+			functionData.chgFieldInputValue("IDB", "10");
+			functionData.chgFieldInputValue("CPI", "N");
+			functionData.chgFieldInputValue("RPYM", "1");
+			functionData.chgFieldInputValue("SCHC", "2");
+
+			functionData.chgFieldInputValue("NPY", "10");
+			functionData.chgFieldInputValue("RPQ", "V01");
+			functionData.chgFieldInputValue("RPA", "");
+			functionData.chgFieldInputValue("FTA", "");
+			functionData.chgFieldInputValue("FDT", "010100");
+			functionData.chgFieldInputValue("DIF", "N");
+			functionData.chgFieldInputValue("MDT", "");
+			functionData.chgFieldInputValue("AB", "9132");
+			functionData.chgFieldInputValue("AN", "234567");
+			functionData.chgFieldInputValue("AS", "001");
+			functionData.chgFieldInputValue("SAP", "N");
+
+			functionData.chgFieldInputValue("PYT", "KBC");
+
+			functionData.chgFieldInputValue("RCCY", "GBP");
+			functionData.chgFieldInputValue("RAMT", "10T");
+			functionData.chgFieldInputValue("PCCY", "USD");
+
+			functionData.chgFieldInputValue("XREF", LNR2);
+			functionData.chgFieldInputValue("RMTR", "Remitter Id");
+
+			functionData.chgFieldInputValue("NST1", "GBP R");
+			functionData.chgFieldInputValue("SAD1", "Sender line 1");
+			functionData.chgFieldInputValue("SAD2", "Sender line 2");
+			functionData.chgFieldInputValue("SAD3", "Sender line 3");
+			functionData.chgFieldInputValue("SAD4", "Sender line 4");
+
+			functionData.chgFieldInputValue("NST2", "BARUSD");
+			functionData.chgFieldInputValue("OAN1", "Beneficiary account number");
+			functionData.chgFieldInputValue("BAD1", "Beneficiary line 1");
+			functionData.chgFieldInputValue("BAD2", "Beneficiary line 2");
+			functionData.chgFieldInputValue("BAD3", "Beneficiary line 3");
+			functionData.chgFieldInputValue("BAD4", "Beneficiary line 4");
+
+			functionData.chgFieldInputValue("OAN2", "A/c with inst account number");
+			functionData.chgFieldInputValue("AAD1", "A/c with inst line 1");
+			functionData.chgFieldInputValue("AAD2", "A/c with inst line 2");
+			functionData.chgFieldInputValue("AAD3", "A/c with inst line 3");
+			functionData.chgFieldInputValue("AAD4", "A/c with inst line 4");
+			functionData.chgFieldInputValue("US1", "A/c ref 1");
+			functionData.chgFieldInputValue("US2", "A/c ref 2");
+
+			functionHandler.applyTransaction();
+			FunctionToolboxStub.printMessages(functionHandler.rtvFunctionMessages().getMessages());
+
+			// retrieve journal header
+			System.out.println(LNR2);
+			JournalHeader journalHeader = functionHandler.getFhd().getJournalHeader();
+			if (journalHeader != null)
+			{
+				System.out.println("Journal 1=" + journalHeader);
+			}
+			else
+			{
+				System.out.println("Journal 1=" + "ERROR");
+			}
+
+			return (journalHeader != null);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+		finally
+		{
+			if (functionHandler != null)
+			{
+				if (functionHandler.getFhd().getFunctionSession() != null)
+				{
+					SupervisorToolbox.removeSession(functionHandler.getFhd().getFunctionSession(), functionHandler.getFhd()
+									.getEquationUser().getEquationUnit());
+				}
+			}
+			cleanUp();
+		}
+	}
+
+	public void testStub14RL2()
+	{
+		FunctionHandlerStub14RL2 stub = new FunctionHandlerStub14RL2();
+		boolean success = stub.test();
+		assertEquals(true, success);
+	}
+
+}

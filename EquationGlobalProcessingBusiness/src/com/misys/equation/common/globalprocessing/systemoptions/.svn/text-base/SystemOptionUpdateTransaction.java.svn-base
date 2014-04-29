@@ -1,0 +1,305 @@
+package com.misys.equation.common.globalprocessing.systemoptions;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import com.misys.equation.common.access.EquationStandardGSListTransaction;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.access.IEquationStandardObject;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.internal.eapi.core.EQMessage;
+import com.misys.equation.common.utilities.EquationLogger;
+
+/**
+ * Invokes the H61LRR external input transaction API.
+ * 
+ * @author jazulm
+ */
+public class SystemOptionUpdateTransaction implements Serializable
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/** Serial UID */
+	private static final long serialVersionUID = 2308951053418122262L;
+
+	/** Logger for this class */
+	private static final EquationLogger LOG = new EquationLogger(SystemOptionUpdateTransaction.class);
+	private final transient EquationStandardSession eqSession;
+	private EquationStandardTransaction transactionSingleGSData;
+	private EquationStandardGSListTransaction transactionMultipleGSData;
+	private EQMessage singleEqErrorMessageFromAPI;
+	private EQMessage singleEqWarningMessageFromAPI;
+	private List<EQMessage> multipleEqErrorMessagesFromAPI;
+	private List<EQMessage> multipleEqWarningMessagesFromAPI;
+
+	private final boolean hasRepeatingData;
+
+	/**
+	 * This constructor sets up the fields to be used for H61L external input transaction processing
+	 * 
+	 * @param eqSession
+	 *            - the Equation Standard Session
+	 * @param sysOptType
+	 *            - the system option type
+	 * @param sysOptGroup
+	 *            - the system option group
+	 * @param sysOptFieldName
+	 *            - the system option field name
+	 * @param sysOptInputVal
+	 *            - the input value for the system option
+	 * 
+	 * @throws EQException
+	 */
+	public SystemOptionUpdateTransaction(EquationStandardSession eqSession, boolean hasRepeatingData) throws EQException
+	{
+		this.eqSession = eqSession;
+		this.hasRepeatingData = hasRepeatingData;
+	}
+
+	/**
+	 * Adds a single Maintain System Option API transaction to the list of Equation Standard Transactions.
+	 */
+	public void addSingleH61ApiTransaction(String sysOptType, String sysOptGroup, String sysOptFieldName, String sysOptInputVal)
+	{
+		try
+		{
+			transactionSingleGSData = getEquationStandardTransaction("H61LRRGUO", 0);
+			transactionSingleGSData.setFieldValue("GZTYP", sysOptType);
+			transactionSingleGSData.setFieldValue("GZSGP", sysOptGroup);
+			transactionSingleGSData.setFieldValue("GZFLN", sysOptFieldName);
+			transactionSingleGSData.setGSFieldValue("GSFLN", sysOptFieldName);
+			transactionSingleGSData.setGSFieldValue("GSVAL", sysOptInputVal);
+			transactionSingleGSData.setMode(IEquationStandardObject.FCT_MNT);
+			eqSession.addEquationTransaction(transactionSingleGSData);
+		}
+		catch (Exception e)
+		{
+			LOG.error(e);
+		}
+	}
+
+	/**
+	 * Adds multiple System Option API transaction to the list of Equation Standard Transactions.
+	 */
+	public void addMultipleH61ApiTransaction(String sysOptType, String sysOptGroup, String sysOptFieldName,
+					Map<String, String> relatedSysOptEnteredValues, String[] sysOptsInDisplayOrder)
+	{
+		try
+		{
+			transactionMultipleGSData = getEquationStandardGSListTransaction("H61LRRGUO", 28);
+			transactionMultipleGSData.setMode(IEquationStandardObject.FCT_MNT);
+
+			// set up GZ journal header fields
+			transactionMultipleGSData.setFieldValue("GZTYP", sysOptType);
+			transactionMultipleGSData.setFieldValue("GZSGP", sysOptGroup);
+			transactionMultipleGSData.setFieldValue("GZFLN", sysOptFieldName);
+
+			Set<String> relatedSysOpts = relatedSysOptEnteredValues.keySet();
+
+			for (String sysOptOrdered : sysOptsInDisplayOrder)
+			{
+				String sysOptRelFieldName = sysOptOrdered;
+				String sysOptInputVal = relatedSysOptEnteredValues.get(sysOptRelFieldName);
+
+				// set up GS journal detail fields
+				transactionMultipleGSData.addRow();
+				transactionMultipleGSData.setFieldValue("GSFLN", sysOptRelFieldName);
+				transactionMultipleGSData.setFieldValue("GSVAL", sysOptInputVal);
+			}
+
+			// to avoid H61LRR from returning 'KSM7364 Transaction H61LRRGUO failed. See program dumps' error message, ensure that
+			// the remaining repeating GS data are initialised accordingly by simply adding rows
+			int remainingGSDataRows = 24 - relatedSysOpts.size();
+			for (int i = 0; i < remainingGSDataRows; i++)
+			{
+				transactionMultipleGSData.addRow();
+			}
+
+			// add all the header and repeating GS data
+			eqSession.addEquationTransaction(transactionMultipleGSData);
+		}
+		catch (Exception e)
+		{
+			LOG.error(e);
+		}
+	}
+	/**
+	 * Calls the H61LRR API program to process the new value for the system option.
+	 */
+	public void applyH61ApiTransaction()
+	{
+		try
+		{
+			eqSession.applyTransactions();
+
+			// if transaction has repeating data, it signifies that related system options is being processed and so multiple error
+			// messages are to be retrieved
+			if (this.hasRepeatingData == true)
+			{
+				// retrieve the resulting warning and error message from the H61L transactions API call
+				setMultipleEqErrorMessagesFromAPI(transactionMultipleGSData.getErrorList());
+				setMultipleEqWarningMessagesFromAPI(transactionMultipleGSData.getWarningList());
+			}
+			else
+			{
+				// retrieve the resulting warning and error message from the H61L transaction API call
+				setSingleEqErrorMessageFromAPI(transactionSingleGSData.getErrorList());
+				setSingleEqWarningMessageFromAPI(transactionSingleGSData.getWarningList());
+			}
+		}
+		catch (Exception e)
+		{
+			LOG.error(e);
+		}
+	}
+
+	/**
+	 * Get an Equation standard transaction to be used for processing the API transaction
+	 * 
+	 * @param apiNameOptID
+	 *            - the name of API and the menu option ID
+	 * @param gsOffset
+	 *            - the GS record position (irrelevant in this function)
+	 * 
+	 * @return an instance of {@link EquationStandardTransaction}
+	 * @throws Exception
+	 */
+	private EquationStandardTransaction getEquationStandardTransaction(String apiNameOptID, int gsOffset) throws EQException
+	{
+		return new EquationStandardTransaction(apiNameOptID, eqSession, gsOffset);
+	}
+
+	/**
+	 * Get an Equation standard transaction with GS List to be used for processing the API transaction
+	 * 
+	 * @param apiNameOptID
+	 *            - the name of API and the menu option ID
+	 * @param gsOffset
+	 *            - the GS record position (irrelevant in this function)
+	 * 
+	 * @return an instance of {@link EquationStandardGSListTransaction}
+	 * @throws Exception
+	 */
+	private EquationStandardGSListTransaction getEquationStandardGSListTransaction(String apiNameOptID, int gsOffset)
+					throws Exception
+	{
+		return new EquationStandardGSListTransaction(apiNameOptID, eqSession);
+	}
+
+	/**
+	 * Return the resulting Equation error message from API call.
+	 * 
+	 * @return the resulting Equation error message from API call.
+	 */
+	public EQMessage getSingleEqErrorMessageFromAPI()
+	{
+		return singleEqErrorMessageFromAPI;
+	}
+
+	/**
+	 * Set the resulting Equation error message from API call.
+	 * 
+	 * @param equationMsg
+	 *            - the resulting Equation error message from API call
+	 */
+	public void setSingleEqErrorMessageFromAPI(List<EQMessage> equationMsgs)
+	{
+
+		if (!equationMsgs.isEmpty())
+		{
+			this.singleEqErrorMessageFromAPI = equationMsgs.get(0);
+		}
+		else
+		{
+			this.singleEqErrorMessageFromAPI = null;
+		}
+	}
+
+	/**
+	 * Return the resulting Equation warning message from API call.
+	 * 
+	 * @return the resulting Equation warning message from API call.
+	 */
+	public EQMessage getSingleEqWarningMessageFromAPI()
+	{
+		return singleEqWarningMessageFromAPI;
+	}
+
+	/**
+	 * Set the resulting Equation warning message from API call.
+	 * 
+	 * @param equationMsg
+	 *            - the resulting Equation warning message from API call
+	 */
+	public void setSingleEqWarningMessageFromAPI(List<EQMessage> equationMsgs)
+	{
+		if (!equationMsgs.isEmpty())
+		{
+			this.singleEqWarningMessageFromAPI = equationMsgs.get(0);
+		}
+		else
+		{
+			this.singleEqWarningMessageFromAPI = null;
+		}
+	}
+
+	/**
+	 * Set the resulting Equation error messages from API call.
+	 * 
+	 * @param equationMsg
+	 *            - the resulting Equation messages from API call
+	 */
+	public void setMultipleEqErrorMessagesFromAPI(List<EQMessage> equationErrorMsgs)
+	{
+		if (!equationErrorMsgs.isEmpty())
+		{
+			this.multipleEqErrorMessagesFromAPI = equationErrorMsgs;
+		}
+		else
+		{
+			this.multipleEqErrorMessagesFromAPI = null;
+		}
+	}
+
+	/**
+	 * Return the resulting error messages from API call.
+	 * 
+	 * @return the resulting Equation error messages from API call.
+	 */
+	public List<EQMessage> getMultipleEqErrorMessagesFromAPI()
+	{
+		return multipleEqErrorMessagesFromAPI;
+	}
+
+	/**
+	 * Set the resulting Equation error messages from API call.
+	 * 
+	 * @param equationMsg
+	 *            - the resulting Equation messages from API call
+	 */
+	public void setMultipleEqWarningMessagesFromAPI(List<EQMessage> equationWarningMsgs)
+	{
+		if (!equationWarningMsgs.isEmpty())
+		{
+			this.multipleEqWarningMessagesFromAPI = equationWarningMsgs;
+		}
+		else
+		{
+			this.multipleEqWarningMessagesFromAPI = null;
+		}
+	}
+
+	/**
+	 * Return the resulting error messages from API call.
+	 * 
+	 * @return the resulting Equation error messages from API call.
+	 */
+	public List<EQMessage> getMultipleEqWarningMessagesFromAPI()
+	{
+		return multipleEqWarningMessagesFromAPI;
+	}
+}

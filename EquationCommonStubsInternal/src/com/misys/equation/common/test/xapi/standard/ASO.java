@@ -1,0 +1,160 @@
+/*
+ * This sample code is provided by Misys for illustrative purposes only.
+ * 
+ * These examples have not been thoroughly tested under all conditions.
+ * 
+ * Misys, therefore, cannot guarantee or imply reliability, serviceability, or function of these programs.
+ * 
+ * All programs contained herein are provided to you "AS IS" without any warranties of any kind. The implied warranties of
+ * non-infringement, merchantability and fitness for a particular purpose are expressly disclaimed.
+ */
+package com.misys.equation.common.test.xapi.standard;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.access.EquationUnit;
+import com.misys.equation.common.access.EquationUser;
+import com.misys.equation.common.test.TestEnvironment;
+
+// *************************************************************************************************
+/**
+ * 
+ * 
+ */
+// *************************************************************************************************
+public class ASO
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: ASO.java 11310 2011-06-27 12:20:21Z ESTHER.WILLIAMS $";
+
+	protected static EquationStandardSession session;
+	protected static EquationUnit unit;
+	protected static EquationUser user;
+	// *********************************************************************************************
+	/**
+	 * 
+	 */
+	// *********************************************************************************************
+	private ASO()
+	{
+		try
+		{
+			unit = TestEnvironment.getTestEnvironment().getEquationUnit();
+			user = TestEnvironment.getTestEnvironment().getEquationUser();
+			session = user.getSession();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+	public static void main(String[] inputParameters)
+	{
+		ASO test = new ASO();
+		test.setEnviroment();
+		test.test();
+
+	}
+	// *********************************************************************************************
+	/**
+	 * 
+	 */
+	// *********************************************************************************************
+	public void test()
+	{
+		// Have a bash...
+		try
+		{
+			EquationStandardTransaction transaction = new EquationStandardTransaction("H11ARRASO", session);
+
+			// Set the transaction type
+			transaction.setMode("A");
+
+			// ---------------------------------TO FORCE AN ERROR USE THIS ACCOUNT ---------------------------------------
+			// transaction.setFieldValue("GZAB", "0543"); // Account branch
+			// transaction.setFieldValue("GZAN", "000001"); // Basic part of account number
+			// transaction.setFieldValue("GZAS", "001"); // Account suffix
+
+			transaction.setFieldValue("GZAB", "1000"); // Account branch
+			transaction.setFieldValue("GZAN", "500003"); // Basic part of account number
+			transaction.setFieldValue("GZAS", "006"); // Account suffix
+			transaction.setFieldValue("GZREF", "TEST-19"); // Standing order reference
+
+			transaction.setFieldValue("GZBCCY", "GBP"); // Beneficiary currency
+			transaction.setFieldValue("GZFRQ", "V31"); // Frequency code
+			transaction.setFieldValue("GZFAD", "1000131"); // First action date
+			transaction.setFieldValue("GZFLD", "9999999"); // Final action date
+			transaction.setFieldValue("GZRPA", "500000"); // Regular payment amount
+			transaction.setFieldValue("GZDSIF", "N"); // Dr S/o if no avail funds?
+			transaction.setFieldValue("GZDCIF", "N"); // Dr chgs if no avail funds?
+			transaction.setFieldValue("GZUSID", "EQUI"); // User ID (4A)
+			transaction.setFieldValue("GZAUTO", "N"); // Auto-authorised (API)? (1A)
+			transaction.setFieldValue("GZAUTH", "N"); // Standing order authorised? (1A)
+			transaction.setFieldValue("GZRSO", "N"); // Authorise standing order flag (1A)
+
+			// Apply the transaction
+			session.addEquationTransaction(transaction);
+			session.applyTransactions();
+
+			// Commit
+			session.commitTransactions();
+			session.rollbackTransactions();
+			System.out.println("finished!");
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			System.out.println(e.toString());
+			// Rollback any transactions for the unit
+		}
+	}
+
+	private void setEnviroment()
+	{
+
+		try
+		{
+			EquationStandardTransaction transaction = new EquationStandardTransaction("K42FRRMSD", session);
+
+			// Set the transaction type
+			transaction.setMode("A");
+
+			// GZOID does not appear on the screen, but is needed for the java program
+			transaction.setFieldValue("GZOID", "ASO"); // Menu option id
+			transaction.setFieldValue("GZAB", "1000"); // Instruction a/c branch
+			transaction.setFieldValue("GZAN", "500003"); // Instruction a/c number
+			transaction.setFieldValue("GZAS", "006"); // Instruction a/c suffix
+			transaction.setFieldValue("GZPYT", "SO"); // Settlement type
+			transaction.setFieldValue("GZREF", "TEST-19"); // Settlement reference
+
+			transaction.setFieldValue("GZCFG", "N"); // Continuation flag (1A)
+
+			transaction.setFieldValue("GZABR", "N"); // Abbreviated instructions? (1A)
+			transaction.setFieldValue("GZCTC", "510"); // Credit transaction code (3A)
+			transaction.setFieldValue("GZCCY", "GBP"); // Credit currency mnemonic (3A)
+			transaction.setFieldValue("GZDTC", "010"); // Debit transaction code (3A)
+			transaction.setFieldValue("GZDCY", "USD"); // Debit currency mnemonic (3A)
+
+			transaction.setFieldValue("GZTRM1", "AC"); // Receive transfer method (2A)
+			transaction.setFieldValue("GZAB2", "0132"); // Pay a/c branch (4A)
+			transaction.setFieldValue("GZAN2", "012008"); // Pay a/c number (6A)
+			transaction.setFieldValue("GZAS2", "050"); // Pay a/c suffix (3A)
+
+			// Apply the transaction
+			session.addEquationTransaction(transaction);
+			session.applyTransactions();
+
+			// Commit
+			session.commitTransactions();
+			session.rollbackTransactions();
+			System.out.println("finished!");
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			System.out.println(e.toString());
+			// Rollback any transactions for the unit
+		}
+	}
+}

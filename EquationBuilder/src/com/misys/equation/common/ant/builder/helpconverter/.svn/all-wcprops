@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/17234/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/helpconverter
+END
+AuthorItToEclipseConverter.java
+K 25
+svn:wc:ra_dav:version-url
+V 163
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/helpconverter/AuthorItToEclipseConverter.java
+END
+CommonDefinitions.java
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/helpconverter/CommonDefinitions.java
+END
+RoboHelpToEclipseConverter.java
+K 25
+svn:wc:ra_dav:version-url
+V 163
+/svn/repos/bfeq_src/!svn/ver/17234/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/helpconverter/RoboHelpToEclipseConverter.java
+END

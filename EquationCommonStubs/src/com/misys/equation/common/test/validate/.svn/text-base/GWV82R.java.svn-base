@@ -1,0 +1,33 @@
+package com.misys.equation.common.test.validate;
+
+import com.misys.equation.common.access.EquationData;
+import com.misys.equation.common.test.EquationTestCaseValidate;
+
+public class GWV82R extends EquationTestCaseValidate
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	public GWV82R()
+	{
+		// Set up a valid CCN
+		validCCN = "GBP1234567890123456789012345678901234SWGBYATES AB 1234SANOSTUS ";
+
+		// Set up an invalid CCN
+		invalidCCN = "GBP1234567890123456789012345678901234SWGBYATES AB 1234SANOSTUS ";
+	}
+
+	@Override
+	public void test00200_ValidateNonExistingCall() throws Exception
+	{
+		EquationData data = getEQData(this.getClass().getSimpleName(), invalidCCN, "A", "N");
+		String error = data.getErrorMessage().trim();
+		System.out.println("Validate Non-Existing Call");
+		if (!error.equals(""))
+		{
+			System.out.println("Error: " + error);
+		}
+		System.out.println("Data Returned: " + data.getData());
+		assertEquals(false, error.equals(""));
+	}
+
+}

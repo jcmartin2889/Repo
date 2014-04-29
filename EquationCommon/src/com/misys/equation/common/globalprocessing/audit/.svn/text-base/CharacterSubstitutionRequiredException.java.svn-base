@@ -1,0 +1,27 @@
+package com.misys.equation.common.globalprocessing.audit;
+
+import com.misys.equation.common.internal.eapi.core.EQException;
+
+/**
+ * Thrown when an operation requires character substitution during CCSID conversion but was not set-up to do so (e.g., via a
+ * parameter option)
+ * 
+ * @author berzosa
+ */
+@SuppressWarnings("serial")
+public class CharacterSubstitutionRequiredException extends EQException
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/**
+	 * Indicates that the operation requires character substitution in order to be able to proceed.
+	 * 
+	 * @param message
+	 *            The message to pass to the superclass Exception.
+	 */
+	public CharacterSubstitutionRequiredException(String message)
+	{
+		super(message);
+	}
+}

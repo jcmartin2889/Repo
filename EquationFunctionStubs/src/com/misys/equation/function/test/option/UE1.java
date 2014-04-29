@@ -1,0 +1,354 @@
+package com.misys.equation.function.test.option;
+
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.function.beans.DisplayAttributes;
+import com.misys.equation.function.beans.DisplayAttributesSet;
+import com.misys.equation.function.beans.InputField;
+import com.misys.equation.function.beans.InputFieldSet;
+import com.misys.equation.function.beans.ValidationExpression;
+import com.misys.equation.function.test.helper.DisplayFieldSetWrapper;
+import com.misys.equation.function.test.helper.FunctionGenerator;
+import com.misys.equation.function.tools.FunctionToolbox;
+import com.misys.equation.function.tools.MappingToolbox;
+
+/**
+ * A test class for non-business testing.
+ * <p>
+ * This class generates the service XML for service UE1. This service tests the basic Service attributes:
+ * <ul>
+ * <li>Mandatory status</li>
+ * <li>Min/Max lengths/values</li>
+ * <li>Valid values</li>
+ * <li>Regular expressions</li>
+ * <li>Validation EL Script expressions</li>
+ * </ul>
+ */
+public class UE1 extends TestOptionStub
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: UE1.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+
+	public UE1()
+	{
+		try
+		{
+			setUp();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] inputParameters)
+	{
+		UE1 test = new UE1();
+		test.test();
+	}
+
+	private DisplayFieldSetWrapper addRecord1(FunctionGenerator fg) throws EQException
+	{
+		// add the record
+		DisplayFieldSetWrapper fieldSetWrapper = fg.addFieldSet("PRIMARY", "Primary Input Field Set",
+						"Primary Input Field Set Description");
+		InputFieldSet inputFieldSet = fieldSetWrapper.getInputFieldSet();
+		DisplayAttributesSet attributeSet = fieldSetWrapper.getDisplayAttributesSet();
+
+		// input field
+		InputField inputField;
+		DisplayAttributes displayAttributes;
+
+		// add all the fields in this section ---------------------------------------
+
+		// Valid value
+		inputField = FunctionToolbox.getInputField("VV1", "Valid valuedefault", "This is an Alpha field with a valid value", "A",
+						"3", "");
+		inputField.setInitialValue("105");
+		inputField.setValidValues("100:101:102:103:104:105");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setProtected(DisplayAttributes.PROTECTED_NO);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Valid value
+		inputField = FunctionToolbox.getInputField("VVP1", "Valid value packed",
+						"This is a Packed field with a set of valid values", "P", "5", "0");
+		inputField.setValidValues("100:101:99999");
+		inputField.setInitialValue("101");
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Valid value
+		inputField = FunctionToolbox.getInputField("VVZ1", "Valid value zoned", "This is a Zoned field with a set of valid values",
+						"S", "6", "0");
+		inputField.setValidValues("100:101:99999");
+		inputField.setInitialValue("101");
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Valid value
+		inputField = FunctionToolbox.getInputField("MMP1", "Min/max packed",
+						"This is a Packed field with minimum and maximum values", "P", "15", "0");
+		inputField.setMinLength("-3789");
+		inputField.setMaxLength("46846853789");
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Currency
+		inputField = FunctionToolbox.getInputField("CCY", "Currency", "This is the currency", "A", "3", "");
+		inputField.setInitialValue("GBP");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setPrompt("C8R01R");
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+		FunctionToolbox.addPVFieldSet(inputField, FunctionToolbox.getPVFieldSet(session, "C8R01R", "", false, "N"));
+
+		// Amount
+		inputField = FunctionToolbox.getInputField("AMT", "Amount", "This is the amount", "P", "15", "0");
+		inputField.setInitialValue("1T");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		inputField.setUpperCase(false);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+		FunctionToolbox.addPVFieldSet(inputField, FunctionToolbox.getPVFieldSet(session, "GWV30R", "", false, "N"));
+
+		// Value date
+		inputField = FunctionToolbox.getInputField("VFR", "Value date", "This is the value date", "D", "7", "");
+		inputField.setInitialValue("040100");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		inputField.setUpperCase(false);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setWidget("CAL");
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+		FunctionToolbox.addPVFieldSet(inputField, FunctionToolbox.getPVFieldSet(session, "GWV94R", "", false, "N"));
+
+		// Reference
+		inputField = FunctionToolbox.getInputField("DRF", "Reference",
+						"This is the reference, a 20 long character field with min (5) and max (15) lengths", "A", "20", "");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		inputField.setMaxLength("15");
+		inputField.setMinLength("5");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Regular Expression validation
+		inputField = FunctionToolbox.getInputField("REGA1", "Alpha Reg Exp",
+						"This field is a 35 long character field with a Regular expression (*.REGULAR)", "A", "35", "");
+		inputField.setInitialValue("Valid REGULAR text");
+		inputField.setRegExp(".*REGULAR.*");
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// TODO: Will any field types other than Alphanumeric really support regular expressions?
+
+		// Syntax validation EL scripts
+		inputField = FunctionToolbox.getInputField("VLDA1", "Alpha Expression1",
+						"This field is a 35 long character field with an EL script validation expression", "A", "35", "");
+		ValidationExpression validationExpression = new ValidationExpression();
+		validationExpression.setExpression("VLDA1 ne '' and VLDA1 ne 'XX'");
+		validationExpression.setDescription("The description for this particular expression");
+		validationExpression.setErrorText("Must be XX or blank");
+		inputField.addValidationExpression(validationExpression);
+
+		validationExpression = new ValidationExpression();
+		validationExpression.setExpression("VLDA1 ne '' and VLDA1 ne 'YY'");
+		validationExpression.setDescription("The description for this particular expression");
+		validationExpression.setErrorText("Must be YY or blank");
+		inputField.addValidationExpression(validationExpression);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Syntax validation EL scripts
+		inputField = FunctionToolbox.getInputField("VLDA2", "Alpha EL Field2",
+						"This field is a 35 long character field with an EL script validation expression", "A", "35", "");
+		validationExpression = new ValidationExpression();
+		validationExpression.setExpression("VLDA2 eq 'FAIL1' or VLDA2 eq 'FAIL2'");
+		validationExpression.setDescription("This expression has no message");
+		inputField.addValidationExpression(validationExpression);
+
+		validationExpression = new ValidationExpression();
+		validationExpression.setExpression("VLDA2 eq 'FAIL2'");
+		validationExpression.setDescription("This one specifies KSM1756");
+		validationExpression.setErrorMessageId("KSM1756");
+		inputField.addValidationExpression(validationExpression);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Narrative 1
+		inputField = FunctionToolbox.getInputField("NR1", "Narrative 1",
+						"This is the narrative 1, initial value should be Y/N depending whether K451 is installed", "A", "35", "");
+		inputField.setMaxLength("20");
+		inputField.setInitialValueType(InputField.INIT_VALUE_ENH);
+		inputField.setInitialValue("K451");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Narrative 2
+		inputField = FunctionToolbox.getInputField("NR2", "Narrative 2", "This is the narrative 2", "A", "35", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Narrative 3
+		inputField = FunctionToolbox.getInputField("NR3", "Narrative 3", "This is the narrative 3", "A", "35", "");
+		inputField.setInitialValue("ACMD001");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Narrative 4
+		inputField = FunctionToolbox.getInputField("NR4", "Narrative 4", "This is the narrative 4", "A", "35", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Number of items
+		inputField = FunctionToolbox.getInputField("NPE", "Number of items",
+						"This is the number of items, mandatory, with min/max values of 1", "P", "5", "0");
+		inputField.setInitialValue("1");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		inputField.setUpperCase(false);
+		inputField.setMaxLength("1");
+		inputField.setMinLength("1");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Posting reference
+		inputField = FunctionToolbox.getInputField("PBR", "Posting reference", "This is the posting reference", "A", "4", "");
+		inputField.setInitialValue("EQDE");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		inputField.setMaxLength("4");
+		inputField.setMinLength("4");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Rate 1
+		inputField = FunctionToolbox.getInputField("RAT1", "Rate 1", "This is the rate 1 (10,5)", "P", "10", "5");
+		inputField.setUpperCase(false);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Rate 2
+		inputField = FunctionToolbox.getInputField("RAT2", "Rate 2", "This is the rate 2 (15,7)", "P", "15", "7");
+		inputField.setUpperCase(false);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Date 1
+		inputField = FunctionToolbox.getInputField("DAT1", "Date 1", "This is the date 1", "D", "7", "");
+		inputField.setUpperCase(false);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setWidget("CAL");
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+		FunctionToolbox.addPVFieldSet(inputField, FunctionToolbox.getPVFieldSet(session, "GWV94R", "", false, "N"));
+
+		// Date 2
+		inputField = FunctionToolbox.getInputField("DAT2", "Date 2", "This is the date 2", "D", "7", "");
+		inputField.setUpperCase(false);
+		inputField.setInitialValueType(InputField.INIT_VALUE_CONSTANT);
+		inputField.setInitialValue("1M");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setWidget("CAL");
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+		FunctionToolbox.addPVFieldSet(inputField, FunctionToolbox.getPVFieldSet(session, "GWV94R", "", false, "N"));
+
+		// Date 3
+		inputField = FunctionToolbox.getInputField("DAT3", "Date 3", "This is the date 3", "D", "7", "");
+		inputField.setUpperCase(false);
+		inputField.setInitialValue("3M");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setWidget("CAL");
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+		FunctionToolbox.addPVFieldSet(inputField, FunctionToolbox.getPVFieldSet(session, "GWV94R", "", false, "N"));
+
+		// Number of digits
+		inputField = FunctionToolbox.getInputField("DIGIT", "Number of digits", "This is the number of digits for the amounts",
+						"S", "2", "0");
+		inputField.setInitialValue("15");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		inputField.setUpperCase(false);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Number of decimal
+		inputField = FunctionToolbox.getInputField("DECI", "Number of decimals", "This is the number of decimals for the amounts",
+						"S", "1", "0");
+		inputField.setInitialValue("0");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		inputField.setUpperCase(false);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		return fieldSetWrapper;
+	}
+
+	private void addMappings(FunctionGenerator fg) throws EQException
+	{
+		fg.addValidateMappingToPV("PRIMARY", "CCY", "PRIMARY", "AMT", "GWV30R", "$CCYAM");
+		fg.addValidateMappingToPV("PRIMARY", "AMT", "PRIMARY", "AMT", "GWV30R", "$INPAM");
+		fg.addValidateMappingFromPV("PRIMARY", "AMT", "GWV30R", "$EDTAM", "PRIMARY", "AMT", MappingToolbox.TYPE_OUTPUT);
+		fg.addValidateMappingFromPV("PRIMARY", "AMT", "GWV30R", "$NUMAM", "PRIMARY", "AMT", MappingToolbox.TYPE_PRIMITIVE);
+		// fg.addValidateMappingFromPV("PRIMARY", "AMT", "GWV30R", "$NUMAM", "PRIMARY", "DTMP2", MappingToolbox.TYPE_PRIMITIVE);
+
+		fg.addValidateMappingToPV("PRIMARY", "DIGIT", "PRIMARY", "AMT", "GWV30R", "$NODIG");
+		fg.addValidateMappingToPV("PRIMARY", "DECI", "PRIMARY", "AMT", "GWV30R", "$NDPAM");
+
+		fg.addValidateMappingToPV("PRIMARY", "DDLP", "PRIMARY", "DDLR", "OSR33R", "$DLP");
+		fg.addValidateMappingToPV("PRIMARY", "DDLR", "PRIMARY", "DDLR", "OSR33R", "$DLR");
+		fg.addValidateMappingToPV("PRIMARY", "DBRN", "PRIMARY", "DDLR", "OSR33R", "$BRNM");
+
+		fg.addValidateMappingFromPV("PRIMARY", "DDLR", "OSR33R", "$BRNM", "PRIMARY", "DBRN", MappingToolbox.TYPE_PRIMITIVE);
+		fg.addValidateMappingFromPV("PRIMARY", "DDLR", "OSR33R", "$DLP", "PRIMARY", "DDLP", MappingToolbox.TYPE_PRIMITIVE);
+		fg.addValidateMappingFromPV("PRIMARY", "DDLR", "OSR33R", "$DLP", "PRIMARY", "DDLP", MappingToolbox.TYPE_OUTPUT);
+		fg.addValidateMappingFromPV("PRIMARY", "DDLR", "OSR33R", "$DLR", "PRIMARY", "DDLR", MappingToolbox.TYPE_PRIMITIVE);
+		fg.addValidateMappingFromPV("PRIMARY", "DDLR", "OSR33R", "$DLR", "PRIMARY", "DDLR", MappingToolbox.TYPE_OUTPUT);
+		fg.addValidateMappingFromPV("PRIMARY", "DDLR", "OSR33R", "$CUS", "PRIMARY", "DTMP", MappingToolbox.TYPE_PRIMITIVE);
+
+	}
+
+	private void test()
+	{
+		// Have a bash...
+		try
+		{
+			FunctionGenerator fg = new FunctionGenerator("UE1", "EQ4 Test Service 1",
+							"Test Service 1 - testing basic service field validation", "com.bigbank.services",
+							"com.bigbank.services.ui");
+			addRecord1(fg);
+			addMappings(fg);
+
+			// System Testing should test Batch External Input and Recovery
+			// processing by applying as a service, not individual APIs
+			fg.getFunction().setApplyDuringExtInput(true);
+			fg.getFunction().setApplyDuringRecovery(true);
+
+			// print
+			printCompleteStatus(fg, this.getClass().getSimpleName(), printXML);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+}

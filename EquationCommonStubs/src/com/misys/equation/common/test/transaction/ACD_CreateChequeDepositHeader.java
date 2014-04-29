@@ -1,0 +1,98 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseAddOnce;
+import com.misys.equation.common.test.TestEnvironment;
+
+/**
+ * @author weddelc1
+ */
+public class ACD_CreateChequeDepositHeader extends EquationTestCaseAddOnce
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: ACD_CreateChequeDepositHeader.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	String programName = "J49ARR";
+	String optionId = "ACD";
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		String reference = TestEnvironment.getTestEnvironment().getParameter("Cheque_Deposit_Suite");
+		if (reference != null)
+		{
+			transaction.setFieldValue("GZ9OLR", reference); // Off-line deposit reference (12A)
+		}
+		else
+		{
+			transaction.setFieldValue("GZ9OLR", "Unknown"); // Transaction refer
+		}
+	}
+
+	/**
+	 * Setup the mandatory fields
+	 */
+	@Override
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZ9CAB", "0543"); // Customer credit branch number (4A)
+		transaction.setFieldValue("GZ9CAN", "012008"); // Customer credit customer number (6A)
+		transaction.setFieldValue("GZ9CAS", "001"); // Customer credit suffix (3A)
+		transaction.setFieldValue("GZ9TCD", "515"); // Customer credit trancode (3A)
+		transaction.setFieldValue("GZ9AMT", "10000"); // Deposit amount (15P,0)
+		transaction.setFieldValue("GZ9CCY", "GBP"); // Deposit currency (3A)
+		transaction.setFieldValue("GZ9ITM", "1"); // Number of items in deposit (3P,0)
+		transaction.setFieldValue("GZ9PDD", "N"); // Post dated deposit? (1A)
+	}
+	/**
+	 * Test: validate mode: existing record<br>
+	 * Expected result: Fail<br>
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public void test00500Add_Validate_ExistingRecord() throws Exception
+	{
+		// Do not do this test. Duplicate checking only done in update module.
+		// Generated Reference Number supplied in the key.
+	}
+
+}

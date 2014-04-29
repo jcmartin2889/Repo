@@ -1,0 +1,69 @@
+package com.misys.equation.common.search.criteria;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.dao.DaoFactory;
+import com.misys.equation.common.dao.IDao;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.dao.beans.GBRecordDataModel;
+import com.misys.equation.common.search.results.SearchType;
+
+public class OptionSearchCriteria implements ISearchCriteria
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: OptionSearchCriteria.java 9725 2010-11-08 12:34:45Z MACDONP1 $";
+
+	private final String optionId;
+	private final String optionTitle;
+
+	public OptionSearchCriteria(String optionId, String optionTitle)
+	{
+		super();
+		if (optionId == null || optionId.equals("*"))
+		{
+			this.optionId = "";
+		}
+		else
+		{
+			this.optionId = optionId.trim();
+		}
+
+		if (optionTitle == null || optionTitle.equals("*"))
+		{
+			this.optionTitle = "";
+		}
+		else
+		{
+			this.optionTitle = optionTitle.trim();
+		}
+	}
+
+	public String getOptionId()
+	{
+		return optionId;
+	}
+
+	public String getOptionTitle()
+	{
+		return optionTitle;
+	}
+
+	public AbsRecord getDataModel()
+	{
+		return new GBRecordDataModel();
+	}
+
+	public String getSearchString()
+	{
+		return "GBOID LIKE '%" + optionId + "%' AND GBONM LIKE '%" + optionTitle + "%'";
+	}
+
+	public SearchType getSearchType()
+	{
+		return SearchType.OPTION;
+	}
+
+	public IDao getRecordDao(EquationStandardSession session, DaoFactory daoFactory, AbsRecord record)
+	{
+		return daoFactory.getGBDao(session, record);
+	}
+}

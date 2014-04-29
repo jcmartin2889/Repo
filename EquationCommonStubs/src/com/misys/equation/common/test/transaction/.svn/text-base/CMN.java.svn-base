@@ -1,0 +1,65 @@
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseAddCancel;
+
+/**
+ * Equation test cases for Maintain Customer Mnemonic
+ */
+public class CMN extends EquationTestCaseAddCancel
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	String programName = "G02JRR";
+	String optionId = "CMN";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		retrieveBeforeCancel = true;
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZCUS", "ATLANT"); // Customer mnemonic
+		transaction.setFieldValue("GZCLC", "IND"); // Customer location
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	@Override
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZNCUS", "TANLTA"); // New customer mnemonic
+		transaction.setFieldValue("GZNCLC", "DNI"); // New customer location
+	}
+
+}

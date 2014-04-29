@@ -1,0 +1,766 @@
+package com.misys.equation.function.tools;
+
+import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.Map.Entry;
+
+import bf.com.misys.bankfusion.attributes.ArtefactsPermission;
+import bf.com.misys.bankfusion.attributes.ArtefactsPermissionList;
+import bf.com.misys.bankfusion.attributes.DetailsOfPermission;
+import bf.com.misys.bankfusion.attributes.OrganisationGroupDetails;
+import bf.com.misys.bankfusion.attributes.Permission;
+import bf.com.misys.bankfusion.attributes.PermissionList;
+import bf.com.misys.bankfusion.attributes.all.ZonePermList;
+import bf.com.misys.bankfusion.attributes.all.ZonePermissionList;
+import bf.com.misys.bf.attributes.UserDetail;
+import bf.com.misys.bf.attributes.UserGroups;
+import bf.com.misys.bf.attributes.UserRoleDetail;
+import bf.com.misys.bf.attributes.UserRoleInfo;
+import bf.com.misys.bf.attributes.UserZones;
+
+import com.misys.equation.bankfusion.tools.BFToolbox;
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationSystem;
+import com.misys.equation.common.access.EquationUnit;
+import com.misys.equation.common.dao.beans.OCRecordDataModel;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.trapedza.bankfusion.commander.exceptions.BankFusionCommanderError;
+
+/**
+ * Updates the BankFusion Groups/Users based on the users authorised to Equation units.
+ */
+public class BankFusionSynchronizer
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: BankFusionSynchronizer.java 15719 2013-04-30 15:47:25Z whittap1 $";
+
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(BankFusionSynchronizer.class);
+	/**
+	 * Name of the BankFusion permission used by BFEQ. Published Microflows will be automatically added to this Permission.
+	 */
+	public final static String BANKFUSION_PERMISSION_NAME = "BFEQPermission";
+	/** Name of the BankFusion Group suffix used by BFEQ. */
+	private final static String BANKFUSION_GROUP_NAME = "BFEQGroup";
+	/** BankFusionException error number for user already being logged in */
+	private final static int BF_ERROR_USER_ALREADY_LOGGED_IN = 11400015;
+	/** Number of errors before cancelling the timer thread to prevent further synchronization attempts */
+	private final static int MAX_PERSISTENT_ERRORS = 3;
+	/** Minimum timer period (in seconds) */
+	private final static int MIN_TIMER_PERIOD = 30;
+	/** Indicates that synchronization should occur once only */
+	private boolean onceOnly = false;
+	/** Default BankFusion Zone */
+	public final static String DEFAULT_ZONE = "BF";
+	/** Group Parent ID */
+	private final static String GROUP_PARENTID = "BFRoot";
+	/** Default BankFusion Sort code */
+	private final static String DEFAULT_BANKFUSION_SORT_CODE = "99999999";
+	/** Default locale */
+	private static String DEFAULT_LOCALE = "enGB";
+	/** Blank language code */
+	private final static String BLANK_LANGUAGE_CODE = "  ";
+
+	/** Default BankFusion users (that will not be deleted) */
+	private final static Set<String> defaultBankFusionUsers = new HashSet<String>();
+	/** Default BankFusion users (that will not be deleted) */
+	private Set<String> processedItems = new HashSet<String>();
+
+	/**
+	 * Indicates how the BFTB_BRANCHSORTCODE column is populated
+	 */
+	private enum BranchPopulation
+	{
+		/** Not specified, will default to {@link #DEFAULT_BANKFUSION_SORT_CODE} */
+		DEFAULT,
+		/** The Equation branch number will be used */
+		NUMBER,
+		/** The Equation branch mnemonic will be used */
+		MNEMONIC
+	}
+
+	private String bfUser;
+	private String bfPassword;
+	private String unit;
+	private String system;
+	private String interval;
+	private String bfGroupName;
+	private String bfPermissionName;
+	private boolean deleteUsers = false;
+	private boolean isUpperCase = false;
+
+	/** Map of Equation Language codes to BankFusion Locales */
+	private Map<String, String> localeMap = new HashMap<String, String>();
+	private int failures = 0;
+
+	/** A Timer for scheduling synchronisation of BankFusion user */
+	private Timer timer;
+
+	/** A Thread for performing the synchronisation of BankFusion user */
+	private static Thread workerThread;
+
+	/** What value should be used to populate the users branch */
+	BranchPopulation branchPopulationMode = BranchPopulation.DEFAULT;
+
+	/**
+	 * Creates and 'starts' a new BankFusionSynchronizer with the specified Timer details
+	 * <p>
+	 * The required configuration properties will be read, and the Timer will only be started if the values are valid
+	 * 
+	 * @param delay
+	 *            delay in milliseconds before task is to be executed
+	 */
+	public BankFusionSynchronizer(int delay)
+	{
+		defaultBankFusionUsers.add("system");
+		defaultBankFusionUsers.add("retail");
+		defaultBankFusionUsers.add("brad");
+		defaultBankFusionUsers.add("publish");
+		defaultBankFusionUsers.add("superit");
+
+		bfUser = EquationCommonContext.getConfigProperty("bf.sync.user").trim();
+		bfPassword = EquationCommonContext.getConfigProperty("bf.sync.password").trim();
+
+		Map<String, String> aliasDetails = EquationCommonContext.getSyncAlias();
+		if (aliasDetails != null)
+		{
+			bfUser = aliasDetails.get("User");
+			bfPassword = aliasDetails.get("Password");
+		}
+
+		system = EquationCommonContext.getConfigProperty("bf.sync.system").trim();
+		unit = EquationCommonContext.getConfigProperty("bf.sync.unit").trim();
+		interval = EquationCommonContext.getConfigProperty("bf.sync.interval").trim();
+		String branchProperty = EquationCommonContext.getConfigProperty("bf.sync.branch").trim();
+		bfGroupName = EquationCommonContext.getConfigProperty("bf.sync.groupName").trim();
+		bfPermissionName = EquationCommonContext.getConfigProperty("bf.sync.permissionName").trim();
+		deleteUsers = "true".equals(EquationCommonContext.getConfigProperty("bf.sync.delete"));
+
+		if (delay == 0)
+		{
+			delay = 5000;
+		}
+
+		int nonBlank = 0;
+		if (bfUser.length() > 0)
+		{
+			nonBlank++;
+		}
+		if (bfPassword.length() > 0)
+		{
+			nonBlank++;
+		}
+		if (system.length() > 0)
+		{
+			nonBlank++;
+		}
+		if (unit.length() > 0)
+		{
+			nonBlank++;
+		}
+
+		// If all are blank, then synchronization will not be attempted
+		if (nonBlank > 0)
+		{
+			if (nonBlank != 4)
+			{
+				LOG.error("Inconsistent BankFusion synchronization parameters ");
+			}
+			else
+			{
+				if (interval.length() == 0)
+				{
+					LOG.info("BankFusion/Equation bf.sync.interval property was blank; synchonization will not be attempted.");
+				}
+				else
+				{
+					try
+					{
+						// Parse interval as seconds:
+						int intValue = Integer.parseInt(interval);
+						if (intValue == 0)
+						{
+							intValue = MIN_TIMER_PERIOD; // Need a non-zero period to pass to the Timer class
+							onceOnly = true;
+						}
+						int period = intValue;
+						// All OK, sanity check on interval:
+						if (intValue < MIN_TIMER_PERIOD)
+						{
+							period = MIN_TIMER_PERIOD;
+							LOG.error("Synchronization interval of [" + intValue + "] too low. Using minimum interval of ["
+											+ period + "] seconds.");
+						}
+
+						// Parse branch population property
+						if ("mnemonic".equals(branchProperty))
+						{
+							branchPopulationMode = BranchPopulation.MNEMONIC;
+						}
+						else if ("number".equals(branchProperty))
+						{
+							branchPopulationMode = BranchPopulation.NUMBER;
+						}
+						processCase();
+						if (processLocales())
+						{
+							timer = new Timer("BankFusion user synchronization scheduler", true);
+							if (onceOnly)
+							{
+								LOG
+												.info("Starting BankFusion/Equation user synchronization scheduler, for a single synchronzation.");
+							}
+							else
+							{
+								LOG.info("Starting BankFusion/Equation user synchronization scheduler, using an interval of ["
+												+ period + "] seconds");
+							}
+							timer.schedule(new UserSynch(), delay, 1000L * period);
+						}
+
+						// use the default names if properties were left blank.
+						if (bfGroupName.length() == 0)
+						{
+							bfGroupName = BANKFUSION_GROUP_NAME;
+						}
+						if (bfPermissionName.length() == 0)
+						{
+							bfPermissionName = BANKFUSION_PERMISSION_NAME;
+						}
+					}
+					catch (NumberFormatException e)
+					{
+						LOG.error("BankFusion synchronization processing not started: interval is not numeric [" + interval + "]");
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Process the bf.sync.locales properties into the localeMap property
+	 * 
+	 * @return true if no error, false indicates an invalid property value
+	 */
+	private boolean processLocales()
+	{
+		String LOCALE_PROPERTY_NAME = "bf.sync.locale";
+
+		Properties equationConfigurationProperties = EquationCommonContext.getContext().getProperties("equationConfiguration");
+		for (Object key : equationConfigurationProperties.keySet())
+		{
+			String stringKey = (String) key;
+			if (stringKey.startsWith(LOCALE_PROPERTY_NAME))
+			{
+				String stringValue = equationConfigurationProperties.getProperty(stringKey);
+				if (stringValue.length() > 0) // Ignore blank 'example' property
+				{
+					if (stringValue.length() != 2 && stringValue.length() != 4)
+					{
+						LOG.error("BankFusion synchronization processing not started: invalid locale [" + stringValue
+										+ "] for entry [" + stringKey + "]");
+						return false;
+					}
+
+					String extra = stringKey.substring(LOCALE_PROPERTY_NAME.length());
+					if (extra.startsWith("."))
+					{
+						extra = extra.substring(1);
+						// trailing spaces are trimmed, need to re-add
+						if (extra.length() == 0)
+						{
+							extra = BLANK_LANGUAGE_CODE;
+						}
+						localeMap.put(extra, stringValue);
+						LOG.info("BankFusion Locale [" + stringValue + "] will be used for Equation language code [" + extra + "]");
+					}
+					else
+					{
+						DEFAULT_LOCALE = stringValue;
+						LOG.info("BankFusion Locale [" + stringValue + "] will be the default locale");
+					}
+				}
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Determines whether BankFusion users should be lower or upper case
+	 */
+	private void processCase()
+	{
+		String requiredCase = EquationCommonContext.getConfigProperty(EquationCommonContext.BANKFUSION_USER_CASE_PROPERTY);
+		isUpperCase = EquationCommonContext.CASE_UPPER.equals(requiredCase);
+	}
+
+	/**
+	 * Called to cancel the timer processing.
+	 * <p>
+	 * This method is intended to be called to cancel the timer processing when the application is being stopped. It therefore also
+	 * attempts to cancel the worker thread, if active.
+	 */
+	public void cancel()
+	{
+		LOG.info("cancel method called");
+		if (timer != null)
+		{
+			timer.cancel();
+		}
+		if (workerThread != null && workerThread.isAlive())
+		{
+			LOG.warn("Synch thread is active");
+			workerThread.interrupt();
+
+			try
+			{
+				workerThread.join(2000);
+			}
+			catch (InterruptedException e)
+			{
+				LOG.error(e);
+			}
+		}
+	}
+
+	/**
+	 * Called to cancel the timer processing.
+	 * <p>
+	 * This does not attempt to cancel the worker thread (if active). This is intended to be called from the worker thread itself to
+	 * stop any future threads
+	 */
+	public void cancelTimer()
+	{
+		LOG.info("cancelTimer method called");
+		if (timer != null)
+		{
+			timer.cancel();
+		}
+	}
+
+	/**
+	 * A Thread class that performs the work of synchronizing Equation users into BankFusion users
+	 * 
+	 */
+	private class SynchThread extends Thread
+	{
+		public SynchThread(String name)
+		{
+			super(name);
+		}
+
+		@Override
+		public void run()
+		{
+			if (LOG.isInfoEnabled())
+			{
+				LOG.info("Synchronizing BankFusion/Equation users for unit: [" + unit + "] on system [" + system + "]");
+			}
+
+			// BankFusionClient methods should not be used for create, amend, delete of
+			// users, roles or permissions. Security microflows should be used instead.
+			String userLocator = null;
+			boolean success = false;
+			try
+			{
+				BFToolbox bfToolbox = new BFToolbox();
+				// First check that the Equation Unit is available:
+				EquationUnit equationUnit = null;
+				EquationSystem equationSystem = EquationCommonContext.getContext().getEquationSystem(system);
+				if (equationSystem != null)
+				{
+					equationUnit = equationSystem.getUnit(unit);
+				}
+				if (equationUnit == null)
+				{
+					LOG.info("Synchronizing BankFusion/Equation users: unit has not been initialised");
+				}
+				else
+				{
+					long startTime = System.currentTimeMillis();
+
+					// Explicitly login
+					// -----------------
+					userLocator = BFToolbox.login(bfUser, bfPassword, EquationCommonContext.PASSWORD_TYPE_TEXT_PLAIN);
+
+					HashMap inputParams = null;
+					String securityAPIResult = null;
+					String microflowName = null;
+
+					microflowName = "CreatePermissionService";
+					if (!processedItems.contains(microflowName + bfPermissionName))
+					{
+						// Ensure that the BFEQPermission permission exists:
+						// --------------------------------------------------
+
+						// Setup permission
+						DetailsOfPermission permissionDetails = new DetailsOfPermission();
+						permissionDetails.setPermissionName(bfPermissionName);
+						permissionDetails.setShortDescription(bfPermissionName);
+						permissionDetails.setLongDescription(bfPermissionName);
+
+						// Setup permission zone
+						ZonePermList zonePerm = new ZonePermList();
+						zonePerm.setZONE(DEFAULT_ZONE);
+						zonePerm.setALLOWINCOB(false);
+						ZonePermissionList zonePermissionList = new ZonePermissionList();
+						zonePermissionList.addZonePermList(zonePerm);
+
+						// Setup input parameters
+						inputParams = new HashMap();
+						inputParams.put("detailsOfPermission", permissionDetails);
+						inputParams.put("zonePermissionList", zonePermissionList);
+
+						try
+						{
+							// Call MF
+							securityAPIResult = bfToolbox.callMicroflowReturnStatus(userLocator, microflowName, inputParams);
+							if (securityAPIResult.equals("S"))
+							{
+								LOG.info("BankFusion permission [" + bfPermissionName + "] has been created");
+								processedItems.add(microflowName + bfPermissionName);
+							}
+							else if (securityAPIResult.equals("R"))
+							{
+								LOG.info("Referral generated to create BankFusion permission [" + bfPermissionName + "]");
+								processedItems.add(microflowName + bfPermissionName);
+							}
+						}
+						catch (Exception e)
+						{
+							// Ignore as permission may already exist
+						}
+					}
+					microflowName = "AmendArtfPermServiceMF";
+					if (!processedItems.contains(microflowName + bfPermissionName))
+					{
+						String artefactName = "SetBusinessDateByzoneServiceMF";
+						// Add Artefact to Permission for :
+						// ---------------------------
+						ArtefactsPermission artefactsPermission = new ArtefactsPermission();
+						artefactsPermission.setRESOURCE_ARTEFACTID(artefactName);
+						artefactsPermission.setRESOURCE_TYPE("1");
+						artefactsPermission.setPERMISSION_NAME(bfPermissionName);
+						artefactsPermission.setACTION("add");
+
+						ArtefactsPermissionList artefactsPermissionList = new ArtefactsPermissionList();
+						artefactsPermissionList.addArtefactPermissionList(artefactsPermission);
+
+						// Setup input parameters
+						inputParams = new HashMap();
+						inputParams.put("ArtefactsPermissionList", artefactsPermissionList);
+						inputParams.put("MICROFLOW_ID", artefactName);
+						inputParams.put("SUBSTITUTION_REQUIRED", Boolean.FALSE);
+
+						try
+						{
+							// Call MF
+							securityAPIResult = bfToolbox.callMicroflowReturnStatus(userLocator, microflowName, inputParams);
+							if (securityAPIResult.equals("S"))
+							{
+								LOG.info("BankFusion artefact [" + artefactName + "] was successfully added to permission "
+												+ bfPermissionName);
+							}
+							else if (securityAPIResult.equals("R"))
+							{
+								LOG.info("Referral generated to add BankFusion artefact [" + artefactName + "] to permission "
+												+ bfPermissionName);
+							}
+						}
+						catch (Exception e)
+						{
+							// Ignore as artefact may already be associated with permission
+						}
+					}
+
+					microflowName = "CreateRoleService";
+					if (!processedItems.contains(microflowName + bfGroupName))
+					{
+						// Ensure that the BF role is present:
+						// -------------------------------------
+
+						// Setup role details. Groups have been renamed to roles.
+						OrganisationGroupDetails organisationGroupDetails = new OrganisationGroupDetails();
+						organisationGroupDetails.setGroupName(bfGroupName);
+						organisationGroupDetails.setGroupDescription(bfGroupName);
+						organisationGroupDetails.setGroupDisplayName(bfGroupName);
+						organisationGroupDetails.setGroupParentID(GROUP_PARENTID);
+
+						// Setup permission details
+						Permission permission = new Permission();
+						permission.setPermissionName(bfPermissionName);
+						PermissionList permissionList = new PermissionList();
+						permissionList.addPermissionName(permission);
+
+						// Setup input parameters
+						inputParams = new HashMap();
+						inputParams.put("OrgGroupDetails", organisationGroupDetails);
+						inputParams.put("permissionListToAdd", permissionList);
+
+						try
+						{
+							// Call MF
+							securityAPIResult = bfToolbox.callMicroflowReturnStatus(userLocator, microflowName, inputParams);
+							if (securityAPIResult.equals("S"))
+							{
+								LOG.info("BankFusion role [" + bfGroupName + "] has been created");
+								processedItems.add(microflowName + bfGroupName);
+							}
+							else if (securityAPIResult.equals("R"))
+							{
+								LOG.info("Referral generated to create BankFusion role [" + bfGroupName + "]");
+								processedItems.add(microflowName + bfGroupName);
+							}
+
+						}
+						catch (Exception e)
+						{
+							// Ignore as role may already exist
+						}
+					}
+
+					// Process all the users
+					// ----------------------
+					Map<String, OCRecordDataModel> authorisedUsers = equationUnit.getAuthorisedUsers();
+					int numberOfUsers = 0;
+					for (Entry<String, OCRecordDataModel> entry : authorisedUsers.entrySet())
+					{
+						String plainUserName = entry.getKey();
+						String userNameToAdd = isUpperCase ? plainUserName.toUpperCase() : plainUserName.toLowerCase();
+
+						if (deleteUsers)
+						{
+							microflowName = "DeleteUserServiceMF";
+							String userNameToDelete = isUpperCase ? plainUserName.toLowerCase() : plainUserName.toUpperCase();
+							if (!processedItems.contains(microflowName + userNameToDelete))
+							{
+								if (!defaultBankFusionUsers.contains(userNameToDelete))
+								{
+
+									UserRoleInfo userRoleInfo = new UserRoleInfo();
+									userRoleInfo.setUSERNAME(userNameToDelete);
+									UserRoleDetail userRoleDetail = new UserRoleDetail();
+									userRoleDetail.addUserRoleDetails(userRoleInfo);
+
+									UserRoleDetail usersToDelete = new UserRoleDetail();
+									usersToDelete.addUserRoleDetails(userRoleInfo);
+
+									// Setup input parameters
+									inputParams = new HashMap();
+									inputParams.put("UserRoleDetail", userRoleDetail);
+									try
+									{
+										// Call MF
+										securityAPIResult = bfToolbox.callMicroflowReturnStatus(userLocator, microflowName,
+														inputParams);
+										if (securityAPIResult.equals("S"))
+										{
+											LOG.info("BankFusion user [" + userNameToDelete + "] has been deleted");
+											processedItems.add(microflowName + userNameToDelete);
+										}
+										else if (securityAPIResult.equals("R"))
+										{
+											LOG.info("Referral generated to delete BankFusion user [" + userNameToDelete + "]");
+											processedItems.add(microflowName + userNameToDelete);
+										}
+
+									}
+									catch (Exception e)
+									{
+										// ignore as user may not exist
+									}
+								}
+							}
+						}
+						microflowName = "CreateUserService";
+						if (!processedItems.contains(microflowName + userNameToAdd))
+						{
+							// Setup User Details
+							UserDetail userDetail = new UserDetail();
+							userDetail.setUserID(userNameToAdd);
+							userDetail.setUserName(entry.getValue().getUserName());
+							String branchToSet = DEFAULT_BANKFUSION_SORT_CODE;
+							if (branchPopulationMode == BranchPopulation.MNEMONIC)
+							{
+								branchToSet = entry.getValue().getBranch();
+							}
+							else if (branchPopulationMode == BranchPopulation.NUMBER)
+							{
+								branchToSet = entry.getValue().getBranchNo();
+							}
+							userDetail.setBranchSortCode(branchToSet);
+							String languageCode = entry.getValue().getLanguage();
+							if (languageCode.length() == 0)
+							{
+								// Use explicit blank string:
+								languageCode = BLANK_LANGUAGE_CODE;
+							}
+
+							String locale = localeMap.get(languageCode);
+							if (locale == null)
+							{
+								// Didn't find a specific entry, use the default:
+								locale = DEFAULT_LOCALE;
+							}
+							userDetail.setLanguageLocale(locale.substring(0, 2));
+							userDetail.setVariantLocale(locale.substring(0, 2));
+							userDetail.setCountryLocale(locale.length() == 4 ? locale.substring(2, 4) : "");
+
+							// Type ('N'ormal, 'S'upervisor or 'T'eller)
+							userDetail.setUserType("N");
+							// User Roles(Groups)
+							UserGroups userGroups = new UserGroups();
+							userGroups.setGroup(bfGroupName);
+							userDetail.addUserGroups(userGroups);
+
+							// Ensure optional parameters are set to avoid null pointer issues
+							userDetail.setBMBranch("");
+							userDetail.setFrontOfficeId("");
+							userDetail.setHostExtension("");
+							userDetail.setPasswordExpiryDate(new Timestamp(0));
+							userDetail.setUserExtension("");
+							// User Zones
+							userDetail.setZone(DEFAULT_ZONE);
+							UserZones userZones = new UserZones();
+							userZones.setZone(DEFAULT_ZONE);
+							userDetail.addUserZones(userZones);
+
+							userDetail.setRSAFlag(false);
+							userDetail.setUpdateEntitlementOFLinkedUser(false);
+							userDetail.setReferenceUser(false);
+
+							// Setup return parameters. This is not as it should be but not doing this will cause null pointer
+							// issues.
+							// Result result = new Result();
+							// result.setMessage("");
+							// result.setStatus(true);
+							// userDetail.setResult(result);
+
+							// Setup input parameters
+							inputParams = new HashMap();
+							inputParams.put("User", userDetail);
+							try
+							{
+								// Call MF
+								securityAPIResult = bfToolbox.callMicroflowReturnStatus(userLocator, microflowName, inputParams);
+								if (securityAPIResult.equals("S"))
+								{
+									LOG.info("BankFusion user [" + userNameToAdd + "] was successfully created");
+									processedItems.add(microflowName + userNameToAdd);
+								}
+								else if (securityAPIResult.equals("R"))
+								{
+									LOG.info("Referral generated to create BankFusion user [" + userNameToAdd + "]");
+									processedItems.add(microflowName + userNameToAdd);
+								}
+							}
+							catch (Exception e)
+							{
+								// Ignore as user may already exist
+							}
+
+						}
+					}
+
+					long elapsed = (System.currentTimeMillis() - startTime) / 1000;
+					LOG.info("Completed BankFusion/Equation user synchronization - [" + numberOfUsers
+									+ "] Equation users processed in [" + elapsed + "] seconds");
+					success = true;
+				}
+
+			}
+			// Catch all Throwables to ensure that runtime problems are caught and logged
+			// as well as checked exceptions:
+			catch (Throwable e)
+			{
+				// Assume any exception indicates a persistent problem. If an exception is fixable
+				// then change to false later on:
+				boolean isPersistentError = true;
+
+				if (e instanceof BankFusionCommanderError)
+				{
+					BankFusionCommanderError ce = (BankFusionCommanderError) e;
+					if (ce.getBankFusionException() != null
+									&& ce.getBankFusionException().getMessageNumber() == BF_ERROR_USER_ALREADY_LOGGED_IN)
+					{
+						isPersistentError = false;
+					}
+				}
+				if (isPersistentError)
+				{
+					failures++;
+				}
+				LOG.error(e);
+			}
+			finally
+			{
+				// Explicitly logoff
+				// ------------------
+				if (userLocator != null)
+				{
+					try
+					{
+						BFToolbox.logoff(userLocator);
+					}
+					catch (Exception e)
+					{
+						LOG.error("Exception on BF client logout");
+						LOG.error(e);
+					}
+				}
+
+				// Allow a few attempts even if we don't know if it's fixable
+				if (failures >= MAX_PERSISTENT_ERRORS)
+				{
+					// Prevent any further attempts
+					LOG.error("No more BankFusion/Equation user synchronization attempts will be made");
+					cancelTimer();
+				}
+				// Check for one-time synchronization:
+				if (onceOnly && success)
+				{
+					LOG.info("Once-only user synchronization has completed.");
+					cancelTimer();
+				}
+
+				// Ensure that user deletion is only performed once per application startup
+				if (deleteUsers && success)
+				{
+					deleteUsers = false;
+					LOG.info("User deletion has been performed.");
+				}
+			}
+		}
+	}
+
+	/**
+	 * TimerTask class that is invoked periodically.
+	 */
+	private class UserSynch extends TimerTask
+	{
+		/**
+		 * When this run method is called, a new Thread is started to perform the actual work as the processing is quite lengthy
+		 */
+		@Override
+		public void run()
+		{
+			if (workerThread != null && workerThread.isAlive())
+			{
+				LOG.error("Last synch attempt is still running");
+			}
+			else
+			{
+				LOG.debug("Creating new SynchThread");
+				workerThread = new SynchThread("BankFusion user synchronization worker");
+				workerThread.start();
+			}
+		}
+	}
+
+}

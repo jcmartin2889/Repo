@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- 
+		These section is used to defined all used Daos.
+		Here all daos should be defined.  	
+	-->
+	<bean id="gAERecordDao" class="com.misys.equation.common.internal.dao.GAERecordDao" singleton="false">
+	</bean>
+	
+	<bean id="ne1RecordDao" class="com.misys.equation.common.internal.dao.NE1RecordDao" singleton="false">
+	</bean>
+		
+	<bean id="gARecordDao" class="com.misys.equation.common.internal.dao.GARecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="gDRecordDao" class="com.misys.equation.common.internal.dao.GDRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="aAIRecordDao" class="com.misys.equation.common.internal.dao.AAIRecordDao" singleton="false" >		
+	</bean>
+
+	<bean id="oCRecordDao" class="com.misys.equation.common.internal.dao.OCRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="oHRecordDao" class="com.misys.equation.common.internal.dao.OHRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="qZRecordDao" class="com.misys.equation.common.internal.dao.QZRecordDao" singleton="false" >		
+	</bean>
+
+	<bean id="qD1RecordDao" class="com.misys.equation.common.internal.dao.QD1RecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="wARecordDao" class="com.misys.equation.common.internal.dao.WARecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="xVRecordDao" class="com.misys.equation.common.internal.dao.XVRecordDao" singleton="false" >		
+	</bean>
+
+	<bean id="gAXRecordDao" class="com.misys.equation.common.internal.dao.GAXRecordDao" singleton="false" >		
+	</bean>	
+	
+	<bean id="gAZRecordDao" class="com.misys.equation.common.internal.dao.GAZRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="aCMRecordDao" class="com.misys.equation.common.internal.dao.ACMRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="aCNRecordDao" class="com.misys.equation.common.internal.dao.ACNRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="aCORecordDao" class="com.misys.equation.common.internal.dao.ACORecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="sessionRecordDao" class="com.misys.equation.common.internal.dao.SessionRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="gBRecordDao" class="com.misys.equation.common.internal.dao.GBRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="hPRecordDao" class="com.misys.equation.common.internal.dao.HPRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="oC2RecordDao" class="com.misys.equation.common.internal.dao.OC2RecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="wERecordDao" class="com.misys.equation.common.internal.dao.WERecordDao" singleton="false" >		
+	</bean>   
+	
+	<bean id="aCERecordDao" class="com.misys.equation.common.internal.dao.ACERecordDao" singleton="false" >		
+	</bean>   
+	
+	<bean id="aCHRecordDao" class="com.misys.equation.common.internal.dao.ACHRecordDao" singleton="false" >		
+	</bean>
+
+	<bean id="hBRecordDao" class="com.misys.equation.common.internal.dao.HBRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="jTRecordDao" class="com.misys.equation.common.internal.dao.JTRecordDao" singleton="false" >		
+	</bean>	
+	
+	<bean id="wEYRecordDao" class="com.misys.equation.common.internal.dao.WEYRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="wEYMCRecordDao" class="com.misys.equation.common.internal.dao.WEYMCRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="iNORHRecordDao" class="com.misys.equation.common.internal.dao.INORHRecordDao" singleton="false" >		
+	</bean>
+			
+	<bean id="iNORDRecordDao" class="com.misys.equation.common.internal.dao.INORDRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="cHRecordDao" class="com.misys.equation.common.internal.dao.CHRecordDao" singleton="false" >		
+	</bean>		
+
+	<bean id="sCRecordDao" class="com.misys.equation.common.internal.dao.SCRecordDao" singleton="false" >		
+	</bean>
+
+	<bean id="cARecordDao" class="com.misys.equation.common.internal.dao.CARecordDao" singleton="false" >		
+	</bean>
+
+	<bean id="oSRecordDao" class="com.misys.equation.common.internal.dao.OSRecordDao" singleton="false" >		
+	</bean>
+
+	<bean id="gFRecordDao" class="com.misys.equation.common.internal.dao.GFRecordDao" singleton="false" >		
+	</bean>
+
+	<bean id="clhRecordDao" class="com.misys.equation.common.internal.dao.CLHRecordDao" singleton="false" >		
+	</bean>
+
+	<bean id="cldRecordDao" class="com.misys.equation.common.internal.dao.CLDRecordDaoImplementation" singleton="false" >		
+	</bean>
+
+	<bean id="clcRecordDao" class="com.misys.equation.common.internal.dao.CLCRecordDao" singleton="false" >		
+	</bean>
+
+	<bean id="kAPRecordDao" class="com.misys.equation.common.internal.dao.KAPRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="gLURecordDao" class="com.misys.equation.common.internal.dao.GLURecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="gPMRecordDao" class="com.misys.equation.common.internal.dao.GPMRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="gPXRecordDao" class="com.misys.equation.common.internal.dao.GPXRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="gPX1RecordDao" class="com.misys.equation.common.internal.dao.GPX1RecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="gPX2RecordDao" class="com.misys.equation.common.internal.dao.GPX2RecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="gPX3RecordDao" class="com.misys.equation.common.internal.dao.GPX3RecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="gPX4RecordDao" class="com.misys.equation.common.internal.dao.GPX4RecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="gPX1RecordDaoImp" class="com.misys.equation.common.internal.dao.GPX1RecordDaoImplementation" singleton="false" >		
+	</bean>
+	
+	<bean id="gAURecordDao" class="com.misys.equation.common.internal.dao.GAURecordDao" singleton="false" >		
+	</bean>
+
+	<bean id="gAVRecordDao" class="com.misys.equation.common.internal.dao.GAVRecordDao" singleton="false" >		
+	</bean>
+
+	<bean id="gAARecordDao" class="com.misys.equation.common.internal.dao.GAARecordDao" singleton="false" >		
+	</bean>
+
+	<bean id="gALRecordDao" class="com.misys.equation.common.internal.dao.GALRecordDao" singleton="false" >		
+	</bean>
+
+	<bean id="gPARecordDao" class="com.misys.equation.common.internal.dao.GPARecordDao" singleton="false" >		
+	</bean>
+
+	<bean id="gPERecordDao" class="com.misys.equation.common.internal.dao.GPERecordDao" singleton="false" >		
+	</bean>
+
+	<bean id="gPFRecordDao" class="com.misys.equation.common.internal.dao.GPFRecordDao" singleton="false" >		
+	</bean>
+
+	<bean id="gPRRecordDao" class="com.misys.equation.common.internal.dao.GPRRecordDao" singleton="false" >		
+	</bean>
+
+	<bean id="gPURecordDao" class="com.misys.equation.common.internal.dao.GPURecordDao" singleton="false" >		
+	</bean>
+
+	<bean id="gPVRecordDao" class="com.misys.equation.common.internal.dao.GPVRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="hARecordDao" class="com.misys.equation.common.internal.dao.HARecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="c8RecordDao" class="com.misys.equation.common.internal.dao.C8RecordDao" singleton="false" >		
+	</bean>
+		
+	<bean id="dhoRecordDao" class="com.misys.equation.common.internal.dao.DH0RecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="gpeServiceRecordDao" class="com.misys.equation.common.internal.dao.GPEServiceRecordDao" singleton="false" >		
+	</bean>
+
+	<bean id="fpgRecordDao" class="com.misys.equation.common.internal.dao.FPGRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="nostroPositionsDao" class="com.misys.equation.common.internal.dao.NostroPositionsDao" singleton="false" >		
+	</bean>
+	
+	<bean id="eqsRecordDao" class="com.misys.equation.common.internal.dao.EQSRecordDao" singleton="false" >		
+	</bean>
+
+	<bean id="aPJRecordDao" class="com.misys.equation.common.internal.dao.APJRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="aPVRecordDao" class="com.misys.equation.common.internal.dao.APVRecordDao" singleton="false" >		
+	</bean>
+
+	<bean id="gAFRecordDao" class="com.misys.equation.common.internal.dao.GAFRecordDao" singleton="false" >		
+	</bean>
+
+	<bean id="gflRecordDao" class="com.misys.equation.common.internal.dao.GFLRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="headerRecordDao" class="com.misys.equation.common.internal.dao.HeaderRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="gfeRecordDao" class="com.misys.equation.common.internal.dao.GFERecordDao" singleton="false" >		
+	</bean>
+
+	<bean id="gfgRecordDao" class="com.misys.equation.common.internal.dao.GFGRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="gpxRecordDao" class="com.misys.equation.common.internal.dao.GPXRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="gSPRecordDao" class="com.misys.equation.common.internal.dao.GSPRecordDao" singleton="false" >		
+	</bean>
+
+	<bean id="gCRecordDao" class="com.misys.equation.common.internal.dao.GCRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="gAWRecordDao" class="com.misys.equation.common.internal.dao.GAWRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="gYRecordDao" class="com.misys.equation.common.internal.dao.GYRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="eDMRecordDao" class="com.misys.equation.common.internal.dao.EDMRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="vP1RecordDao" class="com.misys.equation.common.internal.dao.VP1RecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="mPMRecordDao" class="com.misys.equation.common.internal.dao.MPMRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="lU1RecordDao" class="com.misys.equation.common.internal.dao.LU1RecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="sc1RecordDao" class="com.misys.equation.common.internal.dao.SC1RecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="CMDRecordDao" class="com.misys.equation.common.internal.dao.CMDRecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="x01RecordDao" class="com.misys.equation.common.internal.dao.X01RecordDao" singleton="false" >        
+    </bean>
+
+	<bean id="gSRRecordDao" class="com.misys.equation.common.internal.dao.GSRRecordDao" singleton="false" >        
+    </bean>
+
+	<bean id="gmgRecordDao" class="com.misys.equation.common.internal.dao.GMGRecordDao" singleton="false" >		
+	</bean>
+
+	<bean id="gmlRecordDao" class="com.misys.equation.common.internal.dao.GMLRecordDao" singleton="false" >		
+	</bean>
+
+	<bean id="gmeRecordDao" class="com.misys.equation.common.internal.dao.GMERecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="hBXRecordDao" class="com.misys.equation.common.internal.dao.HBXRecordDao" singleton="false" >
+	</bean>
+	
+	<bean id="c1RecordDao" class="com.misys.equation.common.internal.dao.C1RecordDao" singleton="false" >		
+	</bean>
+	
+	<bean id="we2RecordDao" class="com.misys.equation.common.internal.dao.WE2RecordDao" singleton="false" >	
+	</bean>   
+	
+	<bean id="wecRecordDao" class="com.misys.equation.common.internal.dao.WECRecordDao" singleton="false" >	
+	</bean>  
+	 
+	<bean id="wehRecordDao" class="com.misys.equation.common.internal.dao.WEHRecordDao" singleton="false" >	
+	</bean>   
+
+	<bean id="gywRecordDao" class="com.misys.equation.common.internal.dao.GYWRecordDao" singleton="false" >	
+	</bean>   
+	
+	<bean id="wfRecordDao" class="com.misys.equation.common.internal.dao.WFRecordDao" singleton="false" >		
+	</bean>	
+
+	<bean id="bdRecordDao" class="com.misys.equation.common.internal.dao.BDRecordDao" singleton="false" >	
+	</bean>   
+	
+	<bean id="bfRecordDao" class="com.misys.equation.common.internal.dao.BFRecordDao" singleton="false" >	
+	</bean>   
+	
+	<bean id="btRecordDao" class="com.misys.equation.common.internal.dao.BTRecordDao" singleton="false" >	
+	</bean>   
+
+	<bean id="ipvRecordDao" class="com.misys.equation.common.internal.dao.IPVRecordDao" singleton="false" >	
+	</bean>   
+	
+	
+</beans>

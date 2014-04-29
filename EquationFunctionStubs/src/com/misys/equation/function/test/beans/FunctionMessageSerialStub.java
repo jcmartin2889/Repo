@@ -1,0 +1,70 @@
+package com.misys.equation.function.test.beans;
+
+import java.util.ArrayList;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationUnit;
+import com.misys.equation.common.internal.eapi.core.EQMessage;
+import com.misys.equation.common.test.TestEnvironment;
+import com.misys.equation.common.utilities.EqBeanFactory;
+import com.misys.equation.function.runtime.FunctionMessage;
+
+public class FunctionMessageSerialStub
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: FunctionMessageSerialStub.java 4735 2009-09-15 16:58:25Z lima12 $";
+	EquationUnit unit;
+	EquationStandardSession session;
+
+	public FunctionMessageSerialStub()
+	{
+		unit = TestEnvironment.getTestEnvironment().getEquationUnit();
+		session = TestEnvironment.getTestEnvironment().getStandardSession();
+	}
+
+	public static void main(String[] inputParameters)
+	{
+		FunctionMessageSerialStub test = new FunctionMessageSerialStub();
+		test.test();
+	}
+
+	private void test()
+	{
+		// Have a bash...
+		try
+		{
+			// message
+			String messageText = "DSM0001";
+			EQMessage eqMessage = session.getMessage(messageText);
+
+			// list
+			ArrayList<EQMessage> messages = new ArrayList<EQMessage>();
+			ArrayList<String> dsepms = new ArrayList<String>();
+			messages.add(eqMessage);
+			dsepms.add(messageText);
+
+			// field data
+			FunctionMessage functionMessage = new FunctionMessage(1, 1, "fieldname", 2, eqMessage, "prefixText", "suffixText");
+			functionMessage.setAmount("10T");
+			functionMessage.setBranch("Branch");
+			functionMessage.setDebitCredit("DRCR");
+
+			// print the field values
+			EqBeanFactory eqBeanFactory = EqBeanFactory.getEqBeanFactory();
+			String xml = eqBeanFactory.serialiseBeanAsXML(functionMessage);
+			System.out.println(xml);
+
+			// convert to another function data
+			System.err.println("====================");
+			FunctionMessage copy = (FunctionMessage) eqBeanFactory.deserialiseXMLAsBean(xml, FunctionMessage.class);
+			String xml2 = eqBeanFactory.serialiseBeanAsXML(copy);
+			System.out.println(xml2);
+
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+}

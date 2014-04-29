@@ -1,0 +1,107 @@
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/repos/bfeq_src/!svn/ver/17343/branches/BFEQ_Branch_3-1/EquationBankFusionStubs/src/com/misys/equation/bf/stub/mf/lrp
+END
+TestMicroflowTransferTaskAndComment.java
+K 25
+svn:wc:ra_dav:version-url
+V 162
+/svn/repos/bfeq_src/!svn/ver/16894/branches/BFEQ_Branch_3-1/EquationBankFusionStubs/src/com/misys/equation/bf/stub/mf/lrp/TestMicroflowTransferTaskAndComment.java
+END
+TestMicroflowSetOutputMessage.java
+K 25
+svn:wc:ra_dav:version-url
+V 156
+/svn/repos/bfeq_src/!svn/ver/16894/branches/BFEQ_Branch_3-1/EquationBankFusionStubs/src/com/misys/equation/bf/stub/mf/lrp/TestMicroflowSetOutputMessage.java
+END
+TestMicroflowGetAssignees.java
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/16894/branches/BFEQ_Branch_3-1/EquationBankFusionStubs/src/com/misys/equation/bf/stub/mf/lrp/TestMicroflowGetAssignees.java
+END
+TestMicroflowGetComments.java
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/repos/bfeq_src/!svn/ver/16894/branches/BFEQ_Branch_3-1/EquationBankFusionStubs/src/com/misys/equation/bf/stub/mf/lrp/TestMicroflowGetComments.java
+END
+TestMicroflowGetCustomProperties.java
+K 25
+svn:wc:ra_dav:version-url
+V 159
+/svn/repos/bfeq_src/!svn/ver/16894/branches/BFEQ_Branch_3-1/EquationBankFusionStubs/src/com/misys/equation/bf/stub/mf/lrp/TestMicroflowGetCustomProperties.java
+END
+TestMicroflowCompleteTask.java
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/16894/branches/BFEQ_Branch_3-1/EquationBankFusionStubs/src/com/misys/equation/bf/stub/mf/lrp/TestMicroflowCompleteTask.java
+END
+TestMicroflowCancelClaim.java
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/repos/bfeq_src/!svn/ver/16894/branches/BFEQ_Branch_3-1/EquationBankFusionStubs/src/com/misys/equation/bf/stub/mf/lrp/TestMicroflowCancelClaim.java
+END
+TestMicroflowGetTaskList.java
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/repos/bfeq_src/!svn/ver/17343/branches/BFEQ_Branch_3-1/EquationBankFusionStubs/src/com/misys/equation/bf/stub/mf/lrp/TestMicroflowGetTaskList.java
+END
+TestMicroflowSetComments.java
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/repos/bfeq_src/!svn/ver/16894/branches/BFEQ_Branch_3-1/EquationBankFusionStubs/src/com/misys/equation/bf/stub/mf/lrp/TestMicroflowSetComments.java
+END
+TestMicroflowCompleteTaskAndComment.java
+K 25
+svn:wc:ra_dav:version-url
+V 162
+/svn/repos/bfeq_src/!svn/ver/16894/branches/BFEQ_Branch_3-1/EquationBankFusionStubs/src/com/misys/equation/bf/stub/mf/lrp/TestMicroflowCompleteTaskAndComment.java
+END
+TestMicroflowSetCustomProperties.java
+K 25
+svn:wc:ra_dav:version-url
+V 159
+/svn/repos/bfeq_src/!svn/ver/16894/branches/BFEQ_Branch_3-1/EquationBankFusionStubs/src/com/misys/equation/bf/stub/mf/lrp/TestMicroflowSetCustomProperties.java
+END
+TestMicroflowGetWorkflowTaskAttributes.java
+K 25
+svn:wc:ra_dav:version-url
+V 165
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBankFusionStubs/src/com/misys/equation/bf/stub/mf/lrp/TestMicroflowGetWorkflowTaskAttributes.java
+END
+TestMicroflowGetInputMessage.java
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/16894/branches/BFEQ_Branch_3-1/EquationBankFusionStubs/src/com/misys/equation/bf/stub/mf/lrp/TestMicroflowGetInputMessage.java
+END
+TestMicroflowTransferTask.java
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/16894/branches/BFEQ_Branch_3-1/EquationBankFusionStubs/src/com/misys/equation/bf/stub/mf/lrp/TestMicroflowTransferTask.java
+END
+TestMicroflowGetBasicTaskAttributesList.java
+K 25
+svn:wc:ra_dav:version-url
+V 166
+/svn/repos/bfeq_src/!svn/ver/17343/branches/BFEQ_Branch_3-1/EquationBankFusionStubs/src/com/misys/equation/bf/stub/mf/lrp/TestMicroflowGetBasicTaskAttributesList.java
+END
+TestMicroflowClaimTask.java
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16894/branches/BFEQ_Branch_3-1/EquationBankFusionStubs/src/com/misys/equation/bf/stub/mf/lrp/TestMicroflowClaimTask.java
+END
+TestMicroflowStartLrpProcess.java
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/16894/branches/BFEQ_Branch_3-1/EquationBankFusionStubs/src/com/misys/equation/bf/stub/mf/lrp/TestMicroflowStartLrpProcess.java
+END

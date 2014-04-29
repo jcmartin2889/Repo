@@ -1,0 +1,211 @@
+package com.misys.equation.common.test.dao;
+
+import java.util.Calendar;
+
+import com.misys.equation.common.dao.IGAXRecordDao;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.dao.beans.GAXRecordDataModel;
+import com.misys.equation.common.test.EquationTestCaseDao;
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * This is a unit-test which will test GAXIRecord services.
+ * 
+ * @author deroset
+ * 
+ */
+public class GAXRecord extends EquationTestCaseDao
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: GAXRecord.java 11310 2011-06-27 12:20:21Z ESTHER.WILLIAMS $";
+	private String serviceId = "_A_";
+
+	public GAXRecord()
+	{
+
+	}
+
+	/**
+	 * 
+	 * This method is going to retrieve the Dao from the bean repository and set it as local attribute.
+	 */
+	@Override
+	protected void setDao()
+	{
+
+		dao = daoFactory.getGAXDao(session, dataModel);
+	}
+
+	/**
+	 * This method will test if the record has been already inserted in the dataBase.
+	 */
+	@Override
+	public void isRecord(boolean assertValue)
+	{
+		boolean result;
+
+		result = checkIfThisRecordIsInTheDB();
+		if (assertValue)
+		{
+			assertTrue(result);
+		}
+		else
+		{
+			assertFalse(result);
+		}
+
+	}
+
+	/**
+	 * This method is going to check the getRecord dao's service.<br>
+	 * The obtained result should be the same than the preset in the dao data-model.
+	 * 
+	 */
+	@Override
+	public GAXRecordDataModel getRecord()
+	{
+
+		GAXRecordDataModel GAXRecord = null;
+		GAXRecord = ((IGAXRecordDao) dao).getGAXRecord();
+		assertDataModel(GAXRecord);
+		return GAXRecord;
+	}
+
+	/**
+	 * This method will test the update dao's service.
+	 */
+	@Override
+	public void updateRecord()
+	{
+
+		GAXRecordDataModel GAXRecord = null;
+
+		this.getMyModel().setLayout("Layout Updated");
+		dao.updateRecord();
+		GAXRecord = getRecord();
+		assertEquals(this.getMyModel().getLayout(), GAXRecord.getLayout());
+	}
+
+	@Override
+	protected void assertDataModel(AbsRecord dataModel)
+	{
+
+		GAXRecordDataModel record = (GAXRecordDataModel) dataModel;
+
+		assertEquals(getMyModel().getCode(), record.getCode());
+		assertEquals(getMyModel().getKey(), record.getKey());
+		assertEquals(getMyModel().getTimestamp(), record.getTimestamp());
+		assertEquals(getMyModel().getLayout(), record.getLayout());
+
+	}
+
+	@Override
+	protected boolean checkIfThisRecordIsInTheDB()
+	{
+		boolean result;
+		result = ((IGAXRecordDao) dao).checkIfThisGAXRecordIsInTheDB();
+		return result;
+	}
+
+	@Override
+	protected void setDataModel()
+	{
+
+		GAXRecordDataModel record = new GAXRecordDataModel(GAXRecordDataModel.SERVICE_CODE, serviceId);
+
+		String oldTimestamp = Toolbox.formatDate(Calendar.getInstance(), Toolbox.TIMESTAMP_FORMAT);
+		record.setTimestamp(oldTimestamp);
+		record.setLayout("function");
+
+		record.setLibrary(kFilLibName);
+		this.dataModel = record;
+
+	}
+
+	/**
+	 * This method is going to return a casted data model.
+	 * 
+	 * @return a casted data model
+	 */
+	public GAXRecordDataModel getMyModel()
+	{
+
+		GAXRecordDataModel GAXRecordDataModel = null;
+
+		if (dataModel instanceof GAXRecordDataModel)
+		{
+
+			GAXRecordDataModel = (GAXRecordDataModel) dataModel;
+
+		}
+		else
+		{
+			throw new IllegalArgumentException("The set data-model does not correspond to the expected one.");
+		}
+
+		return GAXRecordDataModel;
+	}
+
+	/**
+	 * This test in going to test all RecordDao services add, get, update and delete.
+	 * <ul>
+	 * <li>1)Add a new record.</li>
+	 * <li>2)Check if this record was added.</li>
+	 * <li>3)Get this record and evaluate if it is equals to the previous added.</li>
+	 * <li>4)Get the record using a new time-stamp.The returned record has to be null.</li>
+	 * <li>5)Get the record using a old time-stamp.The returned record has not to be null</li>
+	 * <li>6)Modify this record and test it.</li>
+	 * <li>7)Delete this record and test it.</li>
+	 * </ul>
+	 */
+	@Override
+	public void testRecordDaoServices()
+	{
+
+		String newTimestamp = Toolbox.formatDate(Calendar.getInstance(), Toolbox.TIMESTAMP_FORMAT);
+		String oldTimestamp = getMyModel().getTimestamp();
+
+		// Ensure different time-stamps
+		while (newTimestamp.equals(oldTimestamp))
+		{
+
+			newTimestamp = Toolbox.formatDate(Calendar.getInstance(), Toolbox.TIMESTAMP_FORMAT);
+		}
+
+		try
+		{
+			session.startEquationTransaction();
+			insertRecord();
+			session.commitTransaction();
+			isRecord(true);
+			getRecord();
+
+			// Test the findByLaterTimestamp method:
+			GAXRecordDataModel tempDataModel = ((IGAXRecordDao) dao).findWithLaterTimestamp(GAXRecordDataModel.SERVICE_CODE,
+							serviceId, newTimestamp);
+			assertNull("No record should be returned for the latest timestamp", tempDataModel);
+
+			tempDataModel = ((IGAXRecordDao) dao).findWithLaterTimestamp(GAXRecordDataModel.SERVICE_CODE, serviceId, oldTimestamp);
+			assertNotNull("A record should be returned for the old timestamp", tempDataModel);
+
+			updateRecord();
+			session.commitTransaction();
+
+			deleteRecord();
+			session.commitTransaction();
+			isRecord(false);
+			session.endEquationTransaction();
+
+		}
+		catch (Exception exception)
+		{
+			exception.printStackTrace();
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error("There was a problem when the testAAIRecordDao() was executed ", exception);
+			}
+		}
+
+	}
+}

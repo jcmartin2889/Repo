@@ -1,0 +1,70 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.perf;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+
+/**
+ * Equation test cases for Maintain function
+ */
+public class ASI extends Add_ASI_TestCase
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: ASI.java 11310 2011-06-27 12:20:21Z ESTHER.WILLIAMS $";
+	String programName = "H15ARR";
+	String optionId = "ASI";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+	/**
+	 * Setup the mandatory fields
+	 */
+	@Override
+	public void setupFields(EquationStandardTransaction transaction, int ref)
+	{
+		transaction.setFieldValue("GZAB", "0543"); // Account branch (4A)
+		transaction.setFieldValue("GZAN", "123107"); // Basic part of account number (6A)
+		transaction.setFieldValue("GZAS", "001"); // Account suffix (3A)
+		transaction.setFieldValue("GZTCD", "510"); // Transaction code (3A)
+		transaction.setFieldValue("GZCCY", "GBP"); // Currency mnemonic (3A)
+		transaction.setFieldValue("GZAMA", "543200"); // Ordinary amount in minor currency units (15P,0)
+		transaction.setFieldValue("GZVFR", "1000106"); // Value from date (7S,0)
+		transaction.setFieldValue("GZDRF", "JavaTest " + ref); // Users own reference for deals, reconciliation etc (16A)
+		transaction.setFieldValue("GZNR1", "TEST NARRATIVE1");
+		transaction.setFieldValue("GZNR2", "TEST NARRATIVE2");
+		transaction.setFieldValue("GZNPE", "1"); // Number of posting entries (5P,0)
+		transaction.setFieldValue("GZPBR", "JUNT"); // Posting group id or user id, and group level (5A)
+		transaction.setFieldValue("GZBRNM", "LOND"); // Branch mnemonic (4A)
+	}
+}

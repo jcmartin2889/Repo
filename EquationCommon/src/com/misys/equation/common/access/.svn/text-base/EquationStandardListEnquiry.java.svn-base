@@ -1,0 +1,281 @@
+package com.misys.equation.common.access;
+
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import com.ibm.as400.access.Record;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EquationLogger;
+
+/**
+ * This class provides methods for setting Equation API fields before the enquiry is executed and for getting fields after the
+ * enquiry is executed - returning list data is supported.
+ */
+@SuppressWarnings("serial")
+public class EquationStandardListEnquiry extends EquationStandardEnquiry implements IListTransaction
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	/** Log instance */
+	private static final EquationLogger LOG = new EquationLogger(EquationStandardListEnquiry.class);
+
+	private String listFormatName = "";
+	private final List<Record> hzListRcds = new ArrayList<Record>();
+	private EquationDataStructureData hzListTemplateDSData;
+	private boolean complete = false;
+	private boolean initialised = false;
+	private int currentRow = -1;
+
+	public EquationStandardListEnquiry(String inputApiName, String fixedFormat, String listFormat, EquationStandardSession session)
+					throws EQException
+	{
+		// reuse all the good work we did in the super...
+		super(inputApiName, fixedFormat, session);
+		// And a bit more...
+		setListFormatName(listFormat);
+		initialiseListEnquiry();
+	}
+	public EquationStandardListEnquiry(String inputApiName, EquationStandardSession session) throws EQException
+	{
+		this(inputApiName, "HZ" + inputApiName.substring(0, 3) + "1", "HZ" + inputApiName.substring(0, 3) + "2", session);
+	}
+
+	/**
+	 * 
+	 */
+	private void setListFormatName(String listFormat)
+	{
+		listFormatName = listFormat;
+	}
+
+	/**
+	 * 
+	 */
+	public String getListFormatName()
+	{
+		return listFormatName;
+	}
+
+	/**
+	 * @throws EQException
+	 */
+	private void initialiseListEnquiry() throws EQException
+	{
+		hzListTemplateDSData = new EquationDataStructureData(getEquationStandardSession().getEquationDataStructure(listFormatName));
+	}
+
+	/**
+	 * 
+	 */
+	protected void addhzListRcdFmt(byte[] format) throws EQException
+	{
+		try
+		{
+			hzListRcds.add(new Record(hzListTemplateDSData.getEqDS().getRcdFmt(), format));
+		}
+		catch (UnsupportedEncodingException e)
+		{
+			throw new EQException(e);
+		}
+	}
+	/**
+	 * 
+	 */
+	protected byte[] gethzListTemplateBytes()
+	{
+		return hzListTemplateDSData.getBytes();
+	}
+
+	/**
+	 * 
+	 */
+	public String getListField(String fieldName, int row) throws EQException
+	{
+		String fieldValue = "";
+		Record currentRow = hzListRcds.get(row);
+		if (hzListTemplateDSData.getEqDS().containsField(fieldName))
+		{
+			try
+			{
+				int fieldType = hzListTemplateDSData.getEqDS().getFieldDataType(fieldName);
+				if (fieldType == Types.CHAR || fieldType == Types.BINARY || fieldType == Types.VARCHAR
+								|| fieldType == Types.VARBINARY)
+				{
+					fieldValue = (String) (currentRow.getField(fieldName.toUpperCase()));
+				}
+				else
+				{
+					BigDecimal fieldValueNumber = (BigDecimal) (currentRow.getField(fieldName.toUpperCase()));
+					fieldValue = fieldValueNumber.toPlainString();
+				}
+			}
+			catch (UnsupportedEncodingException e)
+			{
+				throw new EQException(e);
+			}
+		}
+		return fieldValue;
+	}
+
+	/**
+	 * 
+	 */
+	@Override
+	public String toString()
+	{
+		StringBuffer serialisation = new StringBuffer(super.toString());
+		try
+		{
+			for (int i = 0; i < hzListRcds.size(); i++)
+			{
+				Set<String> keySet = hzListTemplateDSData.getEqDS().getFieldNames();
+				Iterator<String> keys = keySet.iterator();
+				while (keys.hasNext())
+				{
+					String fieldName = keys.next();
+					serialisation.append("row: " + (i + 1) + ", " + fieldName + ": " + getListField(fieldName, i) + "\n");
+				}
+			}
+		}
+		catch (EQException e)
+		{
+			LOG.error(e);
+		}
+		return serialisation.toString();
+	}
+	/**
+	 * Determines whether all the records have been retrieved. There will be scenarios where this is FALSE when trying to retrieve
+	 * only the first n records to prevent memory error
+	 * 
+	 * @return true if all records have been retrieved.
+	 * @equation.external
+	 */
+	public boolean isComplete()
+	{
+		return complete;
+	}
+
+	/**
+	 * Return the number of records
+	 * 
+	 * @return the number of records
+	 * @equation.external
+	 */
+	public int getRecordCount()
+	{
+		return hzListRcds.size();
+	}
+
+	protected void setComplete(boolean complete)
+	{
+		this.complete = complete;
+	}
+
+	protected boolean isInitialised()
+	{
+		return initialised;
+	}
+
+	protected void setInitialised(boolean initialised)
+	{
+		this.initialised = initialised;
+	}
+
+	public List<Record> getHzListRcds()
+	{
+		return hzListRcds;
+	}
+
+	public EquationDataStructureData getHzListTemplateDSData()
+	{
+		return hzListTemplateDSData;
+	}
+
+	/**
+	 * Overridden version of the method to return both fixed and repeating data
+	 * 
+	 * @param fieldName
+	 *            The name of the field to retrieve the value of
+	 * @return String containing the field value.
+	 * @equation.external
+	 */
+	@Override
+	public String getFieldValue(String fieldName)
+	{
+		String result = "";
+		if (hzListTemplateDSData.getEqDS().containsField(fieldName))
+		{
+			// Only attempt to process if any repeat rows loaded and the currentRow index is valid
+			if (currentRow >= 0 && currentRow < hzListRcds.size())
+			{
+				try
+				{
+					result = getListField(fieldName, currentRow);
+				}
+				catch (EQException e)
+				{
+					LOG.error("Failed to find field [" + fieldName + "]", e);
+				}
+			}
+		}
+		else
+		{
+			// Ask the base class to handle (presumably fixed field)
+			result = super.getFieldValue(fieldName);
+		}
+		return result;
+	}
+
+	/**
+	 * Iterate through the returned rows
+	 * 
+	 * @return a boolean indicating if there is a row of data available
+	 * @equation.external
+	 */
+	public boolean next()
+	{
+		boolean result = false;
+		if (hzListRcds.size() > currentRow + 1)
+		{
+			currentRow++;
+			result = true;
+		}
+		return result;
+	}
+
+	/**
+	 * Moves back (before) the first row.
+	 * 
+	 * @equation.external
+	 */
+	public void moveFirst()
+	{
+		currentRow = -1;
+	}
+
+	/**
+	 * Let the system decides for the number of records to be retrieved
+	 * 
+	 */
+	public int chkNoreq()
+	{
+		int i = 9999 / hzListTemplateDSData.getBytes().length;
+		setNoreq(i);
+		return i;
+	}
+
+	/**
+	 * Return maximum record length
+	 * 
+	 * @return the maximum record length
+	 */
+	public int getRecordLength()
+	{
+		return hzListTemplateDSData.getBytes().length;
+	}
+}

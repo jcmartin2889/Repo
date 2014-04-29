@@ -1,0 +1,84 @@
+package com.misys.equation.function.test.run;
+
+import com.misys.equation.common.files.JournalHeader;
+import com.misys.equation.function.beans.FunctionData;
+import com.misys.equation.function.runtime.FunctionHandler;
+
+/**
+ * FunctionHandler Stub 1
+ * 
+ * This is how to use the Function Handler with validate and update processing done separately
+ * 
+ */
+public class FunctionHandlerStub15ALW extends FunctionHandlerStubTestCase
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: FunctionHandlerStub15ALW.java 6793 2010-03-31 12:10:20Z deroset $";
+
+	public FunctionHandlerStub15ALW()
+	{
+		try
+		{
+			setUp();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] inputParameters)
+	{
+		FunctionHandlerStub15ALW test = new FunctionHandlerStub15ALW();
+		test.test();
+	}
+
+	public boolean test()
+	{
+		// Have a bash...
+		FunctionHandler functionHandler = null;
+		try
+		{
+			System.out.println("------------------------------- 1");
+			functionHandler = FunctionToolboxStub.getFunctionHandler(user, "SESSIONID", "");
+			functionHandler.doNewTransaction("ALW", "");
+			FunctionData functionData = functionHandler.getFhd().getScreenSetHandler().rtvScrnSetCurrent().getFunctionData();
+			functionData.chgFieldInputValue("HLD", "GCF");
+			functionData.chgFieldInputValue("BRNM", "LOND");
+			functionData.chgFieldInputValue("DLP", "FXF");
+			functionData.chgFieldInputValue("DLR", "1001");
+			functionData.chgFieldInputValue("AB", "0132");
+			functionData.chgFieldInputValue("AN", "123467");
+			functionData.chgFieldInputValue("AS", "001");
+			functionHandler.applyRetrieveTransaction();
+
+			System.out.println(functionHandler.getFhd().getScreenSetHandler().rtvScreenSetMain().getFunctionData());
+			FunctionToolboxStub.printMessages(functionHandler.rtvFunctionMessages().getMessages());
+
+			boolean bool1 = functionData.rtvFieldOutputValue("HLD").contains("GUAR");
+			boolean bool2 = functionData.rtvFieldInputValue("DSC").contains("CERTIFIED");
+			boolean bool3 = functionData.rtvFieldOutputValue("AB").contains("Atlant");
+
+			JournalHeader journalHeader = functionHandler.getFhd().getJournalHeader();
+			return (bool1 && bool2 && bool3);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+		finally
+		{
+			cleanUp();
+		}
+	}
+
+	public void testStub15ALW()
+	{
+		FunctionHandlerStub15ALW stub = new FunctionHandlerStub15ALW();
+		boolean success = stub.test();
+		assertEquals(true, success);
+	}
+
+}

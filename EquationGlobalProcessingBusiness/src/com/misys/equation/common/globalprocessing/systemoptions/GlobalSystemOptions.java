@@ -1,0 +1,96 @@
+package com.misys.equation.common.globalprocessing.systemoptions;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.dao.DaoFactory;
+import com.misys.equation.common.dao.IGPMRecordDao;
+import com.misys.equation.common.dao.beans.GPMRecordDataManager;
+import com.misys.equation.common.dao.beans.GPMRecordDataModel;
+import com.misys.equation.common.utilities.EquationLogger;
+
+public class GlobalSystemOptions
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: GlobalSystemOptions.java 9210 2010-09-17 15:31:21Z deroset $";
+	private IGPMRecordDao gPMRecordDao;
+	private final EquationStandardSession session;
+	private boolean isGPisInstalled = false;
+	private final EquationLogger LOG = new EquationLogger(this.getClass());
+	private GPMRecordDataManager gPMRecordDataManager;
+
+	public GlobalSystemOptions(EquationStandardSession session)
+	{
+		// Set the session
+		this.session = session;
+		initialization();
+	}
+
+	private void initialization()
+	{
+		DaoFactory daoFactory = new DaoFactory();
+		checkIfGPisInstalled();
+		isGPisInstalled = true;
+		// if the GP is installed;
+		if (isGPisInstalled)
+		{
+			gPMRecordDataManager = new GPMRecordDataManager();
+			gPMRecordDao = daoFactory.getGPMDao(session, gPMRecordDataManager);
+		}
+	}
+
+	/**
+	 * This method will check if the current session is GP and if the server has the GP pool set.
+	 */
+	private void checkIfGPisInstalled()
+	{
+		try
+		{
+			isGPisInstalled = EquationCommonContext.getContext().checkIfGPIsInstalled(session.getSessionIdentifier());
+		}
+		catch (Exception exception)
+		{
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error("There was a problem checkIfGPisInstalled.", exception);
+			}
+		}
+	}
+
+	/***
+	 * This method will find the value for the system option.
+	 * 
+	 * @param systemOptionId
+	 *            this is the system option id.
+	 * @return a <code>GPMRecordDataManager</code> that represents the systems values.
+	 */
+	public GPMRecordDataManager getSystemOptionValue(String systemOptionId)
+	{
+		GPMRecordDataModel gPMRecordDataModel = null;
+
+		// if the GP is installed;
+		if (isGPisInstalled)
+		{
+			gPMRecordDataManager.setSystemOptionId(systemOptionId);
+			gPMRecordDataModel = gPMRecordDao.getGPMRecord();
+
+			gPMRecordDataManager.setLibrary(gPMRecordDataModel.getLibrary());
+			gPMRecordDataManager.setOptionDescription(gPMRecordDataModel.getOptionDescription());
+			gPMRecordDataManager.setOptionType(gPMRecordDataModel.getOptionType());
+			gPMRecordDataManager.setSystemOptionId(gPMRecordDataModel.getSystemOptionId());
+			gPMRecordDataManager.setSystemOptionValue(gPMRecordDataModel.getSystemOptionValue());
+		}
+		return gPMRecordDataManager;
+	}
+
+	/***
+	 * Save the new value for the Global System Option in the corresponding record in GPMPF file.
+	 * 
+	 * @param newValue
+	 *            - the new value
+	 */
+	public void saveSystemOptionValue(String newValue)
+	{
+		gPMRecordDataManager.setSystemOptionValue(newValue);
+		gPMRecordDao.updateRecord();
+	}
+}

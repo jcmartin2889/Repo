@@ -1,0 +1,75 @@
+package com.misys.equation.common.consolidation;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.dao.DaoFactory;
+import com.misys.equation.common.dao.IC8RecordDao;
+import com.misys.equation.common.dao.IDao;
+import com.misys.equation.common.globalprocessing.GlobalParameterMap;
+import com.misys.equation.common.internal.eapi.core.EQException;
+
+public class C8DaoConsolidator extends DaoConsolidator
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/**
+	 * Constructor
+	 * 
+	 * @param session
+	 *            EquationStandardSession
+	 * @throws EQException
+	 */
+	public C8DaoConsolidator(EquationStandardSession session) throws EQException
+	{
+		super(session, DaoFactory.c8RecordDaoName);
+	}
+
+	public Map<String, String> getC8CurrencyMnemonics()
+	{
+		Map<String, String> result = new TreeMap<String, String>();
+		List<String> coll = new ArrayList<String>();
+
+		for (IDao iDao : daos)
+		{
+			IC8RecordDao dao = (IC8RecordDao) iDao;
+			coll.addAll(dao.getC8CurrencyMnemonics());
+		}
+
+		for (String ccy : coll)
+		{
+			result.put(ccy, ccy);
+		}
+
+		return result;
+	}
+
+	public Map<String, String> getC8CurrencyMnemonicsWithMPM()
+	{
+		Map<String, String> result = new TreeMap<String, String>();
+
+		int i = 0;
+		for (IDao iDao : daos)
+		{
+			String mapUnit = sessions.get(i).getUnitId();
+			String mapSystem = sessions.get(i).getSystemId();
+			IC8RecordDao dao = (IC8RecordDao) iDao;
+			for (String ccyc8 : dao.getC8CurrencyMnemonics())
+			{
+				String masterCcy = GlobalParameterMap.getParameterMap().getMasterValue(sessions.get(i), "C8", mapUnit, mapSystem,
+								ccyc8);
+				if (masterCcy.equals(""))
+				{
+					masterCcy = ccyc8;
+				}
+				result.put(mapUnit + ":" + mapSystem + ":" + ccyc8, masterCcy);
+			}
+			i++;
+		}
+		return result;
+	}
+}

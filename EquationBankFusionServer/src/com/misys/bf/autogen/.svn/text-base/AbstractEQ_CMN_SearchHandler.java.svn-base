@@ -1,0 +1,339 @@
+package com.misys.bf.autogen;
+
+import java.util.ArrayList;
+import com.trapedza.bankfusion.microflow.ActivityStep;
+import java.util.Map;
+import java.util.List;
+import com.trapedza.bankfusion.core.BankFusionException;
+import java.util.HashMap;
+import com.trapedza.bankfusion.core.DataType;
+import com.trapedza.bankfusion.utils.Utils;
+import com.trapedza.bankfusion.core.CommonConstants;
+import java.util.Iterator;
+import com.trapedza.bankfusion.servercommon.commands.BankFusionEnvironment;
+import com.trapedza.bankfusion.core.ExtensionPointHelper;
+import bf.com.misys.bankfusion.attributes.UserDefinedFields;
+
+/**
+ * 
+ * DO NOT CHANGE MANUALLY - THIS IS AUTOMATICALLY GENERATED CODE.<br>
+ * This will be overwritten by any subsequent code-generation.
+ * 
+ */
+public abstract class AbstractEQ_CMN_SearchHandler implements IEQ_CMN_SearchHandler
+{
+	//This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	/**
+	 * @deprecated use no-argument constructor!
+	 */
+	public AbstractEQ_CMN_SearchHandler(BankFusionEnvironment env)
+	{
+	}
+
+	public AbstractEQ_CMN_SearchHandler()
+	{
+	}
+
+	private Object f_IN_SearchData = new String();
+
+	private bf.com.misys.eqf.types.header.SearchRqHeader f_IN_SearchHeader = new bf.com.misys.eqf.types.header.SearchRqHeader();
+	{
+		f_IN_SearchHeader.setMaxResults(Utils.getINTEGERValue(""));
+		bf.com.misys.eqf.types.header.UiControlRq var_019_SearchHeader_uiControlRq = new bf.com.misys.eqf.types.header.UiControlRq();
+
+		var_019_SearchHeader_uiControlRq.setChildFunctionHandlerId(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_uiControlRq.setCkey(Utils.getINTEGERValue(""));
+		var_019_SearchHeader_uiControlRq.setCurScrn(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_uiControlRq.setKeyLoaded(Utils.getBOOLEANValue(""));
+		var_019_SearchHeader_uiControlRq.setFldValidate(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_uiControlRq.setReason(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_uiControlRq.setLoadFieldSet(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_uiControlRq.setLoadField(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_uiControlRq.setUiMode(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_uiControlRq.setTransactionId(Utils.getSTRINGValue(""));
+		f_IN_SearchHeader.setUiControlRq(var_019_SearchHeader_uiControlRq);
+
+		f_IN_SearchHeader.setFilterFields(Utils.getSTRINGValue(""));
+		f_IN_SearchHeader.setPvId(CommonConstants.EMPTY_STRING);
+		f_IN_SearchHeader.setDirection(Utils.getSTRINGValue(""));
+		f_IN_SearchHeader.setDecode(Utils.getSTRINGValue(""));
+		f_IN_SearchHeader.setPagingFields(Utils.getSTRINGValue(""));
+		bf.com.misys.eqf.types.header.RqHeader var_019_SearchHeader_rqHeader = new bf.com.misys.eqf.types.header.RqHeader();
+
+		var_019_SearchHeader_rqHeader.setUserExtension(Utils.getJAVA_OBJECTValue(""));
+		var_019_SearchHeader_rqHeader.setEqMessageDetail(Utils.getSTRINGValue(""));
+		bf.com.misys.eqf.types.header.Formatting var_019_SearchHeader_rqHeader_formatting = new bf.com.misys.eqf.types.header.Formatting();
+
+		var_019_SearchHeader_rqHeader_formatting.setDateFormat(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader_formatting.setReturnAllFormats(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader_formatting.setAmountFormat(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader.setFormatting(var_019_SearchHeader_rqHeader_formatting);
+
+		var_019_SearchHeader_rqHeader.setUserIdType(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader.setDataSourceName(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader.setUnitId(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader.setSessionId(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader.setMessageType(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader.setUserId(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader.setVersion(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader.setMessageId(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader.setSystemId(Utils.getSTRINGValue(""));
+		bf.com.misys.eqf.types.header.Orig var_019_SearchHeader_rqHeader_orig = new bf.com.misys.eqf.types.header.Orig();
+
+		var_019_SearchHeader_rqHeader_orig.setOrigTCPIP(Utils.getSTRINGValue(""));
+		bf.com.misys.eqf.types.header.BranchKeys var_019_SearchHeader_rqHeader_orig_origBranch = new bf.com.misys.eqf.types.header.BranchKeys();
+
+		var_019_SearchHeader_rqHeader_orig_origBranch.setBranchCode(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader_orig_origBranch.setBranchMnemonic(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader_orig.setOrigBranch(var_019_SearchHeader_rqHeader_orig_origBranch);
+
+		var_019_SearchHeader_rqHeader_orig.setOrigWorkstation(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader_orig.setAppId(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader.setOrig(var_019_SearchHeader_rqHeader_orig);
+
+		bf.com.misys.eqf.types.header.Overrides var_019_SearchHeader_rqHeader_overrides = new bf.com.misys.eqf.types.header.Overrides();
+
+		var_019_SearchHeader_rqHeader_overrides.setOverrideType(Utils.getSTRINGValue(""));
+		bf.com.misys.eqf.types.header.EqMessage var_019_SearchHeader_rqHeader_overrides_overrideExclusion = new bf.com.misys.eqf.types.header.EqMessage();
+
+		var_019_SearchHeader_rqHeader_overrides_overrideExclusion.setOverridden(Utils.getBOOLEANValue(""));
+		var_019_SearchHeader_rqHeader_overrides_overrideExclusion.setFirstLevelText(Utils.getSTRINGValue(""));
+		bf.com.misys.eqf.types.header.BranchLimitParameters var_019_SearchHeader_rqHeader_overrides_overrideExclusion_branchLimit = new bf.com.misys.eqf.types.header.BranchLimitParameters();
+
+		var_019_SearchHeader_rqHeader_overrides_overrideExclusion_branchLimit.setLocalCurrencyAmount(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader_overrides_overrideExclusion_branchLimit.setDebitCredit(Utils.getSTRINGValue(""));
+		bf.com.misys.eqf.types.header.BranchKeys var_019_SearchHeader_rqHeader_overrides_overrideExclusion_branchLimit_affectedBranch = new bf.com.misys.eqf.types.header.BranchKeys();
+
+		var_019_SearchHeader_rqHeader_overrides_overrideExclusion_branchLimit_affectedBranch
+						.setBranchCode(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader_overrides_overrideExclusion_branchLimit_affectedBranch.setBranchMnemonic(Utils
+						.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader_overrides_overrideExclusion_branchLimit
+						.setAffectedBranch(var_019_SearchHeader_rqHeader_overrides_overrideExclusion_branchLimit_affectedBranch);
+
+		var_019_SearchHeader_rqHeader_overrides_overrideExclusion
+						.setBranchLimit(var_019_SearchHeader_rqHeader_overrides_overrideExclusion_branchLimit);
+
+		var_019_SearchHeader_rqHeader_overrides_overrideExclusion.setEqMessageParameter3(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader_overrides_overrideExclusion.setEqMessageParameter2(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader_overrides_overrideExclusion.setEqMessageParameter1(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader_overrides_overrideExclusion.setEqMessageSeverity(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader_overrides_overrideExclusion.setFormattedMessage(Utils.getSTRINGValue(""));
+		bf.com.misys.eqf.types.header.ServiceStack var_019_SearchHeader_rqHeader_overrides_overrideExclusion_serviceStack = new bf.com.misys.eqf.types.header.ServiceStack();
+		var_019_SearchHeader_rqHeader_overrides_overrideExclusion_serviceStack.addServiceStackEntry(0, Utils.getSTRINGValue(""));
+
+		var_019_SearchHeader_rqHeader_overrides_overrideExclusion
+						.setServiceStack(var_019_SearchHeader_rqHeader_overrides_overrideExclusion_serviceStack);
+
+		var_019_SearchHeader_rqHeader_overrides_overrideExclusion.setEqMessageId(Utils.getSTRINGValue(""));
+		bf.com.misys.eqf.types.header.FieldLocation var_019_SearchHeader_rqHeader_overrides_overrideExclusion_fieldLocation = new bf.com.misys.eqf.types.header.FieldLocation();
+
+		var_019_SearchHeader_rqHeader_overrides_overrideExclusion_fieldLocation.setSetId(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader_overrides_overrideExclusion_fieldLocation.addFieldId(0, Utils.getSTRINGValue(""));
+
+		var_019_SearchHeader_rqHeader_overrides_overrideExclusion_fieldLocation.setRowSequence(Utils.getINTEGERValue(""));
+		var_019_SearchHeader_rqHeader_overrides_overrideExclusion_fieldLocation.setFieldSet(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader_overrides_overrideExclusion
+						.setFieldLocation(var_019_SearchHeader_rqHeader_overrides_overrideExclusion_fieldLocation);
+
+		var_019_SearchHeader_rqHeader_overrides_overrideExclusion.setSecondLevelText(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader_overrides.addOverrideExclusion(0, var_019_SearchHeader_rqHeader_overrides_overrideExclusion);
+
+		bf.com.misys.eqf.types.header.EqMessage var_019_SearchHeader_rqHeader_overrides_overrideSelection = new bf.com.misys.eqf.types.header.EqMessage();
+
+		var_019_SearchHeader_rqHeader_overrides_overrideSelection.setOverridden(Utils.getBOOLEANValue(""));
+		var_019_SearchHeader_rqHeader_overrides_overrideSelection.setFirstLevelText(Utils.getSTRINGValue(""));
+		bf.com.misys.eqf.types.header.BranchLimitParameters var_019_SearchHeader_rqHeader_overrides_overrideSelection_branchLimit = new bf.com.misys.eqf.types.header.BranchLimitParameters();
+
+		var_019_SearchHeader_rqHeader_overrides_overrideSelection_branchLimit.setLocalCurrencyAmount(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader_overrides_overrideSelection_branchLimit.setDebitCredit(Utils.getSTRINGValue(""));
+		bf.com.misys.eqf.types.header.BranchKeys var_019_SearchHeader_rqHeader_overrides_overrideSelection_branchLimit_affectedBranch = new bf.com.misys.eqf.types.header.BranchKeys();
+
+		var_019_SearchHeader_rqHeader_overrides_overrideSelection_branchLimit_affectedBranch
+						.setBranchCode(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader_overrides_overrideSelection_branchLimit_affectedBranch.setBranchMnemonic(Utils
+						.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader_overrides_overrideSelection_branchLimit
+						.setAffectedBranch(var_019_SearchHeader_rqHeader_overrides_overrideSelection_branchLimit_affectedBranch);
+
+		var_019_SearchHeader_rqHeader_overrides_overrideSelection
+						.setBranchLimit(var_019_SearchHeader_rqHeader_overrides_overrideSelection_branchLimit);
+
+		var_019_SearchHeader_rqHeader_overrides_overrideSelection.setEqMessageParameter3(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader_overrides_overrideSelection.setEqMessageParameter2(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader_overrides_overrideSelection.setEqMessageParameter1(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader_overrides_overrideSelection.setEqMessageSeverity(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader_overrides_overrideSelection.setFormattedMessage(Utils.getSTRINGValue(""));
+		bf.com.misys.eqf.types.header.ServiceStack var_019_SearchHeader_rqHeader_overrides_overrideSelection_serviceStack = new bf.com.misys.eqf.types.header.ServiceStack();
+		var_019_SearchHeader_rqHeader_overrides_overrideSelection_serviceStack.addServiceStackEntry(0, Utils.getSTRINGValue(""));
+
+		var_019_SearchHeader_rqHeader_overrides_overrideSelection
+						.setServiceStack(var_019_SearchHeader_rqHeader_overrides_overrideSelection_serviceStack);
+
+		var_019_SearchHeader_rqHeader_overrides_overrideSelection.setEqMessageId(Utils.getSTRINGValue(""));
+		bf.com.misys.eqf.types.header.FieldLocation var_019_SearchHeader_rqHeader_overrides_overrideSelection_fieldLocation = new bf.com.misys.eqf.types.header.FieldLocation();
+
+		var_019_SearchHeader_rqHeader_overrides_overrideSelection_fieldLocation.setSetId(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader_overrides_overrideSelection_fieldLocation.addFieldId(0, Utils.getSTRINGValue(""));
+
+		var_019_SearchHeader_rqHeader_overrides_overrideSelection_fieldLocation.setRowSequence(Utils.getINTEGERValue(""));
+		var_019_SearchHeader_rqHeader_overrides_overrideSelection_fieldLocation.setFieldSet(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader_overrides_overrideSelection
+						.setFieldLocation(var_019_SearchHeader_rqHeader_overrides_overrideSelection_fieldLocation);
+
+		var_019_SearchHeader_rqHeader_overrides_overrideSelection.setSecondLevelText(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader_overrides.addOverrideSelection(0, var_019_SearchHeader_rqHeader_overrides_overrideSelection);
+
+		var_019_SearchHeader_rqHeader.setOverrides(var_019_SearchHeader_rqHeader_overrides);
+
+		var_019_SearchHeader_rqHeader.setSessionType(Utils.getSTRINGValue(""));
+		var_019_SearchHeader_rqHeader.addResponseFilter(0, Utils.getSTRINGValue(""));
+
+		f_IN_SearchHeader.setRqHeader(var_019_SearchHeader_rqHeader);
+	}
+	private ArrayList<String> udfBoNames = new ArrayList<String>();
+	private HashMap udfStateData = new HashMap();
+
+	private Object f_OUT_OutputSearchData = new String();
+
+	private bf.com.misys.eqf.types.header.SearchRsHeader f_OUT_OutputSearchHeader = new bf.com.misys.eqf.types.header.SearchRsHeader();
+	{
+		f_OUT_OutputSearchHeader.setEof(Utils.getBOOLEANValue("false"));
+		bf.com.misys.eqf.types.header.UiControlRs var_020_OutputSearchHeader_uiControlRs = new bf.com.misys.eqf.types.header.UiControlRs();
+
+		var_020_OutputSearchHeader_uiControlRs.setNextScrn(Utils.getSTRINGValue(""));
+		var_020_OutputSearchHeader_uiControlRs.setNextProcess(Utils.getINTEGERValue(""));
+		f_OUT_OutputSearchHeader.setUiControlRs(var_020_OutputSearchHeader_uiControlRs);
+
+		bf.com.misys.eqf.types.header.RsHeader var_020_OutputSearchHeader_rsHeader = new bf.com.misys.eqf.types.header.RsHeader();
+
+		var_020_OutputSearchHeader_rsHeader.setVersion(Utils.getSTRINGValue(""));
+		bf.com.misys.eqf.types.header.MessageStatus var_020_OutputSearchHeader_rsHeader_status = new bf.com.misys.eqf.types.header.MessageStatus();
+
+		var_020_OutputSearchHeader_rsHeader_status.setOverallStatus(CommonConstants.EMPTY_STRING);
+		bf.com.misys.eqf.types.header.EqMessage var_020_OutputSearchHeader_rsHeader_status_eqMessages = new bf.com.misys.eqf.types.header.EqMessage();
+
+		var_020_OutputSearchHeader_rsHeader_status_eqMessages.setOverridden(Utils.getBOOLEANValue(""));
+		var_020_OutputSearchHeader_rsHeader_status_eqMessages.setFirstLevelText(Utils.getSTRINGValue(""));
+		bf.com.misys.eqf.types.header.BranchLimitParameters var_020_OutputSearchHeader_rsHeader_status_eqMessages_branchLimit = new bf.com.misys.eqf.types.header.BranchLimitParameters();
+
+		var_020_OutputSearchHeader_rsHeader_status_eqMessages_branchLimit.setLocalCurrencyAmount(Utils.getSTRINGValue(""));
+		var_020_OutputSearchHeader_rsHeader_status_eqMessages_branchLimit.setDebitCredit(Utils.getSTRINGValue(""));
+		bf.com.misys.eqf.types.header.BranchKeys var_020_OutputSearchHeader_rsHeader_status_eqMessages_branchLimit_affectedBranch = new bf.com.misys.eqf.types.header.BranchKeys();
+
+		var_020_OutputSearchHeader_rsHeader_status_eqMessages_branchLimit_affectedBranch.setBranchCode(Utils.getSTRINGValue(""));
+		var_020_OutputSearchHeader_rsHeader_status_eqMessages_branchLimit_affectedBranch
+						.setBranchMnemonic(Utils.getSTRINGValue(""));
+		var_020_OutputSearchHeader_rsHeader_status_eqMessages_branchLimit
+						.setAffectedBranch(var_020_OutputSearchHeader_rsHeader_status_eqMessages_branchLimit_affectedBranch);
+
+		var_020_OutputSearchHeader_rsHeader_status_eqMessages
+						.setBranchLimit(var_020_OutputSearchHeader_rsHeader_status_eqMessages_branchLimit);
+
+		var_020_OutputSearchHeader_rsHeader_status_eqMessages.setEqMessageParameter3(Utils.getSTRINGValue(""));
+		var_020_OutputSearchHeader_rsHeader_status_eqMessages.setEqMessageParameter2(Utils.getSTRINGValue(""));
+		var_020_OutputSearchHeader_rsHeader_status_eqMessages.setEqMessageParameter1(Utils.getSTRINGValue(""));
+		var_020_OutputSearchHeader_rsHeader_status_eqMessages.setEqMessageSeverity(Utils.getSTRINGValue(""));
+		var_020_OutputSearchHeader_rsHeader_status_eqMessages.setFormattedMessage(Utils.getSTRINGValue(""));
+		bf.com.misys.eqf.types.header.ServiceStack var_020_OutputSearchHeader_rsHeader_status_eqMessages_serviceStack = new bf.com.misys.eqf.types.header.ServiceStack();
+		var_020_OutputSearchHeader_rsHeader_status_eqMessages_serviceStack.addServiceStackEntry(0, Utils.getSTRINGValue(""));
+
+		var_020_OutputSearchHeader_rsHeader_status_eqMessages
+						.setServiceStack(var_020_OutputSearchHeader_rsHeader_status_eqMessages_serviceStack);
+
+		var_020_OutputSearchHeader_rsHeader_status_eqMessages.setEqMessageId(Utils.getSTRINGValue(""));
+		bf.com.misys.eqf.types.header.FieldLocation var_020_OutputSearchHeader_rsHeader_status_eqMessages_fieldLocation = new bf.com.misys.eqf.types.header.FieldLocation();
+
+		var_020_OutputSearchHeader_rsHeader_status_eqMessages_fieldLocation.setSetId(Utils.getSTRINGValue(""));
+		var_020_OutputSearchHeader_rsHeader_status_eqMessages_fieldLocation.addFieldId(0, Utils.getSTRINGValue(""));
+
+		var_020_OutputSearchHeader_rsHeader_status_eqMessages_fieldLocation.setRowSequence(Utils.getINTEGERValue(""));
+		var_020_OutputSearchHeader_rsHeader_status_eqMessages_fieldLocation.setFieldSet(Utils.getSTRINGValue(""));
+		var_020_OutputSearchHeader_rsHeader_status_eqMessages
+						.setFieldLocation(var_020_OutputSearchHeader_rsHeader_status_eqMessages_fieldLocation);
+
+		var_020_OutputSearchHeader_rsHeader_status_eqMessages.setSecondLevelText(Utils.getSTRINGValue(""));
+		var_020_OutputSearchHeader_rsHeader_status.addEqMessages(0, var_020_OutputSearchHeader_rsHeader_status_eqMessages);
+
+		var_020_OutputSearchHeader_rsHeader.setStatus(var_020_OutputSearchHeader_rsHeader_status);
+
+		var_020_OutputSearchHeader_rsHeader.setUserExtension(Utils.getJAVA_OBJECTValue(""));
+		var_020_OutputSearchHeader_rsHeader.setBuid(Utils.getSTRINGValue(""));
+		var_020_OutputSearchHeader_rsHeader.setCorrelationId(Utils.getSTRINGValue(""));
+		var_020_OutputSearchHeader_rsHeader.setSessionId(Utils.getSTRINGValue(""));
+		f_OUT_OutputSearchHeader.setRsHeader(var_020_OutputSearchHeader_rsHeader);
+	}
+
+	public void process(BankFusionEnvironment env) throws BankFusionException
+	{
+	}
+
+	public Object getF_IN_SearchData()
+	{
+		return f_IN_SearchData;
+	}
+
+	public void setF_IN_SearchData(Object param)
+	{
+		f_IN_SearchData = param;
+	}
+
+	public bf.com.misys.eqf.types.header.SearchRqHeader getF_IN_SearchHeader()
+	{
+		return f_IN_SearchHeader;
+	}
+
+	public void setF_IN_SearchHeader(bf.com.misys.eqf.types.header.SearchRqHeader param)
+	{
+		f_IN_SearchHeader = param;
+	}
+
+	public Map getInDataMap()
+	{
+		Map dataInMap = new HashMap();
+		dataInMap.put(IN_SearchData, f_IN_SearchData);
+		dataInMap.put(IN_SearchHeader, f_IN_SearchHeader);
+		return dataInMap;
+	}
+
+	public Object getF_OUT_OutputSearchData()
+	{
+		return f_OUT_OutputSearchData;
+	}
+
+	public void setF_OUT_OutputSearchData(Object param)
+	{
+		f_OUT_OutputSearchData = param;
+	}
+
+	public void setUDFData(String boName, UserDefinedFields fields)
+	{
+		if (!udfBoNames.contains(boName.toUpperCase()))
+		{
+			udfBoNames.add(boName.toUpperCase());
+		}
+		String udfKey = boName.toUpperCase() + CommonConstants.CUSTOM_PROP;
+		udfStateData.put(udfKey, fields);
+	}
+
+	public bf.com.misys.eqf.types.header.SearchRsHeader getF_OUT_OutputSearchHeader()
+	{
+		return f_OUT_OutputSearchHeader;
+	}
+
+	public void setF_OUT_OutputSearchHeader(bf.com.misys.eqf.types.header.SearchRsHeader param)
+	{
+		f_OUT_OutputSearchHeader = param;
+	}
+
+	public Map getOutDataMap()
+	{
+		Map dataOutMap = new HashMap();
+		dataOutMap.put(OUT_OutputSearchData, f_OUT_OutputSearchData);
+		dataOutMap.put(CommonConstants.ACTIVITYSTEP_UDF_BONAMES, udfBoNames);
+		dataOutMap.put(CommonConstants.ACTIVITYSTEP_UDF_STATE_DATA, udfStateData);
+		dataOutMap.put(OUT_OutputSearchHeader, f_OUT_OutputSearchHeader);
+		return dataOutMap;
+	}
+}

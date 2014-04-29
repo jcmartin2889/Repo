@@ -1,0 +1,93 @@
+package com.misys.equation.function.test.run;
+
+import com.ibm.as400.access.AS400BidiTransform;
+import com.misys.equation.common.files.JournalHeader;
+import com.misys.equation.common.utilities.Toolbox;
+import com.misys.equation.function.beans.FunctionData;
+import com.misys.equation.function.runtime.FunctionHandler;
+
+// Via API
+public class FunctionHandlerStub04HCX7Arabic extends FunctionHandlerStubTestCase
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	public FunctionHandlerStub04HCX7Arabic()
+	{
+		try
+		{
+			setUp();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] inputParameters)
+	{
+		FunctionHandlerStub04HCX7Arabic test = new FunctionHandlerStub04HCX7Arabic();
+		test.test();
+	}
+
+	public boolean test()
+	{
+		// Have a bash...
+		FunctionHandler functionHandler2 = null;
+		try
+		{
+			// Maintain XX4
+			System.out.println("--------------------------- 2");
+			functionHandler2 = FunctionToolboxStub.getFunctionHandler(user, "SESSIONID", "");
+			functionHandler2.doNewTransaction("HCX", "");
+			FunctionData functionData2 = functionHandler2.getFhd().getScreenSetHandler().rtvScrnSetCurrent().getFunctionData();
+			functionData2.chgFieldInputValue("HLD", "AR9");
+			functionHandler2.applyRetrieveTransaction();
+
+			// String sourceStr = "ش ي ل ب ل ا ";
+			String sourceStr = "شيستبثصخهعقلبتمؤلاقفششتتتشيش";
+			// String sourceStr = "ABC ش ي ل &45ب ل  DEF";
+			// String sourceStr = "我们的yi";
+
+			AS400BidiTransform abt = new AS400BidiTransform(session.getCcsid());
+			// abt.setJavaStringType(BidiStringType.ST5);
+			String description = abt.toAS400Layout(sourceStr);
+
+			functionData2.chgFieldInputValue("DSC", description);
+			functionHandler2.applyTransaction();
+
+			Toolbox.printList(functionHandler2.print());
+			FunctionToolboxStub.printMessages(functionHandler2.rtvFunctionMessages().getMessages());
+
+			JournalHeader journalHeader = functionHandler2.getFhd().getJournalHeader();
+			if (journalHeader != null)
+			{
+				System.out.println("Journal 2=" + journalHeader);
+			}
+			else
+			{
+				System.out.println("Journal 2=" + "ERROR");
+			}
+
+			return (journalHeader != null);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+		finally
+		{
+			cleanUp();
+		}
+	}
+
+	public void testStub04HCX2Maint_001()
+	{
+		FunctionHandlerStub04HCX7Arabic stub = new FunctionHandlerStub04HCX7Arabic();
+		boolean success = stub.test();
+		assertEquals(true, success);
+	}
+
+}

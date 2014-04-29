@@ -1,0 +1,267 @@
+package com.misys.equation.common.dao.beans;
+
+/**
+ * @author eranag1
+ */
+public class C1RecordDataModel extends AbsRecord
+{
+	//This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private static final long serialVersionUID = 1L;
+	private final static String RECORD_NAME = "C1PF";
+
+	private String dateLastMaintainedDay; // C1DLMD
+	private String dateLastMaintainedMonth; // C1DLMM
+	private String dateLastMaintainedYear; // C1DLMY
+	private String illegalMaintenanceIndicator; // C1ILM
+	private String narrativeType; // C1KCD
+	private String languageName; // C1LAN
+	private String languageNumber; // C1LGN
+	private String isMaintenanceIllegalOnThisField; // C1MIL
+	private String updateLevelNumber; // C1ULV
+	private String languageMnemonic; // C1LNM
+	private String rightToLeftTextOrientation; // C1YRTL
+
+	/**
+	 * Default constructor
+	 */
+	public C1RecordDataModel()
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+
+	}
+
+	// ---getters and setters----//
+
+	/**
+	 * Return the date last maintained day
+	 * 
+	 * @return date last maintained day
+	 */
+	public String getDateLastMaintainedDay()
+	{
+		return dateLastMaintainedDay;
+	}
+
+	/**
+	 * Set the date last maintained day
+	 * 
+	 * @param dateLastMaintainedDay
+	 *            - the date last maintained day
+	 */
+	public void setDateLastMaintainedDay(String dateLastMaintainedDay)
+	{
+		this.dateLastMaintainedDay = dateLastMaintainedDay;
+	}
+
+	/**
+	 * Return the date last maintained month
+	 * 
+	 * @return date last maintained month
+	 */
+	public String getDateLastMaintainedMonth()
+	{
+		return dateLastMaintainedMonth;
+	}
+
+	/**
+	 * Set the date last maintained month
+	 * 
+	 * @param dateLastMaintainedMonth
+	 *            - the date last maintained month
+	 */
+	public void setDateLastMaintainedMonth(String dateLastMaintainedMonth)
+	{
+		this.dateLastMaintainedMonth = dateLastMaintainedMonth;
+	}
+
+	/**
+	 * Return the date last maintained year
+	 * 
+	 * @return date last maintained year
+	 */
+	public String getDateLastMaintainedYear()
+	{
+		return dateLastMaintainedYear;
+	}
+
+	/**
+	 * Set the date last maintained year
+	 * 
+	 * @param dateLastMaintainedYear
+	 *            - the date last maintained year
+	 */
+	public void setDateLastMaintainedYear(String dateLastMaintainedYear)
+	{
+		this.dateLastMaintainedYear = dateLastMaintainedYear;
+	}
+
+	/**
+	 * Return the illegal maintenance indicator
+	 * 
+	 * @return the illegal maintenance indicator
+	 */
+	public String getIllegalMaintenanceIndicator()
+	{
+		return illegalMaintenanceIndicator;
+	}
+
+	/**
+	 * Set the illegal maintenance indicator
+	 * 
+	 * @param illegalMaintenanceIndicator
+	 *            - the illegal maintenance indicator
+	 */
+	public void setIllegalMaintenanceIndicator(String illegalMaintenanceIndicator)
+	{
+		this.illegalMaintenanceIndicator = illegalMaintenanceIndicator;
+	}
+
+	/**
+	 * Return the narrative type
+	 * 
+	 * @return the narrative type
+	 */
+	public String getNarrativeType()
+	{
+		return narrativeType;
+	}
+
+	/**
+	 * Set the narrative type
+	 * 
+	 * @param narrativeType
+	 *            - the narrative type
+	 */
+	public void setNarrativeType(String narrativeType)
+	{
+		this.narrativeType = narrativeType;
+	}
+
+	/**
+	 * Return the language name
+	 * 
+	 * @return the language name
+	 */
+	public String getLanguageName()
+	{
+		return languageName;
+	}
+
+	/**
+	 * Set the language name
+	 * 
+	 * @param languageName
+	 *            - the language name
+	 */
+	public void setLanguageName(String languageName)
+	{
+		this.languageName = languageName;
+	}
+
+	/**
+	 * Return the language number
+	 * 
+	 * @return the language number
+	 */
+	public String getLanguageNumber()
+	{
+		return languageNumber;
+	}
+
+	/**
+	 * Set the language number
+	 * 
+	 * @param languageNumber
+	 *            - the language number
+	 */
+	public void setLanguageNumber(String languageNumber)
+	{
+		this.languageNumber = languageNumber;
+	}
+
+	/**
+	 * Return the maintenance illegal on this field indicator
+	 * 
+	 * @return the maintenance illegal on this field indicator
+	 */
+	public String getIsMaintenanceIllegalOnThisField()
+	{
+		return isMaintenanceIllegalOnThisField;
+	}
+
+	/**
+	 * Set the maintenance illegal on this field indicator
+	 * 
+	 * @param isMaintenanceIllegalOnThisField
+	 *            - the maintenance illegal on this field indicator
+	 */
+	public void setIsMaintenanceIllegalOnThisField(String isMaintenanceIllegalOnThisField)
+	{
+		this.isMaintenanceIllegalOnThisField = isMaintenanceIllegalOnThisField;
+	}
+
+	/**
+	 * Return the update level number
+	 * 
+	 * @return the update level number
+	 */
+	public String getUpdateLevelNumber()
+	{
+		return updateLevelNumber;
+	}
+
+	/**
+	 * Set the update level number
+	 * 
+	 * @param updateLevelNumber
+	 *            - the update level number
+	 */
+	public void setUpdateLevelNumber(String updateLevelNumber)
+	{
+		this.updateLevelNumber = updateLevelNumber;
+	}
+
+	/**
+	 * Return the language mnemonic
+	 * 
+	 * @return the language mnemonic
+	 */
+	public String getLanguageMnemonic()
+	{
+		return languageMnemonic;
+	}
+
+	/**
+	 * Set the language mnemonic
+	 * 
+	 * @param languageMnemonic
+	 *            - the language mnemonic
+	 */
+	public void setLanguageMnemonic(String languageMnemonic)
+	{
+		this.languageMnemonic = languageMnemonic;
+	}
+
+	/**
+	 * Return the right to left text orientation indicator
+	 * 
+	 * @return the right to left text orientation indicator
+	 */
+	public String getRightToLeftTextOrientation()
+	{
+		return rightToLeftTextOrientation;
+	}
+
+	/**
+	 * Set the right to left text orientation indicator
+	 * 
+	 * @param rightToLeftTextOrientation
+	 *            - the right to left text orientation indicator
+	 */
+	public void setRightToLeftTextOrientation(String rightToLeftTextOrientation)
+	{
+		this.rightToLeftTextOrientation = rightToLeftTextOrientation;
+	}
+}

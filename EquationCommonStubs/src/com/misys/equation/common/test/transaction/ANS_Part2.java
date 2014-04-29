@@ -1,0 +1,137 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseMaintain;
+
+/**
+ * Equation test cases for Authorise Net Settlements Summary
+ */
+public class ANS_Part2 extends EquationTestCaseMaintain
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: ANS_Part2.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	String programName = "N24MRR";
+	String optionId = "ANS";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZCUS", "ATLANT"); // Customer mnemonic (6A)
+		transaction.setFieldValue("GZCLC", "IND"); // Customer location (3A)
+		transaction.setFieldValue("GZSDTE", "1000105"); // Settlement date (7S,0)
+		transaction.setFieldValue("GZCCY1", "GOP"); // Currency 1 (3A)
+		transaction.setFieldValue("GZCCY2", ""); // Currency 2 (3A)
+		transaction.setFieldValue("GZLVL", "35"); // Group reference level (2S,0)
+
+		transaction.setFieldValue("GZBRNM", "LOND"); // Branch mnemonic (4A)
+		transaction.setFieldValue("GZDLP", "XNT"); // Deal type (3A)
+		transaction.setFieldValue("GZDLR", "0001050067GOP"); // Deal reference (13A)
+	}
+
+	/**
+	 * Setup an existing key fields
+	 */
+	@Override
+	public void setupExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZCUS", "ATLANT"); // Customer mnemonic (6A)
+		transaction.setFieldValue("GZCLC", "IND"); // Customer location (3A)
+		transaction.setFieldValue("GZSDTE", "1000105"); // Settlement date (7S,0)
+		transaction.setFieldValue("GZCCY1", "GBP"); // Currency 1 (3A)
+		transaction.setFieldValue("GZCCY2", ""); // Currency 2 (3A)
+		transaction.setFieldValue("GZLVL", "35"); // Group reference level (2S,0)
+
+		// ANS_Part1 auto-generates the reference, so below data were just hard-coded
+		// to test the maintain.
+		transaction.setFieldValue("GZBRNM", "LOND"); // Branch mnemonic (4A)
+		transaction.setFieldValue("GZDLP", "XNT"); // Deal type (3A)
+		transaction.setFieldValue("GZDLR", "0001050067GBP"); // Deal reference (13A)
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	@Override
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZSTYP", "A"); // Settlement type (1A)
+		transaction.setFieldValue("GZSTS", "S"); // Settlement status (1A)
+		transaction.setFieldValue("GZADHC", "Y"); // Ad-hoc netting group? (1A)
+		transaction.setFieldValue("GZAMT1", "200000000"); // Amount in currency 1 (15P,0)
+		transaction.setFieldValue("GZTND", "1"); // Total no. of deals in a group (3S,0)
+		transaction.setFieldValue("GZLUSR", "BIAN"); // Last user to modify (4A)
+		transaction.setFieldValue("GZDLM", "1000105"); // Date last maintained (7S,0)
+		transaction.setFieldValue("GZCONR", "N"); // Confirmation needed? (1A)
+		transaction.setFieldValue("GZCONP", "N"); // Confirmation produced? (1A)
+	}
+
+	/**
+	 * Skip the following. N24MRR dumps when checking for non-existing records.
+	 */
+	@Override
+	public void test00100Maint_Validate_NonExistingRecord() throws Exception
+	{
+	}
+	@Override
+	public void test00200Maint_Retrieval_NonExistingRecord() throws Exception
+	{
+	}
+	@Override
+	public void test00300Maint_NonExistingRecord() throws Exception
+	{
+	}
+
+	/**
+	 * Skip the following. Retrieval won't work since the validate module does not populate DSAFT which will be moved to DSAVL,
+	 * which will be returned to the recovery module.
+	 */
+	@Override
+	public void test00400Maint_Retrieval_ExistingRecord() throws Exception
+	{
+	}
+	@Override
+	public void test00700Maint_RetrievalMaintain_ExistingRecord() throws Exception
+	{
+	}
+}

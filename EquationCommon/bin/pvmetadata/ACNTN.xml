@@ -1,0 +1,66 @@
+<EquationPVMetaData PFile="SC10LF" description="ACNTN" id="ACNTN" globalConsolidatedPrompt="true" globalLibraryPrompt="false"  label="ACN" packageName="com.misys.pvs">
+  <databaseXref/>
+  <decodeMetaData>
+    <decodeMetaData decode=" " description="Default Decode" index="0" length="44" pFile="SC10LF" sqlFrom="SC10LF LEFT JOIN NE10LF ON SCAB=NEAB AND NEAN=SCAN AND NEAS=SCAS">
+      <keyFields>
+        <keyField>SCAB</keyField>
+        <keyField>SCAN</keyField>
+        <keyField>SCAS</keyField>
+      </keyFields>
+      <pvFields>
+        <pvField>SCAB</pvField>
+        <pvField>SCAN</pvField>
+        <pvField>SCAS</pvField>
+      </pvFields>
+    </decodeMetaData>
+  </decodeMetaData>
+  <fieldMetaData>
+    <fieldMetaData alpha="false" composite="false" decimal="0" description="System" header="System" id="SYSTEM" index="0" key="false" length="8" numericField="false" packed="false" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" decimal="0" description="Unit" header="Unit" id="UNIT" index="8" key="false" label="UNIT" length="3" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" decimal="0" description="Unit Description" header="Unit Description" id="UNITDESC" index="11" key="false" label="Unit Description" length="20" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="SCAB" decimal="0" description="Account branch" header="Account branch" id="SCAB" index="31" key="true" length="4" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="SCAN" decimal="0" description="Account number" header="Account number" id="SCAN" index="35" key="true" length="6" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="SCAS" decimal="0" description="Account suffix" header="Account suffix" id="SCAS" index="41" key="true" length="3" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="NEEAN" decimal="0" description="External account number" header="External account number" id="NEEAN" index="44" key="false" length="20" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="NEIBAN" decimal="0" description="International bank account number" header="International bank account number" id="NEIBAN" index="64" key="false" length="34" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="SCCTP" decimal="0" description="Customer Type" header="Customer Type" id="SCCTP" index="98" key="false" label="SCCTP" length="2" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="SCACT" decimal="0" description="A/c type" header="A/c type" id="SCACT" index="100" key="false" length="2" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="SCCCY" decimal="0" description="Currency mnemonic" header="Currency" id="SCCCY" index="102" key="false" length="3" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="SCSHN" decimal="0" description="Account short name" header="Account short name" id="SCSHN" index="105" key="false" length="15" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="NEAB" decimal="0" description="Account branch" header="Account branch" id="NEAB" index="120" key="true" length="4" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="NEAN" decimal="0" description="Basic part of account number" header="Basic part of account number" id="NEAN" index="124" key="true" length="6" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="NEAS" decimal="0" description="Account suffix" header="Account suffix" id="NEAS" index="130" key="true" length="3" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+  </fieldMetaData>
+  <hdrNames>
+  	<hdrName>SYSTEM</hdrName>
+    <hdrName>UNIT</hdrName>
+    <hdrName>UNITDESC</hdrName>
+    <hdrName>SCAB</hdrName>
+    <hdrName>SCAN</hdrName>
+    <hdrName>SCAS</hdrName>
+    <hdrName>SCCCY</hdrName>
+    <hdrName>SCSHN</hdrName>
+    <hdrName>SCACT</hdrName>    
+    <hdrName>NEEAN</hdrName>
+    <hdrName>NEIBAN</hdrName>
+  </hdrNames>
+  <hdrPositions>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+  </hdrPositions>
+  <pvDvals>
+    <pvDval>SCAB</pvDval>
+  </pvDvals>
+  <pvOvals>
+    <pvOval>SCAB</pvOval>
+  </pvOvals>
+</EquationPVMetaData>

@@ -1,0 +1,193 @@
+package com.misys.equation.common.access;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.misys.equation.common.utilities.EqDataType;
+import com.misys.equation.common.utilities.Toolbox;
+
+public class EquationStandardMultipleValidation
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private final List<EquationStandardValidation> equationStandardValidations;
+
+	/**
+	 * Construct an empty PV validator
+	 */
+	public EquationStandardMultipleValidation()
+	{
+		this.equationStandardValidations = new ArrayList<EquationStandardValidation>();
+	}
+
+	/**
+	 * Add to the list via Equation PV Data
+	 * 
+	 * @param decode
+	 *            - decode of the P/V module
+	 * @param service
+	 *            - P/V program name
+	 * @param equationPVData
+	 *            - input data in Equation PV Data format
+	 * @param blankAllowed
+	 *            - Y - if blank is allowed <br>
+	 *            N - if blank is not allowed
+	 * @param newCode
+	 *            - Y - if the key must not be existing <br>
+	 *            N - if the key must be existing <br>
+	 *            blank - the key may or may not be existing
+	 */
+	public void add(String decode, String service, EquationPVData equationPVData, String blankAllowed, String newCode)
+	{
+		EquationStandardValidation equationStandardValidation = new EquationStandardValidation(decode, service, equationPVData,
+						blankAllowed, newCode);
+		add(equationStandardValidation);
+	}
+
+	/**
+	 * Add to the list via DSCCN
+	 * 
+	 * @param decode
+	 *            - decode of the P/V module
+	 * @param service
+	 *            - P/V program name
+	 * @param dataInput
+	 *            - input data in DSCCN format
+	 * @param blankAllowed
+	 *            - Y - if blank is allowed <br>
+	 *            N - if blank is not allowed
+	 * @param newCode
+	 *            - Y - if the key must not be existing <br>
+	 *            N - if the key must be existing <br>
+	 *            blank - the key may or may not be existing
+	 */
+	public void add(String decode, String service, String dataInput, String blankAllowed, String newCode)
+	{
+		EquationStandardValidation equationStandardValidation = new EquationStandardValidation(decode, service, dataInput,
+						blankAllowed, newCode);
+		add(equationStandardValidation);
+	}
+
+	/**
+	 * Add to the list via Equation Standard Validation
+	 * 
+	 * @param equationStandardValidation
+	 *            - the Equation Standard Validation
+	 */
+	public void add(EquationStandardValidation equationStandardValidation)
+	{
+		equationStandardValidations.add(equationStandardValidation);
+	}
+
+	/**
+	 * Return the list of Equation Standard Validations
+	 * 
+	 * @return the list of Equation Standard Validations
+	 */
+	public List<EquationStandardValidation> getEquationStandardValidations()
+	{
+		return equationStandardValidations;
+	}
+
+	/**
+	 * Clear the list of validations
+	 */
+	public void clear()
+	{
+		equationStandardValidations.clear();
+	}
+
+	/**
+	 * Return the data in the format required by UTW61R
+	 * 
+	 * @return the data in the format required by UTW61R
+	 */
+	public String getData()
+	{
+		StringBuilder buffer = new StringBuilder();
+		for (EquationStandardValidation equationStandardValidation : equationStandardValidations)
+		{
+			buffer.append(Toolbox.pad(equationStandardValidation.getId(), 10));
+			buffer.append(Toolbox.pad(equationStandardValidation.getDecode(), 1));
+			buffer.append(Toolbox.pad(equationStandardValidation.getBlankAllowed(), 1));
+			buffer.append(Toolbox.pad(equationStandardValidation.getNewCode(), 1));
+			buffer.append(Toolbox.pad(equationStandardValidation.getSecurity(), 1));
+			buffer.append(EqDataType.GLOBAL_DELIMETER);
+			buffer.append(equationStandardValidation.getDataInput());
+			buffer.append(EqDataType.GLOBAL_DELIMETER);
+		}
+		return buffer.toString();
+	}
+
+	/**
+	 * Set the data in the format returned by UTW61R
+	 * 
+	 * @param data
+	 *            - the data returned by UTW61R in bytes
+	 */
+	public void setData(byte[] fullDataOutput, int ccsid)
+	{
+		// Divide the fullDataOutput into DSCCN segments separated by delimiter
+		int startPos = 0;
+		int dsccnCount = 0;
+
+		for (int i = 0; i <= fullDataOutput.length; i++)
+		{
+			// check if we have hit a delimiter
+			if ((i < fullDataOutput.length - 2 && fullDataOutput[i] == 90 && fullDataOutput[i + 1] == 122 && fullDataOutput[i + 2] == 90)
+							|| i == fullDataOutput.length)
+			{
+				// process a dsccn segment
+				EquationStandardValidation equationStandardValidation = equationStandardValidations.get(dsccnCount);
+				int dsccnLength = equationStandardValidation.getEquationPVData().getPvMetaData().rtvDSCCNLength(i - startPos);
+
+				equationStandardValidation.setDataOutput(spliAndPadByteArray(fullDataOutput, startPos, i - 1, dsccnLength,
+								(new byte[] { 64 })[0]));
+
+				// prepare for next dsccn segment
+				dsccnCount++;
+				startPos = i + 3;
+				i = i + 2;
+			}
+		}
+
+	}
+	/*******************************************************************************************************************************
+	 * Helper method to pad byte array with a specific byte.
+	 * <P>
+	 * Returns a byte array.
+	 * <P>
+	 * 
+	 * @param bytes
+	 *            the original byte array to be padded
+	 * @param startPos
+	 *            the position in the byte array where to start the copy
+	 * @param endPos
+	 *            the position in the byte array where to end the copy
+	 * @param numBytes
+	 *            the length of the byte array required
+	 * @param padByte
+	 *            the byte to be used in filling the byte array where the desired length is longer than the number of characters
+	 *            between start and end positions
+	 * @return a byte array of length numBytes with original byte array padded with padByte. All bytes = 0 will be replaced with
+	 *         padByte.
+	 */
+	public static byte[] spliAndPadByteArray(byte[] bytes, int startPos, int endPos, int numBytes, byte padByte)
+	{
+		byte[] newBytes = new byte[numBytes];
+		int length = endPos - startPos + 1;
+		for (int i = 0; (i < numBytes); i++)
+		{
+			if (i < length)
+			{
+				newBytes[i] = bytes[i + startPos];
+			}
+			else
+			{
+				newBytes[i] = padByte;
+			}
+		}
+		return newBytes;
+	}
+
+}

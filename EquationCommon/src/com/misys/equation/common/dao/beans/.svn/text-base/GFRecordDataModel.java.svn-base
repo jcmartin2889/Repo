@@ -1,0 +1,168 @@
+package com.misys.equation.common.dao.beans;
+
+import com.misys.equation.common.search.results.CustomerSearchResult;
+import com.misys.equation.common.search.results.ISearchResult;
+
+/**
+ * This is the data model representing the customers logical table (GF03LF).
+ * 
+ * @author camillen
+ * 
+ */
+public class GFRecordDataModel extends SearchResultDataModel
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	/**
+	 * Unique serialID
+	 */
+	private static final long serialVersionUID = 4604371827975683969L;
+	private static final String RECORD_NAME = "GF03LF";
+
+	private String customerMnemonic; // GFCUS
+	private String customerLocation; // GFCLC
+	private String customerFullName; // GFCUN
+	private String customerNumber; // GFCPNC
+	private String customerShortName; // GFDAS
+
+	/**
+	 * Default constructor
+	 */
+	public GFRecordDataModel()
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+	}
+
+	/**
+	 * Parameterised constructor
+	 * 
+	 * @param customerMnemonic
+	 * @param customerLocation
+	 * @param customerFullName
+	 * @param customerShortName
+	 * @param customerNumber
+	 */
+	public GFRecordDataModel(String customerMnemonic, String customerLocation, String customerFullName, String customerShortName,
+					String customerNumber)
+	{
+		this();
+		this.customerMnemonic = customerMnemonic;
+		this.customerLocation = customerLocation;
+		this.customerFullName = customerFullName;
+		this.customerShortName = customerShortName;
+		this.customerNumber = customerNumber;
+	}
+
+	/**
+	 * Getter method for customerMnemonic
+	 * 
+	 * @return customerMnemonic - String
+	 */
+	public String getCustomerMnemonic()
+	{
+		return customerMnemonic;
+	}
+
+	/**
+	 * Setter method for customerMnemonic
+	 * 
+	 * @param customerMnemonic
+	 *            - String
+	 */
+	public void setCustomerMnemonic(String customerMnemonic)
+	{
+		this.customerMnemonic = customerMnemonic;
+	}
+
+	/**
+	 * Getter method for customerLocation
+	 * 
+	 * @return customerLocation - String
+	 */
+	public String getCustomerLocation()
+	{
+		return customerLocation;
+	}
+
+	/**
+	 * Setter method for customerLocation
+	 * 
+	 * @param customerLocation
+	 *            - String
+	 */
+	public void setCustomerLocation(String customerLocation)
+	{
+		this.customerLocation = customerLocation;
+	}
+
+	/**
+	 * Getter method for customerFullName
+	 * 
+	 * @return customerFullName - String
+	 */
+	public String getCustomerFullName()
+	{
+		return customerFullName;
+	}
+
+	/**
+	 * Setter method for customerFullName
+	 * 
+	 * @param customerFullName
+	 *            - String
+	 */
+	public void setCustomerFullName(String customerFullName)
+	{
+		this.customerFullName = customerFullName;
+	}
+
+	/**
+	 * Getter method for customerShortName
+	 * 
+	 * @return customerShortName - String
+	 */
+	public String getCustomerShortName()
+	{
+		return customerShortName;
+	}
+
+	/**
+	 * Setter method for customerShortName
+	 * 
+	 * @param customerShortName
+	 *            - String
+	 */
+	public void setCustomerShortName(String customerShortName)
+	{
+		this.customerShortName = customerShortName;
+	}
+
+	/**
+	 * Getter method for customerNumber
+	 * 
+	 * @return customerNumber - String
+	 */
+	public String getCustomerNumber()
+	{
+		return customerNumber;
+	}
+
+	/**
+	 * Setter method for customerNumber
+	 * 
+	 * @param customerNumber
+	 *            - String
+	 */
+	public void setCustomerNumber(String customerNumber)
+	{
+		this.customerNumber = customerNumber;
+	}
+
+	@Override
+	public ISearchResult populateFromDataModel(AbsRecord dataModel, final String unit, final String system)
+	{
+		return new CustomerSearchResult(customerMnemonic, customerLocation, customerNumber, customerFullName, unit, system, null);
+	}
+
+}

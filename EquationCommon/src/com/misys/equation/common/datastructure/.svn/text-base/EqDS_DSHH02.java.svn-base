@@ -1,0 +1,52 @@
+package com.misys.equation.common.datastructure;
+
+import com.misys.equation.common.access.EquationDataStructure;
+import com.misys.equation.common.utilities.Toolbox;
+
+public class EqDS_DSHH02 extends EquationDataStructure
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	private static final long serialVersionUID = 1L;
+
+	// Field names
+	public final static String HCON = "HCON";
+	public final static String HCNA = "HCNA";
+	public final static String HGRP = "HGRP";
+	public final static String HCUS = "HCUS";
+	public final static String HCLC = "HCLC";
+	public final static String HLC = "HLC";
+	public final static String HCCY = "HCCY";
+	public final static String HXPD = "HXPD";
+	public final static String HRAM = "HRAM";
+	public final static String HAMA = "HAMA";
+	public final static String HAAM = "HAAM";
+	public final static String HERR = "HERR";
+
+	/**
+	 * Constructor to create the DSHH02 data structure
+	 */
+	public EqDS_DSHH02()
+	{
+		super("DSHH02", Toolbox.DEF_CCSID);
+
+		// create the DS
+		createCharacterField(HCON, "Error store control", 1 - 1, 1);
+		createCharacterField(HCNA, "Country", 2 - 1, 2);
+		createCharacterField(HGRP, "Group", 4 - 1, 6);
+		createCharacterField(HCUS, "Customer mnemonic", 10 - 1, 6);
+		createCharacterField(HCLC, "Customer location", 16 - 1, 3);
+		createCharacterField(HLC, "Limit category", 19 - 1, 5);
+		createCharacterField(HCCY, "Currency", 24 - 1, 3);
+		createZonedField(HXPD, "Earlier expiry date", 27 - 1, 7, 0);
+		createPackedField(HRAM, "Risk amount", 34 - 1, 17, 0);
+		createPackedField(HAMA, "Limit amount", 43 - 1, 15, 0);
+		createPackedField(HAAM, "Available amount", 51 - 1, 17, 0);
+		createCharacterField(HERR, "Error", 60 - 1, 37);
+
+		// final setup
+		initialDefaultValue();
+	}
+
+}

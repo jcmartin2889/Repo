@@ -1,0 +1,543 @@
+package com.misys.equation.function.beans;
+
+import java.math.BigDecimal;
+
+import javax.swing.text.MaskFormatter;
+
+import com.misys.equation.common.utilities.EqDataType;
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * This class represents the run time data of a field
+ * 
+ */
+public class FieldData extends FieldValues
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: FieldData.java 10420 2011-02-03 12:22:26Z MACDONP1 $";
+
+	// field name
+	private String fieldName;
+
+	// field data type;
+	private String fieldType;
+	private int fieldLength;
+	private int fieldDecimal;
+	private String editCode;
+	private String editCodeParameter;
+	private int extendedAttribute;
+
+	// properties
+	private boolean upperCase; // automatically convert to upper case
+	private boolean defaultLocked; // this determine whether the field has been initially locked by the system
+	private boolean workField; // work field?
+
+	/**
+	 * Construct a default unnamed field data
+	 * 
+	 */
+	public FieldData()
+	{
+		super();
+		commonInitialisation();
+	}
+
+	/**
+	 * Construct a default named type field data
+	 * 
+	 * @param fieldName
+	 *            - field name
+	 * @param fieldType
+	 *            - field type
+	 * @param fieldLength
+	 *            - field length
+	 * @param fieldDecimal
+	 *            - field decimal
+	 */
+	public FieldData(String fieldName, String fieldType, int fieldLength, int fieldDecimal)
+	{
+		super();
+		commonInitialisation();
+		this.fieldName = fieldName;
+		this.fieldType = fieldType;
+		this.fieldLength = fieldLength;
+		this.fieldDecimal = fieldDecimal;
+	}
+
+	/**
+	 * Construct a default named type field data with values
+	 * 
+	 * @param fieldName
+	 *            - field name
+	 * @param fieldType
+	 *            - field type
+	 * @param fieldLength
+	 *            - field length
+	 * @param fieldDecimal
+	 *            - field decimal
+	 * @param inputValue
+	 *            - field value in input format
+	 * @param dbValue
+	 *            - field value in database format
+	 * @param outputValue
+	 *            - field value in output format
+	 */
+	public FieldData(String fieldName, String fieldType, int fieldLength, int fieldDecimal, String inputValue, String dbValue,
+					String outputValue)
+	{
+		super();
+		commonInitialisation();
+		this.fieldName = fieldName;
+		this.fieldType = fieldType;
+		this.fieldLength = fieldLength;
+		this.fieldDecimal = fieldDecimal;
+
+		setInputValue(inputValue);
+		setDbValue(dbValue);
+		setOutputValue(outputValue);
+	}
+
+	/**
+	 * Construct a field data based on an existing data
+	 * 
+	 * @param fieldName
+	 *            - field name
+	 * @param fieldData
+	 *            - the source field data
+	 */
+	public FieldData(String fieldName, FieldData fieldData)
+	{
+		super(fieldData);
+		commonInitialisation();
+		this.fieldName = fieldName; // just field name, not from fieldData
+
+		this.fieldType = fieldData.fieldType;
+		this.fieldLength = fieldData.fieldLength;
+		this.fieldDecimal = fieldData.fieldDecimal;
+		this.editCode = fieldData.editCode;
+		this.editCodeParameter = fieldData.editCodeParameter;
+		this.extendedAttribute = fieldData.extendedAttribute;
+
+		this.upperCase = fieldData.upperCase;
+		this.defaultLocked = fieldData.defaultLocked;
+		this.workField = fieldData.workField;
+	}
+
+	/**
+	 * Construct a field based on an a field in the function
+	 * 
+	 * @param workField
+	 *            - A WorkField (may be an InputField)
+	 */
+	public FieldData(WorkField workField)
+	{
+		super();
+		commonInitialisation();
+		this.fieldName = workField.getId().toUpperCase();
+		this.fieldType = workField.getDataType();
+		this.fieldLength = Toolbox.parseInt(workField.getSize(), 0);
+		this.fieldDecimal = Toolbox.parseInt(workField.getDecimals(), 0);
+		if (workField instanceof InputField)
+		{
+			this.workField = false;
+			InputField inputField = (InputField) workField;
+			this.upperCase = inputField.isUpperCase();
+			this.extendedAttribute = inputField.getExtendedAttribute();
+		}
+		else
+		{
+			this.workField = true;
+		}
+	}
+
+	/**
+	 * Initialise default properties
+	 */
+	private void commonInitialisation()
+	{
+		this.fieldName = "";
+		this.fieldType = "";
+		this.fieldLength = 0;
+		this.fieldDecimal = 0;
+		this.editCode = "";
+		this.editCodeParameter = "";
+
+		this.upperCase = false;
+		this.defaultLocked = false;
+		this.workField = false;
+		this.extendedAttribute = 0;
+	}
+
+	/**
+	 * Set the field name
+	 * 
+	 * @param fieldName
+	 *            - field name
+	 */
+	public void setFieldName(String fieldName)
+	{
+		this.fieldName = fieldName;
+	}
+
+	/**
+	 * Return the field name
+	 * 
+	 * @return the field name
+	 */
+	public String getFieldName()
+	{
+		return fieldName;
+	}
+
+	/**
+	 * Set the field type
+	 * 
+	 * @param fieldType
+	 *            - field type
+	 */
+	public void setFieldType(String fieldType)
+	{
+		this.fieldType = fieldType;
+	}
+
+	/**
+	 * Return the field type
+	 * 
+	 * @return the field type
+	 */
+	public String getFieldType()
+	{
+		return fieldType;
+	}
+
+	/**
+	 * Set the number of decimal
+	 * 
+	 * @param fieldDecimal
+	 *            - number of decimal
+	 */
+	public void setFieldDecimal(int fieldDecimal)
+	{
+		this.fieldDecimal = fieldDecimal;
+	}
+
+	/**
+	 * Return the number of decimal
+	 * 
+	 * @return the number of decimal
+	 */
+	public int getFieldDecimal()
+	{
+		return fieldDecimal;
+	}
+
+	/**
+	 * Set the field length
+	 * 
+	 * @param fieldLength
+	 *            - field length
+	 */
+	public void setFieldLength(int fieldLength)
+	{
+		this.fieldLength = fieldLength;
+	}
+
+	/**
+	 * Return the field length
+	 * 
+	 * @return the field length
+	 */
+	public int getFieldLength()
+	{
+		return fieldLength;
+	}
+
+	/**
+	 * Determine if the field should be in upper case
+	 * 
+	 * @return true - if the field must be in upper case
+	 */
+	public boolean isUpperCase()
+	{
+		return upperCase;
+	}
+
+	/**
+	 * Set whether the field should be in upper case
+	 * 
+	 * @param upperCase
+	 *            - true - if the field must be in upper case
+	 */
+	public void setUpperCase(boolean upperCase)
+	{
+		this.upperCase = upperCase;
+	}
+
+	/**
+	 * Determine if the field has been defaulted by the system as cannot be changed
+	 * 
+	 * @return true if the field has been defaulted by the system as cannot be changed
+	 */
+	public boolean isDefaultLocked()
+	{
+		return defaultLocked;
+	}
+
+	/**
+	 * Set whether the field has been defaulted by the system as cannot be changed
+	 * 
+	 * @param systemLocked
+	 *            - true if the field has been defaulted by the system as cannot be changed
+	 */
+	public void setDefaultLocked(boolean systemLocked)
+	{
+		this.defaultLocked = systemLocked;
+	}
+
+	/**
+	 * Set the field input value
+	 * 
+	 * @param inputValue
+	 *            - field input value
+	 */
+	@Override
+	public void setInputValue(String inputValue)
+	{
+		// cannot be changed?
+		if (isLocked())
+		{
+			return;
+		}
+
+		// set value
+		super.setInputValue(convertIn(inputValue));
+	}
+
+	/**
+	 * Set the field DB value
+	 * 
+	 * @param dbValue
+	 *            - field DB value
+	 */
+	@Override
+	public void setDbValue(String dbValue)
+	{
+		// cannot be changed?
+		if (isLocked())
+		{
+			return;
+		}
+
+		// set value
+		super.setDbValue(convertIn(dbValue));
+	}
+
+	/**
+	 * Return the edited field output value
+	 * 
+	 * @param mask
+	 *            - the edit mask
+	 * @param edit
+	 *            - perform additional editing? E.g. for numbers, ensure there are correct number of decimal places and/or minus
+	 *            sign in front
+	 * 
+	 * @return the edited field output value
+	 */
+	public String rtvOutputMaskValue(FunctionData functionData, String mask, boolean edit)
+	{
+		String str = getOutputValue();
+
+		// further edit?
+		if (edit && EqDataType.isNumeric(fieldType))
+		{
+			str = Toolbox.reformatNumber1(str, fieldLength, fieldDecimal, functionData.getIntegerSeparator(),
+							functionData.getDecimalSeparator());
+		}
+
+		// no mask, defined then simply return the output value
+		if (mask.equals(""))
+		{
+			return str;
+		}
+
+		// if output value is blank, then use the input value
+		if (str.equals(""))
+		{
+			str = getInputValue();
+		}
+
+		// no string to edit
+		if (str.equals(""))
+		{
+			return "";
+		}
+
+		try
+		{
+			MaskFormatter mf = new MaskFormatter(mask);
+			mf.setValueContainsLiteralCharacters(false);
+			return mf.valueToString(str);
+		}
+		catch (Exception e)
+		{
+			return str;
+		}
+	}
+
+	/**
+	 * Return the String representation
+	 * 
+	 * @return the String representation
+	 */
+	@Override
+	public String toString()
+	{
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(fieldName + " :");
+		buffer.append(" " + super.toString());
+		buffer.append(" Typ=" + fieldLength + fieldType);
+		if (!EqDataType.isAlpha(fieldType))
+		{
+			buffer.append("," + fieldDecimal);
+		}
+		return buffer.toString();
+	}
+
+	/**
+	 * When setting any of the input/db value, convert the string based on the field data characteristics
+	 * 
+	 * @param value
+	 *            - the string value to convert
+	 * 
+	 * @return the converted string (input format)
+	 */
+	protected String convertIn(String value)
+	{
+		String newValue = Toolbox.trimr(value);
+
+		// numeric, then trim all spaces and remove leading spaces
+		if (EqDataType.isNumeric(fieldType))
+		{
+			newValue = Toolbox.removeLeadingZeroes(newValue.trim(), false);
+		}
+
+		// upper case?
+		if (upperCase)
+		{
+			newValue = newValue.toUpperCase();
+		}
+
+		// character field
+		if (EqDataType.isAlpha(fieldType))
+		{
+			newValue = Toolbox.trim(newValue, fieldLength);
+			newValue = Toolbox.trimr(newValue);
+		}
+
+		// return converted
+		return newValue;
+	}
+
+	/**
+	 * Determine if this is a work field
+	 * 
+	 * @return true if this is a work field
+	 */
+	public boolean isWorkField()
+	{
+		return workField;
+	}
+
+	/**
+	 * Set if this is a work field
+	 * 
+	 * @param workField
+	 *            - true if this a work field
+	 */
+	public void setWorkField(boolean workField)
+	{
+		this.workField = workField;
+	}
+
+	/**
+	 * Return the field value depending on the field type<br>
+	 * - For numeric, it is BigDecimal type<br>
+	 * - For date, it is GregorianCalendar type <br>
+	 * - For others, it is String type <br>
+	 * 
+	 * @return the object representing the value
+	 */
+	public Object rtvFieldValueAsRealType()
+	{
+		// Number, then return as BigDecimal
+		if (fieldType.equals(EqDataType.TYPE_ZONED) || fieldType.equals(EqDataType.TYPE_PACKED))
+		{
+			return Toolbox.parseBigDecimal(getDbValue(), new BigDecimal(0));
+		}
+
+		// Date, return as Date
+		else if (fieldType.equals(EqDataType.TYPE_DATE))
+		{
+			return Toolbox.parseEqDate(getDbValue());
+		}
+
+		// return as String
+		else
+		{
+			return getDbValue();
+		}
+	}
+
+	/**
+	 * Return the edit code
+	 * 
+	 * @return the edit code
+	 */
+	public String getEditCode()
+	{
+		return editCode;
+	}
+
+	/**
+	 * Set the edit code
+	 * 
+	 * @param editCode
+	 *            - the edit code
+	 */
+	public void setEditCode(String editCode)
+	{
+		this.editCode = editCode;
+	}
+
+	/**
+	 * Return the parameter for the edit code - see DisplayAttributes for description
+	 * 
+	 * @return the parameter for the edit code
+	 */
+	public String getEditCodeParameter()
+	{
+		return editCodeParameter;
+	}
+
+	/**
+	 * Set a parameter for the edit code - see DisplayAttributes for description
+	 * 
+	 * @param editCodeParameter
+	 *            - a parameter for the edit code
+	 */
+	public void setEditCodeParameter(String editCodeParameter)
+	{
+		this.editCodeParameter = editCodeParameter;
+	}
+
+	/**
+	 * Determine if input date format is 8 digit
+	 * 
+	 * @return true if input date format is 8 digit
+	 */
+	public boolean chkExtAttributeDate8()
+	{
+		return extendedAttribute == InputField.EXT_ATTRIB_DATE_INPUT8D;
+	}
+
+}

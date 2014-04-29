@@ -1,0 +1,50 @@
+package com.misys.equation.bankfusion.lrp.engine;
+
+import java.util.HashMap;
+
+import com.misys.equation.common.internal.eapi.core.EQException;
+
+/**
+ * The BFMFTaskEngine is concrete implementation of AbsBFTaskEngine to interact with BankFusion. This class is used when not running
+ * from inside a microflow - e.g. during refreshing of workload.
+ * 
+ * @author yzobdabu
+ */
+public class BFMFTaskEngine extends AbsBFTaskEngine implements ITaskEngine
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: BFMFTaskEngine.java 11954 2011-09-30 09:07:06Z rpatrici $";
+
+	/** The user locator */
+	private String userLocator = null;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param userLocator
+	 *            - the user locator
+	 * @param zone
+	 *            - the task zone
+	 */
+	public BFMFTaskEngine(String userLocator, String zone)
+	{
+		super(zone);
+		this.userLocator = userLocator;
+	}
+
+	/**
+	 * Call to microflow
+	 * 
+	 * @param microflowName
+	 *            - the microflow name
+	 * @param inputParms
+	 *            - the input parameters
+	 * 
+	 * @return the output parameters
+	 */
+	public HashMap<?, ?> callMicroflow(String microflowName, HashMap<?, ?> inputParms) throws EQException
+	{
+		return bfToolbox.callMicroflow(userLocator, microflowName, inputParms);
+	}
+
+}

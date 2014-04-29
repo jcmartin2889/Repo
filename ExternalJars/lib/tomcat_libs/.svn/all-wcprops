@@ -1,0 +1,107 @@
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/tomcat_libs
+END
+annotations-api.jar
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/tomcat_libs/annotations-api.jar
+END
+el-api.jar
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/tomcat_libs/el-api.jar
+END
+tomcat-i18n-es.jar
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/tomcat_libs/tomcat-i18n-es.jar
+END
+tomcat-i18n-fr.jar
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/tomcat_libs/tomcat-i18n-fr.jar
+END
+catalina.jar
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/tomcat_libs/catalina.jar
+END
+jasper-el.jar
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/tomcat_libs/jasper-el.jar
+END
+jasper.jar
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/tomcat_libs/jasper.jar
+END
+tomcat-coyote.jar
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/tomcat_libs/tomcat-coyote.jar
+END
+tomcat-juli.jar
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/tomcat_libs/tomcat-juli.jar
+END
+servlet-api.jar
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/tomcat_libs/servlet-api.jar
+END
+tomcat-i18n-ja.jar
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/tomcat_libs/tomcat-i18n-ja.jar
+END
+catalina-ant.jar
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/tomcat_libs/catalina-ant.jar
+END
+tomcat-dbcp.jar
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/tomcat_libs/tomcat-dbcp.jar
+END
+catalina-ha.jar
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/tomcat_libs/catalina-ha.jar
+END
+catalina-tribes.jar
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/tomcat_libs/catalina-tribes.jar
+END
+jsp-api.jar
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/tomcat_libs/jsp-api.jar
+END
+jasper-jdt.jar
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/tomcat_libs/jasper-jdt.jar
+END

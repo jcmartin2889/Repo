@@ -1,0 +1,77 @@
+package com.misys.equation.builder.javadoc;
+
+import com.sun.javadoc.ClassDoc;
+import com.sun.javadoc.PackageDoc;
+
+/**
+ * This encapsulates the PackageDoc instance into an EquationPackageDoc instance <br>
+ * in order to return only classes and methods for Equation Java <br>
+ * Documentation
+ * 
+ */
+public class EquationPackageDoc extends AbstractEquationPackageDoc
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EquationPackageDoc.java 11191 2011-06-14 10:22:56Z perkinj1 $";
+
+	/**
+	 * Constructor to accept a PackageDoc instance
+	 * 
+	 * @param classDoc
+	 *            - the class document to encapsulate
+	 */
+	public EquationPackageDoc(PackageDoc packageDoc)
+	{
+		super(packageDoc);
+	}
+
+	// Note:
+	// All of these classes have been overridden in order to return
+	// the Equation equivalent classes
+
+	public ClassDoc[] allClasses()
+	{
+		return JavaDocToolbox.filterAndConvertToEquationClassDoc(packageDoc.allClasses());
+	}
+
+	public ClassDoc[] allClasses(boolean flag)
+	{
+		return JavaDocToolbox.filterAndConvertToEquationClassDoc(packageDoc.allClasses(flag));
+	}
+
+	public ClassDoc[] enums()
+	{
+		return JavaDocToolbox.filterAndConvertToEquationClassDoc(packageDoc.enums());
+	}
+
+	public ClassDoc[] errors()
+	{
+		return JavaDocToolbox.filterAndConvertToEquationClassDoc(packageDoc.errors());
+	}
+
+	public ClassDoc[] exceptions()
+	{
+		return JavaDocToolbox.filterAndConvertToEquationClassDoc(packageDoc.exceptions());
+	}
+
+	public ClassDoc findClass(String s)
+	{
+		return JavaDocToolbox.convertToEquationClassDoc(packageDoc.findClass(s));
+	}
+
+	public ClassDoc[] interfaces()
+	{
+		return JavaDocToolbox.filterAndConvertToEquationClassDoc(packageDoc.interfaces());
+	}
+
+	public ClassDoc[] ordinaryClasses()
+	{
+		return JavaDocToolbox.filterAndConvertToEquationClassDoc(packageDoc.ordinaryClasses());
+	}
+
+	public int compareTo(Object o)
+	{
+		return packageDoc.name().compareTo(o.toString());
+	}
+
+}

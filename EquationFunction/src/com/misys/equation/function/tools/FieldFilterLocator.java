@@ -1,0 +1,256 @@
+package com.misys.equation.function.tools;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import com.misys.equation.function.beans.Field;
+import com.misys.equation.function.beans.Function;
+import com.misys.equation.function.beans.InputField;
+import com.misys.equation.function.beans.XSDStructure;
+import com.misys.equation.function.runtime.FunctionBankFusion;
+
+public class FieldFilterLocator
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: FieldFilterLocator.java 17190 2013-09-03 11:49:59Z Lima12 $";
+
+	/** Filter keyword to exclude everything */
+	public static final String KEYWORD_EXCLUDEALL = "none";
+
+	/** Excluded */
+	public static final int FILTERING_EXCLUDE = 0;
+
+	/** No filtering */
+	public static final int FILTERING_NONE = 1;
+
+	/** Exactly match the filtering */
+	public static final int FILTERING_MATCH = 2;
+
+	/** Match because this is inside a group that is included in the filter */
+	public static final int FILTERING_GROUP = 3;
+
+	/** Match because a subfield is included in the filtering */
+	public static final int FILTERING_SUBGROUP = 4;
+
+	/** The field filter. This is the list of fields to be included when converting the Function Data into the complex type */
+	private Set<String> fieldFilter = null;
+
+	/** Filter in String form */
+	private StringBuilder filtersAsString;
+
+	/**
+	 * Set and initialise the list of fields to be included in the complex type
+	 * 
+	 * @param filters
+	 *            - the list of fields to be included in the complex type
+	 * @param prefix
+	 *            - prefix to be added to the specified filters
+	 */
+	public void setFieldFilter(String[] filters, String prefix)
+	{
+		// assume no field filtering
+		fieldFilter = null;
+		filtersAsString = new StringBuilder();
+		if (filters == null)
+		{
+			return;
+		}
+		else if (filters.length == 0)
+		{
+			return;
+		}
+
+		// populate the field filter
+		fieldFilter = new HashSet<String>();
+
+		for (String filter : filters)
+		{
+			// only non-blanks filter
+			if (filter.trim().length() > 0)
+			{
+				fieldFilter.add(prefix + filter);
+				filtersAsString.append(filter);
+			}
+		}
+
+		// no filter?
+		if (fieldFilter.size() == 0)
+		{
+			fieldFilter = null;
+		}
+	}
+
+	/**
+	 * Add additional filter field
+	 * 
+	 * @param str
+	 *            - the Xpath
+	 */
+	public void addFilterField(String filter)
+	{
+		// initialise, if not yet initialise
+		if (fieldFilter == null)
+		{
+			fieldFilter = new HashSet<String>();
+		}
+
+		fieldFilter.add(filter);
+	}
+
+	/**
+	 * Determine if the XSD is included in the filter (enhanced XSD).
+	 * 
+	 * Note this does not check if the field is part of a group that is included in the filter. Use the other method
+	 * isIncludedInFilter()
+	 * 
+	 * @param xsd
+	 *            - the XSD structure
+	 * 
+	 * @return a flag to determine whether the field is included or not, and the reason why it is included (see constant
+	 *         FILTERING_*)
+	 */
+	public int isIncludedInFilterPerf(XSDStructure xsd)
+	{
+		// field filter not set, then include all fields
+		if (fieldFilter == null)
+		{
+			return FILTERING_NONE;
+		}
+
+		// field?
+		if (fieldFilter.contains(xsd.rtvRuntimePath()))
+		{
+			return FILTERING_MATCH;
+		}
+
+		// group / repeating group - then check if at least one field is included in this group
+		if (xsd.chkGroup() || xsd.chkRepeatingGroup())
+		{
+			for (String filter : fieldFilter)
+			{
+				if (filter.startsWith(xsd.rtvRuntimePath()))
+				{
+					return FILTERING_SUBGROUP;
+				}
+			}
+		}
+
+		// not included
+		return FILTERING_EXCLUDE;
+	}
+
+	/**
+	 * Determine if the XSD is included in the filter (enhanced XSD)
+	 * 
+	 * @param xsd
+	 *            - the XSD structure
+	 * 
+	 * @return a flag to determine whether the field is included or not, and the reason why it is included (see constant
+	 *         FILTERING_*)
+	 */
+	public int isIncludedInFilter(XSDStructure xsd)
+	{
+		int filter = isIncludedInFilterPerf(xsd);
+
+		// already match a filter
+		if (filter != FILTERING_EXCLUDE)
+		{
+			return filter;
+		}
+
+		// is this part of a group that is included in the filter?
+		String[] parts = xsd.rtvRuntimePath().split("\\.");
+		String consolidatedString = null;
+		for (String part : parts)
+		{
+			if (consolidatedString == null)
+			{
+				consolidatedString = part;
+			}
+			else
+			{
+				consolidatedString += "." + part;
+			}
+
+			if (fieldFilter.contains(consolidatedString))
+			{
+				return FILTERING_GROUP;
+			}
+		}
+
+		// not included
+		return FILTERING_EXCLUDE;
+	}
+
+	/**
+	 * Determine if the XSD is included in the filter (Non-enhanced XSD)
+	 * 
+	 * @param webServiceName
+	 *            - the web service name
+	 * 
+	 * @return a flag to determine whether the field is included or not, and the reason why it is included (see constant
+	 *         FILTERING_*)
+	 */
+	public int isIncludedInFilter(InputField inputField)
+	{
+		// field filter not set, then include all fields
+		if (fieldFilter == null)
+		{
+			return FILTERING_NONE;
+		}
+
+		// is this field in the filter
+		String webServiceName = inputField.rtvWebServiceName(Function.XSD_DEFAULT);
+		if (fieldFilter.contains(webServiceName))
+		{
+			return FILTERING_MATCH;
+		}
+
+		// is this a repeating field, and the repeating group is specified in the filter?
+		if (Field.isRepeating(inputField))
+		{
+			String rowName = FunctionToolbox.UNDERSCORE + inputField.getRepeatingGroup() + FunctionBankFusion.BF_LIST_SUFFIX;
+			if (fieldFilter.contains(rowName))
+			{
+				return FILTERING_GROUP;
+			}
+		}
+
+		// note: FILTERING_SUBGROUP is not implemented for non-enhanced XSD as there is no concept of subgroup
+		// (aside from the repeating list)
+
+		// not included
+		return FILTERING_EXCLUDE;
+	}
+
+	/**
+	 * Clear filters
+	 */
+	public void clear()
+	{
+		fieldFilter = null;
+	}
+
+	/**
+	 * Return the list of filters as a String
+	 * 
+	 * @return the list of filters as a String
+	 */
+	public StringBuilder rtvFilters()
+	{
+		return filtersAsString;
+	}
+
+	/**
+	 * Determine if exclude all
+	 * 
+	 * @return true if exclude all
+	 */
+	public boolean isExcludeAll()
+	{
+		// only one filter, and it is none
+		return fieldFilter != null && fieldFilter.size() == 1 && fieldFilter.contains(KEYWORD_EXCLUDEALL);
+	}
+
+}

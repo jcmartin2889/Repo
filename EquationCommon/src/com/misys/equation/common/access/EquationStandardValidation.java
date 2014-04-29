@@ -1,0 +1,497 @@
+package com.misys.equation.common.access;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.misys.equation.common.internal.eapi.core.EQMessage;
+import com.misys.equation.common.utilities.DsccnToolbox;
+import com.misys.equation.common.utilities.EqDataType;
+import com.misys.equation.common.utilities.EquationPVMetaDataHelper;
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * This class provides methods for setting Equation validate fields before the validate is executed and for getting fields after the
+ * validate is executed - returning list data is not supported.
+ */
+public class EquationStandardValidation implements IEquationStandardObject
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EquationStandardValidation.java 15074 2012-12-18 18:54:59Z williae1 $";
+
+	private static final long serialVersionUID = 1L;
+
+	private String id;
+	private final String decode;
+	private final String service;
+	private String dataInput;
+	private String dataOutput;
+	private final String blankAllowed;
+	private final String newCode;
+	private String error;
+	private List<EQMessage> errorList;
+	protected transient EquationPVData equationPVData;
+	private String returnedNewCode;
+	private String security;
+
+	/**
+	 * Construct a new prompt and validate module that allows access to individual PV fields
+	 * 
+	 * @param decode
+	 *            - decode of the P/V module
+	 * @param service
+	 *            - P/V program name
+	 * @param equationPVData
+	 *            - input data in Equation PV Data format
+	 * @param blankAllowed
+	 *            - Y - if blank is allowed <br>
+	 *            N - if blank is not allowed
+	 * @param newCode
+	 *            - determine whether key must exists or not<br>
+	 *            Y - if the key must not be existing <br>
+	 *            N - if the key must be existing <br>
+	 *            blank - the key may or may not be existing
+	 * @equation.external
+	 */
+	public EquationStandardValidation(String decode, String service, EquationPVData equationPVData, String blankAllowed,
+					String newCode)
+	{
+		this.id = service;
+		this.decode = decode;
+		this.service = service;
+		this.blankAllowed = blankAllowed;
+		this.newCode = newCode;
+		this.errorList = new ArrayList<EQMessage>();
+		this.security = "";
+
+		// setup the data input
+		this.equationPVData = equationPVData;
+		this.dataInput = equationPVData.parseFieldsIntoDSCCN("N");
+	}
+
+	/**
+	 * Construct a new prompt and validate module that allows access to data via DSCNN format
+	 * 
+	 * @param decode
+	 *            - decode of the P/V module
+	 * @param service
+	 *            - P/V program name
+	 * @param dataInput
+	 *            - input data in DSCCN format
+	 * @param blankAllowed
+	 *            - Y - if blank is allowed <br>
+	 *            N - if blank is not allowed
+	 * @param newCode
+	 *            - Y - if the key must not be existing <br>
+	 *            N - if the key must be existing <br>
+	 *            blank - the key may or may not be existing
+	 * @equation.external
+	 */
+	public EquationStandardValidation(String decode, String service, String dataInput, String blankAllowed, String newCode)
+	{
+		this.id = service;
+		this.decode = decode;
+		this.service = service;
+		this.dataInput = dataInput;
+		this.blankAllowed = blankAllowed;
+		this.newCode = newCode;
+		this.equationPVData = null;
+		this.errorList = new ArrayList<EQMessage>();
+		this.security = "";
+		this.error = "";
+	}
+
+	/**
+	 * Return the decode character
+	 * 
+	 * @return the decode character
+	 */
+	public String getDecode()
+	{
+		return decode;
+	}
+
+	/**
+	 * Return the input data in DSCCN format
+	 * 
+	 * @return the input data in DSCCN format
+	 */
+	public String getDataInput()
+	{
+		return dataInput;
+	}
+
+	/**
+	 * Set the input data in DSCCN format
+	 * 
+	 * @return the input data in DSCCN format
+	 */
+	public void setDataInput(String dataInput)
+	{
+		this.dataInput = dataInput;
+	}
+
+	/**
+	 * Return the P/V program name
+	 * 
+	 * @return the P/V program name
+	 */
+	public String getService()
+	{
+		return service;
+	}
+
+	/**
+	 * Return the error message as a result of the validation
+	 * 
+	 * @return the error message
+	 */
+	public String getError()
+	{
+		return error;
+	}
+
+	/**
+	 * Return whether blank is allowed or not
+	 * 
+	 * @return Y if blank is allowed <br>
+	 *         N if blank is not allowed
+	 */
+	public String getBlankAllowed()
+	{
+		return blankAllowed;
+	}
+
+	/**
+	 * Return whether the code must exists or not
+	 * 
+	 * @return Y if the code must not exists <br>
+	 *         N if the code must exists <br>
+	 *         blank if the code may or may not exist
+	 */
+	public String getNewCode()
+	{
+		return newCode;
+	}
+
+	/**
+	 * Return the security mode
+	 * 
+	 * @return the security mode
+	 */
+	public String getSecurity()
+	{
+		return security;
+	}
+
+	/**
+	 * Set the security mode
+	 * 
+	 * @param security
+	 *            - the security mode
+	 * @equation.external
+	 */
+	public void setSecurity(String security)
+	{
+		this.security = security;
+	}
+
+	/**
+	 * Return the new code status to determine whether the key is existing or not. This is automatically setup by the system if the
+	 * original new code is blank
+	 * 
+	 * @return the new code status to determine whether the key is existing or not
+	 */
+	public boolean isNewCode()
+	{
+		if (returnedNewCode.equals(""))
+		{
+			return newCode.equals(EqDataType.YES);
+		}
+		else
+		{
+			return returnedNewCode.equals(EqDataType.YES);
+		}
+	}
+
+	/**
+	 * Return the output data in DSCCN format
+	 * 
+	 * @return - the output data in DSCCN format
+	 */
+	public String getDataOutput()
+	{
+		return dataOutput;
+	}
+
+	/**
+	 * Set the output data in DSCCN format
+	 * 
+	 * @param fullDataOutput
+	 *            - the output data in DSEPMS + DSCCN format
+	 */
+	public void setDataOutput(String fullDataOutput)
+	{
+		this.dataOutput = Toolbox.trimr(fullDataOutput.substring(EquationPVMetaDataHelper.LEN_DSEPMS));
+
+		// set the error (the first 37 characters)
+		error = fullDataOutput.substring(0, EquationPVMetaDataHelper.LEN_DSEPMS - 1).trim();
+
+		// set the returned new code
+		// .. this is supposed to be the last character, however, the length of returned DSCCN can be
+		// .. 128, 256, 4096
+		returnedNewCode = newCode;
+		if (newCode.trim().equals(""))
+		{
+			if (this.dataOutput.length() > 0)
+			{
+				returnedNewCode = this.dataOutput.substring(this.dataOutput.length() - 1, this.dataOutput.length());
+			}
+		}
+
+		// set the data structure if defined
+		if (equationPVData != null)
+		{
+			equationPVData.setDataDsccn(this.dataOutput);
+		}
+	}
+
+	/**
+	 * Set the output data in DSCCN format
+	 * 
+	 * @param fullDataOutput
+	 *            - the output data in DSEPMS + DSCCN format
+	 */
+	public void setDataOutput(byte[] fullDataOutput)
+	{
+		// set the data structure if defined
+		int ccsid = DsccnToolbox.CCSID_GB; // default CCSID of English
+		if (equationPVData != null)
+		{
+			ccsid = equationPVData.getCcsid();
+		}
+
+		// get the data
+		byte[] dataBytes = new byte[fullDataOutput.length - EquationPVMetaDataHelper.LEN_DSEPMS];
+		System.arraycopy(fullDataOutput, EquationPVMetaDataHelper.LEN_DSEPMS, dataBytes, 0, dataBytes.length);
+		this.dataOutput = Toolbox.trimr(Toolbox.convertAS400TextIntoCCSID(dataBytes, dataBytes.length, ccsid));
+
+		// retrieve the KSM
+		byte[] ksmBytes = new byte[EquationPVMetaDataHelper.LEN_DSEPMS];
+		System.arraycopy(fullDataOutput, 0, ksmBytes, 0, EquationPVMetaDataHelper.LEN_DSEPMS);
+		error = Toolbox.convertAS400TextIntoCCSID(ksmBytes, ksmBytes.length, ccsid).trim();
+
+		// set the returned new code
+		// .. this is supposed to be the last character, however, the length of returned DSCCN can be
+		// .. 128, 256, 4096
+		returnedNewCode = newCode;
+		if (newCode.trim().equals(""))
+		{
+			if (this.dataOutput.length() > 0)
+			{
+				returnedNewCode = this.dataOutput.substring(this.dataOutput.length() - 1, this.dataOutput.length());
+			}
+		}
+
+		// set the data structure if defined
+		if (equationPVData != null)
+		{
+			equationPVData.setDataDsccn(dataBytes);
+		}
+	}
+
+	/**
+	 * Return the data in Equation PV Data format
+	 * 
+	 * @return the data in Equation PV Data format
+	 * @equation.external
+	 */
+	public EquationPVData getEquationPVData()
+	{
+		return equationPVData;
+	}
+
+	/**
+	 * Return the String representation
+	 */
+	@Override
+	public String toString()
+	{
+		return dataOutput;
+	}
+
+	/**
+	 * Return the list of errors
+	 * 
+	 * @return - the list of errors
+	 * @equation.external
+	 */
+	public List<EQMessage> getErrorList()
+	{
+		return errorList;
+	}
+
+	/**
+	 * Set the list of errors
+	 * 
+	 * @param errorList
+	 *            - the list of errors
+	 */
+	public void setErrorList(List<EQMessage> errorList)
+	{
+		this.errorList = errorList;
+		if (errorList.size() > 0)
+		{
+			error = errorList.get(0).getDsepms();
+		}
+		else
+		{
+			error = "";
+		}
+	}
+
+	/**
+	 * This is not supported
+	 * 
+	 * @return null
+	 */
+	public byte[] getBytes()
+	{
+		return null; // not supported
+	}
+
+	/**
+	 * This is not supported
+	 * 
+	 * @param data
+	 *            - the bytes
+	 */
+	public void setBytes(byte[] data)
+	{
+		// not supported
+	}
+
+	/**
+	 * Return the list of messages
+	 * 
+	 * @return - the list of messages
+	 * @equation.external
+	 */
+	public List<EQMessage> getMessages()
+	{
+		return getErrorList();
+	}
+
+	/**
+	 * Return whether the transaction is valid
+	 * 
+	 * @return true if the transaction is valid
+	 * @equation.external
+	 */
+	public boolean getValid()
+	{
+		return error.equals("");
+	}
+
+	/**
+	 * Set whether the transaction is valid
+	 * 
+	 * @param valid
+	 *            - true if the transaction is valid
+	 */
+	public void setValid(boolean valid)
+	{
+		error = "";
+	}
+
+	/**
+	 * Return the field value
+	 * 
+	 * @param fieldName
+	 *            - field name
+	 * @equation.external
+	 */
+	public String getFieldValue(String fieldName)
+	{
+		return equationPVData.getFieldValue(fieldName);
+	}
+
+	/**
+	 * Set the field value
+	 * 
+	 * @param fieldName
+	 *            - field name
+	 * @param fieldValue
+	 *            - field value
+	 * @equation.external
+	 */
+	public void setFieldValue(String fieldName, String fieldValue)
+	{
+		equationPVData.setFieldValue(fieldName, fieldValue);
+	}
+
+	/**
+	 * Return the id of this transaction
+	 * 
+	 * @return the id of this transaction
+	 */
+	public String getId()
+	{
+		return id;
+	}
+
+	/**
+	 * Set the id of this transaction
+	 * 
+	 * @param id
+	 *            - id of this transaction
+	 */
+	public void setId(String id)
+	{
+		this.id = id;
+	}
+
+	/**
+	 * Return the transaction mode
+	 * 
+	 * @return the transaction mode
+	 */
+	public String getMode()
+	{
+		return IEquationStandardObject.FCT_ENQ;
+	}
+
+	/**
+	 * Set the transaction mode
+	 * 
+	 * @param mode
+	 *            - the transaction mode
+	 */
+	public void setMode(String mode)
+	{
+		// do nothing, cannot change mode
+	}
+
+	/**
+	 * Set the output data in DSCCN format
+	 * 
+	 * @param dsccn
+	 *            - output data in DSCCN format
+	 */
+	public void setData(String dsccn)
+	{
+		this.dataOutput = dsccn;
+	}
+
+	/**
+	 * Set the Equation PV data
+	 * 
+	 * @param equationPVData
+	 *            - the Equation PV data
+	 * @equation.external
+	 */
+	public void setEquationPVData(EquationPVData equationPVData)
+	{
+		this.equationPVData = equationPVData;
+	}
+
+}

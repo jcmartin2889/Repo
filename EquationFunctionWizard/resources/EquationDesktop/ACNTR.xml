@@ -1,0 +1,77 @@
+<EquationPVMetaData PFile="SC01LF" description="ACNTR" id="ACNTR" globalConsolidatedPrompt="true" globalLibraryPrompt="false"  label="ACN" packageName="com.misys.pvs">
+  <databaseXref/>
+  <decodeMetaData>
+    <decodeMetaData decode=" " description="Default Decode" index="0" length="0" pFile="SC01LF"
+    	sqlSelect="
+			SELECT SCAB, SCAN, SCAS, SCSHN, SCACT, SCCCY, CABRNM, NEEAN FROM
+			  (SELECT SCAB, SCAN, SCAS, SCSHN, SCACT, SCCCY, CABRNM, CHAR(COALESCE(NEEAN, ' '), 20) NEEAN
+			     FROM SC01LF
+			LEFT JOIN NE10LF
+			       ON SCAB=NEAB AND NEAN=SCAN AND NEAS=SCAS
+			LEFT JOIN CA09LF ON SCAB=CABBN
+			  ) TBL
+    	"
+    	sqlFrom=" ">
+      <keyFields>
+        <keyField>SCAB</keyField>
+        <keyField>SCAN</keyField>
+        <keyField>SCAS</keyField>
+      </keyFields>
+      <pvFields>
+        <pvField>SCAB</pvField>
+        <pvField>SCAN</pvField>
+        <pvField>SCAS</pvField>
+        <pvField>SCSHN</pvField>
+        <pvField>SCACT</pvField>
+        <pvField>SCCCY</pvField>
+        <pvField>CABRNM</pvField>
+        <pvField>NEEAN</pvField>
+      </pvFields>
+    </decodeMetaData>
+  </decodeMetaData>
+  <fieldMetaData>
+    <fieldMetaData alpha="true" composite="false" decimal="0" description="Server" header="Server" id="SERVER" index="0" key="false" label="SERVER" length="8" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" decimal="0" description="Unit" header="Unit" id="UNIT" index="8" key="false" label="UNIT" length="3" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" decimal="0" description="Unit Description" header="Unit Description" id="UNITDESC" index="11" key="false" label="Unit Description" length="20" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="SCAB" decimal="0" description="Account branch" header="Account branch" id="SCAB" index="31" key="true" length="4" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="SCAN" decimal="0" description="Account number" header="Account number" id="SCAN" index="35" key="true" length="6" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="SCAS" decimal="0" description="Account suffix" header="Account suffix" id="SCAS" index="41" key="true" length="3" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="SCSHN" decimal="0" description="Account short name" header="Account short name" id="SCSHN" index="64" key="false" length="15" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="SCACT" decimal="0" description="A/c type" header="A/c type" id="SCACT" index="79" key="false" length="2" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="SCCCY" decimal="0" description="Currency mnemonic" header="Currency" id="SCCCY" index="81" key="false" length="3" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="CABRNM" decimal="0" description="Branch Name" header="Branch Name" id="CABRNM" index="84" key="false" length="4" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="NEEAN" decimal="0" description="External account number" header="External account number" id="NEEAN" index="88" key="false" length="20" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+ </fieldMetaData>
+ <hdrNames>
+    <hdrName>SERVER</hdrName>
+    <hdrName>UNIT</hdrName>
+    <hdrName>UNITDESC</hdrName>
+    <hdrName>SCAB</hdrName>
+    <hdrName>SCAN</hdrName>
+    <hdrName>SCAS</hdrName>
+    <hdrName>SCSHN</hdrName>    
+    <hdrName>SCACT</hdrName>
+    <hdrName>SCCCY</hdrName>
+    <hdrName>CABRNM</hdrName>
+    <hdrName>NEEAN</hdrName>
+  </hdrNames>
+  <hdrPositions>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>   
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+  </hdrPositions>
+  <pvDvals>
+    <pvDval>SCAB</pvDval>
+  </pvDvals>
+  <pvOvals>
+    <pvOval>SCAB</pvOval>
+  </pvOvals>
+</EquationPVMetaData>

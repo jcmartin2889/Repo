@@ -1,0 +1,85 @@
+package com.misys.equation.common.ant.builder.helpText.core;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.misys.equation.common.ant.builder.core.EquationLogger;
+import com.misys.equation.common.ant.builder.helpText.helpers.CommonDefinitions;
+import com.misys.equation.common.ant.builder.helpText.helpers.FileErrorLog;
+import com.misys.equation.common.ant.builder.helpText.helpers.FileUtils;
+
+public class AuthorItHtmlSource
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: AuthorItHtmlSource.java 9659 2010-11-02 17:25:07Z MACDONP1 $";
+	private static final EquationLogger LOG = new EquationLogger(AuthorItHtmlSource.class);
+	private static HelpTextProperties helpTextProperties = HelpTextProperties.getInstance();
+	private final List<String> authorItHtml = new ArrayList<String>();
+	private final FileErrorLog fileErrorLog = FileErrorLog.getInstance();
+	private final FileUtils fileUtils = FileUtils.getInstance();
+	private String optionId;
+
+	/*
+	 * Constructor for reflection of the bean
+	 */
+	public AuthorItHtmlSource()
+	{
+	}
+
+	public AuthorItHtmlSource(String optionId)
+	{
+		this.optionId = optionId;
+	}
+
+	public void readAuthorItHtmlSource()
+	{
+		StringBuilder outputFile = null;
+		outputFile = new StringBuilder(helpTextProperties.getOutputDirectory());
+		outputFile.append(CommonDefinitions.FILE_SEPARATOR);
+		outputFile.append(optionId);
+		outputFile.append(".htm");
+
+		FileReader fileReader = null;
+		BufferedReader bufferedReader = null;
+
+		try
+		{
+			fileReader = new FileReader(new File(outputFile.toString()));
+			bufferedReader = new BufferedReader(fileReader);
+			String str;
+			int lineIndex = 0;
+			while ((str = bufferedReader.readLine()) != null)
+			{
+				authorItHtml.add(lineIndex, str);
+				lineIndex++;
+			}
+		}
+		catch (FileNotFoundException fileNotFoundException)
+		{
+			fileErrorLog.appendFunctionMessage(optionId);
+		}
+		catch (Exception exception)
+		{
+			if (LOG.isErrorEnabled())
+			{
+				StringBuilder message = new StringBuilder("There was a problem trying to process the file.");
+				message.append(outputFile);
+				LOG.error(message.toString().toString(), exception);
+			}
+		}
+		finally
+		{
+			fileUtils.close(bufferedReader);
+		}
+
+	}
+
+	public List<String> getAuthorItHtml()
+	{
+		return authorItHtml;
+	}
+}

@@ -1,0 +1,91 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseAddOnce;
+
+/**
+ * Equation test cases for Transfer Commercial Paper
+ */
+public class OKU extends EquationTestCaseAddOnce
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: OKU.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	String programName = "W24ARR";
+	String optionId = "OKU";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZBPN", "054355551111"); // Paper number (12A)
+	}
+
+	/**
+	 * Setup the mandatory fields
+	 */
+	@Override
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZGRPN", "55551111"); // Group number (8A)
+		transaction.setFieldValue("GZBRNM", "LOND"); // Branch mnemonic (4A)
+		transaction.setFieldValue("GZPAP", "AA"); // Paper type (2A)
+		transaction.setFieldValue("GZPOP", "AX"); // Purpose of Presentation (2A)
+		transaction.setFieldValue("GZCUS", "ACCS"); // Customer Mnemonic (6A)
+		transaction.setFieldValue("GZCLC", "DTA"); // Customer Location (3A)
+		transaction.setFieldValue("GZNST", ""); // Nostro (6A)
+		transaction.setFieldValue("GZNCUS", ""); // Non-Customer Mnem (6A)
+		transaction.setFieldValue("GZNCLC", ""); // Non-Customer Location (3A)
+		transaction.setFieldValue("GZAB", ""); // A/c branch (4A)
+		transaction.setFieldValue("GZAN", ""); // A/c number (6A)
+		transaction.setFieldValue("GZAS", ""); // A/c suffix (3A)
+		transaction.setFieldValue("GZCHQN", "87542196"); // Cheque/bill number (15A)
+		transaction.setFieldValue("GZAMT", "550000"); // Amount (21A)
+		transaction.setFieldValue("GZCCY", "GBP"); // Currency (3A)
+		transaction.setFieldValue("GZMDTE", "1000106"); // Maturity Date (7S,0)
+		transaction.setFieldValue("GZDCDE", "JANE01"); // Debtor/Drawer Code (8A)
+		transaction.setFieldValue("GZNPOP", "CC"); // New Purpose of Presentation (2A)
+		transaction.setFieldValue("GZNMDT", "1000108"); // New Maturity Date (7S,0)
+		transaction.setFieldValue("GZDFF", ""); // Deferring fees charge code (2A)
+		transaction.setFieldValue("GZDFFA", ""); // Deferring fees amount (15P,0)
+	}
+
+}

@@ -1,0 +1,374 @@
+package com.misys.equation.function.beans;
+
+import com.misys.equation.function.beans.valid.IValidation;
+import com.misys.equation.function.beans.valid.MessageContainer;
+import com.misys.equation.function.language.LanguageResources;
+import com.misys.equation.problems.ProblemLocation;
+
+/**
+ * A collection of DisplayAttributes
+ * 
+ * @author perkinj1
+ */
+public class DisplayAttributesSet extends Element implements IValidation
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private String nextScreenUserExit = "";
+
+	/** The parent Layout object */
+	private Layout layout;
+
+	/** Collection of display items */
+	private DisplayItemList displayItemList = new DisplayItemList();
+
+	/** Indicates Finish button is not enabled */
+	public static final String FINISH_BUTTON_ENABLED_NO = "0";
+	/** Indicates Finish button is enabled (default) */
+	public static final String FINISH_BUTTON_ENABLED_YES = "1";
+	/** Indicates that there is an EL Script to determine visibility */
+	public static final String FINISH_BUTTON_ENABLED_SCRIPT = "2";
+	/** Indicates that there is Java exit code to determine visibility */
+	public static final String FINISH_BUTTON_ENABLED_CODE = "3";
+
+	/*
+	 * Attributes
+	 */
+	private String finishButtonEnabled;
+	private String finishButtonEnabledExpression;
+
+	/**
+	 * Construct a new empty DisplayAttributesSet
+	 * 
+	 */
+	public DisplayAttributesSet()
+	{
+		super();
+		commonInitialization();
+	}
+
+	/**
+	 * Construct a new DisplayAttributesSet with the supplied details
+	 * 
+	 * @param id
+	 *            - identifies the set
+	 * @param label
+	 *            - label of the set
+	 * @param description
+	 *            - description of the set
+	 */
+	public DisplayAttributesSet(String id, String label, String description)
+	{
+		super(id, label, description);
+		commonInitialization();
+	}
+
+	/**
+	 * Construct a new DisplayAttributesSet, copying the id, label and description from the supplied Element
+	 * 
+	 * @param element
+	 *            - An Element
+	 */
+	public DisplayAttributesSet(Element element)
+	{
+		super(element);
+		commonInitialization();
+	}
+
+	/**
+	 * Constructor to create a new input field set from an existing one
+	 * 
+	 * @param displayAttributesSet
+	 *            - the display attributes set to be copied
+	 */
+	public DisplayAttributesSet(DisplayAttributesSet displayAttributesSet)
+	{
+		super(displayAttributesSet);
+		this.nextScreenUserExit = displayAttributesSet.nextScreenUserExit;
+		this.displayItemList.addAll(displayAttributesSet.displayItemList);
+		this.finishButtonEnabled = displayAttributesSet.finishButtonEnabled;
+		this.finishButtonEnabledExpression = displayAttributesSet.finishButtonEnabledExpression;
+	}
+
+	/**
+	 * Common field initialization called by non-copy Constructors.
+	 * <p>
+	 * When new member variables are added, initialisation code must be added to both this method and the copy constructor.
+	 */
+	private void commonInitialization()
+	{
+		finishButtonEnabled = FINISH_BUTTON_ENABLED_YES;
+	}
+
+	/**
+	 * Gets the Finish button enabled status
+	 * <p>
+	 * 
+	 * @return a <code>String</code> indicating how the visibility of the Finish button will be determined at runtime. This will be
+	 *         one of the following constants: FINISH_BUTTON_ENABLED_YES, FINISH_BUTTON_ENABLED_NO, FINISH_BUTTON_ENABLED_SCRIPT or
+	 *         FINISH_BUTTON_ENABLED_CODE.
+	 */
+	public String getFinishButtonEnabled()
+	{
+		return finishButtonEnabled;
+	}
+
+	/**
+	 * Sets how the visibility of the Finish button will be determined at run time.
+	 * <p>
+	 * 
+	 * @param finishButtonEnabledStatus
+	 *            an <code>int</code> indicating how the visibility of the finish button is determined. Must be one of
+	 *            FINISH_BUTTON_ENABLED_YES, FINISH_BUTTON_ENABLED_NO, FINISH_BUTTON_ENABLED_SCRIPT or FINISH_BUTTON_ENABLED_CODE.
+	 */
+	public void setFinishButtonEnabled(String finishButtonEnabled)
+	{
+		this.finishButtonEnabled = finishButtonEnabled;
+	}
+
+	/**
+	 * Return the user exit that will be triggered prior to moving to the next screen
+	 * 
+	 * @return the default user exit of the field set
+	 */
+	public String getNextScreenUserExit()
+	{
+		return nextScreenUserExit;
+	}
+
+	/**
+	 * Set the user exit that is triggered prior to moving to the next screen
+	 * 
+	 * @param nextScreenUserExit
+	 *            - the user exit that is triggered prior to moving to the next screen
+	 */
+	public void setNextScreenUserExit(String nextScreenUserExit)
+	{
+		this.nextScreenUserExit = nextScreenUserExit;
+	}
+
+	public DisplayItemList getDisplayItems()
+	{
+		return displayItemList;
+	}
+
+	public void setDisplayItems(DisplayItemList displayItemList)
+	{
+		this.displayItemList = displayItemList;
+		if (displayItemList != null)
+		{
+			for (IDisplayItem item : displayItemList)
+			{
+				((Element) item).setParent(this);
+			}
+		}
+	}
+
+	public void addItem(IDisplayItem displayItem)
+	{
+		Element element = (Element) displayItem;
+		if (displayItemList.contains(element.getId()))
+		{
+			throw new RuntimeException("Duplicate key");
+		}
+		element.setParent(this); // Set 'this' as the parent set
+		displayItemList.add(displayItem, element.getId());
+	}
+
+	public void addItem(int index, IDisplayItem displayItem)
+	{
+		Element element = (Element) displayItem;
+		if (displayItemList.contains(element.getId()))
+		{
+			throw new RuntimeException("Duplicate key");
+		}
+		element.setParent(this); // Set 'this' as the parent set
+		displayItemList.add(index, displayItem, element.getId());
+	}
+
+	/**
+	 * Apply a change of Id of a child item
+	 * <p>
+	 * This will apply the change by both updating the id of the actual item, <strong>and</strong> updating the key of the item in
+	 * the KeyedArrayList collection.
+	 * 
+	 * @param oldId
+	 *            a String containing the old Id
+	 * @param newId
+	 *            a String containing the new Id
+	 */
+	public void modifyItemId(String oldId, String newId)
+	{
+		displayItemList.modifyItemId(oldId, newId);
+	}
+
+	public boolean validateBean(MessageContainer messageContainer, String subSet, boolean includeChildren)
+	{
+		ProblemLocation problemLocation = new ProblemLocation(DisplayAttributesSet.class.getSimpleName(), getId());
+
+		// Validate the AttributesSet finish button enabled EL expression:
+		if (DisplayAttributesSet.FINISH_BUTTON_ENABLED_SCRIPT.equals(finishButtonEnabled))
+		{
+			ValidationHelper.validateBooleanELExpression(finishButtonEnabledExpression, this, messageContainer,
+							ValidationHelper.BooleanELType.DISPLAY_ATTRIBUTESSET_FINISHENABLED_EXPRESSION, problemLocation);
+		}
+
+		Function serviceBean = null;
+		if (this.layout == null)
+		{
+			messageContainer.addErrorMessageId("Language.DisplayAttributesSetHasNullParentLayout", problemLocation); //$NON-NLS-1$
+		}
+		else
+		{
+			serviceBean = this.layout.service();
+			if (serviceBean == null)
+			{
+				messageContainer.addErrorMessageId("Language.DisplayAttributesSetHasNullParentLayout", problemLocation); //$NON-NLS-1$
+			}
+		}
+
+		// Check that the link to the input field is valid:
+		if (serviceBean != null && !serviceBean.inputFieldSetKeys().contains(getId()))
+		{
+			// This is currently based on matching ids...
+			messageContainer.addErrorMessage(LanguageResources.getFormattedString(
+							"Language.CorrespondingInputFieldSetNotFound", getId())); //$NON-NLS-1$
+		}
+		// A field set with a blank label may at this point contain '<none>' due to
+		// defaulting when the xml file is processed as a bean
+		if (getLabel().length() == 0 || getLabel().trim().equals(DEFAULT_TEXT_VALUE))
+		{
+			messageContainer.addErrorMessageId("Language.FieldSetTitleCannotBeBlank", getId(), problemLocation); //$NON-NLS-1$
+		}
+
+		if (includeChildren && serviceBean != null && serviceBean.inputFieldSetKeys().contains(getId()))
+		{
+			for (IDisplayItem item : getDisplayItems())
+			{
+				item.validateBean(messageContainer, subSet, includeChildren);
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Returns the parent Layout
+	 * 
+	 * @return Layout - the parent Layout object
+	 */
+	public Layout rtvLayout()
+	{
+		return layout;
+	}
+
+	public void setLayout(Layout layout)
+	{
+		this.layout = layout;
+	}
+
+	public Object getParent()
+	{
+		return null;
+	}
+
+	public void setParent(Object parent)
+	{
+		// TODO Auto-generated method stub
+	}
+
+	/**
+	 * Return the display group identified by the repeating group id
+	 * 
+	 * @param repeatingGroupId
+	 *            - the repeating group id
+	 * 
+	 * @return the display group for the repeating group id
+	 */
+	public DisplayGroup rtvRepeatingGroup(String repeatingGroupId)
+	{
+		for (IDisplayItem displayItem : getDisplayItems())
+		{
+			if (displayItem instanceof DisplayGroup)
+			{
+				DisplayGroup displayGroup = (DisplayGroup) displayItem;
+				if (displayGroup.getRepeatingGroup().equals(repeatingGroupId))
+				{
+					return displayGroup;
+				}
+			}
+		}
+
+		// not found
+		return null;
+	}
+
+	/**
+	 * Return the display attributes of the specified field name
+	 * 
+	 * @param fieldName
+	 *            - the field name
+	 * 
+	 * @return the display attributes of the specified field name
+	 */
+	public DisplayAttributes rtvDisplayAttribute(String fieldName)
+	{
+		return rtvDisplayAttributeFromDisplayGroup(displayItemList, fieldName);
+	}
+
+	/**
+	 * Return the display attributes of the specified field name from the list
+	 * 
+	 * @param displayItems
+	 *            - the list of items
+	 * @param fieldName
+	 *            - the field names
+	 * @return the display attributes of the specified field name from the list
+	 */
+	public DisplayAttributes rtvDisplayAttributeFromDisplayGroup(DisplayItemList displayItems, String fieldName)
+	{
+		for (IDisplayItem item : displayItems)
+		{
+			if (item instanceof DisplayAttributes)
+			{
+				DisplayAttributes attrib = (DisplayAttributes) item;
+				if (attrib.getId().equals(fieldName))
+				{
+					return attrib;
+				}
+			}
+			else if (item instanceof DisplayGroup)
+			{
+				DisplayGroup displayGroup = (DisplayGroup) item;
+				DisplayAttributes attrib = rtvDisplayAttributeFromDisplayGroup(displayGroup.getDisplayItems(), fieldName);
+				if (attrib != null)
+				{
+					return attrib;
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Return the Finish button enabled expression
+	 * 
+	 * @return the finish button enabled expression
+	 */
+	public String getFinishButtonEnabledExpression()
+	{
+		return finishButtonEnabledExpression;
+	}
+
+	/**
+	 * Set the Finish button enabled expression
+	 * 
+	 * @param finishButtonEnabledExpression
+	 *            - the finish button enabled expression
+	 */
+	public void setFinishButtonEnabledExpression(String finishButtonEnabledExpression)
+	{
+		this.finishButtonEnabledExpression = finishButtonEnabledExpression;
+	}
+
+}

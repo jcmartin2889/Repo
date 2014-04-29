@@ -1,0 +1,145 @@
+package com.misys.equation.function.useraccess;
+
+public class UserExitListColumnData
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: UserExitListColumnData.java 9642 2010-10-29 14:06:50Z lima12 $";
+	private String inputValue = "";
+	private String dbValue = "";
+	private String outputValue = "";
+	private String style = "";
+	private String rowStyle = "";
+
+	/**
+	 * Construct a return value
+	 * 
+	 * @param inputValue
+	 *            - the input value
+	 * @param dbValue
+	 *            - the db value
+	 * @param outputValue
+	 *            - the output value
+	 */
+	public UserExitListColumnData(String inputValue, String dbValue, String outputValue)
+	{
+		this.inputValue = inputValue;
+		this.dbValue = dbValue;
+		this.outputValue = outputValue;
+	}
+
+	/**
+	 * Return the input value
+	 * 
+	 * @return the input value
+	 */
+	public String getInputValue()
+	{
+		return inputValue;
+	}
+
+	/**
+	 * Set the input value
+	 * 
+	 * @param inputValue
+	 *            - the input value
+	 */
+	public void setInputValue(String inputValue)
+	{
+		this.inputValue = inputValue;
+	}
+
+	/**
+	 * Return the DB value
+	 * 
+	 * @return the DB value
+	 */
+	public String getDbValue()
+	{
+		return dbValue;
+	}
+
+	/**
+	 * Set the DB value
+	 * 
+	 * @param dbValue
+	 *            - the DB value
+	 */
+	public void setDbValue(String dbValue)
+	{
+		this.dbValue = dbValue;
+	}
+
+	/**
+	 * Return the output value
+	 * 
+	 * @return the output value
+	 */
+	public String getOutputValue()
+	{
+		return outputValue;
+	}
+
+	/**
+	 * Set the output value
+	 * 
+	 * @param outputValue
+	 *            - the output value
+	 */
+	public void setOutputValue(String outputValue)
+	{
+		this.outputValue = outputValue;
+	}
+
+	/**
+	 * Determine if return value contains data
+	 * 
+	 * @return true if return value contains data
+	 */
+	public boolean containsData()
+	{
+		return inputValue.trim().length() > 0 || dbValue.trim().length() > 0 || outputValue.trim().length() > 0;
+	}
+
+	/**
+	 * Return the style for this particular cell
+	 * 
+	 * @return the style for this particular cell
+	 */
+	public String getStyle()
+	{
+		return style;
+	}
+
+	/**
+	 * Set the style for this particular cell
+	 * 
+	 * @param style
+	 *            - the style for this particular cell
+	 */
+	public void setStyle(String style)
+	{
+		this.style = style;
+	}
+
+	/**
+	 * Return the row style
+	 * 
+	 * @return the row style
+	 */
+	public String getRowStyle()
+	{
+		return rowStyle;
+	}
+
+	/**
+	 * Set the row style. Only set the row style on the first column to return a data
+	 * 
+	 * @param rowStyle
+	 *            - the row style
+	 */
+	public void setRowStyle(String rowStyle)
+	{
+		this.rowStyle = rowStyle;
+	}
+
+}

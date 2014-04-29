@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	
+	<!-- 
+		Unit, User, password  and others should be provided. 
+		Use  connectionProperties to set the current ConnectionProperties application 
+		instance. 
+		Only one could be set at runtime.
+	 -->
+	<bean id="TestingApplicationProperties" class="com.misys.equation.common.test.TestEnvironmentApplicationProperties" singleton="true">
+		<property name="connectionProperties" ref="PHMKIMNM" />
+	</bean>
+	
+	<bean id="PHMKIMNM" class="com.misys.equation.common.test.TestEnvironmentConnectionProperties" singleton="true">
+		<property name="system" value="PHMKIMNM" />
+		<property name="inputBranch" value="LOND" />
+		<property name="unit" value="J99" />
+		<property name="user" value="CI08USER" />
+		<property name="password" value="CI08USER" />	
+	</bean>
+		
+	<bean id="slough1" class="com.misys.equation.common.test.TestEnvironmentConnectionProperties" singleton="true" >
+		<property name="system" value="SLOUGH1" />
+		<property name="inputBranch" value="LOND" />
+		<property name="unit" value="GP1" />
+		<property name="user" value="EQUIADMIN" />
+		<property name="password" value="EQUIADMIN" />	
+	</bean>
+	
+	<bean id="olympus" class="com.misys.equation.common.test.TestEnvironmentConnectionProperties" singleton="true">
+		<property name="system" value="olympus" />
+		<property name="inputBranch" value="LOND" />
+		<property name="unit" value="EQQ" />
+		<property name="user" value="KAPOWNEQQ" />
+		<property name="password" value="KAPOWNEQQ" />	
+	</bean>
+		
+	<bean id="is0614" class="com.misys.equation.common.test.TestEnvironmentConnectionProperties" singleton="true">
+		<property name="system" value="is0614" />
+		<property name="inputBranch" value="LOND" />
+		<property name="unit" value="EQQ" />
+		<property name="user" value="EQ4ADMIN" />
+		<property name="password" value="EQ4ADMIN" />	
+	</bean>
+		
+	 <bean id="globalPoolConnectionBean" class="com.misys.equation.common.test.TestPoolConnectionProperties" singleton="true">
+        <property name="user" value="EQUIADMIN" />
+        <property name="password" value="EQUIADMIN" />
+        <property name="url" value="jdbc:as400://SLOUGH1/KGRPGP1" />
+        <property name="driverClassName" value="com.ibm.as400.access.AS400JDBCDriver" />        
+        <property name="maxWait" value="50000" />
+        <property name="maxConnections" value="5"/>     
+        <property name="timeBetweenEvictionRunsMillis" value="6000" />
+        <property name="bind" value="java:comp/env/jdbc/GlobalDB" />
+    </bean> 
+    
+    <bean id="localPoolConnectionBean" class="com.misys.equation.common.test.LocalPoolConnectionProperties" singleton="true">
+        <property name="user" value="EQUIADMIN" />
+        <property name="password" value="EQUIADMIN" />
+        <property name="url" value="jdbc:as400://SLOUGH1;prompt=false;naming=system;trace=false;libraries=INTBASELIB" />
+        <property name="driverClassName" value="com.ibm.as400.access.AS400JDBCDriver" />        
+        <property name="maxWait" value="500000" />
+        <property name="maxConnections" value="5"/>     
+        <property name="timeBetweenEvictionRunsMillis" value="60000" /> 
+        <property name="binds">
+            <list>
+                <value>java:comp/env/jdbc/EQ-SLOUGH1-GP1</value>
+                <value>java:comp/env/jdbc/EQ-SLOUGH1-GP2</value>  
+            </list>
+        </property>    
+     </bean>  
+</beans>

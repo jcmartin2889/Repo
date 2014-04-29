@@ -1,0 +1,63 @@
+package com.misys.equation.ui.servlets;
+
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+
+import com.misys.equation.common.utilities.EquationAPICacheUpdater;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.function.tools.BankFusionSynchronizer;
+import com.misys.equation.ui.context.EquationDesktopContext;
+
+public class DesktopContextListener implements ServletContextListener
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(DesktopContextListener.class);
+
+	/** The name of the ServletContext attribute that holds the BankFusionSynchronization object */
+	public static final String BANKFUSION_SYNCH_CONTEXT_ATTRIBUTE = "com.misys.equation.context.bfsynchronizer";
+
+	/** The name of the ServletContext attribute that holds the API cache updater object */
+	public static final String API_CACHE_CONTEXT_ATTRIBUTE = "EquationAPICacheUpdater";
+
+	/**
+	 * Processing for context initialisation
+	 * 
+	 * @param event
+	 *            - servlet context event
+	 */
+	public void contextInitialized(ServletContextEvent event)
+	{
+		LOG.info("contextInitialized method called");
+	}
+
+	/**
+	 * Processing for context destruction
+	 * 
+	 * @param event
+	 *            - servlet context event
+	 */
+	public void contextDestroyed(ServletContextEvent event)
+	{
+		LOG.info("contextDestroyed method called");
+
+		// If the BankFusionSyncrhonizer object has been added in
+		// the ServletContext, cancel its processing
+		Object attribute = event.getServletContext().getAttribute(BANKFUSION_SYNCH_CONTEXT_ATTRIBUTE);
+		if (attribute instanceof BankFusionSynchronizer)
+		{
+			((BankFusionSynchronizer) attribute).cancel();
+		}
+
+		// Stop the Equation API cache updater if it is running
+		attribute = event.getServletContext().getAttribute(API_CACHE_CONTEXT_ATTRIBUTE);
+		if (attribute instanceof EquationAPICacheUpdater)
+		{
+			((EquationAPICacheUpdater) attribute).cancel();
+		}
+
+		EquationDesktopContext.getContext().removeContext();
+	}
+}

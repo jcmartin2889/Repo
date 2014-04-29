@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?><!-- Use this file to deploy some handlers/chains and services      --><!-- Two ways to do this:                                           --><!--   java org.apache.axis.client.AdminClient deploy.wsdd          --><!--      after the axis server is running                          --><!-- or                                                             --><!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   --><!--      from the same directory that the Axis engine runs         --><deployment xmlns="http://xml.apache.org/axis/wsdd/" xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+  <!-- Services from ServiceDirectoryService WSDL service -->
+
+  <service name="ServiceDirectory" provider="java:RPC" style="wrapped" use="literal">
+      <parameter name="wsdlTargetNamespace" value="http://services.equation.misys.com"/>
+      <parameter name="wsdlServiceElement" value="ServiceDirectoryService"/>
+      <parameter name="schemaQualified" value="http://services.equation.misys.com"/>
+      <parameter name="wsdlServicePort" value="ServiceDirectory"/>
+      <parameter name="className" value="com.misys.equation.services.ServiceDirectory"/>
+      <parameter name="wsdlPortType" value="ServiceDirectory"/>
+      <parameter name="typeMappingVersion" value="1.2"/>
+      <operation xmlns:operNS="http://services.equation.misys.com" xmlns:retNS="http://services.equation.misys.com" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getEqUnit" qname="operNS:getEqUnit" returnQName="retNS:getEqUnitReturn" returnType="rtns:string" soapAction="">
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:sessionIdentifier" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://services.equation.misys.com" xmlns:retNS="http://services.equation.misys.com" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getEqUser" qname="operNS:getEqUser" returnQName="retNS:getEqUserReturn" returnType="rtns:string" soapAction="">
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:sessionIdentifier" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://services.equation.misys.com" xmlns:retNS="http://services.equation.misys.com" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getEqLogin" qname="operNS:getEqLogin" returnQName="retNS:getEqLoginReturn" returnType="rtns:string" soapAction="">
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:sessionIdentifier" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://services.equation.misys.com" xmlns:retNS="http://services.equation.misys.com" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getEqData" qname="operNS:getEqData" returnQName="retNS:getEqDataReturn" returnType="rtns:string" soapAction="">
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:sessionIdentifier" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:service" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:decode" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:key" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://services.equation.misys.com" xmlns:retNS="http://services.equation.misys.com" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getEqDataList" qname="operNS:getEqDataList" returnQName="retNS:getEqDataListReturn" returnType="rtns:string" soapAction="">
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:sessionIdentifier" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:service" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:decode" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:primaryTable" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:serviceKey" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:query" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:start" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:direction" type="tns:int"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:maxResults" type="tns:int"/>
+      </operation>
+      <operation xmlns:operNS="http://services.equation.misys.com" xmlns:retNS="http://services.equation.misys.com" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getEqReferral" qname="operNS:getEqReferral" returnQName="retNS:getEqReferralReturn" returnType="rtns:string" soapAction="">
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:sessionIdentifier" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://services.equation.misys.com" xmlns:retNS="http://services.equation.misys.com" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getRecentOptionHTML" qname="operNS:getRecentOptionHTML" returnQName="retNS:getRecentOptionHTMLReturn" returnType="rtns:string" soapAction="">
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:sessionIdentifier" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://services.equation.misys.com" xmlns:retNS="http://services.equation.misys.com" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getFullMenuHTML" qname="operNS:getFullMenuHTML" returnQName="retNS:getFullMenuHTMLReturn" returnType="rtns:string" soapAction="">
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:sessionIdentifier" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://services.equation.misys.com" xmlns:retNS="http://services.equation.misys.com" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getUserSpoolFilesHTML" qname="operNS:getUserSpoolFilesHTML" returnQName="retNS:getUserSpoolFilesHTMLReturn" returnType="rtns:string" soapAction="">
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:sessionIdentifier" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://services.equation.misys.com" xmlns:retNS="http://services.equation.misys.com" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getUnitSpoolFilesHTML" qname="operNS:getUnitSpoolFilesHTML" returnQName="retNS:getUnitSpoolFilesHTMLReturn" returnType="rtns:string" soapAction="">
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:sessionIdentifier" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://services.equation.misys.com" xmlns:retNS="http://services.equation.misys.com" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getJobLogHTML" qname="operNS:getJobLogHTML" returnQName="retNS:getJobLogHTMLReturn" returnType="rtns:string" soapAction="">
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:sessionIdentifier" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:jobName" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:jobUser" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:jobNumber" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://services.equation.misys.com" xmlns:retNS="http://services.equation.misys.com" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getJobLogDirHTML" qname="operNS:getJobLogDirHTML" returnQName="retNS:getJobLogDirHTMLReturn" returnType="rtns:string" soapAction="">
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:sessionIdentifier" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:jobName" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:jobUser" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:jobNumber" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:msgPos" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:direction" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://services.equation.misys.com" xmlns:retNS="http://services.equation.misys.com" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getJobLogEntryHTML" qname="operNS:getJobLogEntryHTML" returnQName="retNS:getJobLogEntryHTMLReturn" returnType="rtns:string" soapAction="">
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:sessionIdentifier" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:jobName" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:jobUser" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:jobNumber" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:msgPos" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:msgDate" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:msgTime" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:msgType" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://services.equation.misys.com" xmlns:retNS="http://services.equation.misys.com" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getMsgQueueHTML" qname="operNS:getMsgQueueHTML" returnQName="retNS:getMsgQueueHTMLReturn" returnType="rtns:string" soapAction="">
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:sessionIdentifier" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:queue" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://services.equation.misys.com" xmlns:retNS="http://services.equation.misys.com" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getMsgQueueDirHTML" qname="operNS:getMsgQueueDirHTML" returnQName="retNS:getMsgQueueDirHTMLReturn" returnType="rtns:string" soapAction="">
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:sessionIdentifier" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:queue" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:msgPos" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:direction" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://services.equation.misys.com" xmlns:retNS="http://services.equation.misys.com" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getMsgQueueEntryHTML" qname="operNS:getMsgQueueEntryHTML" returnQName="retNS:getMsgQueueEntryHTMLReturn" returnType="rtns:string" soapAction="">
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:sessionIdentifier" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:queue" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:msgPos" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:msgDate" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:msgTime" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:msgType" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://services.equation.misys.com" xmlns:retNS="http://services.equation.misys.com" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getMsgFileEntryHTML" qname="operNS:getMsgFileEntryHTML" returnQName="retNS:getMsgFileEntryHTMLReturn" returnType="rtns:string" soapAction="">
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:sessionIdentifier" type="tns:string"/>
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:msgd" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://services.equation.misys.com" name="destroyPools" qname="operNS:destroyPools" soapAction="">
+        <parameter xmlns:pns="http://services.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:sessionIdentifier" type="tns:string"/>
+      </operation>
+      <parameter name="allowedMethods" value="getMsgQueueEntryHTML getMsgQueueHTML getMsgQueueDirHTML getFullMenuHTML getEqUnit getEqData getUnitSpoolFilesHTML getJobLogHTML getUserSpoolFilesHTML getEqUser getRecentOptionHTML getMsgFileEntryHTML getJobLogDirHTML getJobLogEntryHTML getEqLogin destroyPools getEqReferral getEqDataList"/>
+
+  </service>
+</deployment>

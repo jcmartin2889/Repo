@@ -1,0 +1,425 @@
+package com.misys.equation.function.el;
+
+import java.math.BigDecimal;
+
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * String based functions which will be available to EL scripts
+ * 
+ * When using via EL the invocation should be of the form fn:method(x1,x2,...,xn)
+ * 
+ * For example fn:concat('a','b') returns 'ab'
+ */
+public class StringFunctions
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: StringFunctions.java 13262 2012-04-20 22:27:14Z jonathan.perkins $";
+	private StringFunctions()
+	{
+	}
+	/*
+	 * Protect against cloning
+	 */
+	@Override
+	public Object clone() throws CloneNotSupportedException
+	{
+		throw new CloneNotSupportedException();
+	}
+	/**
+	 * Returns true if string contains the substring.
+	 * 
+	 * @param string
+	 * @param substring
+	 * @return true if <code>string</code> contains <code>substring</code>, false otherwise
+	 */
+	public static boolean contains(String string, String substring)
+	{
+		return string.contains(substring);
+	}
+	/**
+	 * Returns true if the string contains the substring, ignoring case.
+	 * 
+	 * @param string
+	 * @param substring
+	 * @return true if the <code>string</code> contains <code>substring</code>, ignoring case, false otherwise
+	 */
+	public static boolean containsIgnoreCase(String string, String substring)
+	{
+		return string.toUpperCase().contains(substring.toUpperCase());
+	}
+	/**
+	 * Returns true if the string ends with the suffix.
+	 * 
+	 * @param string
+	 * @param suffix
+	 * @return true if the <code>string</code> ends with the <code>suffix</code>, false otherwise
+	 */
+	public static boolean endsWith(String string, String suffix)
+	{
+		return string.endsWith(suffix);
+	}
+	/**
+	 * Returns the string with all characters that have special meaning in XML (and HTML) converted to their equivalent XML
+	 * character entity code.
+	 * 
+	 * TODO: Implement this method
+	 * 
+	 * @param string
+	 */
+	public static String escapeXml(String string)
+	{
+		return string;
+	}
+	/**
+	 * Returns the index for the first occurrence of the substring in the string.
+	 * 
+	 * @param string
+	 * @param substring
+	 * @return if the substring argument occurs within the string argument object, then the index of the first character of the
+	 *         first such substring is returned; if it does not occur, <code>-1</code> is returned.
+	 */
+	public static int indexOf(String string, String substring)
+	{
+		return string.indexOf(substring);
+	}
+	/**
+	 * Returns a string composed from the array elements, separated by the separator.
+	 * 
+	 * @param array
+	 * @param separator
+	 * @return a string composed from the array elements, separated by the separator.
+	 */
+	public static String join(String[] array, String separator)
+	{
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < array.length; i++)
+		{
+			if (i == array.length - 1)
+			{
+				sb.append(array[i]);
+			}
+			else
+			{
+				sb.append(array[i] + separator);
+			}
+		}
+		return sb.toString();
+	}
+	/**
+	 * Returns the length of the string
+	 * 
+	 * @param string
+	 * @return the length of the sequence of characters in the string
+	 */
+	public static int length(String string)
+	{
+		return string.length();
+	}
+	/**
+	 * Returns a string where all occurrences of the before string have been replaced with the after string.
+	 * 
+	 * @param string
+	 * @param before
+	 * @param after
+	 * @return a string where all occurrences of the <code>before</code> string have been replaced with the <code>after</code>
+	 *         string.
+	 */
+	public static String replace(String string, String before, String after)
+	{
+		return string.replaceAll(before, after);
+	}
+	/**
+	 * Returns an array consisting of splits of the string around matches of the given regular expression.
+	 * 
+	 * @param string
+	 *            The String to split
+	 * @param regEx
+	 *            regular expression
+	 * @return the array of strings computed by splitting the given string around matches of the given regular expression
+	 */
+	public static String[] split(String string, String regEx)
+	{
+		return string.split(regEx);
+	}
+	/**
+	 * Returns true if the string starts with the prefix.
+	 * 
+	 * @param string
+	 * @param prefix
+	 * @return true if the <code>string</code> starts with the <code>prefix</code>, false otherwise
+	 */
+	public static boolean startsWith(String string, String prefix)
+	{
+		return string.startsWith(prefix);
+	}
+	/**
+	 * Returns a part of the string, starting from the begin index up to and including the end index.
+	 * 
+	 * @param string
+	 *            the full String
+	 * @param begin
+	 *            the beginning index
+	 * @param end
+	 *            the end index
+	 * @return the specified substring
+	 */
+	public static String substring(String string, int begin, int end)
+	{
+		return string.substring(begin, end);
+	}
+	/**
+	 * Returns the part of the string that follows the substring.
+	 * 
+	 * @param string
+	 * @param substring
+	 * @return the part of the string that follows the substring.
+	 */
+	public static String substringAfter(String string, String substring)
+	{
+		String s = "";
+		int i = string.indexOf(substring);
+		int j = substring.length();
+		if (i > -1 && (i + j) < string.length())
+		{
+			s = string.substring(i + j);
+		}
+		return s;
+	}
+	/**
+	 * Returns the part of the string that precedes the substring.
+	 * 
+	 * @param string
+	 * @param substring
+	 * @return the part of the string that precedes the substring.
+	 */
+	public static String substringBefore(String string, String substring)
+	{
+		String s = "";
+		int i = string.indexOf(substring);
+		if (i > 0)
+		{
+			s = string.substring(0, i);
+		}
+		return s;
+	}
+	/**
+	 * Returns a string with all characters from the input string converted to lower case.
+	 * 
+	 * @param string
+	 * @return the <code>string<code>, converted to lower case
+	 */
+	public static String toLowerCase(String string)
+	{
+		return string.toLowerCase();
+	}
+	/**
+	 * Returns a string with all characters from the input string converted to upper case.
+	 * 
+	 * @param string
+	 * @return the <code>string<code>, converted to upper case
+	 */
+	public static String toUpperCase(String string)
+	{
+		return string.toUpperCase();
+	}
+	/**
+	 * Returns a string with all leading and trailing whitespace characters in the input string removed.}
+	 * 
+	 * @param string
+	 *            The String to trim
+	 * @return A copy of <code>string</code> with leading and trailing white space removed, or the <code>string</code> itself if it
+	 *         has no leading or trailing white space
+	 */
+	public static String trim(String string)
+	{
+		return string.trim();
+	}
+	/**
+	 * Concatenates the two strings
+	 * 
+	 * @param string1
+	 *            first string
+	 * @param string2
+	 *            second string
+	 * @return A String representing a concatenation of the two strings
+	 */
+	public static String concat(String string1, String string2)
+	{
+		return string1.concat(string2);
+	}
+
+	/**
+	 * Parse a String into a long number
+	 * 
+	 * @param string
+	 *            - the string to parse
+	 * 
+	 * @return the equivalent long number
+	 */
+	public static long parseLong(String string)
+	{
+		return Long.parseLong(string);
+	}
+
+	/**
+	 * Parse a String into a double number
+	 * 
+	 * @param string
+	 *            - the string to parse
+	 * 
+	 * @return the equivalent double number
+	 */
+	public static double parseDouble(String string)
+	{
+		return Double.parseDouble(string);
+	}
+
+	/**
+	 * Pad trailing spaces so that it has at least the specified length
+	 * 
+	 * @param string
+	 *            - the string to parse
+	 * @param length
+	 *            - minimum length of the string
+	 * 
+	 * @return the padded string
+	 */
+	public static String pad(String string, int length)
+	{
+		return Toolbox.pad(string, length);
+	}
+
+	/**
+	 * Truncate the String so that is has the maximum specified length
+	 * 
+	 * @param string
+	 *            - the string to parse
+	 * @param length
+	 *            - maximum length of the string
+	 * 
+	 * @return the truncated string
+	 */
+	public static String truncate(String string, int length)
+	{
+		return Toolbox.trim(string, length);
+	}
+
+	/**
+	 * Pad/truncate the String so that is has the specified length
+	 * 
+	 * @param string
+	 *            - the string to parse
+	 * @param length
+	 *            - maximum length of the string
+	 * 
+	 * @return the truncated string
+	 */
+	public static String padTruncate(String string, int length)
+	{
+		return pad(truncate(string, length), length);
+	}
+
+	/**
+	 * Return the first n characters
+	 * 
+	 * @param string
+	 *            - the string to parse
+	 * @param length
+	 *            - length
+	 * 
+	 * @return the string
+	 */
+	public static String firstChars(String string, int length)
+	{
+		if (string.length() > length)
+		{
+			return string.substring(0, length);
+		}
+		else
+		{
+			return string;
+		}
+	}
+
+	/**
+	 * Return the last n characters
+	 * 
+	 * @param string
+	 *            - the string to parse
+	 * @param length
+	 *            - length
+	 * 
+	 * @return the string
+	 */
+	public static String lastChars(String string, int length)
+	{
+		if (string.length() > length)
+		{
+			int len = string.length();
+			return string.substring(len - length, len);
+		}
+		else
+		{
+			return string;
+		}
+	}
+
+	/**
+	 * Convert a numeric into a String
+	 * 
+	 * @param d
+	 *            - double
+	 * 
+	 * @return the equivalent string
+	 */
+	public static String toStringDbl(double d)
+	{
+		BigDecimal bd = new BigDecimal(d);
+		return bd.toPlainString();
+	}
+
+	/**
+	 * Convert a numeric into a String
+	 * 
+	 * @param l
+	 *            - long
+	 * 
+	 * @return the equivalent string
+	 */
+	public static String toStringLong(long l)
+	{
+		return String.valueOf(l);
+	}
+	/**
+	 * Convert a String containing a numeric into the form x000...000nnnn where n is passed and x can be a negative sign
+	 * 
+	 * @param ns
+	 *            - string
+	 * @param len
+	 *            - length of the numeric portion without the sign
+	 * 
+	 * @return the formatted numeric string
+	 */
+	public static String formatInteger(String ns, int len)
+	{
+		return Toolbox.formatInteger(ns, len);
+	}
+	/**
+	 * Convert a String containing a numeric rate into the form x000...000nnnnmmmmmmmm000...000 where nnnn.mmmmmmmm is passed and x
+	 * can be a negative sign
+	 * 
+	 * @param ns
+	 *            - numeric string
+	 * @param intLen
+	 *            - the length of the integer part
+	 * @param decLen
+	 *            - the length of the decimal part
+	 * 
+	 * @return the formatted numeric string
+	 */
+	public static String formatDouble(String ns, int intLen, int decLen)
+	{
+		return Toolbox.formatDouble(ns, intLen, decLen);
+	}
+}

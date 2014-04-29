@@ -1,0 +1,121 @@
+package com.misys.equation.common.dao.beans;
+
+/**
+ * [ACE]Record data-model.
+ * 
+ * @author deroset
+ * 
+ */
+public class ACERecordDataModel extends AbsRecord
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: ACERecordDataModel.java 4475 2009-08-17 20:15:44Z esther.williams $";
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private final static String RECORD_NAME = "ACEPF";
+
+	private String widgetName; // ACEWID
+	private String description = ""; // ACEDES
+	private String misysSupplied = "T"; // ACEMISY
+
+	/** Prefix used for label keys, used to subset list shown in the Service Composer */
+	public final static String ACE_LABEL_PREFIX = "LAB";
+	/** Prefix used for mask keys, used to subset list shown in the Service Composer */
+	public final static String ACE_MASK_PREFIX = "MSK";
+	/** Prefix used for regular expression keys, used to subset list shown in the Service Composer */
+	public final static String ACE_REGEXP_PREFIX = "REG";
+	/** Prefix used for description keys, used to subset list shown in the Service Composer */
+	public final static String ACE_DESCRIPTION_PREFIX = "DSC";
+	/** Prefix used for valid values keys, used to subset list shown in the Service Composer */
+	public final static String ACE_VALIDVALUES_PREFIX = "VLD";
+
+	/**
+	 * Default constructor
+	 */
+	public ACERecordDataModel()
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+
+	}
+
+	/**
+	 * Construct a new ACE record
+	 * 
+	 * @param widgetName
+	 *            - the widget name
+	 */
+	public ACERecordDataModel(String widgetName)
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+		setWidgetName(widgetName);
+	}
+
+	// ---getters and setters----//
+
+	/**
+	 * Return the widget name
+	 */
+	public String getWidgetName()
+	{
+		return widgetName;
+	}
+
+	/**
+	 * Set the widget name
+	 * 
+	 * @param widgetName
+	 *            - the widget name
+	 */
+	public void setWidgetName(String widgetName)
+	{
+		this.widgetName = widgetName;
+	}
+
+	/**
+	 * Return the widget description
+	 * 
+	 * @return the widget description
+	 */
+	public String getDescription()
+	{
+		return description;
+	}
+
+	/**
+	 * Set the widget description
+	 * 
+	 * @param description
+	 *            - the widget description
+	 */
+	public void setDescription(String description)
+	{
+		this.description = description;
+	}
+
+	/**
+	 * Return the Misys supplied flag
+	 * 
+	 * @return the Misys supplied flag
+	 */
+	public String getMisysSupplied()
+	{
+		return misysSupplied;
+	}
+
+	/**
+	 * Set the Misys supplied flag
+	 * 
+	 * @param misysSupplied
+	 *            - the Misys supplied flag
+	 */
+	public void setMisysSupplied(String misysSupplied)
+	{
+		this.misysSupplied = misysSupplied;
+	}
+
+}

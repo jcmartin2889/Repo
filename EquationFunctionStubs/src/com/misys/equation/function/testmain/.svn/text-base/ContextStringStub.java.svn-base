@@ -1,0 +1,65 @@
+package com.misys.equation.function.testmain;
+
+import junit.framework.TestCase;
+
+import com.misys.equation.function.tools.ContextString;
+
+public class ContextStringStub extends TestCase
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private boolean process(String id, String context, String expected)
+	{
+		ContextString cs = new ContextString();
+		cs.parse(context);
+
+		// test for expected value
+		boolean success = cs.getContextString().equals(expected);
+
+		// not successful then print details
+		if (!success)
+		{
+			System.out.println("Id      : " + id);
+			System.out.println("Context : " + context);
+			System.out.println("Expect  : " + expected);
+		}
+
+		System.out.println("Result 1: " + cs.getContextString());
+		System.out.println("Result 2: " + cs.getLegacyContextString());
+		return success;
+	}
+
+	public void testNoLiteral()
+	{
+		String context = "A:B:C:D";
+		String expected = "'A':'B':'C':'D'";
+		boolean result = process("testNoLiteral", context, expected);
+		assertEquals(result, true);
+	}
+
+	public void testLiteral()
+	{
+		String context = "'A':'B':'C':'D'";
+		String expected = "'A':'B':'C':'D'";
+		boolean result = process("testLiteral", context, expected);
+		assertEquals(result, true);
+	}
+
+	public void testLiteral2()
+	{
+		String context = "'ABC:DEF':'BDEF'':''':'XD''ED:DED:ED':'GEDEF'";
+		String expected = "'ABC:DEF':'BDEF':'':'XD'ED:DED:ED':'GEDEF'";
+		boolean result = process("testLiteral", context, expected);
+		assertEquals(result, true);
+	}
+
+	public void testInvalidLiteral()
+	{
+		String context = "'ABC'DEF'GHI' : ABC''DEF";
+		String expected = "''ABC'DEF'GHI' ':' ABC''DEF'";
+		boolean result = process("testInvalidLiteral", context, expected);
+		assertEquals(result, true);
+	}
+
+}

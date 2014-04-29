@@ -1,0 +1,536 @@
+package com.misys.equation.common.globalprocessing.audit;
+
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+
+import com.ibm.as400.access.AS400;
+import com.ibm.as400.access.AS400FileRecordDescription;
+import com.ibm.as400.access.Record;
+import com.ibm.as400.access.RecordFormat;
+import com.ibm.as400.access.SequentialFile;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationSystem;
+import com.misys.equation.common.dao.beans.APJRecordDataModel;
+import com.misys.equation.common.dao.beans.GYRecordDataModel;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.SQLToolbox;
+import com.misys.equation.common.utilities.Toolbox;
+
+public class SAPJ10RUtils
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: SAPJ10RUtils.java 11601 2011-08-18 09:16:56Z bterrado $";
+
+	protected static final EquationLogger LOG = new EquationLogger(SAPJ10RUtils.class);
+
+	/** The clean payment API identifiers */
+	public static final List<String> CLEAN_PAYMENTS = Arrays.asList(new String[] { "DPS", "APR", "DCH", "ACR", "DHS", "AHO", "DRP",
+					"ARR", "DAS", "AAC" });
+
+	/** Customer APIs which should use customer number (GZCPNC) instead of GZCUS/GZCLC */
+	public static final List<String> CUSTOMERS = Arrays.asList(new String[] { "MCD", "MCO", "CFF", "ANX", "CDD" });
+
+	/** Sundry Selections */
+	public static final List<String> SUNDRY_SELECTION = Arrays.asList(new String[] { "SS1", "SS2", "SS3" });
+
+	/** Flag to indicate if DSAIMs should be truncated (by default, we don't truncate DSAIM) */
+	public static boolean truncateDSAIMs = false;
+
+	/**
+	 * SAPJ10R Stored Procedure parameters ordered by index.
+	 */
+	enum SAPJ10RParams
+	{
+		APJARF(java.sql.Types.CHAR, true), // Internal API Identifier - alocated by GP Team
+		APJFIL(java.sql.Types.CHAR, true), // API File name
+		MODE(java.sql.Types.CHAR, true), // Mode - 'A' for target unit, 'B' for source unit
+		FUNT(java.sql.Types.CHAR, true), // From Unit - used if mode = 'A'
+		KEYIN(java.sql.Types.CHAR, true), // Key value for database retrieval
+		DSAIM(java.sql.Types.CHAR, true), // Data structure of API details - in the CCSID of the unit
+		DSFLD(java.sql.Types.CHAR, true), // Fields to be excluded - identified by the APJPF field seq nos
+		DBREC(java.sql.Types.CHAR, true), // Record found on database? (Y,N)
+		GZLENB(java.sql.Types.DECIMAL, true), // Length of GZ record
+		DSEPMS(java.sql.Types.CHAR, true), // returned error message
+		YSTUB(java.sql.Types.CHAR, true); // For test stub use only, must be 'N'!
+
+		/** The SQL Type of this parameter */
+		private final int sqlType;
+
+		/** If this column is an SQL INOUT parameter */
+		private final boolean outParam;
+
+		private SAPJ10RParams(int sqlType, boolean outParam)
+		{
+			this.sqlType = sqlType;
+			this.outParam = outParam;
+		}
+
+		/**
+		 * Returns the Stored Procedure index.
+		 */
+		public int index()
+		{
+			return ordinal() + 1;
+		}
+
+		public int getSqlType()
+		{
+			return this.sqlType;
+		}
+
+		public boolean isOutParam()
+		{
+			return outParam;
+		}
+	}
+
+	public static String prepareExcludeParams(List<APJRecordDataModel> apiFields, Set<String> includedFields,
+					Set<String> excludedFields)
+	{
+		// determine the total number of API fields based on the last sequence number
+		final APJRecordDataModel lastField = apiFields.get(apiFields.size() - 1);
+
+		// if "include" set is empty, then assume this is an 'include all fields' rule
+		final boolean includeAllFields = includedFields.isEmpty();
+
+		// construct a string of '0's (if rule is 'include') or '1's (if rule is 'exclude')
+		final int maxAPISeq = Integer.parseInt(lastField.getApiFieldSequence());
+		final StringBuilder exclude = new StringBuilder();
+		for (int i = 0; i < maxAPISeq; i++)
+		{
+			exclude.append((includeAllFields ? "0" : "1"));
+		}
+
+		// toggle the values depending on whether they are included / excluded
+		for (APJRecordDataModel apiField : apiFields)
+		{
+			final int fieldSequence = Integer.parseInt(apiField.getApiFieldSequence());
+
+			if (includeAllFields)
+			{
+				if (excludedFields.contains(apiField.getApiFieldName()))
+				{
+					// exclude this field
+					exclude.setCharAt(fieldSequence - 1, '1');
+				}
+			}
+			else
+			{
+				if (includedFields.contains(apiField.getApiFieldName()))
+				{
+					// include this field
+					exclude.setCharAt(fieldSequence - 1, '0');
+				}
+			}
+
+			// safety net: only 'DB' control-type fields with a non-'BIO' (Before Image Only) may be excluded!
+			// Neither is it possible to exclude any GS fields.
+			if (!"DB".equals(apiField.getControlType()) || "BIO".equals(apiField.getSubControlType())
+							|| apiField.getApiFieldName().startsWith("GS"))
+			{
+				// can't exclude this field even if rule specifies to do so!
+				exclude.setCharAt(fieldSequence - 1, '0');
+			}
+		}
+
+		// return the resulting string sequence
+		return exclude.toString();
+	}
+
+	@SuppressWarnings("unchecked")
+	static <T> List<T> coerce(List genericList)
+	{
+		return genericList;
+	}
+
+	private static void updateGAUPF(EquationStandardSession session, long auditHeaderId, AuditStatus status) throws EQException
+	{
+		String updateSQL = "UPDATE GAUPF SET GAUSTS = '" + status.getValue() + "' WHERE GAUSEQ = " + auditHeaderId;
+		GlobalAuditUtils.updateGlobalGeneric(session, updateSQL);
+
+	}
+
+	private static void insertGAAPF(EquationStandardSession session, long auditHeaderId, AuditStatus status, ApplyType applyType,
+					String errorMessage) throws EQException
+	{
+		GlobalAuditUtils.insertPropData(session, auditHeaderId, status, applyType, errorMessage);
+	}
+
+	static void updateAuditTables(EquationStandardSession session, long auditHeaderId, AuditStatus auditStatus,
+					ApplyType applyType, String errorMessage) throws EQException
+	{
+		session.startEquationTransaction();
+		SAPJ10RUtils.updateGAUPF(session, auditHeaderId, auditStatus);
+		SAPJ10RUtils.insertGAAPF(session, auditHeaderId, auditStatus, applyType, errorMessage);
+		session.endEquationTransaction();
+	}
+
+	public static SAPJ10RDS callStoredProcSAPJ10R(EquationStandardSession session, String apiarf, String apifil, String mode,
+					String funt, String keyin, byte[] dsaim, String dsfld) throws EQException
+	{
+		// retrieve session connection
+		final Connection toCon = session.getConnection();
+		final SAPJ10RDS dsaimDS = new SAPJ10RDS();
+
+		// special case: SS1, SS2, and SS3 should use API ref of "SS"
+		if (SUNDRY_SELECTION.contains(apiarf))
+		{
+			// SS1 to SS3 all use 'SS' API REF type...
+			apiarf = "SS";
+		}
+
+		CallableStatement cs = null;
+		try
+		{
+			/*
+			 * The program to call from the applicator is named SAPJ10R with a parameter list of the following – all fields are
+			 * character: C *ENTRY PLIST C PARM #APJARF C PARM #APJFIL C PARM #MODE 1 C PARM #FUNT 3 C PARM @KEYIN 20 C PARM DSAIM C
+			 * PARM DSEPMS
+			 */
+			cs = toCon.prepareCall("CALL KLIB" + session.getUnitId().trim() + "/SAPJ10RPRC (?,?,?,?,?,?,?,?,?,?,?)");
+
+			// set out parameters
+			for (SAPJ10RUtils.SAPJ10RParams param : SAPJ10RUtils.SAPJ10RParams.values())
+			{
+				if (param.isOutParam())
+				{
+					cs.registerOutParameter(param.index(), param.getSqlType(), param.name());
+				}
+			}
+
+			// setup parameters
+			cs.setString(SAPJ10RUtils.SAPJ10RParams.APJARF.index(), Toolbox.pad(apiarf, 10));
+			cs.setString(SAPJ10RUtils.SAPJ10RParams.APJFIL.index(), Toolbox.pad(apifil, 10));
+			cs.setString(SAPJ10RUtils.SAPJ10RParams.MODE.index(), Toolbox.pad(mode, 1));
+			cs.setString(SAPJ10RUtils.SAPJ10RParams.FUNT.index(), Toolbox.pad(funt, 3));
+			cs.setString(SAPJ10RUtils.SAPJ10RParams.KEYIN.index(), Toolbox.pad(keyin.trim(), 35));
+			cs.setBytes(SAPJ10RUtils.SAPJ10RParams.DSAIM.index(), dsaim);
+			cs.setString(SAPJ10RUtils.SAPJ10RParams.DSFLD.index(), Toolbox.pad(dsfld, 1000));
+			cs.setString(SAPJ10RUtils.SAPJ10RParams.DBREC.index(), Toolbox.pad("", 1));
+			cs.setInt(SAPJ10RUtils.SAPJ10RParams.GZLENB.index(), dsaim != null ? dsaim.length : 0);
+			cs.setString(SAPJ10RUtils.SAPJ10RParams.DSEPMS.index(), Toolbox.pad("", 37));
+			cs.setString(SAPJ10RUtils.SAPJ10RParams.YSTUB.index(), "N"); // this is not the test stub!
+
+			if (LOG.isDebugEnabled())
+			{
+				LOG.debug("Calling SAPJ10R: " + ("apiarf=" + apiarf) //
+								+ (", apifil=" + apifil) //
+								+ (", mode=" + mode) //
+								+ (", funt=" + funt) //
+								+ (", keyin=" + keyin) //
+								+ (", dsaim=" + (dsaim != null ? Toolbox.cvtBytesToHexString(dsaim) : "null"))//
+								+ (", dsfld=" + dsfld));
+			}
+
+			// call SAPJ10R!
+			cs.execute();
+
+			// retrieve output parameters
+
+			dsaimDS.setDsaimLength(Integer.parseInt(cs.getString(SAPJ10RUtils.SAPJ10RParams.GZLENB.name()).trim()));
+			dsaimDS.setMode(cs.getString(SAPJ10RUtils.SAPJ10RParams.MODE.name()));
+			byte[] outDSAIM = cs.getBytes(SAPJ10RUtils.SAPJ10RParams.DSAIM.name());
+			dsaimDS.setErrorMessage(cs.getString(SAPJ10RUtils.SAPJ10RParams.DSEPMS.name()));
+			dsaimDS.setRecordFound("Y".equalsIgnoreCase(cs.getString(SAPJ10RUtils.SAPJ10RParams.DBREC.name())));
+			dsaimDS.setExcludedFields(cs.getString(SAPJ10RUtils.SAPJ10RParams.DSFLD.name()));
+			// error message should be blank (i.e., no error message) to be considered valid
+			dsaimDS.setValid(dsaimDS.getErrorMessage() != null && "".equals(dsaimDS.getErrorMessage().trim()));
+
+			// truncate DSAIM
+			if (truncateDSAIMs && dsaimDS.getDsaimLength() < outDSAIM.length)
+			{
+				// truncated length is length of GZ record
+				final int truncatedLength = dsaimDS.getDsaimLength();
+
+				// special condition for GZVF1P: SAPJ returns additional data containing the indicators at the very end of DSAIM, so
+				// DO NOT TRUNCATE for that case!
+				if (!"GZVF1P".equals(apifil))
+				{
+					final byte[] truncatedDSAIM = new byte[truncatedLength];
+					System.arraycopy(outDSAIM, 0, truncatedDSAIM, 0, truncatedDSAIM.length);
+					outDSAIM = truncatedDSAIM;
+				}
+
+				// ##FIXME: We also should not truncate DSAIMs that contain GS records either; however, since we're not truncating
+				// records currently (truncateDSAIMs == false), this can be implemented at a future stage.
+			}
+
+			// clean payments special processing for "After" images?
+			if ("A".equals(mode) && DSAIMUtilForCleanPayments.requiresProcessing(apiarf))
+			{
+				// process the DSAIM's GS records
+				outDSAIM = DSAIMUtilForCleanPayments.processDSAIM(session, outDSAIM, dsaimDS.getDsaimLength(), apiarf, keyin);
+			}
+
+			// store returned DSAIM into data structure
+			dsaimDS.setApiData(outDSAIM);
+
+			if (LOG.isDebugEnabled())
+			{
+				LOG.debug("SAPJ10RPRC return results:" //
+								+ ("\n  MODE   = " + dsaimDS.getMode()) //
+								+ ("\n  DSAIM  = " + Arrays.toString(dsaimDS.getApiData())) //
+								+ ("\n  DBREC  = " + dsaimDS.isRecordFound()) //
+								+ ("\n  DSEPMS = " + dsaimDS.getErrorMessage()));
+			}
+		}
+		catch (SQLException e)
+		{
+			if (LOG.isDebugEnabled())
+			{
+				LOG.debug("SQL error calling SAPJ10R.", e);
+			}
+
+			dsaimDS.setErrorMessage(e.getMessage());
+			dsaimDS.setValid(false);
+		}
+		finally
+		{
+			SQLToolbox.close(cs);
+		}
+
+		// return encapsulated result
+		return dsaimDS;
+	}
+
+	public static String prepareKeyInParam(List<APJRecordDataModel> keyFields, ResultSet gzRecord) throws EQException, SQLException
+	{
+		final StringBuilder keyIn = new StringBuilder();
+		for (APJRecordDataModel field : keyFields)
+		{
+			// get corresponding value, in string format
+			final Object gzValue = gzRecord.getObject(field.getApiFieldName());
+
+			if (gzValue == null)
+			{
+				throw new EQException("API Field '" + field.getApiFieldName() + "' was not found in GZ Recordset!");
+			}
+
+			if ("A".equals(field.getApiFieldType()))
+			{
+				// Text type -- append to 'keyIn' as text
+				keyIn.append(Toolbox.leftPad(gzValue.toString(), " ", Integer.parseInt(field.getApiFieldLength())));
+			}
+			else
+			{
+				// data type not yet implemented!
+				throw new EQException("API Field type '" + field.getApiFieldType() + "' not yet supported!");
+			}
+		}
+
+		// return the constructed 'key in' value
+		return keyIn.toString();
+	}
+
+	public static String extractKeyIn(EquationStandardSession session, String unit, String filename, long rrn, int apiLength,
+					int apiKeyStart, int unitCCSID, String apiIdentifier) throws EQException
+	{
+		if (CLEAN_PAYMENTS.contains(apiIdentifier))
+		{
+			return extractCleanPaymentsKeyIn(session, rrn, apiIdentifier);
+		}
+		else if (CUSTOMERS.contains(apiIdentifier))
+		{
+			if ("GZG011".equals(filename) || "GZG261".equals(filename))
+			{
+				// Customer APIs should use customer number (GZCPNC)
+				return (String) UnitAuditUtils.runUnitGenericQuery(session,
+								"SELECT GZCPNC FROM " + filename + " WHERE RRN(" + filename + ") = " + rrn).get(0)[0];
+			}
+			else
+			{
+				// get GFCPNC from GFPF
+				final List<Object[]> records = UnitAuditUtils.runUnitGenericQuery(session, "SELECT GFCPNC FROM " + filename
+								+ ", GFPF WHERE GFCLC = GZCLC AND GFCUS = GZCUS AND RRN(" + filename + ") = " + rrn);
+
+				if (records.isEmpty())
+				{
+					// no data?!?
+					return null;
+				}
+
+				// must join CLC/CUS with GFPF to get CPNC
+				return (String) records.get(0)[0];
+			}
+		}
+		else if ("ABR".equalsIgnoreCase(apiIdentifier))
+		{
+			return (String) UnitAuditUtils.runUnitGenericQuery(session,
+							"SELECT GZREF || RIGHT(DIGITS(GZDTE), 7) FROM GZO061 WHERE RRN(GZO061) = " + rrn).get(0)[0];
+		}
+		else if ("CAA".equalsIgnoreCase(apiIdentifier))
+		{
+			final List<Object[]> records = UnitAuditUtils.runUnitGenericQuery(session,
+							"SELECT GFCPNC || GZPRM FROM GZH601, GFPF WHERE RRN(GZH601) = " + rrn
+											+ " AND GFCLC = GZCLC AND GFCUS = GZCUS");
+
+			if (records.isEmpty())
+			{
+				// no data?!?
+				return null;
+			}
+
+			return (String) records.get(0)[0];
+		}
+		else if ("D".equals(apiIdentifier))
+		{
+			return (String) UnitAuditUtils.runUnitGenericQuery(session,
+							"SELECT SUBSTR(VFDATA,5,5) FROM GZVF1P WHERE RRN(GZVF1P) = " + rrn).get(0)[0];
+		}
+
+		final EquationSystem eqSystem = session.getUnit().getEquationSystem();
+		final AS400 as400 = eqSystem.getAS400();
+
+		String keyIn = "";
+		try
+		{
+			final String library = "KINP" + unit;
+			final String filePath = "/QSYS.LIB/" + library + ".LIB/" + filename + ".FILE";
+			final SequentialFile myFile = new SequentialFile(as400, filePath + "/%FILE%.MBR");
+			try
+			{
+				final RecordFormat rf = new AS400FileRecordDescription(as400, filePath).retrieveRecordFormat()[0];
+				myFile.setRecordFormat(rf);
+				myFile.open();
+
+				final Record r = myFile.read(((Number) rrn).intValue());
+				byte[] data = r.getContents();
+				byte[] keyData = new byte[apiLength];
+				System.arraycopy(data, apiKeyStart - 1, keyData, 0, apiLength);
+
+				// store key in as a 'text' field
+				keyIn = Toolbox.convertAS400TextIntoCCSID(keyData, apiLength, unitCCSID);
+			}
+			finally
+			{
+				myFile.close();
+			}
+		}
+		catch (Exception e)
+		{
+			// error accessing file! wrap errors in EQException
+			throw new EQException(e);
+		}
+		finally
+		{
+			eqSystem.returnAS400(as400);
+		}
+
+		return keyIn;
+	}
+
+	/**
+	 * Specialised version for creating keys for the clean payment APIs.
+	 * 
+	 * @param session
+	 *            The session to execute a query on
+	 * @param rrn
+	 *            The Relative Record Number (RRN) of the GZ record.
+	 * @param apiIdentifier
+	 *            The API Identifier (APVARF)
+	 * @return The KEYIN for use with SAPI for the relevant record
+	 * @throws EQException
+	 *             If any errors occur extracting the key in value.
+	 */
+	private static String extractCleanPaymentsKeyIn(EquationStandardSession session, long rrn, String apiIdentifier)
+					throws EQException
+	{
+		if ("DPS".equalsIgnoreCase(apiIdentifier))
+		{
+			return (String) UnitAuditUtils.runUnitGenericQuery(session, "SELECT GZPSET FROM GZK541 WHERE RRN(GZK541) = " + rrn)
+							.get(0)[0];
+		}
+		else if ("APR".equalsIgnoreCase(apiIdentifier))
+		{
+			return (String) UnitAuditUtils.runUnitGenericQuery(session,
+							"SELECT GZPSET || RIGHT(DIGITS(GZSQ), 3) FROM GZK781 WHERE RRN(GZK781) = " + rrn).get(0)[0];
+		}
+		else if ("DCH".equalsIgnoreCase(apiIdentifier))
+		{
+			return (String) UnitAuditUtils.runUnitGenericQuery(session,
+							"SELECT GZCRST || GZCUS || GZCLC || GZCTP FROM GZK551 WHERE RRN(GZK551) = " + rrn).get(0)[0];
+		}
+		else if ("ACR".equalsIgnoreCase(apiIdentifier))
+		{
+			return (String) UnitAuditUtils.runUnitGenericQuery(
+							session,
+							"SELECT GZCRST || GZCUST || GZCLOC || GZCTP || RIGHT(DIGITS(GZSQ), 3) FROM GZK781 WHERE RRN(GZK781) = "
+											+ rrn).get(0)[0];
+		}
+		else if ("DHS".equalsIgnoreCase(apiIdentifier))
+		{
+			return (String) UnitAuditUtils.runUnitGenericQuery(session, "SELECT GZHSET FROM GZK561 WHERE RRN(GZK561) = " + rrn)
+							.get(0)[0];
+		}
+		else if ("AHO".equalsIgnoreCase(apiIdentifier))
+		{
+			return (String) UnitAuditUtils.runUnitGenericQuery(session,
+							"SELECT GZHSET || RIGHT(DIGITS(GZSQ), 3) FROM GZK801 WHERE RRN(GZK801) = " + rrn).get(0)[0];
+		}
+		else if ("DRP".equalsIgnoreCase(apiIdentifier))
+		{
+			return (String) UnitAuditUtils.runUnitGenericQuery(session, "SELECT GZRPST FROM GZK571 WHERE RRN(GZK571) = " + rrn)
+							.get(0)[0];
+		}
+		else if ("ARR".equalsIgnoreCase(apiIdentifier))
+		{
+			return (String) UnitAuditUtils.runUnitGenericQuery(session,
+							"SELECT GZRPST || RIGHT(DIGITS(GZSQ), 3) FROM GZK811 WHERE RRN(GZK811) = " + rrn).get(0)[0];
+		}
+		else if ("DAS".equalsIgnoreCase(apiIdentifier))
+		{
+			return (String) UnitAuditUtils.runUnitGenericQuery(session, "SELECT GZASET FROM GZK581 WHERE RRN(GZK581) = " + rrn)
+							.get(0)[0];
+		}
+		else if ("AAC".equalsIgnoreCase(apiIdentifier))
+		{
+			return (String) UnitAuditUtils.runUnitGenericQuery(session,
+							"SELECT GZASET || RIGHT(DIGITS(GZSQ), 3) FROM GZK821 WHERE RRN(GZK821) = " + rrn).get(0)[0];
+		}
+		else
+		{
+			throw new EQException(String.format("[%s] is not a Clean Payments API!", apiIdentifier));
+		}
+	}
+
+	public static long getRRN(EquationStandardSession session, GYRecordDataModel gyRecord, String apiFile) throws EQException
+	{
+		long rrn = 0;
+
+		final String query;
+		if (!"GZVF1P".equals(apiFile))
+		{
+			query = "SELECT RRN(" + apiFile + ") FROM " + apiFile + //
+							" WHERE GZWSID='" + SQLToolbox.replaceSingleQuote(gyRecord.getWorkstationId()) + "'" + //
+							" AND GZDIM =" + gyRecord.getDayInMonth() + //
+							" AND GZTIM =" + gyRecord.getTimeHhmmss() + //
+							" AND GZSEQ=" + gyRecord.getSequenceNumber() + //
+							" ORDER BY GZIMG" + //
+							" FETCH FIRST 1 ROW ONLY";
+		}
+		else
+		{
+			query = "SELECT RRN(" + apiFile + ") FROM " + apiFile + //
+							" WHERE VFWSD='" + SQLToolbox.replaceSingleQuote(gyRecord.getWorkstationId()) + "'" + //
+							" AND VFDIM =" + gyRecord.getDayInMonth() + //
+							" AND VFTIM =" + gyRecord.getTimeHhmmss() + //
+							" AND VFSEQ=" + gyRecord.getSequenceNumber() + //
+							" ORDER BY VFIMG" + //
+							" FETCH FIRST 1 ROW ONLY";
+		}
+
+		List<Object[]> results = UnitAuditUtils.runUnitGenericQuery(session, query);
+		if (results.size() > 0 && results.get(0).length > 0)
+		{
+			String strRRN = results.get(0)[0].toString().trim();
+			rrn = Long.parseLong(strRRN.trim());
+		}
+		return rrn;
+	}
+}

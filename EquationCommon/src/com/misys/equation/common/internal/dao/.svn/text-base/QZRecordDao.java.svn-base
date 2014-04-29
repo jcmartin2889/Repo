@@ -1,0 +1,242 @@
+package com.misys.equation.common.internal.dao;
+
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+
+import com.misys.equation.common.dao.IQZRecordDao;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.dao.beans.QZRecordDataModel;
+import com.misys.equation.common.internal.dao.mappers.QZRecordRowMapper;
+
+/**
+ * This the QZ-Record Dao implementation. <br>
+ * This class is going to provide all back-end services for QZ-Record.
+ * 
+ * @author deroset
+ */
+public class QZRecordDao extends AbsEquationDao implements IQZRecordDao
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	public QZRecordDao()
+	{
+		super();
+	}
+
+	/**
+	 * This method will check if the current record was already set in the database. <br>
+	 * The Sql <code>SELECT COUNT(*)</code> query will be executed.
+	 * 
+	 * @param sqlWhereStatement
+	 *            - the WHERE clause of the SQL statement
+	 * 
+	 * @return true if the SQL statement returns a count >= 1
+	 */
+	public boolean checkIfThisQZRecordIsInTheDB(String sqlWhereStatement)
+	{
+		return checkIfThisRecordIsInTheDB(sqlWhereStatement);
+	}
+
+	/**
+	 * This method will check if the current record was already set in the database. <br>
+	 * The Sql <code>SELECT COUNT(*)</code> query will be executed.
+	 * 
+	 * @return true if the SQL statement returns a count >= 1
+	 */
+	public boolean checkIfThisQZRecordIsInTheDB()
+	{
+		return checkIfThisRecordIsInTheDB(getWhereConditionBaseOnIdRecord());
+	}
+
+	/**
+	 * This method will return an instance of the preset data model.
+	 * 
+	 * @return an instance of the preset data model.
+	 */
+	public QZRecordDataModel getMyDataModel()
+	{
+		QZRecordDataModel QZRecordDataModel = null;
+		AbsRecord record = getRecord();
+
+		if (record instanceof QZRecordDataModel)
+		{
+			QZRecordDataModel = (QZRecordDataModel) getRecord();
+		}
+		return QZRecordDataModel;
+	}
+
+	/**
+	 * This method will return a <code>Map</code> of QZ records given an SQL where clause
+	 * 
+	 * @return a map of the data model records keyed by the field name (QZFLN)
+	 */
+	@SuppressWarnings("unchecked")
+	public Map<String, QZRecordDataModel> getQZRecordBy(String whereClause)
+	{
+		StringBuilder sqlBuilder = new StringBuilder(1024);
+		List<QZRecordDataModel> dataModels = null;
+
+		sqlBuilder.append("SELECT  QZFLN, QZPOS, QZLGTD, QZARA, QZTYP, QZSGP, QZDES, QZREL, QZTXT, QZBLN, QZALM, QZPHS, QZVLD, QZLLM, QZULM, QZPVMV, QZDCD, QZPAV, QZRFLN, QZDFT FROM "
+						+ getTableName() + " WHERE ");
+		sqlBuilder.append(whereClause);
+		JdbcTemplate select = getJdbcTemplate();
+		dataModels = select.query(sqlBuilder.toString(), new QZRecordRowMapper());
+		return createHashTableModel(dataModels);
+	}
+
+	/**
+	 * This method will return a Map of QZ records
+	 * 
+	 * @return a map of the data model records keyed by the field name (QZFLN)
+	 */
+	@SuppressWarnings("unchecked")
+	public Map<String, QZRecordDataModel> getQZRecord()
+	{
+		StringBuilder sqlBuilder = new StringBuilder(1024);
+		List<QZRecordDataModel> dataModels = null;
+
+		sqlBuilder.append("SELECT  QZFLN, QZPOS, QZLGTD, QZARA, QZTYP, QZSGP, QZDES, QZREL, QZTXT, QZBLN, QZALM, QZPHS, QZVLD, QZLLM, QZULM, QZPVMV, QZDCD, QZPAV, QZRFLN, QZDFT FROM "
+						+ getTableName());
+		JdbcTemplate select = getJdbcTemplate();
+		dataModels = select.query(sqlBuilder.toString(), new QZRecordRowMapper());
+		return createHashTableModel(dataModels);
+	}
+
+	/**
+	 * This method will return a <code>String</code> which represents and sql where condition base on the record id.<br>
+	 * For example <code>id = getDataModel.getId()</code>
+	 * 
+	 * @return a <code>String</code> which represents and sql filter.
+	 */
+	@Override
+	protected String getWhereConditionBaseOnIdRecord()
+	{
+		StringBuilder whereCondition = new StringBuilder("QZFLN='");
+		whereCondition.append(getMyDataModel().getFieldName());
+		whereCondition.append("' ");
+		return whereCondition.toString();
+	}
+
+	/**
+	 * Returns a list of name and ? pairs in the format of:
+	 * <p>
+	 * field1=?, field2=?, field3=?, ...
+	 * 
+	 * @return a list of name and ? pairs
+	 */
+	@Override
+	protected String getParameterizedFields()
+	{
+		String fields = " QZFLN=?, QZPOS=?, QZLGTD=?, QZARA=?, QZTYP=?, QZSGP=?, QZDES=?, QZREL=? , QZTXT=? , QZBLN=? , QZALM=?, QZPHS=?, QZVLD=?, QZLLM=?, QZULM=? , QZPVMV=?, QZDCD=?, QZPAV=?, QZRFLN=?, QZDFT=? ";
+		return fields;
+	}
+
+	/**
+	 * Returns a list of the filed's name
+	 * 
+	 * @return a list of the filed's name
+	 */
+	@Override
+	protected String getFields()
+	{
+		String fields = " QZFLN, QZPOS, QZLGTD, QZARA, QZTYP, QZSGP, QZDES, QZREL, QZTXT, QZBLN, QZALM, QZPHS, QZVLD, QZLLM, QZULM, QZPVMV, QZDCD, QZPAV, QZRFLN, QZDFT ";
+		return fields;
+	}
+
+	/**
+	 * Returns a list of the filed's parameters
+	 * 
+	 * @return the list of the filed's parameters
+	 */
+	@Override
+	protected String getParameters()
+	{
+		String fields = " ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ";
+		return fields;
+	}
+
+	/**
+	 * This method create an array that contains the fields values and Its types. <br>
+	 * It will be used by jdbc <code>PreparedStatement</code>
+	 * 
+	 * @return An array that contains the fields values and Its types.
+	 */
+	@Override
+	public Object[] getParameterizedFieldsValues()
+	{
+		QZRecordDataModel dataModel = getMyDataModel();
+
+		Object[] object = new Object[] { dataModel.getFieldName(), dataModel.getFieldPosition(), dataModel.getFieldLength(),
+						dataModel.getDataarea(), };
+
+		return object;
+	}
+
+	/**
+	 * This method is going execute a Sql query using the filter criteria.
+	 * 
+	 * @param whereClause
+	 *            this is the <code>String</code> that represent the sql filter.
+	 * @return a <code>List</code> which contains a records
+	 */
+	public List<AbsRecord> getRecordBy(String whereClause)
+	{
+		return getRecordBy(whereClause, new QZRecordRowMapper());
+	}
+
+	/**
+	 * This method is going to get all records.
+	 * 
+	 * @return a <code>List</code> which contains a records
+	 */
+	public List<AbsRecord> getRecords()
+	{
+		return getRecordBy(null, new QZRecordRowMapper());
+	}
+
+	/**
+	 * This method is going to return a <code>QZRecordDataModel</code> base on QZFID
+	 * 
+	 * @return a <code>QZRecordDataModel</code> base on QZFID
+	 */
+	public QZRecordDataModel getQZRecordByQZFID()
+	{
+		QZRecordDataModel QZRecordDataModel = null;
+		List<AbsRecord> results = getRecordBy(getWhereConditionBaseOnIdRecord(), new QZRecordRowMapper());
+
+		if (!results.isEmpty())
+		{
+			QZRecordDataModel = (QZRecordDataModel) results.get(0);
+		}
+		return QZRecordDataModel;
+	}
+	/**
+	 * This is a internal helper method which create a <code>Hashtable</code> <br>
+	 * which contains a record of <code>QZRecordDataModel</code>
+	 * 
+	 * @param dataModels
+	 *            record of <code>QZRecordDataModel</code>.
+	 * @return a <code>Hashtable</code> which contains a <code>QZRecordDataModel</code> objects.
+	 */
+	private Hashtable<String, QZRecordDataModel> createHashTableModel(List<QZRecordDataModel> dataModels)
+	{
+		Hashtable<String, QZRecordDataModel> modelTable = new Hashtable<String, QZRecordDataModel>();
+
+		for (QZRecordDataModel record : dataModels)
+		{
+			modelTable.put(record.getFieldName(), record);
+		}
+
+		return modelTable;
+	}
+
+	@Override
+	protected Hashtable<String, AbsRecord> createHashtableRecordModel(List<AbsRecord> records)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+}

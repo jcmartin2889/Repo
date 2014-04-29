@@ -1,0 +1,393 @@
+package com.misys.equation.common.access;
+
+import java.sql.CallableStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.internal.eapi.core.EQMessage;
+import com.misys.equation.common.language.LanguageResources;
+import com.misys.equation.common.utilities.EqTimingTest;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.SQLToolbox;
+import com.misys.equation.common.utilities.Toolbox;
+
+public class Equation38Session extends AbsEquationStandardSession
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: Equation38Session.java 15717 2013-04-30 15:46:31Z whittap1 $";
+
+	private static final EquationLogger LOG = new EquationLogger(Equation38Session.class);
+
+	/**
+	 * Construct an Equation4Session using the supplied connection
+	 * 
+	 * @param user
+	 *            An EquationUser
+	 * @param connectionWrapper
+	 *            An EquationConnectionWrapper with the connection to use
+	 * @throws EQException
+	 */
+	public Equation38Session(EquationUser user, EquationConnectionWrapper connectionWrapper) throws EQException
+	{
+		super(user, connectionWrapper);
+	}
+
+	/**
+	 * Construct an Equation4Session using a connection from the unit's Equation session pool
+	 * 
+	 * @param unit
+	 * @throws EQException
+	 */
+	public Equation38Session(EquationUnit unit) throws EQException
+	{
+		super(unit);
+	}
+
+	/**
+	 * Create instance of CallableStatement based on the argument provided.
+	 * 
+	 * @throws EQException
+	 */
+	@Override
+	protected Statement getEqStatement(EQStatementType type) throws EQException
+	{
+		Statement s = null;
+		try
+		{
+			switch (type)
+			{
+				// Get us the CC API caller
+				case CC_API_CALLER:
+					s = getConnection().prepareCall("CALL EQTXM(?, ?, ?, ?)");
+					break;
+				// Get us the Transaction API caller
+				case TRANSACTION_API_CALLER:
+					s = getConnection().prepareCall(
+									"{ CALL X56HMRPRC (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) }");
+					break;
+				// Get us the Enquiry API caller
+				case ENQUIRY_API_CALLER:
+					s = getConnection().prepareCall("{ CALL X46HMRPRC (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) }");
+					break;
+				// Get us the Validate API caller
+				case VALIDATE_API_CALLER:
+					s = getConnection().prepareCall("{ CALL UTW06RPRC (?, ?, ?, ?, ?, ?, ?, ?) }");
+					break;
+				// Get us the Multiple Validate API caller
+				case MULTIPLE_VALIDATE_API_CALLER:
+					s = getConnection().prepareCall("{ CALL UTW61RPRC (?, ?) }");
+					break;
+				// Get us the Supervisor validation caller
+				case SUPERVISOR_CALLER:
+					s = getConnection().prepareCall("{ CALL UTW21RPRC (?, ?, ?, ?) }");
+					break;
+				// Get us the GH update caller
+				case GH_UPDATE_CALLER:
+					s = getConnection().prepareCall("{ CALL SGH02RPRC (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) }");
+					break;
+				// Get us the Retrieve data area API
+				case RETRIEVE_DATAAREA:
+					s = getConnection().prepareCall("{ CALL UTW52RPRC (?, ?) }");
+					break;
+				// Get us the path calculator API
+				case RETRIEVE_OBJECT_PATH:
+					s = getConnection().prepareCall("{ CALL UTW53CPRC (?, ?, ?, ?, ?) }");
+					break;
+				// Get us the CRM API
+				case CRM_LIMIT_API_CALLED:
+					s = getConnection().prepareCall("{ CALL UTW54RPRC (?, ?, ?) }");
+					break;
+				// Get us the inter-branch authority API
+				case USER_INTERBRANCH_AUTH:
+					s = getConnection().prepareCall("{ CALL UTW57RPRC (?, ?, ?) }");
+					break;
+				// Get us the PV Meta data caller
+				case PV_METADATA_API_CALLER:
+					s = getConnection().prepareCall("{ CALL UTW19RPRC (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) }");
+					break;
+				// Get us the enhancement check caller UTW58R
+				case UTW58R:
+					s = getConnection().prepareCall("{ CALL UTW58RPRC (?, ?, ?) }");
+					break;
+			}
+
+			switch (type)
+			{
+				// Get us a simple command to determine if the system is valid
+				case GET_OBJECT_LIBRARY_CALLER:
+					s = getConnection().prepareCall("{ CALL " + unit.getSystem().getBaseLibrary() + "/GETLIBPRC (?, ?, ?) }");
+					break;
+				// Get us a simple command to determine if the system is valid
+				case QUICK_COMMAND:
+					s = getConnection().prepareStatement(SQLToolbox.getQcmdexcString(CMD_DUMMY_QUICK));
+					break;
+				// Get us the enhancement check caller UTR00R
+				case ENHANCEMENT_CHECKER_CALLER:
+					s = getConnection().prepareCall("{ CALL UTR00RPRC (?, ?) }");
+					break;
+			}
+		}
+		catch (SQLException sqle)
+		{
+			throw new EQException(sqle);
+		}
+
+		return s;
+	}
+
+	/**
+	 * Call X56HMR to execute an <code>EquationStandardTransaction</code>
+	 * 
+	 * @param transaction
+	 *            - the transaction to execute
+	 * @param mode
+	 *            - the mode to call X56 in
+	 */
+	@Override
+	protected EquationStandardTransaction callX56HMR(EquationStandardTransaction transaction, String mode) throws EQException
+	{
+		String rpgm = "";
+		String wsid = "";
+		String usid = "";
+		String suid = "";
+		String spwd = "";
+		String jtt = "";
+		byte[] gza = null;
+		byte[] gzb = null;
+		byte[] dsgyctr = null;
+		byte[] dsgydet = null;
+		String rrec = "";
+		String aoe = "";
+		String aow = "";
+		byte[] crm = null;
+		String aext = "";
+		String arec = "";
+		String beforeGzDsStr = "";
+		try
+		{
+			// print timing test
+			EqTimingTest.printStartTime("Equation38Session.callX56HMR()", transaction.getAPIName());
+
+			// Set the H56 parameter variables
+			byte[] blankByte = { 0x40 };
+			rpgm = transaction.getAPIName();
+			usid = getEquationUserId();
+			wsid = transaction.getWorkStationId(); // workstation id
+			jtt = transaction.getMode(); // transaction type (A, M, ...)
+			gza = transaction.getBytes();
+
+			// before image
+			gzb = transaction.getBeforeImage();
+			if (gzb == null)
+			{
+				gzb = blankByte;
+			}
+
+			// gy control
+			if (transaction.getDsgyCtr() == null)
+			{
+				dsgyctr = blankByte;
+			}
+			else
+			{
+				dsgyctr = transaction.getDsgyCtr().getBytes();
+			}
+
+			// gy details
+			if (transaction.getDsgyDet() == null)
+			{
+				dsgydet = blankByte;
+			}
+			else
+			{
+				dsgydet = transaction.getDsgyDet().getBytes();
+			}
+
+			rrec = "";
+			if (mode.equals(IEquationStandardObject.FCT_VAL))
+			{
+				rrec = mode; // Validate - see EQ Journal File definition manual
+			}
+			if (mode.equals(IEquationStandardObject.FCT_RTV))
+			{
+				jtt = mode; // Retrieval - see EQ Journal File definition manual
+			}
+			if (transaction.getAPIName().startsWith("K61A") && mode.equals(IEquationStandardObject.FCT_RTV)
+							&& transaction.getByteCP() != 0x20)
+			{
+				jtt = "R"; // Clean Payments retrieval mode
+			}
+			// output parameters
+			aoe = ""; // Error message
+			aow = ""; // Warning messages
+			suid = "";
+			spwd = "";
+			crm = blankByte;
+			aext = transaction.getAext();
+			arec = transaction.getArec();
+
+			if (equationTransactionAPICaller == null)
+			{
+				equationTransactionAPICaller = (CallableStatement) getEqStatement(EQStatementType.TRANSACTION_API_CALLER);
+			}
+			// Set the X56 parameter variables in the X56 SQL procedure
+			equationTransactionAPICaller.setString(1, Toolbox.trim(rpgm, 10));
+			equationTransactionAPICaller.setString(2, Toolbox.trim(branchId, 4));
+			equationTransactionAPICaller.setString(3, Toolbox.trim(wsid, 4));
+			equationTransactionAPICaller.setString(4, Toolbox.trim(usid, 4));
+			equationTransactionAPICaller.setString(5, Toolbox.trim(suid, 4));
+			equationTransactionAPICaller.setString(6, Toolbox.trim(spwd, 10));
+			equationTransactionAPICaller.setString(7, Toolbox.trim(jtt, 1));
+			equationTransactionAPICaller.setBytes(8, gza);
+			equationTransactionAPICaller.setBytes(9, gzb);
+			equationTransactionAPICaller.setString(10, Toolbox.trim(rrec, 1));
+			equationTransactionAPICaller.setString(11, aoe);
+			equationTransactionAPICaller.setString(12, aow);
+			equationTransactionAPICaller.setBytes(13, crm);
+			equationTransactionAPICaller.setString(14, aext);
+			equationTransactionAPICaller.setString(15, arec);
+			equationTransactionAPICaller.setString(16, "");
+			equationTransactionAPICaller.setString(17, "");
+			equationTransactionAPICaller.setString(18, "");
+			equationTransactionAPICaller.setString(19, "");
+			equationTransactionAPICaller.setBytes(20, dsgyctr);
+			equationTransactionAPICaller.setBytes(21, dsgydet);
+			equationTransactionAPICaller.setBytes(22, blankByte);
+
+			// We want to be able to process all the returned parameters
+			equationTransactionAPICaller.registerOutParameter(1, Types.CHAR);
+			equationTransactionAPICaller.registerOutParameter(2, Types.CHAR);
+			equationTransactionAPICaller.registerOutParameter(3, Types.CHAR);
+			equationTransactionAPICaller.registerOutParameter(4, Types.CHAR);
+			equationTransactionAPICaller.registerOutParameter(5, Types.CHAR);
+			equationTransactionAPICaller.registerOutParameter(6, Types.CHAR);
+			equationTransactionAPICaller.registerOutParameter(7, Types.CHAR);
+			equationTransactionAPICaller.registerOutParameter(8, Types.VARCHAR);
+			equationTransactionAPICaller.registerOutParameter(9, Types.VARCHAR);
+			equationTransactionAPICaller.registerOutParameter(10, Types.CHAR);
+			equationTransactionAPICaller.registerOutParameter(11, Types.VARCHAR);
+			equationTransactionAPICaller.registerOutParameter(12, Types.VARCHAR);
+			equationTransactionAPICaller.registerOutParameter(13, Types.VARCHAR);
+			equationTransactionAPICaller.registerOutParameter(14, Types.CHAR);
+			equationTransactionAPICaller.registerOutParameter(15, Types.CHAR);
+			equationTransactionAPICaller.registerOutParameter(16, Types.CHAR);
+			equationTransactionAPICaller.registerOutParameter(17, Types.CHAR);
+			equationTransactionAPICaller.registerOutParameter(18, Types.CHAR);
+			equationTransactionAPICaller.registerOutParameter(19, Types.CHAR);
+			equationTransactionAPICaller.registerOutParameter(20, Types.VARCHAR);
+			equationTransactionAPICaller.registerOutParameter(21, Types.VARCHAR);
+			equationTransactionAPICaller.registerOutParameter(22, Types.VARCHAR);
+
+			// store string
+			beforeGzDsStr = transaction.toString();
+
+			// Call the API
+			equationTransactionAPICaller.execute();
+
+			// Set the returned values
+			rpgm = equationTransactionAPICaller.getString(1);
+			branchId = equationTransactionAPICaller.getString(2);
+			wsid = equationTransactionAPICaller.getString(3);
+			usid = equationTransactionAPICaller.getString(4);
+			suid = equationTransactionAPICaller.getString(5);
+			spwd = equationTransactionAPICaller.getString(6);
+			jtt = equationTransactionAPICaller.getString(7);
+			gza = equationTransactionAPICaller.getBytes(8);
+			gzb = equationTransactionAPICaller.getBytes(9);
+			rrec = equationTransactionAPICaller.getString(10);
+			aoe = equationTransactionAPICaller.getString(11);
+			aow = equationTransactionAPICaller.getString(12);
+			crm = equationTransactionAPICaller.getBytes(13);
+			aext = equationTransactionAPICaller.getString(14);
+			arec = equationTransactionAPICaller.getString(15);
+			dsgyctr = equationTransactionAPICaller.getBytes(20);
+			dsgydet = equationTransactionAPICaller.getBytes(21);
+			byte[] dsJrnKey = equationTransactionAPICaller.getBytes(22);
+
+			if (transaction.getDsgyCtr() != null)
+			{
+				transaction.getDsgyCtr().setBytes(dsgyctr);
+			}
+			if (transaction.getDsgyDet() != null)
+			{
+				transaction.getDsgyDet().setBytes(dsgydet);
+			}
+			transaction.getDsJrnKey().setBytes(dsJrnKey);
+		}
+		catch (SQLException e)
+		{
+			LOG.error(e);
+			LOG.error("Failed Execution of X56HMR:" + "RPGM=" + rpgm + ";WSID=" + wsid + ";USID=" + usid + ";SUID=" + suid
+							+ ";SPWD=" + spwd.length() + ";AEXT=" + aext + ";AREC=" + arec);
+
+			LOG.error(LanguageResources.getFormattedString("Equation38Session.X56HMRBefore", transaction.getAPIName()) + "\n"
+							+ beforeGzDsStr + "\n");
+			LOG.error(LanguageResources.getFormattedString("Equation38Session.X56HMRFailure", transaction.getAPIName()) + "\n"
+							+ transaction + "\n" + getMessages(aoe));
+
+			throw new EQException("Equation38Session - callX56HMR() failed: " + Toolbox.getExceptionMessage(e), e);
+		}
+
+		// API successfully applied? Note: W=Warnings (e.g. H15ARR)
+		if (rrec.equals("R") || rrec.equals("W"))
+		{
+			transaction.setGzBytes(gza);
+			transaction.setValid(true);
+			transaction.setWarningList(getMessages(aow));
+			transaction.setCrmData(crm);
+
+			// GS defined?
+			int offset = transaction.getGsOffset();
+			if (offset > 0)
+			{
+				byte[] gs = new byte[gza.length - offset + 1];
+				System.arraycopy(gza, offset - 1, gs, 0, gza.length - offset + 1);
+				transaction.setGsBytes(gs);
+			}
+
+			// print the transaction data
+			LOG.debug(LanguageResources.getFormattedString("Equation38Session.X56HMRBefore", transaction.getAPIName()) + "\n"
+							+ beforeGzDsStr + "\n");
+			LOG.debug(LanguageResources.getFormattedString("Equation38Session.X56HMRAfter", transaction.getAPIName()) + "\n"
+							+ transaction + "\n" + getMessages(aoe));
+		}
+		else
+		{
+			if (aoe.trim().length() == 0)
+			{
+				aoe = "KSM7364" + transaction.getAPIName();
+			}
+			transaction.setErrorList(getMessages(aoe));
+			transaction.setCrmData(crm);
+
+			// Set to invalid transaction
+			transaction.setValid(false);
+
+			LOG.error(LanguageResources.getFormattedString("Equation38Session.X56HMRBefore", transaction.getAPIName()) + "\n"
+							+ beforeGzDsStr + "\n");
+			LOG.error(LanguageResources.getFormattedString("Equation38Session.X56HMRFailure", transaction.getAPIName()) + "\n"
+							+ transaction + "\n" + getMessages(aoe));
+		}
+
+		// print timing test
+		EqTimingTest.printTime("Equation38Session.callX56HMR()", transaction.getAPIName());
+		return transaction;
+	}
+
+	@Override
+	protected EQMessage updateGH(String mode, String workStation, String userId, int jobNumber, String sessionId, String optionId,
+					String program, String cc, String app, String logUser, String tcpIp) throws EQException
+	{
+		// No GH Updating at levels of BFEQ prior to EQ4, return empty message and continue
+		return new EQMessage();
+	}
+
+	@Override
+	public boolean isWEYPFBdtaInstalled() throws SQLException
+	{
+		// the WEYPF does not exist at this level, so this is always false
+		return false;
+	}
+}

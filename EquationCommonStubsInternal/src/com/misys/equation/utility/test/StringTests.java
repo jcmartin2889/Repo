@@ -1,0 +1,51 @@
+package com.misys.equation.utility.test;
+
+import junit.framework.TestCase;
+
+import com.misys.equation.common.test.TestEnvironment;
+import com.misys.equation.common.utilities.EquationLogger;
+
+/**
+ * Test class to investigate conversion round tripping
+ * 
+ * @author perkinj1
+ * 
+ */
+public class StringTests extends TestCase
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: StringTests.java 11310 2011-06-27 12:20:21Z ESTHER.WILLIAMS $";
+	/**
+	 * Logger for this class
+	 */
+	private static final EquationLogger LOG = new EquationLogger(TestEnvironment.class);
+
+	/**
+	 * 
+	 */
+	public void test()
+	{
+		String s = "a,b,c,";
+		String[] sa = s.split(",");
+		System.out.println(sa.length + ":" + sa);
+		String a = new String("fred");
+		String b = null;
+		String c = "rita";
+		String d = new String("fred");
+		String e = "bob";
+		String f = "bob";
+
+		assertEquals(false, (a == b));
+		assertEquals(true, (b == null));
+		assertEquals(false, (a == d));
+		assertEquals(true, (a.equals(d)));
+
+		// the following one is perhaps surprising...
+		// it is as if the jvm has behind the scenes done the following lines of code...
+		// String x = new String("bob");
+		// String e = x;
+		// String f = x;
+		assertEquals(true, (e == f));
+	}
+
+}

@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/dataaccess/connectionpooling
+END
+EQDataAccessException.java
+K 25
+svn:wc:ra_dav:version-url
+V 153
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/dataaccess/connectionpooling/EQDataAccessException.java
+END
+ConnectionAccess.java
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/dataaccess/connectionpooling/ConnectionAccess.java
+END
+AbstractConnectionPool.java
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/dataaccess/connectionpooling/AbstractConnectionPool.java
+END
+SessionUserCredential.java
+K 25
+svn:wc:ra_dav:version-url
+V 153
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/dataaccess/connectionpooling/SessionUserCredential.java
+END

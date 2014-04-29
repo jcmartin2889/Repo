@@ -1,0 +1,2175 @@
+/* ***************************************************/
+/* DO NOT MODIFY THIS ARTIFACT. IT IS AUTO GENERATED.*/
+/* ***************************************************/
+/*******************************************************************************
+ *  Equation User Interface Styles
+ * -------------------------------
+ *  
+ *  Copyright and all other intellectual property rights in this software, 
+ *  in any form, is vested in Misys International Banking Systems Ltd ("Misys") 
+ *  or a related company.                                  
+ *                                                     
+ *  This software may not be copied, amended, compiled, translated, or developed
+ *  or sold, leased, hired, rented, or disclosed to any third party without the 
+ *  prior written consent of Misys.                     
+ *                                                     
+ *  Copyright © Misys International Banking Systems Ltd                           
+ *******************************************************************************/
+@media screen, print
+{
+/*******************************************************************************
+	 *  GLOBAL STYLES
+	 *******************************************************************************/
+HTML
+{
+	margin:0px;
+	padding:0px;
+}
+BODY
+{
+	margin:0px;
+	padding:0px;
+	font-size:small;
+	font-family:monospace;
+	font-size:9pt;
+}
+INPUT.wf_field
+{
+	font-family:monospace;
+	font-size:10pt;
+	margin:0px 0px 2px;
+	padding:0px;
+	padding-left:2px;
+	padding-right:2px;
+	border:1px solid ThreeDShadow;
+	color:windowtext;
+}
+INPUT.wf_field2
+{
+	margin:0px;
+	padding:0px;
+	padding-left:2px;
+	padding-right:2px;
+	border:1px solid ThreeDShadow;
+	color:windowtext;
+}
+INPUT.wf_pr
+{
+	border-style:none;
+	border-width:0px;
+}
+.repeatingDiv *.mousePointerHover INPUT.wf_pr
+{
+	cursor:pointer;
+}
+.wf_hi.wf_ri_default
+{
+	background-color:#99cc99;
+}
+.mandatory
+{
+}
+.inputText
+{
+	font-family:monospace;
+	font-size:8pt;
+	margin:0px;
+	padding:0px;
+	padding-left:2px;
+	padding-right:2px;
+	border:1px solid ThreeDShadow;
+	color:windowtext;
+}
+.inputPassword
+{
+	font-family:monospace;
+	font-size:8pt;
+	margin:0px;
+	padding:0px;
+	padding-left:2px;
+	padding-right:2px;
+	border:1px solid ThreeDShadow;
+}
+.inputSubmit
+{
+	font-family:monospace;
+	font-size:8pt;
+	margin:0px;
+	padding:0px;
+}
+.inputButton
+{
+	font-family:monospace;
+	font-size:9pt;
+	font-weight:bold;
+	margin:0px;
+	padding:0px;
+	width:70px;
+	color:#00aeef;
+/* Input Button without fix width */
+}
+.inputButtonExt
+{
+	font-family:monospace;
+	font-size:9pt;
+	font-weight:bold;
+	margin:0px;
+	padding:0px;
+	color:#00aeef;
+}
+.inputButton2
+{
+	font-family:monospace;
+	font-size:7pt;
+	margin:0px;
+	padding:0px 3px;
+	vertical-align:-15%;
+}
+TABLE.wf_TABLE_RIGHT_ALIGN
+{
+	float:right;
+	margin-right:14px;
+}
+SELECT
+{
+	font-family:monospace;
+	font-size:8pt;
+	margin:0px;
+	padding:0px;
+	border:1px solid ThreeDShadow;
+}
+.passwordText
+{
+	text-decoration:underline;
+	color:black;
+/*******************************************************************************
+	 *  ERROR STYLES
+	 *******************************************************************************/
+}
+.errorHeader
+{
+	padding-left:10px;
+	font-size:x-large;
+	color:red;
+}
+#errorHeader
+{
+	padding-left:10px;
+/*******************************************************************************
+	 *  HEADER STYLES
+	 *******************************************************************************/
+}
+.header
+{
+	margin:0px;
+	padding:0px;
+	background-color:#ffffff;
+	background-image:url(../images/equi/mys_header_r.jpg);
+	background-position:right top;
+	background-repeat:no-repeat;
+	font-family:monospace;
+	font-size:8pt;
+	border:0px;
+}
+.header font.externalLink
+{
+	color:#ffffff;
+}
+.header td.externalLink
+{
+	display:none;
+}
+.headBanner
+{
+	padding-left:5px;
+}
+.corporateImage
+{
+	padding-left:10px;
+	border:0px solid window;
+	display:none;
+}
+.banner
+{
+	background:url(../images/equi/mys_logo.png) no-repeat 20px;
+}
+.banner img
+{
+	width:0px;
+/** if you want to show own logo, change this back to 120 */
+	margin:-5px 5px 10px 5px;
+	visibility:hidden;
+	height:37px;
+}
+.externalLinkBar
+{
+	background-image:none;
+	background-color:#5e5e5e;
+	background-repeat:x;
+	border:0;
+	cellpadding:0;
+	cellspacing:0;
+	width:100%;
+	height:8px;
+}
+.externalLink
+{
+	white-space:nowrap;
+	color:#666666;
+	text-decoration:none;
+}
+.appName
+{
+	white-space:nowrap;
+	color:#ffffff;
+	font-size:12pt;
+	width:292px;
+	padding:8px 0 0 5px;
+	display:block;
+	background-color:#00aeef;
+	font-weight:bold;
+	text-align:left;
+	height:28px;
+/*******************************************************************************
+	 *  FOOTER STYLES
+	 *******************************************************************************/
+}
+.footer
+{
+	font-family:monospace;
+	font-size:8pt;
+	background-image:url('../images/equi/mys_footerBG.gif');
+	border:1px solid #6f6453;
+}
+.footerLogo
+{
+	width:77px;
+	background:url(../images/equi/mys_footer_logo.png) no-repeat 5px;
+}
+.bottombar
+{
+	font-size:larger;
+	font-weight:bold;
+	background-image:url('../images/bar24lightgray.gif');
+	border-top:2px solid #6f6453;
+	border-left:1px solid #aba598;
+	border-right:1px solid #6f6453;
+	border-bottom:1px solid #6f6453;
+}
+.tabbar
+{
+	font-family:monospace;
+	font-size:8pt;
+	background-image:none;
+	background-color:#9d9d9d;
+	border:1px solid #6f6453;
+	border:0;
+	border-top:5px solid #9d9d9d;
+}
+.bottombarframe
+{
+	background-color:#e0e0e0;
+	background-image:none;
+}
+.bottombarframe *.inputButton
+{
+	margin-right:5px;
+}
+#statusBar td
+{
+	padding-right:3px;
+	padding-left:3px;
+/*******************************************************************************
+	 *  INPUT AREA STYLES
+	 *******************************************************************************/
+}
+.inputBackground
+{
+	background-color:window;
+	border:0px solid inactivecaption;
+}
+.welcomeBackground
+{
+	background-color:window;
+	border:0px solid inactivecaption;
+	background-image:none;
+	background-position:center;
+}
+.welcomeBackground *.corporateImage
+{
+	display:none;
+}
+.inputArea
+{
+	background-color:#ffffff;
+	margin-right:0;
+	margin-top:0;
+	height:100%;
+}
+.footertexts
+{
+	position:absolute;
+	right:17px;
+	bottom:0px;
+}
+.functionKeys
+{
+	position:relative;
+	right:0px;
+	bottom:1px;
+}
+.functionKeysAnchor
+{
+	color:windowtext;
+}
+.optionKeys
+{
+}
+.consoleMessageTable
+{
+}
+.consoleStyle
+{
+	color:windowtext;
+}
+.consoleAnchorImage
+{
+}
+.consoleImage
+{
+	border:0;
+}
+.messageStyle
+{
+	color:windowtext;
+}
+.bottomBar
+{
+	position:absolute;
+	right:17px;
+	top:2px;
+}
+.bottombarBody
+{
+}
+frame#inputFrame
+{
+	border-top:10px solid #9d9d9d;
+	border-bottom:10px solid #9d9d9d;
+	border-right:10px solid #9d9d9d;
+	border-left:0;
+/*******************************************************************************
+	 *  NAVIGATION STYLES
+	 *******************************************************************************/
+}
+.navigatorBody
+{
+}
+.navigationbar
+{
+	font-weight:bold;
+	background-image:url('../images/bar24lightgray.gif');
+	border-top:0;
+	border-left:0;
+	border-right:0;
+	border-bottom:5px solid #9d9d9d;
+	background:#f5f5f5 url(../images/equi/mys_bar24grycurve.png) no-repeat right top;
+}
+.navigationbar *.button
+{
+	background:#f5f5f5 url(../images/equi/mys_bar24grycurve.png) no-repeat left top;
+}
+.navigationbar *.labelText
+{
+	padding-right:10px;
+	background:#f5f5f5 ../images/equi/mys_bar24grycurve.png no-repeat left;
+}
+.navigationbarSelected
+{
+	font-weight:bold;
+	border-top:0;
+	border-left:0;
+	border-right:0;
+	border-bottom:1px solid #e0e0e0;
+	background:url(../images/equi/mys_bar24whtcurve.png) #ffffff no-repeat left top;
+}
+.navigationbarSelected *.labelText
+{
+	background:url(../images/equi/mys_bar24whtcurve.png) #ffffff no-repeat right top;
+	color:#00aeef;
+	padding-right:10px;
+}
+.navigationbarSelected *.button[id|="DivSwitch"]
+{
+	background:../images/equi/mys_bar24whtcurve.png #ffffff no-repeat right top;
+}
+.navigatorFldGroup
+{
+	border:1px solid lightgrey;
+}
+frame#navigatorFrame
+{
+	border-top:10px solid #9d9d9d;
+	border-bottom:10px solid #9d9d9d;
+	border-right:0 solid #9d9d9d;
+	border-left:0;
+}
+.navi
+{
+	background-color:#9d9d9d;
+}
+.navi div
+{
+	border-bottom:5px solid #9d9d9d;
+	background-color:#ffffff;
+}
+.naviExpanded
+{
+	background-color:#9d9d9d;
+}
+.naviExpanded div
+{
+	background-color:#ffffff;
+}
+#AllMenuDiv
+{
+	background-color:#ffffff;
+/*******************************************************************************
+	 *  TOOLBAR STYLES
+	 *******************************************************************************/
+}
+.toolbarBody
+{
+	margin:0px;
+	padding:0px;
+	font-family:monospace;
+	font-size:8pt;
+	background-color:#888888;
+}
+.toolbar
+{
+	font-weight:bold;
+	background-image:url('../images/bar24lightgray.gif');
+	border:0px solid window;
+	background:#9d9d9d url(../images/equi/mys_toolbarback.png) repeat right;
+}
+.toolbar *.labelText
+{
+	color:#ffffff;
+}
+#tdhelpLabel
+{
+	background:url(../images/equi/EQHelp.png) no-repeat center;
+}
+.toolbar *#tdhelpLabel img
+{
+	visibility:hidden;
+}
+#funcKeyAnchor
+{
+	background:transparent url(../images/equi/mys_EqFuncKeywht.png) no-repeat center;
+}
+#funcKeyAnchor img
+{
+	visibility:hidden;
+}
+#sliderAnchor
+{
+	background:transparent url(../images/equi/mys_upwht.png) no-repeat center;
+}
+#tdoptionLabel
+{
+	padding-right:10px;
+}
+#sliderAnchor img
+{
+	visibility:hidden;
+}
+#tdlogoutLabel
+{
+	background:transparent url(../images/equi/mys_EQExitwht.png) no-repeat center;
+}
+#tdlogoutLabel img
+{
+	visibility:hidden;
+/*******************************************************************************
+	 *  SEARCH STYLES
+	 *******************************************************************************/
+}
+.tableHeader
+{
+	font-weight:bold;
+	border-top:1px solid window;
+	border-bottom:1px solid #6f6453;
+/*******************************************************************************
+	 *  GLOBAL BUTTON STYLES
+	 *******************************************************************************/
+}
+.buttonbar
+{
+	font-size:larger;
+	font-weight:bold;
+	border-top:0;
+	border-left:0;
+	border-right:0;
+	border-bottom:1px solid #e0e0e0;
+	background:url(../images/equi/mys_bar24whtcurve.png) #ffffff no-repeat left top;
+}
+.buttonbar *.buttonBarTitle
+{
+	padding-right:10px;
+}
+.buttonBarFiller
+{
+	vertical-align:middle;
+	padding-right:10px;
+	white-space:nowrap;
+	background:url(../images/equi/mys_bar24lightgray.png);
+}
+.buttonBarTitle
+{
+	vertical-align:middle;
+	padding-right:10px;
+	white-space:nowrap;
+	background:url(../images/equi/mys_bar24whtcurve.png) #ffffff no-repeat right top;
+	color:#00aeef;
+	font-weight:bold;
+}
+.buttonDisabled
+{
+	display:inline;
+	margin-left:2px;
+	margin-right:2px;
+	vertical-align:middle;
+	border:1px solid transparent;
+	_border-color:tomato;
+}
+.button
+{
+	padding:2px;
+}
+.button a
+{
+	display:block;
+	width:18px;
+	height:18px;
+	border:1px solid transparent;
+	vertical-align:middle;
+	_border-color:tomato;
+}
+.button a:hover
+{
+	border-top:1px solid ButtonHighlight;
+	border-left:1px solid ButtonHighlight;
+	border-right:1px solid #6f6453;
+	border-bottom:1px solid #6f6453;
+}
+.buttonDown a
+{
+	display:block;
+	width:18px;
+	height:18px;
+	margin-left:2px;
+	margin-right:2px;
+	vertical-align:middle;
+	background-color:#f1f1f1;
+	border-top:1px solid #6f6453;
+	border-left:1px solid #6f6453;
+	border-right:1px solid #ffffff;
+	border-bottom:1px solid #ffffff;
+}
+.buttonText
+{
+	font-family:monospace;
+	font-size:8pt;
+	white-space:nowrap;
+}
+.buttonText a
+{
+	text-decoration:none;
+	color:windowtext;
+	display:block;
+	padding:2px;
+	margin-left:2px;
+	margin-right:2px;
+	border:1px solid transparent;
+	vertical-align:middle;
+	_border-color:tomato;
+}
+.buttonText a:hover
+{
+	padding:2px;
+	border-top:1px solid ButtonHighlight;
+	border-left:1px solid ButtonHighlight;
+	border-right:1px solid #6f6453;
+	border-bottom:1px solid #6f6453;
+}
+.widgetButton
+{
+	display:inline;
+	margin-left:2px;
+	margin-right:2px;
+	width:18px;
+	height:18px;
+	border:1px solid transparent;
+	vertical-align:middle;
+	_border-color:window;
+}
+.widgetButton:hover
+{
+	border-top:1px solid #f1f1f1;
+	border-right:1px solid #f1f1f1;
+	border-left:1px solid #6f6453;
+	border-bottom:1px solid #6f6453;
+}
+.widgetButton:active
+{
+	border-top:1px solid #6f6453;
+	border-right:1px solid #6f6453;
+	border-left:1px solid #f1f1f1;
+	border-bottom:1px solid #f1f1f1;
+/*******************************************************************************
+	 *  GLOBAL TEXT STYLES
+	 *******************************************************************************/
+}
+.legalText
+{
+	vertical-align:middle;
+	padding-left:10px;
+}
+.mandatoryText
+{
+	color:#000000;
+	margin-right:2px;
+	background:url(../images/equi/mys_req.png) no-repeat top 2px;
+}
+.mandatoryField
+{
+}
+.mandatoryText.labelTextTopBottom
+{
+	padding-right:10px;
+}
+.labelText
+{
+	vertical-align:middle;
+	padding-right:10px;
+	white-space:nowrap;
+}
+.labelTextBold
+{
+	font-weight:bold;
+	vertical-align:middle;
+	padding-right:10px;
+	white-space:nowrap;
+}
+.labelTextTopBottom
+{
+	font-weight:bold;
+	vertical-align:middle;
+	white-space:nowrap;
+}
+.defaultSpaceTopBottom
+{
+	padding-right:10px;
+}
+.labelColumnHeaderText
+{
+	font-weight:bold;
+	vertical-align:middle;
+	padding-right:10px;
+	white-space:nowrap;
+}
+.labelColumnHeaderTextWithWrap
+{
+	font-weight:bold;
+	vertical-align:middle;
+	white-space:normal;
+}
+.outputText
+{
+	color:graytext;
+	vertical-align:middle;
+	padding-right:10px;
+	white-space:nowrap;
+}
+.enquiryText
+{
+	vertical-align:middle;
+	padding-right:10px;
+	white-space:nowrap;
+}
+.descriptionText
+{
+	color:graytext;
+	vertical-align:middle;
+	white-space:nowrap;
+}
+.labelTextHi
+{
+	vertical-align:middle;
+	padding-left:10px;
+	white-space:nowrap;
+	color:white;
+}
+.fieldValue
+{
+	vertical-align:middle;
+	padding-left:40px;
+}
+.textInput
+{
+	padding-right:10px;
+}
+.textInputRepeatingGroup
+{
+	padding-right:10px;
+	white-space:nowrap;
+}
+.statusBarText
+{
+	vertical-align:middle;
+	white-space:nowrap;
+	padding:0px;
+	padding-left:2px;
+	padding-right:2px;
+	border-left:1px solid #6f6453;
+	border-right:1px solid buttonhighlight;
+	border:0;
+	color:#ffffff;
+}
+.statusBarSpacer
+{
+	padding:0px;
+	border-right:2px solid #aba598;
+	border:0;
+}
+.tabBarImage
+{
+	display:none;
+	border-bottom:1px solid #9d9d9d;
+	background:#f1f1f1 url(../images/equi/mys_bar24grycurve.png) no-repeat left right;
+}
+.tabBarText
+{
+	cursor:default;
+	background-image:url('../images/bar24lightgray.gif');
+	white-space:nowrap;
+	padding-left:4px;
+	padding-right:4px;
+	border-left:1px solid #9d9d9d;
+	border-bottom:1px solid #9d9d9d;
+	padding:0 5px 0 5px;
+	background:#f1f1f1 url(../images/equi/mys_bar24grycurve.png) no-repeat left top;
+	color:#6f6453;
+	font-weight:bold;
+}
+.tabbar *.tabBarText
+{
+	padding:0 5px 0 5px;
+}
+.tabBarFlash
+{
+	background-image:none;
+	background-color:transparent;
+	color:#ff0000;
+}
+.tabBarImageSelected
+{
+	cursor:default;
+	background-color:buttonface;
+	vertical-align:middle;
+	padding-top:0px;
+	padding-bottom:0px;
+	padding-right:4px;
+	padding-left:0px;
+	border-bottom:1px solid #ffffff;
+	padding:0 5px 0 0;
+	background:#f1f1f1 url(../images/equi/mys_bar24whtcurve.png) no-repeat right top;
+}
+.tabBarTextSelected
+{
+	cursor:default;
+	background-color:buttonface;
+	background-image:url('../images/equi/mys_bar24lightgray.png');
+	white-space:nowrap;
+	padding-left:4px;
+	padding-right:4px;
+	border-left:1px solid #e0e0e0;
+	border-bottom:1px solid #ffffff;
+	padding:0 2px 0 5px;
+	color:#00aeef;
+	background:#f1f1f1 url(../images/equi/mys_bar24whtcurve.png) no-repeat left top;
+	font-weight:bold;
+}
+.tabDiv
+{
+	background:buttonface;
+	border-top:1px solid #6f6453;
+	border-left:1px solid #6f6453;
+	border-right:1px solid #6f6453;
+	border-bottom:1px solid #6f6453;
+	position:relative;
+	top:auto;
+	left:20px;
+	font-family:monospace;
+	width:75%;
+}
+.headingText
+{
+	font-size:larger;
+	vertical-align:middle;
+	padding-left:10px;
+}
+.consoleBody
+{
+}
+.joblogBody
+{
+}
+.systemBody
+{
+}
+.messagesBody
+{
+}
+.referralsBody
+{
+}
+.commentBody
+{
+}
+.commentAddDiv
+{
+	padding-top:2px;
+}
+.spooledFileHeaderBody
+{
+}
+.menuAndOptionText
+{
+	white-space:nowrap;
+/*******************************************************************************
+	 *  PV WIDGET STYLES
+	 *******************************************************************************/
+}
+.pvContainerDIV
+{
+	position:absolute;
+	visibility:hidden;
+}
+.pvContainer
+{
+	background:buttonface;
+	position:relative;
+	top:auto;
+	left:auto;
+	font-family:monospace;
+}
+.pvHeader
+{
+	background-image:url('../images/bar24lightgray.gif');
+	border:1px solid #6f6453;
+	font-weight:bold;
+	height:24px;
+	position:relative;
+	right:auto;
+	top:auto;
+	left:auto;
+	bottom:auto;
+	background:#f1f1f1 url(../images/equi/mys_bar24lightgray_dwn.png) repeat right;
+	color:#000000;
+}
+.pvBody
+{
+	background:window;
+	padding-top:10px;
+	padding-bottom:10px;
+	border-bottom:1px solid #6f6453;
+	position:relative;
+	top:auto;
+	left:auto;
+}
+.pvFooter
+{
+	background-image:none;
+	border:0px solid #6f6453;
+	font-weight:bold;
+	padding-top:2px;
+	padding-bottom:8px;
+	position:relative;
+	right:auto;
+	top:auto;
+	left:auto;
+	bottom:auto;
+}
+.pvWidgetField
+{
+	font-family:monospace;
+	font-size:9pt;
+	margin:0px;
+	padding:0px;
+	padding-left:2px;
+	padding-right:2px;
+	border:1px solid ThreeDShadow;
+	color:windowtext;
+}
+#pvPopUpCancelButtonTD
+{
+	text-align:right;
+	padding-right:5px;
+}
+.pvFooter *.buttonText
+{
+	padding:5px;
+	border:1px solid #e0e0e0;
+	color:#00aeef;
+	background-image:url('../images/equi/mys_bar24lightgray.png');
+	font-size:9pt;
+	font-weight:bold;
+}
+.pvColumnHeadings
+{
+	vertical-align:middle;
+	padding-left:5px;
+	padding-right:5px;
+	white-space:nowrap;
+}
+.pvColumnDetails
+{
+	vertical-align:middle;
+	padding-left:5px;
+	padding-right:5px;
+	white-space:nowrap;
+}
+body.popupPV *.tableHeader
+{
+	background-color:#f1f1f1;
+/*******************************************************************************
+	 *  HELP WIDGET STYLES
+	 *******************************************************************************/
+}
+.helpContainerDIV
+{
+	position:absolute;
+	visibility:hidden;
+}
+.helpContainer
+{
+	background-image:url('../images/bar24lightgray.gif');
+	border-top:1px solid #6f6453;
+	border-left:1px solid #6f6453;
+	border-right:1px solid #6f6453;
+	border-bottom:1px solid #6f6453;
+	position:relative;
+	top:auto;
+	left:auto;
+	font-family:monospace;
+	left:20px;
+}
+.helpHeader
+{
+	font-weight:bold;
+	border-top:0px solid ButtonHighlight;
+	border-left:0px solid ButtonHighlight;
+	border-bottom:0px solid #6f6453;
+	border-right:0px solid #6f6453;
+	position:relative;
+	right:auto;
+	top:auto;
+	left:auto;
+	bottom:auto;
+}
+.helpBody
+{
+	background:window;
+	padding-top:10px;
+	padding-bottom:10px;
+	border-bottom:1px solid #6f6453;
+	position:relative;
+	top:auto;
+	left:auto;
+}
+.helpTableBody
+{
+	width:20%;
+}
+.helpFooter
+{
+	font-weight:bold;
+	border:2px solid #aba598;
+	position:relative;
+	right:auto;
+	top:auto;
+	left:auto;
+	bottom:auto;
+}
+.helpDescription
+{
+	vertical-align:middle;
+	padding-top:5px;
+	padding-left:5px;
+	padding-right:5px;
+}
+.helpColumnHeadings
+{
+	white-space:nowrap;
+	font-weight:bold;
+	vertical-align:middle;
+	padding-top:5px;
+	padding-left:5px;
+	padding-right:5px;
+}
+.helpColumnDetails
+{
+	white-space:nowrap;
+	vertical-align:middle;
+	padding-top:5px;
+	padding-left:5px;
+	padding-right:5px;
+/*******************************************************************************
+	 *  DATE PICKER LAYOUT STYLES
+	 *******************************************************************************/
+/* Set the position of the widget and fixed style settings */
+}
+cal
+{
+	padding:1px;
+	vertical-align:middle;
+}
+iframe.cal
+{
+	position:absolute;
+	top:0px;
+	left:0px;
+	visibility:hidden;
+	width:1px;
+	height:1px;
+}
+table.cal
+{
+	padding:0px;
+	position:absolute;
+	cursor:default;
+	top:0px;
+	left:0px;
+	text-align:center;
+	vertical-align:middle;
+	font-weight:bold;
+}
+td.calDrag,
+td.calHead
+{
+	padding:0px 5px;
+	text-align:center;
+}
+td.calDrag
+{
+	font-size:8pt;
+}
+select.calHead
+{
+	margin:3px 1px;
+}
+input.calHead
+{
+	height:20px;
+	width:22px;
+	vertical-align:middle;
+	text-align:center;
+	margin:2px 1px;
+	font-weight:bold;
+}
+td.calWeekNumberHead,
+td.calWeek
+{
+	padding:0px;
+	text-align:center;
+	font-weight:bold;
+}
+td.calFoot,
+td.calFootHover,
+td.calFoot:hover,
+td.calFootDisabled
+{
+	text-align:center;
+	font-weight:normal;
+}
+table.calCells
+{
+	text-align:center;
+	width:96%;
+}
+td.calCells,
+td.calCellsHover,
+td.calCells:hover,
+td.calCellsDisabled,
+td.calCellsExMonth,
+td.calCellsExMonthHover,
+td.calCellsExMonth:hover,
+td.calCellsExMonthDisabled,
+td.calCellsExMonthWeekend,
+td.calCellsExMonthWeekendHover,
+td.calCellsExMonthWeekend:hover,
+td.calCellsWeekend,
+td.calCellsWeekendHover,
+td.calCellsWeekend:hover,
+td.calCellsWeekendDisabled,
+td.calInputDate,
+td.calInputDateHover,
+td.calInputDate:hover,
+td.calInputDateDisabled,
+td.calWeekNo,
+td.calWeeks
+{
+	padding:1px;
+	width:16px;
+	height:5px;
+	font-weight:bold;
+	vertical-align:middle;
+	border:1px solid transparent;
+/*******************************************************************************
+	 *  DATE PICKER COLOURS
+	 *******************************************************************************/
+/* Calendar background */
+}
+table.cal
+{
+/* Drag Handle */
+}
+td.calDrag
+{
+	background-color:#000000;
+	color:#cccccc;
+/* Week number heading */
+}
+td.calWeekNumberHead
+{
+	color:#000000;
+/* Week day headings */
+}
+td.calWeek
+{
+	color:#000000;
+/* Week numbers */
+}
+td.calWeekNo
+{
+	background-color:#000000;
+	color:#cccccc;
+/* Week Day */
+}
+td.calCells
+{
+	background-color:#ffffff;
+	color:#000000;
+/* Day matching the input date */
+}
+td.calInputDate
+{
+	background-color:#00afd8;
+	color:#482a60;
+/* Weekend Day */
+}
+td.calCellsWeekend
+{
+	background-color:#e0e0e0;
+	color:#666666;
+/* Day outside the current month */
+}
+td.calCellsExMonth
+{
+	color:#666666;
+}
+td.calCellsExMonthWeekend
+{
+	background-color:#e0e0e0;
+	color:#666666;
+}
+td.calCells.calTodayDate,
+td.calCellsWeekend.calTodayDate,
+td.calCellsExMonth.calTodayDate,
+td.calCellsExMonthWeekend.calTodayDate
+{
+	background-color:#bbd200;
+}
+td.calInputDate.calTodayDate
+{
+	background-color:#bbd200;
+	border:1px solid #00afd8;
+/* Today selector */
+}
+td.calFoot
+{
+	padding-top:5px;
+	padding-bottom:5px;
+}
+.calFootTd
+{
+	padding-top:10px;
+	padding-bottom:5px;
+/*******************************************************************************
+	 *  DATE PICKER MOUSE OVER COLOURS
+	 *******************************************************************************/
+/* Active cells */
+}
+td.calCells:hover,
+td.calCellsHover
+{
+	border:1px solid #00efd8;
+	background-color:#e9f1f2;
+	cursor:pointer;
+/* Day matching the input date */
+}
+td.calInputDate:hover,
+td.calInputDateHover
+{
+	cursor:pointer;
+/* Weekend cells */
+}
+td.calCellsWeekend:hover,
+td.calCellsWeekendHover
+{
+	border:1px solid #00efd8;
+	background-color:#e9f1f2;
+	cursor:pointer;
+/* Day outside the current month */
+}
+td.calCellsExMonth:hover,
+td.calCellsExMonthHover
+{
+	border:1px solid #00efd8;
+	background-color:#e9f1f2;
+	cursor:pointer;
+/* Weekend cells and ex month*/
+}
+td.calCellsExMonthWeekend:hover,
+td.calCellsExMonthWeekendHover
+{
+	border:1px solid #00efd8;
+	background-color:#e9f1f2;
+	cursor:pointer;
+/* Active cells */
+}
+td.calInputDate:active,
+td.calCells:active,
+td.calCellsHover:active,
+td.calCellsWeekend:active,
+td.calCellsWeekendHover:active,
+td.calCellsExMonth:active,
+td.calCellsExMonthHover:active,
+td.calCellsExMonthWeekend:active,
+td.calCellsExMonthWeekendHover:active
+{
+	background-color:#f2f2f2;
+	border:1px solid #b2b2b2;
+	cursor:pointer;
+/* Active cells today's date*/
+}
+td.calInputDate.calTodayDate:active,
+td.calCells.calTodayDate:active,
+td.calCellsHover.calTodayDate:active,
+td.calCellsWeekend.calTodayDate:active,
+td.calCellsWeekendHover.calTodayDate:active,
+td.calCellsExMonth.calTodayDate:active,
+td.calCellsExMonthHover.calTodayDate:active,
+td.calCellsExMonthWeekend.calTodayDate:active,
+td.calCellsExMonthWeekendHover.calTodayDate:active
+{
+	border:1px solid #00afd8;
+/* Today selector */
+}
+td.calFoot:hover,
+td.calFootHover
+{
+	color:#000000;
+	cursor:pointer;
+/* Day matching the input date */
+}
+td.calInputDateDisabled
+{
+	background-color:#999999;
+	color:#000000;
+}
+td.calCellsDisabled
+{
+	background-color:#999999;
+	color:#000000;
+/* Weekend Day */
+}
+td.calCellsWeekendDisabled
+{
+	background-color:#999999;
+	color:#cccccc;
+/* Day outside the current month */
+}
+td.calCellsExMonthDisabled
+{
+	background-color:#999999;
+	color:#666666;
+}
+td.calFootDisabled
+{
+	background-color:#000000;
+	color:#ffffff;
+}
+.calCells thead
+{
+}
+.calCells thead tr td
+{
+	padding-top:2px;
+	padding-bottom:2px;
+}
+.calCells tbody tr
+{
+	border-style:solid;
+}
+.calCells tbody tr td
+{
+	padding-top:3px;
+	padding-bottom:3px;
+	padding-left:6px;
+	padding-right:6px;
+	border-bottom:1px solid #666666;
+}
+.callCells tfoot tr td
+{
+/*******************************************************************************
+	 *  TREE VIEW STYLES
+	 *******************************************************************************/
+/* Turn off list bullets */
+}
+ul.mktree li
+{
+	list-style:none;
+}
+ul.mktree li
+{
+	font-family:monospace;
+	font-size:9pt;
+	margin:5px 0 5px 0;
+/* Control how "spaced out" the tree is */
+}
+ul.mktree,
+ul.mktree ul,
+ul.mktree li
+{
+	margin-right:10px;
+	padding:0px;
+/* Provide space for our own "bullet" inside the LI */
+}
+ul.mktree li *.bullet
+{
+	padding-right:16px;
+/* Show "bullets" in the links, depending on the class of the LI that the link's in */
+}
+ul.mktree li.liOpen *.bullet
+{
+	cursor:pointer;
+	padding-right:16px;
+	background:url(../images/minus.gif)   center right no-repeat;
+}
+ul.mktree li.liClosed *.bullet
+{
+	cursor:pointer;
+	padding-right:16px;
+	background:url(../images/plus.gif) center right no-repeat;
+}
+ul.mktree li.liBullet *.bullet
+{
+	cursor:default;
+	padding-right:16px;
+	background:url(../images/bullet.gif) center right no-repeat;
+/* Sublists are visible or not based on class of parent LI */
+}
+ul.mktree li.liOpen ul
+{
+	display:block;
+}
+ul.mktree li.liClosed ul
+{
+	display:none;
+}
+.mktree a
+{
+	text-decoration:none;
+	color:WindowText;
+	padding-right:2px;
+	white-space:nowrap;
+}
+.mktree a:hover
+{
+	text-decoration:underline;
+}
+.mktree a.active
+{
+	background:Highlight;
+	color:HighlightText;
+	width:100%;
+}
+.mktree a.active:hover
+{
+	text-decoration:underline;
+	background:Highlight;
+	color:HighlightText;
+	width:100%;
+/*******************************************************************************
+	 *  WIDGET STYLES
+	 *******************************************************************************/
+}
+.widgetContainerDIV
+{
+	position:absolute;
+	visibility:hidden;
+}
+.widgetContainer
+{
+	background-color:buttonface;
+	border-top:1px solid #6f6453;
+	border-left:1px solid #6f6453;
+	border-right:1px solid #6f6453;
+	border-bottom:1px solid #6f6453;
+	position:relative;
+	top:auto;
+	left:auto;
+	font-family:monospace;
+	left:20px;
+}
+.popupWidgetContainer
+{
+	background-color:buttonface;
+	border-top:1px solid #6f6453;
+	border-left:1px solid #6f6453;
+	border-right:1px solid #6f6453;
+	border-bottom:1px solid #6f6453;
+	top:auto;
+	left:auto;
+	font-family:monospace;
+}
+.widgetContainerAsPopup
+{
+	background-color:buttonface;
+	border-top:1px solid #6f6453;
+	border-left:1px solid #6f6453;
+	border-right:1px solid #6f6453;
+	border-bottom:1px solid #6f6453;
+	position:relative;
+	top:auto;
+	font-family:monospace;
+}
+.referWidgetContainer
+{
+	border-top:1px solid #6f6453;
+	border-left:1px solid #6f6453;
+	border-right:1px solid #6f6453;
+	border-bottom:1px solid #6f6453;
+	position:relative;
+	top:auto;
+	left:auto;
+	font-family:monospace;
+	left:20px;
+	float:left;
+}
+}
+.widgetHeader
+{
+	font-weight:bold;
+	border-bottom:1px solid #6f6453;
+	position:relative;
+	right:auto;
+	top:auto;
+	left:auto;
+	bottom:auto;
+}
+.widgetHeader tr td
+{
+	padding-left:15px;
+	padding-right:15px;
+}
+.popupWidgetHeader
+{
+	font-weight:bold;
+	border-top:1px solid ButtonHighlight;
+	border-left:1px solid ButtonHighlight;
+	border-bottom:1px solid #6f6453;
+	border-right:1px solid #6f6453;
+	right:auto;
+	top:auto;
+	left:auto;
+	bottom:auto;
+}
+.widgetBody
+{
+	border-bottom:1px solid #6f6453;
+	position:relative;
+	top:auto;
+	left:auto;
+}
+.widgetFooter
+{
+	font-weight:bold;
+	border:2px solid transparent;
+	position:relative;
+	right:auto;
+	top:auto;
+	left:auto;
+	bottom:auto;
+	_border-color:tomato;
+}
+.widgetFooter *.inputButton
+{
+	color:windowtext;
+	font-weight:normal;
+	font-size:8pt;
+}
+.widgetFooter *.inputButtonExt
+{
+	color:windowtext;
+	font-weight:normal;
+}
+.widgetField
+{
+	font-size:11px;
+	border:1px solid #b2b2b2;
+	border-radius:3px 3px 3px 3px;
+	box-shadow:1px 1px 2px 0 rgba(0, 0, 0, 0.09) inset;
+	color:windowtext;
+	margin:0 2px 3px;
+	padding:2px 6px;
+	vertical-align:middle;
+}
+.widgetFieldDropDown
+{
+	border:1px solid #b2b2b2;
+	border-radius:3px 3px 3px 3px;
+	box-shadow:1px 1px 2px 0 rgba(0, 0, 0, 0.09) inset;
+	color:windowtext;
+	margin-right:2px;
+	padding-left:2px;
+	vertical-align:middle;
+	width:180px;
+	height:20px;
+/*******************************************************************************
+	 *  WIDGET STYLES
+	 *******************************************************************************/
+}
+.wf_NDP
+{
+	visibility:hidden;
+}
+.wf_AST
+{
+}
+.wf_W97
+{
+	visibility:hidden;
+}
+.wf_NPF
+{
+	font-family:monospace;
+	font-size:100%;
+}
+.wf_FTT
+{
+	font-family:monospace;
+	color:#777777;
+}
+.wf_FFD
+{
+	font-family:monospace;
+	color:#777777;
+}
+.wf_RDF
+{
+	font-family:monospace;
+	color:#777777;
+}
+.wf_OUT
+{
+	color:#777777;
+}
+.wf_OUR
+{
+	text-align:right;
+	color:#777777;
+}
+.wf_ACI
+{
+}
+.wf_ART
+{
+}
+.wf_RPD
+{
+}
+.wf_LBL
+{
+}
+.wf_LBR
+{
+	text-align:right;
+}
+.wf_PVS
+{
+	color:#000000;
+	font-family:monospace;
+	text-decoration:none;
+}
+.wf_PVR
+{
+	text-align:right;
+	color:#777777;
+}
+.wf_HDR
+{
+	visibility:hidden;
+}
+.wf_HD2
+{
+	visibility:hidden;
+}
+.wf_PGM
+{
+	visibility:hidden;
+}
+.wf_LVL
+{
+	visibility:hidden;
+}
+.wf_PGT
+{
+	visibility:hidden;
+}
+.wf_FCT
+{
+	visibility:hidden;
+}
+.wf_DTE
+{
+	visibility:hidden;
+}
+.wf_TIM
+{
+	visibility:hidden;
+}
+.wf_LST
+{
+}
+.wf_PMT
+{
+}
+.wf_CAL
+{
+}
+.wf_FRQ
+{
+}
+.wf_YNO
+{
+	color:gray;
+}
+.wf_SEL
+{
+	visibility:hidden;
+}
+.wf_OPT
+{
+}
+.wf_AMT
+{
+	text-align:right;
+}
+.wf_AMR
+{
+	text-align:right;
+}
+.wf_RIGHT_ALIGN
+{
+	text-align:right;
+	margin-left:auto;
+}
+.wf_LEFT_ALIGN
+{
+	text-align:left;
+}
+.wf_CENTER_ALIGN
+{
+	text-align:center;
+}
+.wf_RTOL
+{
+	direction:rtl;
+}
+.wf_LTOR
+{
+	direction:ltr;
+}
+INPUT.link_ul
+{
+	text-decoration:underline;
+	border:0;
+	border-spacing:1px;
+	padding:0px;
+	background-color:#ffffff;
+}
+.wf_LTOR font
+{
+	font-weight:bold;
+	color:#ffffff;
+}
+.wf_LTOR a
+{
+	text-decoration:none;
+}
+.wf_CODERTL
+{
+}
+.wf_CON
+{
+	visibility:hidden;
+}
+.wf_ERROR
+{
+	background-color:#ff9966;
+}
+.wf_WARNING
+{
+	background-color:#ffff80;
+}
+.wf_INFO
+{
+	background-color:#acd683;
+}
+.wf_NOBORDER
+{
+	border-style:none;
+	border-width:0px;
+}
+.wf_UPPERCASE
+{
+	TEXT-TRANSFORM:uppercase;
+}
+.wf_SELECTED
+{
+	background-color:#ff9966;
+}
+.wf_DSPNONE
+{
+	display:none;
+}
+.wf_VALIDVALUE
+{
+	display:none;
+}
+.wf_NOWRAP
+{
+	white-space:nowrap;
+/*******************************************************************************
+	 *  DISPLAY GROUP STYLE
+	 *******************************************************************************/
+}
+.groupHeaderRowClass
+{
+	vertical-align:middle;
+	font-weight:bold;
+}
+.groupHeaderCellClass
+{
+	color:#000000;
+	height:auto;
+	border-bottom:0;
+	background-image:none;
+	background-color:#e0e0e0;
+	padding-left:6px;
+	padding-right:6px;
+	padding-top:2px;
+	padding-bottom:2px;
+}
+.groupButtonDiv
+{
+	padding-right:5px;
+}
+.groupTabDiv
+{
+}
+.groupTabText
+{
+	color:#00aeef;
+	height:auto;
+	background-image:url('../images/equi/mys_bar24lightgray.png');
+	white-space:nowrap;
+	padding-left:4px;
+	padding-right:4px;
+	border-right:1px solid #e0e0e0;
+}
+.groupTabTextSelected
+{
+	cursor:default;
+	height:auto;
+	background-color:lightcyan;
+	white-space:nowrap;
+	padding-left:4px;
+	padding-right:4px;
+	border-right:1px solid #e0e0e0;
+	background-image:url('../images/equi/mys_bar24lightgray_dwn.png');
+	color:#e86d1f;
+}
+.groupTabTextWithMsg
+{
+	color:#e86d1f;
+	height:auto;
+	white-space:nowrap;
+	padding-left:4px;
+	padding-right:4px;
+	border-left:1px solid #e0e0e0;
+}
+.GroupTableClass
+{
+	border:0px;
+}
+.GroupTableClass tr
+{
+	padding-bottom:7px;
+}
+.GroupTableClass tr td
+{
+	vertical-align:middle;
+}
+.NonGroupTableClass
+{
+	border-top:0;
+	border-left:0px solid #0099ff;
+	border-right:0px solid #0099ff;
+	border-bottom:0px solid #0099ff;
+}
+.NonGroupTableClass tr
+{
+	padding-bottom:7px;
+}
+.NonGroupTableClass tr td
+{
+	vertical-align:middle;
+}
+.SubNonGroupTableClass
+{
+	position:relative;
+	right:10px;
+	border-top:1px solid #0099ff;
+	border-left:0px solid #0099ff;
+	border-right:0px solid #0099ff;
+	border-bottom:0px solid #0099ff;
+}
+.GroupClass
+{
+	padding-bottom:1px;
+}
+.KeyGroupClass
+{
+}
+.DetailGroupClass
+{
+/*******************************************************************************
+	 *  MAIN DIV
+	 *******************************************************************************/
+}
+.MainDivClass
+{
+	padding-top:10px;
+	width:95%;
+}
+.mainTD
+{
+	padding-top:10px;
+/*******************************************************************************
+	 *  MODAL WINDOW STYLE
+	 *******************************************************************************/
+}
+.modalHeader,
+.modalHeaderWarning
+{
+	background-image:url('../images/bar24lightgray.gif');
+	font-weight:bold;
+	height:24px;
+	position:relative;
+	right:auto;
+	top:auto;
+	left:auto;
+	bottom:auto;
+}
+.modalHeaderText
+{
+	padding-left:10px;
+}
+.modalBody
+{
+	background:window;
+}
+.modalTable
+{
+	border:0;
+	border-spacing:1px;
+	padding:0px;
+}
+.modalCell
+{
+	padding:1px;
+}
+.modalInnerTable
+{
+	border-spacing:1px;
+}
+.modalInnerCell
+{
+	padding:4px;
+}
+.modalButtons
+{
+	padding:4px;
+	vertical-align:middle;
+}
+.modalButton
+{
+	font-family:monospace;
+	font-size:10pt;
+	margin:0px;
+	padding:0px;
+	padding-left:2px;
+	padding-right:2px;
+	border:1px solid ThreeDShadow;
+	color:windowtext;
+}
+.modalFooter
+{
+	background-image:url('../images/bar24lightgray.gif');
+	font-weight:bold;
+	padding-top:2px;
+	padding-bottom:8px;
+	position:relative;
+	right:auto;
+	top:auto;
+	left:auto;
+	bottom:auto;
+/*******************************************************************************
+	 *  DEFAULT HORIZONTAL STYLE
+	 *******************************************************************************/
+}
+.hr_default
+{
+	margin-left:10px;
+	margin-right:10px;
+	border-top:0;
+	border-bottom:1px solid #e0e0e0;
+/*******************************************************************************
+	 *  SUPERVISOR ONLINE REQUEST STYLE
+	 *******************************************************************************/
+}
+.onlineRequest
+{
+	color:red;
+/*******************************************************************************
+	 *  OTHERS
+	 *******************************************************************************/
+}
+.rowSpacer
+{
+	height:6px;
+}
+.alignTop
+{
+	vertical-align:top;
+}
+.alignBottom
+{
+	vertical-align:bottom;
+}
+.alignMiddle
+{
+	vertical-align:middle;
+}
+.scrollingX
+{
+	overflow:auto;
+	overflowY:hidden;
+}
+.scrollingY
+{
+	overflow:auto;
+	overflowX:hidden;
+}
+.scrollingXY
+{
+	overflow:auto;
+}
+.maxWidth
+{
+	width:100%;
+}
+.contextMenuStyle
+{
+	color:black;
+	text-decoration:none;
+/*******************************************************************************
+	 *  REPEATING GROUPS STYLE
+	 *******************************************************************************/
+}
+.repeatingDiv
+{
+}
+.repeatingHeaderDiv
+{
+	background-color:buttonface;
+}
+.repeatingHeaderDivAsRow
+{
+	background-color:buttonface;
+}
+.repeatingDataDiv
+{
+}
+.repeatingFooterDiv
+{
+	background-color:buttonface;
+}
+.repeatingFooterDivAsRow
+{
+	background-color:buttonface;
+}
+.defaultPadding
+{
+	padding-right:10px;
+}
+.repeatingGroupButtons
+{
+	width:22px;
+	height:22px;
+/*******************************************************************************
+	 *  REPEATING GROUPS STYLE - GLOBAL PROCESSING
+	 *******************************************************************************/
+}
+.gproweven
+{
+	background-color:#bfecff;
+/*******************************************************************************
+	 *  CUSTOM SELECT STYLE (predictive list)
+	 *******************************************************************************/
+}
+.customSelectContainer
+{
+	border-top:1px solid #6f6453;
+	border-left:1px solid #6f6453;
+	border-right:1px solid #6f6453;
+	border-bottom:1px solid #6f6453;
+	top:auto;
+	left:auto;
+	font-family:monospace;
+	background:window;
+}
+.customSelect
+{
+	background-color:buttonface;
+/*******************************************************************************
+	 *  SELECTION BOX (for copying/pasting using mouse)
+	 *******************************************************************************/
+}
+.mouseSelectionBox
+{
+	background-color:transparent;
+	position:absolute;
+	z-index:101;
+	border:1px solid lightgrey;
+}
+.calendarArrowLeft
+{
+	background-image:url('../images/calendarArrows.png');
+	background-repeat:no-repeat;
+	background-position:0px 0px;
+	width:15px;
+	height:15px;
+	text-align:center;
+}
+.calendarArrowRight
+{
+	background-image:url('../images/calendarArrows.png');
+	background-repeat:no-repeat;
+	background-position:-18px 0px;
+	width:15px;
+	height:15px;
+	text-align:center;
+/*******************************************************************************
+	 *  Confirmation.jsp
+	 *******************************************************************************/
+}
+#confirmationTable
+{
+	margin:0px;
+	border:0px;
+	border-spacing:0px;
+}
+#confirmationRowHeader
+{
+	background-image:url('../images/bar24lightgray.gif');
+	font-weight:bold;
+	height:27px;
+	position:relative;
+	right:auto;
+	top:auto;
+	left:auto;
+	bottom:auto;
+	border:1px;
+	border-spacing:1px;
+	padding-bottom:3px;
+}
+#confirmationRowFooter
+{
+	background-color:buttonface;
+	padding-bottom:4px;
+	position:relative;
+}
+#submittedLabel
+{
+	padding-left:10px;
+/*******************************************************************************
+	 *  Dummy field used in predictive list
+	 *******************************************************************************/
+}
+.dummyField
+{
+	background-color:window;
+	border:0px;
+/*******************************************************************************
+	 *  Standard alternating style for list
+	 *******************************************************************************/
+}
+.standardRowStyle1
+{
+}
+.standardRowStyle2
+{
+}
+.standardRowStyle1:hover
+{
+}
+.standardRowStyle2:hover
+{
+}
+.standardRowStyle1 *.textInputRepeatingGroup
+{
+}
+.standardRowStyle2 *.textInputRepeatingGroup
+{
+/*******************************************************************************
+	 *  Change mouse cursor to pointer on hover
+	 *******************************************************************************/
+}
+.mousePointerHover:hover
+{
+	cursor:pointer;
+}
+.mousePointerHover input[readonly]:hover
+{
+	cursor:pointer;
+}
+
+{
+}

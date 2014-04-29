@@ -1,0 +1,161 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.enquiry;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
+public class _AllEnquiries
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	public static Test suite()
+	{
+		// Create test suite
+		TestSuite suite = new TestSuite("Test for com.misys.equation.common.test.standard.enquiry");
+
+		// Note: Commented-out enquiries (*NO DATA*) work but they currently
+		// do not have data set up from them in the test unit.
+		// TODO: need to set up test data for these enquiries
+
+		// Standard Enquiries
+		suite.addTestSuite(AAE.class); // Address Enquiry
+		suite.addTestSuite(AB.class); // Account Balance Enquiry
+		suite.addTestSuite(ABE.class); // Account Basic Details Enquiry
+		suite.addTestSuite(AIE.class); // Account Interest Enquiry
+		suite.addTestSuite(ANE.class); // Additional Deal Narrative Enquiry
+		suite.addTestSuite(AOE.class); // Discretionary Overdraft Extension
+		suite.addTestSuite(ASE.class); // Account Special Conditions Enquiry
+		suite.addTestSuite(BL.class); // Balance Order Enquiry
+		suite.addTestSuite(CCV.class); // Clean Payments Enquiry
+		// suite.addTestSuite(CED.class); // Corporate credit limit enquiry *NO DATA*
+		suite.addTestSuite(CTE.class); // Collateral Items Enquiry
+		suite.addTestSuite(CXE.class); // Customer extended details
+		suite.addTestSuite(DAC.class); // Deal Amortised Cost Enquiry
+		suite.addTestSuite(DDM.class); // DD Mandates Detail Enquiry
+		suite.addTestSuite(DNE.class); // Deal Notes Enquiry
+		suite.addTestSuite(ECD.class); // Direct Debit Claims Enquiry
+		suite.addTestSuite(EDO.class); // Direct Debit Origination Enquiry
+		// suite.addTestSuite(EPO.class); // Customer Payment Order Enquiry *NO DATA*
+		suite.addTestSuite(ENE.class); // Transaction Narrative Enquiry
+		suite.addTestSuite(FOE.class); // Account Overdraft Status Enquiry
+		suite.addTestSuite(FWE.class); // Free Withdrawal Enquiry
+		// suite.addTestSuite(ICE.class); // Certificate Enquiry *NO DATA*
+		// suite.addTestSuite(KWH.class); // S24c KWG Reported Aut Hldrs Enquiry *NO DATA*
+		suite.addTestSuite(LPE.class); // Loan Pay-off Enquiry
+		// suite.addTestSuite(MBE.class); // MDS Account Balance Enquiry *NO DATA*
+		suite.addTestSuite(NAE.class); // Notice Account Rules Enquiry
+		suite.addTestSuite(NDE.class); // Notice Withdrawal Detail Enquiry
+		suite.addTestSuite(OKZ.class); // Commercial Paper Enquiry *NO DATA*
+		suite.addTestSuite(PAE.class); // Principal Increase/Decrease Enquiry
+		suite.addTestSuite(QTE.class); // Queued Transaction Audit Enquiry
+		suite.addTestSuite(SO.class); // Standing Order Enquiry
+		// suite.addTestSuite(SHE.class); // UII Loss/Stopped History Enquiry *NO DATA*
+		// suite.addTestSuite(SUE.class); // UII Status Enquiry *NO DATA*
+		// suite.addTestSuite(TDE.class); // Tax Details Enquiry *NO DATA*
+
+		// List Enquiries
+		suite.addTestSuite(AGE_account.class); // Guarantee Details Enquiry
+		suite.addTestSuite(AGE_deal.class); // Guarantee Details Enquiry
+		suite.addTestSuite(AJE.class); // Active Jobs for Unit
+		suite.addTestSuite(AS.class); // Account Summary Enquiry
+		// suite.addTestSuite(ASH.class); // Account Status History Enquiry *ENQUIRY BROKEN*
+		suite.addTestSuite(BDE.class); // Bank Card Enquiry
+		suite.addTestSuite(CA2_account.class); // Collateral cover enquiry
+		suite.addTestSuite(CBQ.class); // Chequebook Requests Enquiry
+		suite.addTestSuite(CCU.class); // Clean Payments Events Enquiry
+		suite.addTestSuite(CGE.class); // Account Charges Enquiry
+		suite.addTestSuite(CHI.class); // Charge Illustration Enquiry
+		suite.addTestSuite(CLS.class); // Customer Loan Summary Enquiry
+		suite.addTestSuite(CME.class); // Commitment Charges Enquiry
+		suite.addTestSuite(COW.class); // Outward Local Clearing
+		suite.addTestSuite(CSE.class); // Customer Relationships Enquiry
+		suite.addTestSuite(CVE.class); // Collateral Cover Enquiry
+		suite.addTestSuite(DCE.class); // Deal Charges Enquiry
+		// suite.addTestSuite(DFC.class); // WebFacing Disp File Configuration *NO DATA*
+		suite.addTestSuite(DMS.class); // DD Mandates Summary Enquiry
+		// suite.addTestSuite(DSQ.class); // Deal SWIFT status enquiry *NO DATA*
+		// suite.addTestSuite(ECE.class); // External Cashflows Enquiry *NO DATA*
+		suite.addTestSuite(EDV.class); // Account/Deal Variation Enquiry
+		// EDV populates the fixed format data in U54DMR not U54DER
+		suite.addTestSuite(EPE.class); // Event/postings enquiry
+		suite.addTestSuite(EPV.class); // Product Variation Enquiry
+		// suite.addTestSuite(ETH.class); // Tax Threshold & Utilisation Enquiry *NO DATA*
+		// suite.addTestSuite(ETX.class); // Tax Threshold & Utilisation Enquiry *NO DATA*
+		suite.addTestSuite(EVE.class); // Event Charges Enquiry
+		suite.addTestSuite(EW1.class); // Case summary enquiry
+		suite.addTestSuite(EW2.class); // Summary of notes enquiry
+		suite.addTestSuite(EW3.class); // Sub-case review enquiry
+		suite.addTestSuite(EWS.class); // Sub Case Status Summary
+		// suite.addTestSuite(FIE.class); // Free Interest Withdrawal Enquiry *NO DATA*
+		suite.addTestSuite(GAE.class); // Enhanced API Meta Data Enquiry
+		// suite.addTestSuite(GBE.class); // German Balance Availability Enquiry *NO DATA*
+		// suite.addTestSuite(GBF.class); // German Balance Availability Enquiry *NO DATA*
+		suite.addTestSuite(GDQ.class); // Generic Deals Enquiry *NO DATA*
+		suite.addTestSuite(HPC.class); // Hypothetical Charge Enquiry *NO DATA*
+		suite.addTestSuite(IAC.class); // Customer income charges
+		suite.addTestSuite(IAE.class); // Customer profit enquiry extract
+		suite.addTestSuite(IAF.class); // Customer income FX
+		suite.addTestSuite(IAI.class); // Customer income interest
+		suite.addTestSuite(IAM.class); // Customer Profit Analysis by Month
+		suite.addTestSuite(IDC.class); // Customer income - charges details
+		suite.addTestSuite(IDF.class); // Customer income - FX details
+		suite.addTestSuite(IDI.class); // Customer income - interest details
+		suite.addTestSuite(IGB.class); // Group profit category enquiry
+		suite.addTestSuite(IGS.class); // Subtotal Breakdown Enquiry
+		suite.addTestSuite(IMD.class); // Incoming message detail enquiry
+		suite.addTestSuite(IME.class); // Incoming Messages by Network/Sender
+		suite.addTestSuite(INE.class); // Income & Tax Enquiry
+		// suite.addTestSuite(IRE.class); // Retirement Enquiry *NO DATA*
+		suite.addTestSuite(ISE.class); // IRS Summary Enquiry
+		suite.addTestSuite(ITE.class); // Collateral Item Assignments Enquiry
+		suite.addTestSuite(JAE.class); // Joint Account Enquiry
+		suite.addTestSuite(JRA.class); // Journal Enquiry - Current Users
+		suite.addTestSuite(JRE.class); // Journal Enquiry - All Users
+		// suite.addTestSuite(KWA.class); // S24c KWG Reported Accounts Enquiry *NO DATA*
+		suite.addTestSuite(KC1.class); // System options enquiry
+		suite.addTestSuite(KWT.class); // S24c KWG Transmission Files Enquiry
+		suite.addTestSuite(LSE.class); // Loan Status History Enquiry
+		// suite.addTestSuite(LUE.class); // UII Loss/Stopped History Enquiry *NO DATA*
+		suite.addTestSuite(MPE.class); // Report/Process Requests Enquiry
+		suite.addTestSuite(MRL.class); // Master Request List Enquiry
+		suite.addTestSuite(NSE.class); // Notice Withdrawal Summary Enquiry
+		suite.addTestSuite(NTE.class); // Net Settlement group enquiry
+		suite.addTestSuite(NWE.class); // Notice Withdrawal Account Enquiry
+		suite.addTestSuite(OKY.class); // Commercial Paper Status Enquiry
+		suite.addTestSuite(ORE.class); // Repayments Enquiry
+		suite.addTestSuite(ORF.class); // Outstanding Referrals Enquiry
+		suite.addTestSuite(OVE.class); // Account Overdraft Limits Enquiry
+		suite.addTestSuite(PIE.class); // Pool Interest Rates Enquiry
+		suite.addTestSuite(POE.class); // Postings Enquiry
+		suite.addTestSuite(PXE.class); // Pool Exchange Rates Enquiry
+		suite.addTestSuite(QTA.class); // Queued Transaction Audit Summary
+		// suite.addTestSuite(REQ.class); // EESF Rule Exceptions *NO DATA*
+		suite.addTestSuite(RRE.class); // Extended ESF Access Restriction *NO DATA*
+		suite.addTestSuite(SA.class); // Stop Order Amount Enquiry
+		// suite.addTestSuite(SME.class); // Stock Movement Enquiry *NO DATA*
+		// suite.addTestSuite(SMR.class); // Stock Movement Reconciliation *NO DATA*
+		suite.addTestSuite(SOE.class); // Standing Orders By Account
+		// suite.addTestSuite(SPH.class); // Shadow Adjustment History Enquiry *NO DATA*
+		suite.addTestSuite(ST.class); // Stop Order Account Enquiry
+		suite.addTestSuite(TH.class); // Transaction History Enquiry
+		suite.addTestSuite(TQE.class); // Transaction Queue Manager Enquiry
+		suite.addTestSuite(TQM.class); // Transaction Queue Manager
+		suite.addTestSuite(TS.class); // Temporary Statement Enquiry
+
+		// Iterative List Enquiries
+		suite.addTestSuite(RCE.class); // Loan Repayment Calculator Enquiry
+
+		return suite;
+	}
+
+}

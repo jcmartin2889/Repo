@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/version
+END
+EuqationVersionNumberDefinitions.java
+K 25
+svn:wc:ra_dav:version-url
+V 163
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/version/EuqationVersionNumberDefinitions.java
+END
+UpdateEclipseClassPathVersionFile.java
+K 25
+svn:wc:ra_dav:version-url
+V 164
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/version/UpdateEclipseClassPathVersionFile.java
+END
+EquationVersionIncrementor.java
+K 25
+svn:wc:ra_dav:version-url
+V 157
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/version/EquationVersionIncrementor.java
+END
+ManifestFileVersionUpdater.java
+K 25
+svn:wc:ra_dav:version-url
+V 157
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/version/ManifestFileVersionUpdater.java
+END
+UpdatePluginEclipseXML.java
+K 25
+svn:wc:ra_dav:version-url
+V 153
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/version/UpdatePluginEclipseXML.java
+END
+JarVersionNumberModifier.java
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/version/JarVersionNumberModifier.java
+END
+SourceFileVersionUpdater.java
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/version/SourceFileVersionUpdater.java
+END

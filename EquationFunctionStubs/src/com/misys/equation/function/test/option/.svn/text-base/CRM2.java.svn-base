@@ -1,0 +1,329 @@
+package com.misys.equation.function.test.option;
+
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.function.beans.DisplayAttributes;
+import com.misys.equation.function.beans.DisplayAttributesSet;
+import com.misys.equation.function.beans.InputField;
+import com.misys.equation.function.beans.InputFieldSet;
+import com.misys.equation.function.beans.TextBean;
+import com.misys.equation.function.test.helper.DisplayFieldSetWrapper;
+import com.misys.equation.function.test.helper.FunctionGenerator;
+import com.misys.equation.function.test.run.FunctionToolboxStub;
+import com.misys.equation.function.tools.FunctionToolbox;
+import com.misys.equation.function.tools.TranslationToolbox;
+
+public class CRM2 extends TestOptionStub
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	public CRM2()
+	{
+		try
+		{
+			setUp();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] inputParameters)
+	{
+		CRM2 test = new CRM2();
+		test.test();
+	}
+
+	private DisplayFieldSetWrapper addRecord1(FunctionGenerator fg) throws EQException
+	{
+		// add the record
+		DisplayFieldSetWrapper fieldSetWrapper = fg.addFieldSetParameter("PRIMARY", "GBL000198", "GBL000199");
+		InputFieldSet inputFieldSet = fieldSetWrapper.getInputFieldSet();
+		DisplayAttributesSet attributeSet = fieldSetWrapper.getDisplayAttributesSet();
+
+		// input field
+		InputField inputField;
+		DisplayAttributes displayAttributes;
+
+		// add all the fields in this section ---------------------------------------
+
+		// Customer mnemonic
+		inputField = FunctionToolbox.getInputFieldParameter("CUS", "GBL000200", "GBL000201", "A", "6", "");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setLabelPosition(DisplayAttributes.FIELD_LABEL_NONE);
+		displayAttributes.setProtected(DisplayAttributes.PROTECTED_YES);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Customer location
+		inputField = FunctionToolbox.getInputFieldParameter("CLC", "GBL000202", "GBL000201", "A", "3", "");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setLabelPosition(DisplayAttributes.FIELD_LABEL_NONE);
+		displayAttributes.setProtected(DisplayAttributes.PROTECTED_YES);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Customer group
+		inputField = FunctionToolbox.getInputFieldParameter("GRP", "GBL000204", "GBL000205", "A", "10", "");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setLabelPosition(DisplayAttributes.FIELD_LABEL_NONE);
+		displayAttributes.setProtected(DisplayAttributes.PROTECTED_YES);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Customer country
+		inputField = FunctionToolbox.getInputFieldParameter("CNA", "GBL000206", "GBL000207", "A", "10", "");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setLabelPosition(DisplayAttributes.FIELD_LABEL_NONE);
+		displayAttributes.setProtected(DisplayAttributes.PROTECTED_YES);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Add text owner
+		TranslationToolbox.addTextOwnerToDisplayAttributes(attributeSet, TextBean.OWNER_MISYS, FunctionGenerator.BASE_LANG);
+		TranslationToolbox.addTextOwnerToInputFields(null, inputFieldSet, TextBean.OWNER_MISYS, FunctionGenerator.BASE_LANG);
+
+		return fieldSetWrapper;
+	}
+
+	private DisplayFieldSetWrapper addRecord2(FunctionGenerator fg) throws EQException
+	{
+		// add the record
+		DisplayFieldSetWrapper fieldSetWrapper = fg.addFieldSetParameter("REC2", "GBL000198", "GBL000199");
+		InputFieldSet inputFieldSet = fieldSetWrapper.getInputFieldSet();
+		DisplayAttributesSet attributeSet = fieldSetWrapper.getDisplayAttributesSet();
+
+		// input field
+		InputField inputField;
+		DisplayAttributes displayAttributes;
+
+		// add all the fields in this section ---------------------------------------
+
+		// Limit category
+		inputField = FunctionToolbox.getInputFieldParameter("LC", "GBL000208", "GBL000209", "A", "10", "");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setLabelPosition(DisplayAttributes.FIELD_LABEL_NONE);
+		displayAttributes.setProtected(DisplayAttributes.PROTECTED_YES);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Currency
+		inputField = FunctionToolbox.getInputFieldParameter("CCY", "GBL000210", "GBL000211", "A", "3", "");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setLabelPosition(DisplayAttributes.FIELD_LABEL_NONE);
+		displayAttributes.setProtected(DisplayAttributes.PROTECTED_YES);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Risk amount
+		inputField = FunctionToolbox.getInputFieldParameter("RAM", "GBL000212", "GBL000213", "P", "15", "0");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		inputField.setUpperCase(false);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setLabelPosition(DisplayAttributes.FIELD_LABEL_NONE);
+		displayAttributes.setProtected(DisplayAttributes.PROTECTED_YES);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Limit amount
+		inputField = FunctionToolbox.getInputFieldParameter("LAM", "GBL000214", "GBL000215", "P", "15", "0");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		inputField.setUpperCase(false);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setLabelPosition(DisplayAttributes.FIELD_LABEL_NONE);
+		displayAttributes.setProtected(DisplayAttributes.PROTECTED_YES);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Available amount
+		inputField = FunctionToolbox.getInputFieldParameter("AAM", "GBL000216", "GBL000217", "P", "15", "0");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		inputField.setUpperCase(false);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setLabelPosition(DisplayAttributes.FIELD_LABEL_NONE);
+		displayAttributes.setProtected(DisplayAttributes.PROTECTED_YES);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Expiry date
+		inputField = FunctionToolbox.getInputFieldParameter("XPD", "GBL000218", "GBL000219", "D", "7", "");
+		// inputField.setExtendedAttribute(InputField.EXT_ATTRIB_DATE_INPUT8D);
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		inputField.setUpperCase(false);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setLabelPosition(DisplayAttributes.FIELD_LABEL_NONE);
+		displayAttributes.setProtected(DisplayAttributes.PROTECTED_YES);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Error message
+		inputField = FunctionToolbox.getInputField("ERR", "Error message", "This is the error message", "A", "37", "");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setLabelPosition(DisplayAttributes.FIELD_LABEL_NONE);
+		displayAttributes.setProtected(DisplayAttributes.PROTECTED_YES);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Country
+		inputField = FunctionToolbox.getInputFieldParameter("CNA1", "GBL000220", "GBL000221", "A", "10", "");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setLabelPosition(DisplayAttributes.FIELD_LABEL_NONE);
+		displayAttributes.setProtected(DisplayAttributes.PROTECTED_YES);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Thousand text?
+		inputField = FunctionToolbox.getInputField("INTH", "In Thousand text", "This is the amount in thousand", "A", "35", "");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setLabelPosition(DisplayAttributes.FIELD_LABEL_NONE);
+		displayAttributes.setProtected(DisplayAttributes.PROTECTED_YES);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Add text owner
+		TranslationToolbox.addTextOwnerToDisplayAttributes(attributeSet, TextBean.OWNER_MISYS, FunctionGenerator.BASE_LANG);
+		TranslationToolbox.addTextOwnerToInputFields(null, inputFieldSet, TextBean.OWNER_MISYS, FunctionGenerator.BASE_LANG);
+
+		return fieldSetWrapper;
+	}
+
+	private DisplayFieldSetWrapper addRecord3(FunctionGenerator fg) throws EQException
+	{
+		// add the record
+		DisplayFieldSetWrapper fieldSetWrapper = fg.addFieldSetParameter("REC3", "GBL000198", "GBL000199");
+		InputFieldSet inputFieldSet = fieldSetWrapper.getInputFieldSet();
+		DisplayAttributesSet attributeSet = fieldSetWrapper.getDisplayAttributesSet();
+
+		// input field
+		InputField inputField;
+		DisplayAttributes displayAttributes;
+
+		// add all the fields in this section ---------------------------------------
+
+		// Reference
+		inputField = FunctionToolbox.getInputFieldParameter("REF", "GBL000224", "GBL000225", "A", "20", "");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setLabelPosition(DisplayAttributes.FIELD_LABEL_NONE);
+		displayAttributes.setProtected(DisplayAttributes.PROTECTED_YES);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Reference currency
+		inputField = FunctionToolbox.getInputFieldParameter("CUR", "GBL000226", "GBL000227", "A", "3", "");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setLabelPosition(DisplayAttributes.FIELD_LABEL_NONE);
+		displayAttributes.setProtected(DisplayAttributes.PROTECTED_YES);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Transaction amount
+		inputField = FunctionToolbox.getInputFieldParameter("AMT", "GBL000228", "GBL000229", "P", "15", "0");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		inputField.setUpperCase(false);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setLabelPosition(DisplayAttributes.FIELD_LABEL_NONE);
+		displayAttributes.setProtected(DisplayAttributes.PROTECTED_YES);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Number of data
+		inputField = FunctionToolbox.getInputField("CURDATA", "Number of data", "This is the number of data", "S", "3", "0");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		inputField.setUpperCase(false);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setLabelPosition(DisplayAttributes.FIELD_LABEL_NONE);
+		displayAttributes.setProtected(DisplayAttributes.PROTECTED_YES);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Message status
+		inputField = FunctionToolbox.getInputField("MSGSTS", "Message status", "This is the message status", "A", "6", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// API Id
+		inputField = FunctionToolbox.getInputField("APIID", "API Name", "This is the API which generated the CRM message", "A",
+						"20", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setLabelPosition(DisplayAttributes.FIELD_LABEL_NONE);
+		displayAttributes.setProtected(DisplayAttributes.PROTECTED_YES);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// API Label
+		inputField = FunctionToolbox.getInputField("APILBL", "API Label", "This is the API label", "A", "50", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setLabelPosition(DisplayAttributes.FIELD_LABEL_NONE);
+		displayAttributes.setProtected(DisplayAttributes.PROTECTED_YES);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// API Desc
+		inputField = FunctionToolbox.getInputField("APIDSC", "API Description", "This is the API description", "A", "50", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setLabelPosition(DisplayAttributes.FIELD_LABEL_NONE);
+		displayAttributes.setProtected(DisplayAttributes.PROTECTED_YES);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Add text owner
+		TranslationToolbox.addTextOwnerToDisplayAttributes(attributeSet, TextBean.OWNER_MISYS, FunctionGenerator.BASE_LANG);
+		TranslationToolbox.addTextOwnerToInputFields(null, inputFieldSet, TextBean.OWNER_MISYS, FunctionGenerator.BASE_LANG);
+
+		return fieldSetWrapper;
+	}
+
+	private void addLoadAPI(FunctionGenerator fg)
+	{
+	}
+
+	private void addUpdateAPI(FunctionGenerator fg)
+	{
+	}
+
+	private void addMappings(FunctionGenerator fg)
+	{
+	}
+
+	public void test()
+	{
+		// Have a bash...
+		try
+		{
+			printStartStatus(this.getClass().getSimpleName());
+			FunctionGenerator fg = new FunctionGenerator("CRM", "GBL000198", "GBL000199", "com.misys.equation.screens",
+							"com.misys.equation.screens.layout");
+			fg.setToParameter(null);
+			addRecord1(fg);
+			addRecord2(fg);
+			addRecord3(fg);
+			addLoadAPI(fg);
+			addUpdateAPI(fg);
+			addMappings(fg);
+
+			// Write to DB
+			FunctionToolboxStub.writeToDB(unit, fg, false);
+
+			// print
+			printCompleteStatus(fg, this.getClass().getSimpleName(), printXML);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+}

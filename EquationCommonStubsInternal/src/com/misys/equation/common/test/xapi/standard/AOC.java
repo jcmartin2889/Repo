@@ -1,0 +1,134 @@
+/*
+ * This sample code is provided by Misys for illustrative purposes only.
+ * 
+ * These examples have not been thoroughly tested under all conditions.
+ * 
+ * Misys, therefore, cannot guarantee or imply reliability, serviceability, or function of these programs.
+ * 
+ * All programs contained herein are provided to you "AS IS" without any warranties of any kind. The implied warranties of
+ * non-infringement, merchantability and fitness for a particular purpose are expressly disclaimed.
+ */
+package com.misys.equation.common.test.xapi.standard;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.TestEnvironment;
+import com.misys.equation.common.utilities.Toolbox;
+
+// *************************************************************************************************
+/**
+ * 
+ * 
+ */
+// *************************************************************************************************
+public class AOC
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: AOC.java 11310 2011-06-27 12:20:21Z ESTHER.WILLIAMS $";
+	String decode = "O";
+	String paymentReference = "KBSL00103H000041";
+	String externalPaymentReference = "";
+	EquationStandardSession session;
+	long startTime = System.currentTimeMillis();
+	long currentTime = startTime;
+	// *********************************************************************************************
+	/**
+	 * 
+	 */
+	// *********************************************************************************************
+	private AOC()
+	{
+		try
+		{
+			session = TestEnvironment.getTestEnvironment().getStandardSession();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+	public static void main(String[] inputParameters)
+	{
+		AOC test = new AOC();
+		test.test();
+	}
+	// *********************************************************************************************
+	/**
+	 * 
+	 */
+	// *********************************************************************************************
+	public void test()
+	{
+		// Have a bash...
+		try
+		{
+			// Get a new transaction for Clean Payment
+			EquationStandardTransaction authoriseOutwardCleanPayment = new EquationStandardTransaction("K62MRRAOC", session);
+
+			// **********************************************
+			// Set the fields required for the retrieval call
+			// **********************************************
+			authoriseOutwardCleanPayment.setFieldValue("GZDECD", decode); // Decode; O/I=Auth,P/J=Susp,C=Conf,L=Coll (1A)
+			authoriseOutwardCleanPayment.setFieldValue("GZREF", paymentReference); // Payment reference (16A)
+			authoriseOutwardCleanPayment.setFieldValue("GZXREF", externalPaymentReference); // External payment reference (16A)
+			authoriseOutwardCleanPayment.setFieldValue("GZUSID", session.getUserId()); // Authorised by (4A)
+			// authoriseOutwardCleanPayment.setField("GZRMTR", ""); // Beneficiary id (35A)
+			// authoriseOutwardCleanPayment.setField("GZNOA", ""); // Number of authorisers required (1P,0)
+			// authoriseOutwardCleanPayment.setField("GZAUTN", ""); // Number authorised (1P,0)
+			// authoriseOutwardCleanPayment.setField("GZAUI1", ""); // Authorised by 1 (4A)
+			// authoriseOutwardCleanPayment.setField("GZAUI2", ""); // Authorised by 2 (4A)
+			// authoriseOutwardCleanPayment.setField("GZAUI3", ""); // Authorised by 3 (4A)
+			// authoriseOutwardCleanPayment.setField("GZAUI4", ""); // Authorised by 4 (4A)
+			// authoriseOutwardCleanPayment.setField("GZAUI5", ""); // Authorised by 5 (4A)
+			// authoriseOutwardCleanPayment.setField("GZAUI6", ""); // Authorised by 6 (4A)
+			// authoriseOutwardCleanPayment.setField("GZAUI7", ""); // Authorised by 7 (4A)
+			// authoriseOutwardCleanPayment.setField("GZAUI8", ""); // Authorised by 8 (4A)
+			// authoriseOutwardCleanPayment.setField("GZAUI9", ""); // Authorised by 9 (4A)
+			// authoriseOutwardCleanPayment.setField("GZSTS", ""); // Payment available; U=Unavailable (1A)
+			// authoriseOutwardCleanPayment.setField("GZNXST", ""); // Next payment status; R=Rvw,A=Auth,T=Setl (1A)
+			// authoriseOutwardCleanPayment.setField("GZUSNS", ""); // Suspended by (4A)
+			// authoriseOutwardCleanPayment.setField("GZUSNT", ""); // Settled by (4A)
+			// authoriseOutwardCleanPayment.setField("GZPYST", ""); // Payment status; L=Log,R=Rvw,A=Auth,S=Susp,T=Setl (1A)
+			// authoriseOutwardCleanPayment.setField("GZCSA", ""); // Case Authorisation Status? (1A)
+
+			// Do the invocation
+			authoriseOutwardCleanPayment.setMode("R");
+			session.retrieveEquationTransaction(authoriseOutwardCleanPayment);
+			Toolbox.printMessages(authoriseOutwardCleanPayment.getErrorList());
+			Toolbox.printMessages(authoriseOutwardCleanPayment.getWarningList());
+
+			// **********************************************
+			// Set the fields required for the update
+			// **********************************************
+
+			// Do the invocation
+			authoriseOutwardCleanPayment.setMode("M");
+			session.addEquationTransaction(authoriseOutwardCleanPayment);
+			session.applyTransactions();
+			Toolbox.printMessages(authoriseOutwardCleanPayment.getErrorList());
+			Toolbox.printMessages(authoriseOutwardCleanPayment.getWarningList());
+
+			// **********************************************
+			// Unlock the payment
+			// **********************************************
+
+			// Do the invocation
+			authoriseOutwardCleanPayment.setMode("W");
+			session.addEquationTransaction(authoriseOutwardCleanPayment);
+			session.applyTransactions();
+			Toolbox.printMessages(authoriseOutwardCleanPayment.getErrorList());
+			Toolbox.printMessages(authoriseOutwardCleanPayment.getWarningList());
+
+			// **********************************************
+			// Finish
+			// **********************************************
+			System.out.println("finished!");
+			session.commitTransactions();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.toString());
+		}
+	}
+}

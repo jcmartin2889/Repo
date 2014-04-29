@@ -1,0 +1,168 @@
+package com.misys.equation.function.bf.callback;
+
+import java.beans.PropertyVetoException;
+import java.io.IOException;
+import java.util.logging.Logger;
+
+import org.apache.commons.codec.binary.Base64;
+import org.jasig.cas.authentication.handler.AuthenticationException;
+import org.jasig.cas.authentication.handler.BadPasswordAuthenticationException;
+import org.jasig.cas.authentication.handler.BadUsernameOrPasswordAuthenticationException;
+import org.jasig.cas.authentication.handler.BlockedCredentialsAuthenticationException;
+import org.jasig.cas.authentication.handler.UnsupportedCredentialsException;
+import org.jasig.cas.authentication.handler.support.AbstractUsernamePasswordAuthenticationHandler;
+import org.jasig.cas.authentication.principal.UsernamePasswordCredentials;
+
+import com.ibm.as400.access.AS400;
+import com.ibm.as400.access.AS400SecurityException;
+import com.ibm.as400.access.SecureAS400;
+import com.ibm.as400.security.auth.ProfileTokenCredential;
+import com.misys.equation.function.context.EquationFunctionContext;
+
+/**
+ * CAS authentication handler class that authenticates against an IBM i
+ * 
+ * Note that this class is loaded within the CAS application which is not in the same classloader as the Equation application. This
+ * class should therefore not reference other Equation classes
+ */
+public class CASAS400AuthenticationHandler extends AbstractUsernamePasswordAuthenticationHandler
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/** Logger */
+	private final static Logger LOGGER = Logger.getLogger(CASAS400AuthenticationHandler.class.getName());
+
+	/** The IBM server which will be used to authenticate credentials */
+	private String authenticationServer;
+
+	/** Whether communications with the IBM i should be secure */
+	private boolean secure = false;
+
+	@Override
+	protected boolean authenticateUsernamePasswordInternal(UsernamePasswordCredentials usernamepasswordcredentials)
+					throws AuthenticationException
+	{
+		LOGGER.entering(CASAS400AuthenticationHandler.class.getName(), "authenticateUsernamePasswordInternal"); // for debugging
+		// purposes
+		try
+		{
+			AS400 as400 = null;
+			if (authenticationServer != null && authenticationServer.length() > 0)
+			{
+				as400 = getAS400(authenticationServer);
+			}
+			else
+			{
+				// local server
+				as400 = getAS400();
+			}
+			String password = usernamepasswordcredentials.getPassword();
+			// Profile tokens are passed in as strings longer than the maximum password length
+			// to identify them as containing profile tokens.
+			if (password.length() > EquationFunctionContext.MAX_PASSWORD_LENGTH)
+			{
+				String lengthString = password.substring(0, EquationFunctionContext.PASSWORD_LENGTH_CHARS);
+				int realLength = Integer.parseInt(lengthString);
+				String base64 = password.substring(EquationFunctionContext.PASSWORD_LENGTH_CHARS, realLength
+								+ EquationFunctionContext.PASSWORD_LENGTH_CHARS);
+				byte[] tokenBytes = Base64.decodeBase64(base64.getBytes());
+
+				ProfileTokenCredential token = new ProfileTokenCredential(getAS400(as400), tokenBytes,
+								ProfileTokenCredential.TYPE_SINGLE_USE, 3600);
+				as400.setUserId(usernamepasswordcredentials.getUsername());
+				as400.setProfileToken(token);
+			}
+			else
+			{
+				as400.setUserId(usernamepasswordcredentials.getUsername());
+				as400.setPassword(usernamepasswordcredentials.getPassword());
+			}
+
+			// Validates the user ID and password for this AS/400 but does not add to the signed-on list.
+			as400.validateSignon();
+
+			LOGGER.info(usernamepasswordcredentials.getUsername() + "  is valid user in AS400.");
+			return true;
+		}
+		catch (AS400SecurityException ex)
+		{
+			if (AS400SecurityException.PASSWORD_EXPIRED == ex.getReturnCode())
+			{
+				throw new BadPasswordAuthenticationException(ex);
+			}
+			else if (AS400SecurityException.USERID_DISABLE == ex.getReturnCode())
+			{
+				throw new BlockedCredentialsAuthenticationException(ex);
+			}
+			else
+			{
+				throw new BadUsernameOrPasswordAuthenticationException(ex);
+			}
+		}
+		catch (IOException ex)
+		{
+			throw new UnsupportedCredentialsException(ex);
+		}
+		catch (PropertyVetoException ex)
+		{
+			throw new BadUsernameOrPasswordAuthenticationException(ex);
+		}
+	}
+
+	/**
+	 * Obtains a new AS400 or SecureAS400 object
+	 * 
+	 * @return AS400 or SecureAS400 object
+	 */
+	private AS400 getAS400()
+	{
+		return secure ? new SecureAS400() : new AS400();
+	}
+
+	/**
+	 * Obtains a new AS400 or SecureAS400 object
+	 * 
+	 * @param as400
+	 *            Another AS400 instance
+	 * 
+	 * @return AS400 or SecureAS400 object
+	 */
+	private AS400 getAS400(AS400 as400)
+	{
+		return secure ? new SecureAS400(as400) : new AS400(as400);
+	}
+
+	/**
+	 * Obtains a new AS400 or SecureAS400 object
+	 * 
+	 * @param systemId
+	 *            AS400 system name
+	 * 
+	 * @return AS400 or SecureAS400 object
+	 */
+	private AS400 getAS400(String systemId)
+	{
+		return secure ? new SecureAS400(systemId) : new AS400(systemId);
+	}
+
+	/**
+	 * Set authentication server
+	 * 
+	 * @param authenticationServer
+	 */
+	public final void setAuthenticationServer(String authenticationServer)
+	{
+		this.authenticationServer = authenticationServer;
+	}
+
+	/**
+	 * Set secure
+	 * 
+	 * @param secure
+	 */
+	public final void setSecure(String secure)
+	{
+		this.secure = "true".equalsIgnoreCase(secure);
+	}
+}

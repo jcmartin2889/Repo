@@ -1,0 +1,138 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseFully;
+
+/**
+ * Equation test cases for Assign Loan Repayment Priorities
+ */
+public class LRP extends EquationTestCaseFully
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: LRP.java 4721 2009-09-15 11:14:17Z weddelc1 $";
+	String programName = "Q34FRR";
+	String optionId = "LRP";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		retrieveBeforeCancel = false;
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZAPP", "RL"); // Application (2A)
+		transaction.setFieldValue("GZDLP", "CD1"); // Deal type (3A)
+		transaction.setFieldValue("GZLSC", "00"); // Loan status (2A)
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZFIX", "Y"); // Fix repayment? (1A)
+	}
+
+	/**
+	 * Setup the mandatory fields (maintain mode)
+	 */
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+
+		transaction.setFieldValue("GZFIX", "N"); // Fix repayment? (1A)
+		transaction.setFieldValue("GZRET", "001"); // Days to retain archive (3A)
+		transaction.setFieldValue("GZDI", "00"); // Interest ordering (2A)
+		transaction.setFieldValue("GZDP", "01"); // Principal ordering (2A)
+		transaction.setFieldValue("GZFEA", "02"); // Fees - Group A (2A)
+		transaction.setFieldValue("GZFEB", "03"); // Fees - Group B (2A)
+		transaction.setFieldValue("GZFEC", "04"); // Fees - Group C (2A)
+		transaction.setFieldValue("GZFED", "05"); // Fees - Group D (2A)
+		transaction.setFieldValue("GZFEE", "06"); // Fees - Group E (2A)
+		transaction.setFieldValue("GZFEO", "07"); // Fees - Others (2A)
+		transaction.setFieldValue("GZDSC1", "Constant Days Basis"); // Description (20A)
+		transaction.setFieldValue("GZPTY1", "00003"); // Priority code (5A)
+		transaction.setFieldValue("GZMPY1", "000"); // Minor priority code (3A)
+		transaction.setFieldValue("GZPAY1", "Y"); // Partial payment? (1A)
+		transaction.setFieldValue("GZDRN1", "N"); // Allow overdrawn? (1A)
+		transaction.setFieldValue("GZDSC2", "Constant Days Basis"); // Description (20A)
+		transaction.setFieldValue("GZPTY2", "00003"); // Priority code (5A)
+		transaction.setFieldValue("GZMPY2", "000"); // Minor priority code (3A)
+		transaction.setFieldValue("GZPAY2", "Y"); // Partial payment? (1A)
+		transaction.setFieldValue("GZDRN2", "N"); // Allow overdrawn? (1A)
+		transaction.setFieldValue("GZDSC3", "Constant Days Basis"); // Description (20A)
+		transaction.setFieldValue("GZPTY3", "00003"); // Priority code (5A)
+		transaction.setFieldValue("GZMPY3", "000"); // Minor priority code (3A)
+		transaction.setFieldValue("GZPAY3", "Y"); // Partial payment? (1A)
+		transaction.setFieldValue("GZDRN3", "N"); // Allow overdrawn? (1A)
+		transaction.setFieldValue("GZDSC4", "Constant Days Basis"); // Description (20A)
+		transaction.setFieldValue("GZPTY4", "00003"); // Priority code (5A)
+		transaction.setFieldValue("GZMPY4", "000"); // Minor priority code (3A)
+		transaction.setFieldValue("GZPAY4", "Y"); // Partial payment? (1A)
+		transaction.setFieldValue("GZDRN4", "N"); // Allow overdrawn? (1A)
+		transaction.setFieldValue("GZDSC5", "Constant Days Basis"); // Description (20A)
+		transaction.setFieldValue("GZPTY5", "00003"); // Priority code (5A)
+		transaction.setFieldValue("GZMPY5", "000"); // Minor priority code (3A)
+		transaction.setFieldValue("GZPAY5", "N"); // Partial payment? (1A)
+		transaction.setFieldValue("GZDRN5", "N"); // Allow overdrawn? (1A)
+		transaction.setFieldValue("GZDSC6", "Constant Days Basis"); // Description (20A)
+		transaction.setFieldValue("GZPTY6", "00003"); // Priority code (5A)
+		transaction.setFieldValue("GZMPY6", "000"); // Minor priority code (3A)
+		transaction.setFieldValue("GZPAY6", "N"); // Partial payment? (1A)
+		transaction.setFieldValue("GZDRN6", "N"); // Allow overdrawn? (1A)
+		transaction.setFieldValue("GZDSC7", "Constant Days Basis"); // Description (20A)
+		transaction.setFieldValue("GZPTY7", "00003"); // Priority code (5A)
+		transaction.setFieldValue("GZMPY7", "000"); // Minor priority code (3A)
+		transaction.setFieldValue("GZPAY7", "N"); // Partial payment? (1A)
+		transaction.setFieldValue("GZDRN7", "N"); // Allow overdrawn? (1A)
+		transaction.setFieldValue("GZDSC8", "Constant Days Basis"); // Description (20A)
+		transaction.setFieldValue("GZPTY8", "00003"); // Priority code (5A)
+		transaction.setFieldValue("GZMPY8", "000"); // Minor priority code (3A)
+		transaction.setFieldValue("GZPAY8", "N"); // Partial payment? (1A)
+		transaction.setFieldValue("GZDRN8", "N"); // Allow overdrawn? (1A)
+		transaction.setFieldValue("GZDSC9", "Constant Days Basis"); // Description (20A)
+		transaction.setFieldValue("GZPTY9", "00003"); // Priority code (5A)
+		transaction.setFieldValue("GZMPY9", "000"); // Minor priority code (3A)
+		transaction.setFieldValue("GZPAY9", "N"); // Partial payment? (1A)
+		transaction.setFieldValue("GZDRN9", "N"); // Allow overdrawn? (1A)
+		transaction.setFieldValue("GZDSC0", "Constant Days Basis"); // Description (20A)
+		transaction.setFieldValue("GZPTY0", "00003"); // Priority code (5A)
+		transaction.setFieldValue("GZMPY0", "000"); // Minor priority code (3A)
+		transaction.setFieldValue("GZPAY0", "N"); // Partial payment? (1A)
+		transaction.setFieldValue("GZDRN0", "N"); // Allow overdrawn? (1A)
+	}
+}

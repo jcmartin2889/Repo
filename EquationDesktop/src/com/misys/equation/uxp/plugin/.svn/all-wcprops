@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/repos/bfeq_src/!svn/ver/17823/branches/BFEQ_Branch_3-1/EquationDesktop/src/com/misys/equation/uxp/plugin
+END
+UXResponseMessageDeserializer.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/src/com/misys/equation/uxp/plugin/UXResponseMessageDeserializer.java
+END
+EQServicePlugin.java
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/repos/bfeq_src/!svn/ver/17630/branches/BFEQ_Branch_3-1/EquationDesktop/src/com/misys/equation/uxp/plugin/EQServicePlugin.java
+END
+MenuItemTypeAdapter.java
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/src/com/misys/equation/uxp/plugin/MenuItemTypeAdapter.java
+END
+EqBranchForward.java
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/src/com/misys/equation/uxp/plugin/EqBranchForward.java
+END
+EqSessionIntegration.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/17823/branches/BFEQ_Branch_3-1/EquationDesktop/src/com/misys/equation/uxp/plugin/EqSessionIntegration.java
+END

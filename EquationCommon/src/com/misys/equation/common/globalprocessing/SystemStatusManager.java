@@ -1,0 +1,451 @@
+package com.misys.equation.common.globalprocessing;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationSystem;
+import com.misys.equation.common.globalprocessing.UnitStatus.InputMode;
+import com.misys.equation.common.internal.eapi.core.EQActionErrorException;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * This class will manage the system status
+ */
+public class SystemStatusManager
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: SystemStatusManager.java 17651 2013-11-28 17:44:14Z williae1 $";
+
+	/** Logger for this class */
+	private static final EquationLogger LOG = new EquationLogger(SystemStatusManager.class);
+
+	/** Delay time property name */
+	public static final String DELAY_TIME_PROP = "eq.unitStatus.unitStatusPollInterval";
+
+	/** Delay time property value in seconds */
+	private long delayTime = 0;
+
+	private final Map<String, SystemStatus> systemStatusList;
+	private static SystemStatusManager currentInstance;
+
+	/**
+	 * @return the singleton SystemStatusManager instance
+	 */
+	public static SystemStatusManager getInstance()
+	{
+		synchronized (SystemStatusManager.class)
+		{
+			if (currentInstance == null)
+			{
+				currentInstance = new SystemStatusManager();
+			}
+		}
+		return currentInstance;
+	}
+
+	/**
+	 * @return the singleton SystemStatusManager instance
+	 */
+	public static SystemStatusManager getInstance(String[] unitIds, String[] systemIds, String[] userNames, String[] passwords)
+	{
+		synchronized (SystemStatusManager.class)
+		{
+			if (currentInstance == null)
+			{
+				currentInstance = new SystemStatusManager(unitIds, systemIds, userNames, passwords);
+			}
+		}
+		return currentInstance;
+	}
+	// This is the default constructor.
+	private SystemStatusManager()
+	{
+		commonInitialisation();
+		systemStatusList = new HashMap<String, SystemStatus>();
+		populateSystemsAndUnits();
+	}
+
+	// This is a constructor for 3rd party application that does not maintain equationConfiguration.properties
+	private SystemStatusManager(String[] unitIds, String[] systemIds, String[] userNames, String[] passwords)
+	{
+		commonInitialisation();
+		systemStatusList = new HashMap<String, SystemStatus>();
+		populateSystemsAndUnits(unitIds, systemIds, userNames, passwords);
+	}
+
+	/**
+	 * Common initialisation
+	 */
+	private void commonInitialisation()
+	{
+		// retrieve the delay time
+		String delayStr = EquationCommonContext.getConfigProperty(DELAY_TIME_PROP);
+		if (delayStr != null && delayStr.trim().length() > 0)
+		{
+			delayTime = Toolbox.parseLong(delayStr, 0);
+		}
+	}
+
+	/**
+	 * This method will get all system and units defined in equationConfiguration.properties.
+	 */
+	private void populateSystemsAndUnits()
+	{
+		EquationCommonContext context = EquationCommonContext.getContext();
+		String[] unitIds = null;
+		String[] systemIds = null;
+		String[] userNames = null;
+		String[] passwords = null;
+
+		if (context.validateSystemsAndUnits())
+		{
+			unitIds = EquationCommonContext.getConfigProperty("eq.units").split(",");
+			systemIds = EquationCommonContext.getConfigProperty("eq.systems").split(",");
+			userNames = EquationCommonContext.getConfigProperty("eq.admin.users").split(",");
+			passwords = EquationCommonContext.getConfigProperty("eq.admin.passwords").split(",");
+		}
+		Map<String, String[]> aliasDetails = EquationCommonContext.getAdminAlias();
+		if (aliasDetails != null)
+		{
+			userNames = aliasDetails.get("Users");
+			passwords = aliasDetails.get("Passwords");
+		}
+		populateSystemsAndUnits(unitIds, systemIds, userNames, passwords);
+
+	}
+
+	/**
+	 * This method will set up the monitor for the parameters passed
+	 */
+	private void populateSystemsAndUnits(String[] unitIds, String[] systemIds, String[] userNames, String[] passwords)
+	{
+		EquationCommonContext context = EquationCommonContext.getContext();
+
+		if (systemIds != null)
+		{
+			for (int index = 0; index < systemIds.length; index++)
+			{
+				if (!systemIds[index].trim().equals(""))
+				{
+					if (context.getEquationSystem(systemIds[index]) == null)
+					{
+						try
+						{
+							context.authenticate(systemIds[index].trim(), unitIds[index].trim(), userNames[index].trim(),
+											passwords[index].trim(), EquationCommonContext.PASSWORD_TYPE_TEXT_PLAIN);
+						}
+						catch (EQActionErrorException ex)
+						{
+							LOG.error(ex);
+						}
+					}
+
+					SystemStatus systemStatus;
+
+					if (systemStatusList.containsKey(systemIds[index].trim()))
+					{
+						systemStatus = systemStatusList.get(systemIds[index].trim());
+					}
+					else
+					{
+						systemStatus = new SystemStatus();
+						systemStatus.setSystemName(systemIds[index]);
+						systemStatusList.put(systemIds[index].trim(), systemStatus);
+					}
+					populateUnits(unitIds[index].trim(), systemStatus);
+				}
+			}
+		}
+	}
+
+	/**
+	 * This method will populate a system with all its units.
+	 * 
+	 * @param unitId
+	 *            this is the array of units.
+	 * @param systemStatus
+	 *            this is the system.
+	 */
+	private void populateUnits(String unitId, SystemStatus systemStatus)
+	{
+		UnitStatus unitStatus = new UnitStatus();
+		unitStatus.setUnitName(unitId);
+		unitStatus.setSystemName(systemStatus.getSystemName());
+		systemStatus.setUnitStatus(unitId, unitStatus);
+	}
+
+	/**
+	 * This method will ping all systems and units.
+	 */
+	public void refreshAllSystemStatus()
+	{
+		AS400Ping aS400Ping = null;
+		SystemStatus systemStatus = null;
+
+		for (Entry<String, SystemStatus> systemName : systemStatusList.entrySet())
+		{
+			systemStatus = systemStatusList.get(systemName.getKey());
+			aS400Ping = new AS400Ping(systemStatus.getSystemName());
+			systemStatus.setAvailable(aS400Ping.pingSystem());
+
+			// if the system is available all units will be updated.
+			if (systemStatus.isAvailable())
+			{
+				refreshAllUnitsStatus(systemStatus);
+			}
+			else
+			{
+				// if the system is not available it means that all units will not be available.
+				setAllUnitsAsNonSetAvailable(systemStatus);
+			}
+		}
+	}
+
+	/**
+	 * This method will update all units status , for the current system.
+	 * 
+	 * @param systemStatus
+	 *            this is the current
+	 */
+	public void refreshAllUnitsStatus(SystemStatus systemStatus)
+	{
+		for (Entry<String, UnitStatus> unitName : systemStatus.getUnitStatus().entrySet())
+		{
+			UnitStatus unitStatus = systemStatus.getUnitStatus(unitName.getKey());
+			// if the system is not available its units will not be available.
+			if (systemStatus.isAvailable())
+			{
+				refreshUnitsStatus(systemStatus, unitStatus);
+			}
+			else
+			{
+				unitStatus.setAvailable(false);
+			}
+
+			// notify anyone listening in on availability changes
+			unitStatus.notifyObservers();
+		}
+	}
+
+	/**
+	 * In case that the system in not available all units will be not available.
+	 * 
+	 * @param systemStatus
+	 *            this is the no available system.
+	 */
+	private void setAllUnitsAsNonSetAvailable(SystemStatus systemStatus)
+	{
+		UnitStatus unitStatus = null;
+
+		for (String unitName : systemStatus.getUnitStatus().keySet())
+		{
+			unitStatus = systemStatus.getUnitStatus(unitName);
+			unitStatus.setAvailable(false);
+
+			// notify anyone listening in on availability changes
+			unitStatus.notifyObservers();
+		}
+	}
+
+	/**
+	 * This method will evaluate the unit ability.
+	 * 
+	 * @param systemStatus
+	 *            this the current system
+	 * @param unitStatus
+	 *            this is the current unit to be evaluated.
+	 * @equation.external
+	 */
+	private void refreshUnitsStatus(SystemStatus systemStatus, UnitStatus unitStatus)
+	{
+		UnitStatusHandler unitStatusHandler = null;
+		boolean available = true;
+
+		try
+		{
+			EquationSystem system = EquationCommonContext.getContext().getEquationSystem(systemStatus.getSystemName());
+			unitStatusHandler = new UnitStatusHandler(unitStatus.getUnitName(), system);
+
+			// keep this code aligned with EquationUnit isAvailable()
+			if (unitStatusHandler.getPhase().equals("DAY")
+							&& (unitStatusHandler.getMode().equals(InputMode.NORM) || unitStatusHandler.getMode().equals(
+											InputMode.EXTN)))
+			{
+				available = true;
+			}
+			else
+			{
+				available = false;
+			}
+
+			// delay if the status is changing from unavailable to available
+			if (!unitStatus.isAvailable() && available)
+			{
+				// convert seconds to milliseconds
+				Thread.sleep(delayTime * 1000);
+			}
+
+			unitStatus.setDescription(unitStatusHandler.getDescription());
+			unitStatus.setMode(unitStatusHandler.getMode());
+			unitStatus.setPhase(unitStatusHandler.getPhase());
+			unitStatus.setToday(unitStatusHandler.getToday());
+			unitStatus.setTomorrow(unitStatusHandler.getTomorrow());
+			unitStatus.setYesterday(unitStatusHandler.getYesterday());
+			unitStatus.setJobActiveDataAreas(unitStatusHandler.getDp0DataArea());
+			unitStatus.setSuspendRequest(unitStatusHandler.getSuspendRequest());
+		}
+		catch (Exception exception)
+		{
+			available = false;
+		}
+
+		boolean userSessionCheck = available != unitStatus.isAvailable() && available;
+
+		unitStatus.setAvailable(available);
+
+		if (userSessionCheck)
+		{
+			// Launch any necessary secondary sessions for the users
+			EquationCommonContext.getContext().reinitialiseGPUserSessions(systemStatus.getSystemName(), unitStatus.getUnitName());
+		}
+	}
+
+	/**
+	 * Return a formatted List of Strings containing System/Unit combinations for those unavailable
+	 * 
+	 * @return a formatted List of Strings containing System/Unit combinations for those unavailable
+	 */
+	public List<String> getAllUnavailableUnits()
+	{
+		List<String> unavailables = new ArrayList<String>();
+		for (Entry<String, SystemStatus> entry : systemStatusList.entrySet())
+		{
+			for (Entry<String, UnitStatus> status : entry.getValue().getUnitStatus().entrySet())
+			{
+				if (!status.getValue().isAvailable())
+				{
+					unavailables.add(entry.getKey() + "/" + status.getKey());
+				}
+			}
+		}
+		return unavailables;
+	}
+
+	/**
+	 * This method will ping all systems.
+	 */
+	public void refreshSpecificSystemStatus(String systemName)
+	{
+		AS400Ping aS400Ping = null;
+		SystemStatus systemStatus = null;
+
+		systemStatus = systemStatusList.get(systemName);
+		aS400Ping = new AS400Ping(systemStatus.getSystemName());
+		systemStatus.setAvailable(aS400Ping.pingSystem());
+	}
+
+	/**
+	 * This method will return a <code>SystemStatus</code>
+	 * 
+	 * @param systemName
+	 *            this is the System name.
+	 * @return <code>SystemStatus</code>.
+	 */
+	public SystemStatus getSystemStatus(String systemName)
+	{
+		SystemStatus systemStatus = null;
+		systemStatus = systemStatusList.get(systemName);
+		return systemStatus;
+	}
+
+	/**
+	 * This method will Check is the the system is isAvailable.
+	 * 
+	 * @param systemName
+	 *            this is the System name.
+	 * @return true if the system is available.
+	 */
+	public boolean isSystemStatus(String systemName)
+	{
+		SystemStatus systemStatus = null;
+		systemStatus = systemStatusList.get(systemName);
+		return systemStatus.isAvailable();
+	}
+
+	/**
+	 * Checks if the unit is available
+	 * 
+	 * @param systemName
+	 *            - the name of the system on which the unit resides
+	 * @param unitName
+	 *            - the name of the unit
+	 * @return true if the unit is available, otherwise false
+	 */
+	public boolean isUnitAvailable(String systemName, String unitName)
+	{
+		try
+		{
+			if (isSystemStatus(systemName))
+			{
+				if (getSystemStatus(systemName).getUnitStatus(unitName).isAvailable())
+				{
+					return true;
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			return false;
+		}
+		return false;
+	}
+
+	@Override
+	protected Object clone() throws CloneNotSupportedException
+	{
+		throw new CloneNotSupportedException("This is a singleton class that must not be cloned");
+	}
+
+	// ------------------Getter and Setters. ---------------//
+
+	/**
+	 * Return a Map keyed by system containing <code>SystemStatus</code> beans
+	 */
+	public Map<String, SystemStatus> getSystemStatusList()
+	{
+		return systemStatusList;
+	}
+
+	/**
+	 * Return a <code>UnitStatus</code> bean given a system and unit ID
+	 * 
+	 * @param system
+	 *            - the ID of the system
+	 * @param unit
+	 *            - the unit mnemonic
+	 * @return a <code>UnitStatus</code> bean given a system and unit ID
+	 * @equation.external
+	 */
+	public UnitStatus getUnitStatus(String system, String unit)
+	{
+		SystemStatus status = systemStatusList.get(system);
+		return status.getUnitStatus(unit);
+	}
+	/**
+	 * 
+	 * @param unitID
+	 * @param systemId
+	 */
+	public void addUnit(String unitID, String systemId)
+	{
+		UnitStatus unitStatus = new UnitStatus();
+		unitStatus.setUnitName(unitID);
+		unitStatus.setSystemName(systemId);
+		systemStatusList.get(systemId).setUnitStatus(unitID, unitStatus);
+	}
+}

@@ -1,0 +1,199 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.sample;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * SQL Helper Methods
+ */
+public class EquationSQLToolboxSample
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/**
+	 * Return true if file exists
+	 * 
+	 * @param session
+	 *            - the Equation standard session
+	 * @param library
+	 * @param fileName
+	 * @return true if file exists
+	 * @throws SQLException
+	 */
+	public static boolean fileExists(EquationStandardSession session, String library, String fileName) throws SQLException
+	{
+		boolean fileExists = true;
+		String checkExists = "SELECT COUNT(*) FROM QSYS2/SYSTABLES WHERE SYS_DNAME = '" + library + "' AND SYS_TNAME = '"
+						+ fileName + "'";
+		Statement checkExistsStatement = null;
+		ResultSet checkExistsRS = null;
+		try
+		{
+			Connection connection = session.getConnection();
+			checkExistsStatement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			checkExistsRS = checkExistsStatement.executeQuery(checkExists);
+			if (checkExistsRS.next())
+			{
+				if (checkExistsRS.getInt(1) == 0)
+				{
+					fileExists = false;
+				}
+			}
+		}
+		finally
+		{
+			if (checkExistsRS != null)
+			{
+				checkExistsRS.close();
+			}
+			if (checkExistsStatement != null)
+			{
+				checkExistsStatement.close();
+			}
+		}
+		return fileExists;
+	}
+	/**
+	 * Return true if the procedure exists
+	 * 
+	 * @param session
+	 *            - the Equation standard session
+	 * @param library
+	 * @param procedureName
+	 * @return true if file exists
+	 * @throws SQLException
+	 */
+	public static boolean procedureExists(EquationStandardSession session, String library, String procedureName)
+					throws SQLException
+	{
+		boolean fileExists = true;
+		String checkExists = "SELECT COUNT(*) FROM QSYS2/SYSPROCS WHERE SPECIFIC_SCHEMA = '" + library + "' AND SPECIFIC_NAME = '"
+						+ procedureName + "'";
+		Statement checkExistsStatement = null;
+		ResultSet checkExistsRS = null;
+		try
+		{
+			Connection connection = session.getConnection();
+			checkExistsStatement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			checkExistsRS = checkExistsStatement.executeQuery(checkExists);
+			if (checkExistsRS.next())
+			{
+				if (checkExistsRS.getInt(1) == 0)
+				{
+					fileExists = false;
+				}
+			}
+		}
+		finally
+		{
+			if (checkExistsRS != null)
+			{
+				checkExistsRS.close();
+			}
+			if (checkExistsStatement != null)
+			{
+				checkExistsStatement.close();
+			}
+		}
+		return fileExists;
+	}
+	/**
+	 * Setup QCMDEXC command for SQL
+	 * 
+	 * @param command
+	 */
+	private static String getQcmdexcString(String command)
+	{
+		return (new StringBuilder("CALL QCMDEXC('")).append(command).append("',").append(Toolbox.leftZeroPad(command.length(), 10))
+						.append(".00000)").toString();
+	}
+	/**
+	 * Return the file name in format library slash file name
+	 */
+	public static String rtvFullPath(String library, String fileName)
+	{
+		if (library.equals(""))
+		{
+			return fileName;
+		}
+		else
+		{
+			return library + "/" + fileName;
+		}
+	}
+	/**
+	 * Start journaling on the file
+	 * 
+	 * @param session
+	 *            - the Equation standard session
+	 * @param library
+	 * @param fileName
+	 * @throws Exception
+	 */
+	public static void strjrnpf(EquationStandardSession session, String library, String fileName) throws Exception
+	{
+		// Note that the standard non-default options when starting journaling are to journal both images (before and after)
+		// and to omit file open/close journal entries
+		String journalFile = session.getUnit().getNIJournalFullPath();
+		String command = "STRJRNPF FILE(" + rtvFullPath(library, fileName) + ")" + " JRN(" + journalFile
+						+ ") IMAGES(*BOTH) OMTJRNE(*OPNCLO)";
+		try
+		{
+			executeStatement(session, getQcmdexcString(command));
+		}
+		catch (EQException e)
+		{
+			String message = Toolbox.getExceptionMessage(e);
+			if ((message.indexOf("CPF7030")) == -1)
+			{
+				throw e;
+			}
+		}
+	}
+	/**
+	 * Execute a query
+	 * 
+	 * @param session
+	 *            - the Equation standard session
+	 * @param sqlStatement
+	 *            - the SQL statement
+	 * 
+	 * @throws EQException
+	 * @throws SQLException
+	 */
+	public static void executeStatement(EquationStandardSession session, String sqlStatement) throws EQException, SQLException
+	{
+		Statement statement = null;
+		try
+		{
+			Connection connection = session.getConnection();
+			statement = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			statement.execute(sqlStatement);
+		}
+		finally
+		{
+			if (statement != null)
+			{
+				statement.close();
+			}
+		}
+	}
+
+}

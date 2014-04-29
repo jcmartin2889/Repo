@@ -1,0 +1,13 @@
+K 10
+svn:ignore
+V 9
+dist
+bin
+
+K 13
+svn:mergeinfo
+V 161
+/branches/BFEQ_Branch_2-1/EquationBuilder:12557-14763
+/branches/BFEQ_Branch_2-2/EquationBuilder:13779-14775
+/branches/BFEQ_Branch_3-0/EquationBuilder:14426-16586
+END

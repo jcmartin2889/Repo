@@ -1,0 +1,53 @@
+package com.misys.equation.utility.test;
+
+import com.misys.equation.common.access.EquationDataList;
+import com.misys.equation.common.access.EquationPVData;
+import com.misys.equation.common.access.EquationPVMetaData;
+import com.misys.equation.common.test.TestEnvironment;
+
+public class C8Test
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: C8Test.java 11310 2011-06-27 12:20:21Z ESTHER.WILLIAMS $";
+	public C8Test()
+	{
+		try
+		{
+			TestEnvironment env = TestEnvironment.getTestEnvironment();
+			EquationPVMetaData md = env.getEquationUnit().getPVMetaData("C8R01R");
+			EquationDataList help = new EquationDataList();
+			EquationPVData data = new EquationPVData(md, env.getEquationUnit().getCcsid());
+			data.setFieldValue("C8@CCY", "*");
+			data.setFieldValue("C8@CCN", "*");
+			data.setFieldValue("C8@CUR", "*");
+			data.setFieldValue("C8@CED", "*");
+			data.setFieldValue("C8@DFC", "*");
+			data.setFieldValue("C8@DPU", "*");
+			data.setFieldValue("C8@FXP", "*");
+			data.setFieldValue("C8@IDD", "*");
+			data.setFieldValue("C8@IDC", "*");
+			data.setFieldValue("C8@ITC", "*");
+			data.setFieldValue("C8@MTN", "*");
+			data.setFieldValue("C8@SEI", "*");
+			data.setFieldValue("C8@SRI", "*");
+			data.setFieldValue("C8@FRI", "*");
+			data.setFieldValue("C8@RPI", "*");
+			data.setFieldValue("C8@RFI", "*");
+			data.setFieldValue("C8@PWD", "*");
+			data.setFieldValue("C8@DLM", "*");
+
+			help.initialise(env.getEquationUser(), "C8R01R", " ", data, "", 1, 100);
+
+			String data2 = help.getDataList();
+			System.out.println(data2);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	public static void main(String[] args)
+	{
+		new C8Test();
+	}
+}

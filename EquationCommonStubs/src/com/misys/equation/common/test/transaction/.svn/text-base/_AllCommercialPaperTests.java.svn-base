@@ -1,0 +1,132 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
+import com.misys.equation.common.test.AbstractTestSuite;
+
+public class _AllCommercialPaperTests extends AbstractTestSuite
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	public static Test suite()
+	{
+		// test suite
+		TestSuite suite = new TestSuite("Test for CommercialPaper");
+
+		// Commercial Paper (K496)
+		addTests(suite, OKA.class); // Maintain Paper Type
+		addTests(suite, Add_OKA.class); // Maintain Paper Type
+
+		addTests(suite, OKB.class); // Maintain Purpose of Presentation
+		addTests(suite, AddTest_OKB.class); // Maintain Purpose of Presentation
+		addTests(suite, Add_OKB.class); // Maintain Purpose of Presentation
+		
+		addTests(suite, OKC.class); // Maintain Method of Settlement
+		addTests(suite, Add_OKC.class); // Maintain Method of Settlement
+
+		addTests(suite, OKD.class); // Maintain Commercial Paper Status
+		addTests(suite, AddTest_OKD_Authorised.class); // Maintain Commercial Paper Status
+		addTests(suite, AddTest_OKD_SentToCourt.class); // Maintain Commercial Paper Status
+		addTests(suite, Add_OKD_Logged.class); // Maintain Commercial Paper Status
+		addTests(suite, Add_OKD_Reviewed.class); // Maintain Commercial Paper Status
+		addTests(suite, Add_OKD_Authorised.class); // Maintain Commercial Paper Status
+		addTests(suite, AddTest_OKD_ReturnedWoPayment.class); // Maintain Commercial Paper Status
+		addTests(suite, AddTest_OKD_Paid.class); // Maintain Commercial Paper Status
+		addTests(suite, Add_OKD.class); // Maintain Commercial Paper Status
+		
+		addTests(suite, OKE.class); // Maintain Charge Rule
+		addTests(suite, Add_OKE.class); // Maintain Charge Rule
+		addTests(suite, OKF.class); // Maintain Debtor
+		addTests(suite, Add_OKF.class); // Maintain Debtor
+		addTests(suite, Add_OKF_2.class); // Maintain Debtor
+		addTests(suite, OKG.class); // Maintain Debtor Limits
+		addTests(suite, Add_OKG.class); // Maintain Debtor Limits
+		addTests(suite, OKH.class); // Maintain Commercial Paper A/c
+		addTests(suite, Add_OKH.class); // Maintain Commercial Paper A/c
+		addTests(suite, OKI.class); // Maintain Paper Settlement A/c
+		addTests(suite, Add_OKI.class); // Maintain Paper Settlement A/c
+		addTests(suite, OKJ.class); // Add/Maintain Weightage
+		addTests(suite, OKK.class); // Add/Maintain System Weightage
+		addTests(suite, OKL.class); // Maintain Commercial Paper Group
+		
+		addTests(suite, Add_OKL.class); // Maintain Commercial Paper Group
+		// Add item to group 10000008 with debtor JANE03/ACCS DTA
+		addTests(suite, OKO.class); // Add/Maintain Commercial Paper Item
+		addTests(suite, Add_OKO.class); // Add/Maintain Commercial Paper Item
+		
+		// Log group 10000008 item to make available for OKM (Review)
+		addTests(suite, OLB.class); // Maintain (Log) Commercial Paper Item
+		// Delete group 10000008 item to enable group cancel in OLM
+		addTests(suite, Del_OKO.class); // Add/Maintain Commercial Paper Item
+		// Change/Delete group 10000008
+		addTests(suite, OKM.class); // Review Commercial Paper Group
+			
+		// Re-add group 10000008
+		addTests(suite, Add_OKL.class); // Maintain Commercial Paper Group
+		// Re-add item to group 10000008
+		addTests(suite, Add_OKO.class); // Add/Maintain Commercial Paper Item
+		// Re-log group 10000008 to make available for OKM (Review)
+		addTests(suite, OLB.class); // Maintain (Log) Commercial Paper Item
+		// Review group 10000008 to make available for OKN
+		addTests(suite, OLC.class); // Review Commercial Paper Item
+				
+		// CANNOT DO - Needs end of day!
+		// addTests(suite, OKN.class); // Authorise Commercial Paper Group
+		
+		addTests(suite, OLD.class); // Authorise Commercial Paper Item		
+
+		// OKW - Paper Status Process code should be 03 and Status should be consistent to the process code for this to work
+		// - Cannot do repeated testing unless ZZPF will be changed via UPDDTA-- amending ZZSPRC and ZZSTS
+		addTests(suite, OKW.class); // Change Commmercial Paper Status
+
+		// OKQ - Paper Status Process code should be 04 for this to work
+		// CANNOT DO - Needs end of day!
+		// addTests(suite, OKQ.class); // Maintain Collection Status
+
+		// OKX - Paper Status Process code should be 11 for this to work
+		// CANNOT DO - Needs end of day!
+		// addTests(suite, OKX.class); // Authorise/Return Referred Paper
+
+		// OKU - Paper Status Process code should be 03
+		// - Status Date should be before today's date
+		// CANNOT DO - Needs end of day!
+		// addTests(suite, OKU.class); // Transfer Commercial Paper
+
+		// OKR - Paper Status Process code should be 3 or 4
+		addTests(suite, OKR.class); // Commercial Paper Cash Payment
+
+		// OKS - Paper Status Process code should be 11
+		// - Protest should be 'Y' for this to work
+		// CANNOT DO - Needs end of day!
+		// addTests(suite, OKS.class); // Commercial Paper Sent to Court
+		// addTests(suite, RFC.class); // Commercial Paper Return from Court
+
+		// OKT - Paper Status Process code should be 03
+		// - Status Date should be before today's date
+		// - Sent to Branch and Received from Branch should be 'N'
+		// - Receiver Branch Mnem should be blank
+		// CANNOT DO - Needs end of day!
+		// addTests(suite, OKT.class); // Commercial Paper Cancellation
+
+		// OKP - Paper Status Process code should be 03
+		// - Receiver Branch Mnem should be the same as User Branch (kmenu8 opt4)
+		// - Sent to Branch should be 'Y'
+		// - Received from Branch should be 'N'
+		// CANNOT DO - Needs end of day!
+		// addTests(suite, OKP.class); // Review/Receive Commercial Paper
+
+		return suite;
+	}
+}

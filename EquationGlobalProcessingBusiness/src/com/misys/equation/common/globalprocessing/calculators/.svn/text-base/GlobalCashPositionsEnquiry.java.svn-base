@@ -1,0 +1,340 @@
+package com.misys.equation.common.globalprocessing.calculators;
+
+import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.Map.Entry;
+
+import com.misys.equation.common.consolidation.C8DaoConsolidator;
+import com.misys.equation.common.consolidation.GPEServiceDaoConsolidator;
+import com.misys.equation.common.dao.beans.GPETotalPerDateDataModel;
+import com.misys.equation.common.dao.beans.GPMRecordDataManager;
+import com.misys.equation.common.datastructure.EqDS_DSSYSE;
+import com.misys.equation.common.dates.EquationCalendar;
+import com.misys.equation.common.globalprocessing.systemoptions.GlobalSystemOptions;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * Provides the functionality to enquire on projected nostro account balance totals for each currency for all linked units and
+ * branches.
+ * 
+ * @author camillen
+ */
+public final class GlobalCashPositionsEnquiry extends AbstractGlobalProcessingEnquiry
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(GlobalCashPositionsEnquiry.class);
+
+	// Specific properties for this enquiry
+	private String[] currencyDisplayOrder;
+	private int noOfDays;
+
+	private String lastProcessingDate;
+	private String maxDate;
+	private String[] yDates;
+	private String[] pDates;
+	private GPEServiceDaoConsolidator daoConsolidator;
+	private C8DaoConsolidator c8Consolidator;
+
+	/**
+	 * GlobalCashPositionsEnquiry constructor. This class instantiates the calculator by loading the required data from the database
+	 * and
+	 * 
+	 * @param sessions
+	 */
+	public GlobalCashPositionsEnquiry(final String sessionIdentifier)
+	{
+		// Call the initialisation method
+		super(sessionIdentifier);
+		init(sessionIdentifier);
+
+		try
+		{
+			daoConsolidator = new GPEServiceDaoConsolidator(session);
+			c8Consolidator = new C8DaoConsolidator(session);
+		}
+		catch (EQException e)
+		{
+			LOG.error(e);
+		}
+	}
+
+	/**
+	 * This method initialises the Enquiry class by retrieving required data for the calculations such as LOD, max date, etc.
+	 * 
+	 * @param String
+	 *            sessionIdentifier
+	 */
+	@Override
+	protected void init(final String sessionIdentifier)
+	{
+		super.init(sessionIdentifier);
+		// Do any additional initialisations here
+
+		// Get the latest processing date ...
+		lastProcessingDate = Toolbox.padAtFront(EquationCalendar.getLatestProcessingDateString(sessions), "0", 7);
+
+		// Set the number of days and start and end dates
+		calculateDays();
+
+		// Build ordered list of currencies
+		currencyDisplayOrder = createCurrencyDisplayOrder();
+
+		// Initialise the yDate and pDate
+		yDates = new String[sessions.size()];
+		pDates = new String[sessions.size()];
+
+		for (int i = 0; i < sessions.size(); i++)
+		{
+			yDates[i] = Toolbox.padAtFront(sessions.get(i).getUnit().getSystemOption(EqDS_DSSYSE.YDATE), "0", 7);
+			pDates[i] = Toolbox.padAtFront(sessions.get(i).getUnit().getSystemOption(EqDS_DSSYSE.PDATE), "0", 7);
+		}
+	}
+
+	private Map<String, Long> calculateDays()
+	{
+		GregorianCalendar now = Toolbox.parseEqDate(lastProcessingDate);
+		Map<String, Long> calculatedDaysAndAmounts = new TreeMap<String, Long>();
+
+		defineNumberOfDays();
+
+		calculatedDaysAndAmounts.put(Toolbox.getDateDBStringFormat(now), 0L);
+
+		for (int index = 1; index < noOfDays; index++)
+		{
+			now.add(Calendar.DATE, 1);
+			calculatedDaysAndAmounts.put(Toolbox.getDateDBStringFormat(now), 0L);
+		}
+
+		setEndDay(now);
+
+		return calculatedDaysAndAmounts;
+	}
+
+	private void defineNumberOfDays()
+	{
+		GlobalSystemOptions currentGlobalSystemOptions = new GlobalSystemOptions(session);
+
+		GPMRecordDataManager gPMRecordDataManager = currentGlobalSystemOptions.getSystemOptionValue("GP_DISPLAY_NO_DAYS_GLB_GCE");
+		noOfDays = gPMRecordDataManager.getSystemOptionIntegerValue().intValue();
+	}
+
+	/**
+	 * This method will set the current day from the unit in data base format.
+	 */
+	private void setEndDay(Calendar dbDate)
+	{
+		maxDate = Toolbox.getDateDBStringFormat(dbDate);
+	}
+
+	/**
+	 * This method retrieves the global CSV ordered list of currencies. It the continues to query the C801LF on each unit to
+	 * determine the rest of the currencies which are not defined in the global system. Such currencies will be appended to the end
+	 * such that they are shown towards the end of the GCE screen.
+	 * 
+	 * @return String[] - Ordered list of currencies
+	 */
+	private String[] createCurrencyDisplayOrder()
+	{
+		try
+		{
+			c8Consolidator = new C8DaoConsolidator(session);
+		}
+		catch (EQException e)
+		{
+			LOG.error(e);
+		}
+
+		// Load the priority currencies from the global repository
+		Set<String> priorityCurrencies = new LinkedHashSet<String>();
+		GlobalSystemOptions currentGlobalSystemOptions = new GlobalSystemOptions(session);
+
+		GPMRecordDataManager gPMRecordDataManager = currentGlobalSystemOptions
+						.getSystemOptionValue("GP_DISPLAY_CCY_ORDER_IN_GLB_GCE");
+		List<String> firstCurrencies = gPMRecordDataManager.getSystemOptionStringArrayListValue();
+
+		priorityCurrencies.addAll(firstCurrencies);
+
+		Set<Entry<String, String>> mapEntrys = c8Consolidator.getC8CurrencyMnemonicsWithMPM().entrySet();
+
+		for (Entry<String, String> ccy : mapEntrys)
+		{
+			priorityCurrencies.add(ccy.getValue());
+		}
+
+		return priorityCurrencies.toArray(new String[priorityCurrencies.size()]);
+	}
+
+	/**
+	 * This is the main method which returns the result to be displayed in the enquiry screen. The result is stored in a two
+	 * dimensional array which represents the various currencies and their corresponding position per day.
+	 * 
+	 * @return Long[][] results - two dimensional array which represents the currencies and position
+	 */
+	private Map<String, GPETotalPerDateDataModel> calculateGlobalCashPositions()
+	{
+		Map<String, Long> calculatedDaysAndAmounts = null;
+
+		// Step 1: Calculate the nostro account balances
+		// For each Nostro in GJ03LF (Nostro details by currency) with the same currency we sum up the current balance.
+		// Only include the nostro accounts (GJVST = '1')
+		List<Map<String, Object>> balances = daoConsolidator.getBalances();
+
+		// Step 2: Apply the positions in order to calculate the real balance
+		// Calculate the overnight balance by looping through all records OP01LF (Nostro positions by nostro & date)
+		// We add the pays and reduce the receives between processing date and yesterday's date
+		List<Map<String, Object>> overnightPositions = daoConsolidator.getOvernightPositions(yDates, pDates);
+
+		// Step 3: Consider any account postings by reducing them from the balance above
+		// For each Nostro in GJ03LF (Nostro details by currency) with the same currency
+		// we find any postings in SA18LF (account postings table) and reduce them from the actual balance
+		List<Map<String, Object>> overnightPostings = daoConsolidator.getOvernightPostings(yDates, pDates);
+
+		// Step 4: Get all days positions for specified number of days
+		List<Map<String, Object>> positionsByDate = daoConsolidator.getPositionsByDate(maxDate);
+
+		// Create the two dimensional array using the list of currencies and no of days to pre-determine the size
+		Map<String, GPETotalPerDateDataModel> positions = new LinkedHashMap<String, GPETotalPerDateDataModel>();
+
+		// For each currency we can now loop and calculate the positions per day. This is done firstly be calculating the
+		// starting balance and subsequently by using this starting balance to calculate the position.
+		for (String element : currencyDisplayOrder)
+		{
+			positions.put(element, new GPETotalPerDateDataModel(element, calculateDays()));
+		}
+
+		// Add the balance to the starting balance
+		for (Map<String, Object> balance : balances)
+		{
+			String currency = (String) balance.get("GJCCY");
+			long balanceByCurrency = Long.parseLong(((BigDecimal) balance.get("OPENINGBALANCE")).toString());
+
+			GPETotalPerDateDataModel currentCurrency = positions.get(currency);
+			if ((currentCurrency.getCurrency() == null) || (currentCurrency.getCurrency() == ""))
+			{
+				currentCurrency.setCurrency(currency);
+			}
+			currentCurrency.setStartingBalance(currentCurrency.getStartingBalance() + balanceByCurrency);
+		}
+
+		// Add the overnight position to the starting balance
+		for (Map<String, Object> overnightPosition : overnightPositions)
+		{
+			String currency = (String) overnightPosition.get("GJCCY");
+			long overnightPositionByCurrency = Long.parseLong(((BigDecimal) overnightPosition.get("TOTALPOSFORCURRENCY"))
+							.toString());
+
+			GPETotalPerDateDataModel currentCurrency = positions.get(currency);
+			if ((currentCurrency.getCurrency() == null) || (currentCurrency.getCurrency() == ""))
+			{
+				currentCurrency.setCurrency(currency);
+			}
+			currentCurrency.setStartingBalance(currentCurrency.getStartingBalance() + overnightPositionByCurrency);
+		}
+
+		// Subtract any overnight postings from the starting balance
+		for (Map<String, Object> overnightPosting : overnightPostings)
+		{
+			String currency = (String) overnightPosting.get("GJCCY");
+			long overnightPostingByCurrency = Long.parseLong(((BigDecimal) overnightPosting.get("POSTBAL")).toString());
+
+			GPETotalPerDateDataModel currentCurrency = positions.get(currency);
+			if ((currentCurrency.getCurrency() == null) || (currentCurrency.getCurrency() == ""))
+			{
+				currentCurrency.setCurrency(currency);
+			}
+			currentCurrency.setStartingBalance(currentCurrency.getStartingBalance() - overnightPostingByCurrency);
+		}
+
+		// Construct the positions
+		for (Map<String, Object> positionByDate : positionsByDate)
+		{
+			String currency = (String) positionByDate.get("GJCCY");
+			String dailyDate = Toolbox.padAtFront(((BigDecimal) positionByDate.get("OPDTE")).toString(), "0", 7);
+
+			// Any position dated prior to latest processing date should be re-dated to latest processing date
+			if (Toolbox.parseInt(dailyDate, 0) < Toolbox.parseInt(lastProcessingDate, 0))
+			{
+				dailyDate = lastProcessingDate;
+			}
+			long dailyPositionAmount = Long.parseLong(((BigDecimal) positionByDate.get("POS")).toString());
+
+			GPETotalPerDateDataModel currentCurrency = positions.get(currency);
+			calculatedDaysAndAmounts = currentCurrency.getDailyPositions();
+
+			if ((currentCurrency.getCurrency() == null) || (currentCurrency.getCurrency() == ""))
+			{
+				currentCurrency.setCurrency(currency);
+			}
+
+			// Add the daily amount to the dated column.
+			Long dailyAmount = calculatedDaysAndAmounts.get(dailyDate);
+
+			long calculated = dailyAmount.longValue() + dailyPositionAmount;
+			Long calculatedValue = Long.valueOf(calculated);
+
+			calculatedDaysAndAmounts.remove(dailyDate);
+			calculatedDaysAndAmounts.put(dailyDate, calculatedValue);
+		}
+
+		// Add the starting balance and accumulate
+		for (GPETotalPerDateDataModel position : positions.values())
+		{
+			long balance = position.getStartingBalance();
+
+			Map<String, Long> daysDatesAndAmounts = position.getDailyPositions();
+
+			for (Map.Entry<String, Long> entry : daysDatesAndAmounts.entrySet())
+			{
+				balance = balance + entry.getValue();
+				entry.setValue(balance);
+			}
+		}
+
+		return positions;
+	}
+
+	@Override
+	public GlobalCashPositionsResult calculate()
+	{
+		Map<String, GPETotalPerDateDataModel> positions = calculateGlobalCashPositions();
+
+		return new GlobalCashPositionsResult(positions.values());
+	}
+
+	public String[] getCurrencyDisplayOrder()
+	{
+		return currencyDisplayOrder;
+	}
+
+	/**
+	 * This method returns the latest date visible in the enquiry. This is LOD date + MAX_DAYS
+	 * 
+	 * @return the latest date visible in the enquiry
+	 */
+	public String getMaxDate()
+	{
+		return maxDate;
+	}
+
+	public int getNoOfDays()
+	{
+		return noOfDays;
+	}
+
+	@Override
+	public AbstractGPEnquiryResult calculate(String... params) throws EQException
+	{
+		throw new EQException("method not supported");
+	}
+}

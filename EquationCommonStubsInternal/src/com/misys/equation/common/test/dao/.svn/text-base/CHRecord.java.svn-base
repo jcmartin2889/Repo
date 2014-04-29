@@ -1,0 +1,139 @@
+package com.misys.equation.common.test.dao;
+
+import com.misys.equation.common.dao.ICHRecordDao;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.dao.beans.CHRecordDataModel;
+import com.misys.equation.common.test.EquationTestCaseDao;
+
+/**
+ * This is a unit-test which will test CHRecord services.
+ * 
+ * @author deroset
+ * 
+ */
+public class CHRecord extends EquationTestCaseDao
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	public CHRecord()
+	{
+
+	}
+
+	/**
+	 * This method is going to check the getRecord dao's service.<br>
+	 * The obtained result should be the same than the preset in the dao data-model.
+	 * 
+	 */
+	@Override
+	public CHRecordDataModel getRecord()
+	{
+
+		CHRecordDataModel CHRecordDataModel = null;
+		CHRecordDataModel = ((ICHRecordDao) dao).getCHRecord();
+		assertDataModel(CHRecordDataModel);
+
+		return CHRecordDataModel;
+	}
+	/**
+	 * This method will test the update dao's service.
+	 */
+	@Override
+	public void updateRecord()
+	{
+
+		CHRecordDataModel CHRecordDataModel = null;
+
+		// getMyModel().setEnhancementMnemonic("1".getBytes());
+
+		getMyModel().setEnhancementMnemonic("1");
+		getMyModel().setEnhancementLevel("8");
+		getMyModel().setEnhancementUpgrade("9");
+		dao.updateRecord();
+		CHRecordDataModel = getRecord();
+		assertEquals(getMyModel().getEnhancementMnemonic(), CHRecordDataModel.getEnhancementMnemonic());
+		assertEquals(getMyModel().getEnhancementLevel(), CHRecordDataModel.getEnhancementLevel());
+		assertEquals(getMyModel().getEnhancementUpgrade(), CHRecordDataModel.getEnhancementUpgrade());
+
+	}
+
+	/**
+	 * This method will test the add dao's service.
+	 */
+	@Override
+	public void insertRecord()
+	{
+
+		dao.insertRecord();
+	}
+
+	/**
+	 * This method will test the delete dao's service.
+	 */
+	@Override
+	public void deleteRecord()
+	{
+
+		dao.deleteRecord();
+	}
+
+	@Override
+	protected void assertDataModel(AbsRecord dataModel)
+	{
+		CHRecordDataModel record = (CHRecordDataModel) dataModel;
+
+		assertEquals(getMyModel().getEnhancementMnemonic(), record.getEnhancementMnemonic());
+		assertEquals(getMyModel().getEnhancementDescription(), record.getEnhancementDescription());
+		assertEquals(getMyModel().getEnhancementLibraryName(), record.getEnhancementLibraryName());
+		assertEquals(getMyModel().getEnhancementInstalledToBase(), record.getEnhancementInstalledToBase());
+		assertEquals(getMyModel().getEncryptedEnhancementMnemonic(), record.getEncryptedEnhancementMnemonic());
+		assertEquals(getMyModel().getInstallationDate(), record.getInstallationDate());
+		assertEquals(getMyModel().getInstallationTime(), record.getInstallationTime());
+		assertEquals(getMyModel().getEnhancementLevel(), record.getEnhancementLevel());
+		assertEquals(getMyModel().getEnhancementUpgrade(), record.getEnhancementUpgrade());
+	}
+	@Override
+	protected boolean checkIfThisRecordIsInTheDB()
+	{
+		boolean result;
+		result = ((ICHRecordDao) dao).checkIfThisCHRecordIsInTheDB();
+
+		return result;
+	}
+
+	/**
+	 * 
+	 * This method is going to retrieve the Dao from the bean repository and set it as local attribute.
+	 */
+	@Override
+	protected void setDao()
+	{
+		dao = daoFactory.getCHDao(session, dataModel);
+	}
+
+	@Override
+	protected void setDataModel()
+	{
+		dataModel = new CHRecordDataModel("1", "2", "3", "4", "5", 6, 7, "8", "9");
+	}
+	/**
+	 * This method is going to return a casted data model.
+	 * 
+	 * @return a casted data model
+	 */
+	public CHRecordDataModel getMyModel()
+	{
+		CHRecordDataModel CHRecordDataModel = null;
+
+		if (dataModel instanceof CHRecordDataModel)
+		{
+			CHRecordDataModel = (CHRecordDataModel) dataModel;
+		}
+		else
+		{
+			throw new IllegalArgumentException("The set data-model does not correspond to the expected one.");
+		}
+		return CHRecordDataModel;
+	}
+}

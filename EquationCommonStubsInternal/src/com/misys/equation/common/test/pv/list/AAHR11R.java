@@ -1,0 +1,83 @@
+/*
+ * This sample code is provided by Misys for illustrative purposes only.
+ * 
+ * These examples have not been thoroughly tested under all conditions.
+ * 
+ * Misys, therefore, cannot guarantee or imply reliability, serviceability, or function of these programs.
+ * 
+ * All programs contained herein are provided to you "AS IS" without any warranties of any kind. The implied warranties of
+ * non-infringement, merchantability and fitness for a particular purpose are expressly disclaimed.
+ */
+package com.misys.equation.common.test.pv.list;
+
+import com.misys.equation.common.access.EquationPVData;
+import com.misys.equation.common.access.EquationStandardListValidation;
+import com.misys.equation.common.access.EquationStandardValidation;
+import com.misys.equation.common.test.EquationTestCase;
+
+// *************************************************************************************************
+/**
+ * 
+ * 
+ */
+// *************************************************************************************************
+public class AAHR11R extends EquationTestCase
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: AAHR11R.java 11310 2011-06-27 12:20:21Z ESTHER.WILLIAMS $";
+	// *********************************************************************************************
+	/**
+	 * 
+	 */
+	// *********************************************************************************************
+	public void test()
+	{
+		// Have a bash...
+		try
+		{
+			// Listings
+			System.out.println("Content of AAH");
+			String decode = " ";
+			String pvModule = "AAHR11R";
+			EquationPVData equationPVData = new EquationPVData(unit.getPVMetaData(pvModule), session.getCcsid());
+			equationPVData.setFieldValue("$HORTR", "Y");
+			EquationStandardListValidation listValidation = new EquationStandardListValidation(decode, pvModule, equationPVData,
+							"N", "N", "", "", 1, 16);
+			session.executeListValidate(user, listValidation);
+			System.out.println("PVDATA: " + listValidation);
+
+			// int page = 1;
+			// while (listValidation.isMoreRecords())
+			// {
+			// System.out.println("page " + ++page);
+			// session.executeNextListValidate(user, listValidation);
+			// System.out.println("PVDATA: " + listValidation);
+			// }
+
+			// Validate using EquationPVData
+			System.out.println("Test 2 via Equation PV Data");
+			equationPVData = new EquationPVData(session.getUnit().getPVMetaData(pvModule), session.getCcsid());
+			equationPVData.setFieldValue("$HEVNT", "ALZ");
+			equationPVData.setFieldValue("$HDRAC", "9132234567001");
+			equationPVData.setFieldValue("$HCRAC", "9132234567001");
+			equationPVData.setFieldValue("$HTREF", "VIA STUB1");
+			equationPVData.setFieldValue("$HTDTE", "1000501");
+			equationPVData.setFieldValue("$HXREF", "TEST NR1");
+			equationPVData.setFieldValue("$HSQN", "0000000000000015");
+			equationPVData.setFieldValue("$HESQN", "000");
+			EquationStandardValidation equationStandardValidation = new EquationStandardValidation(decode, pvModule,
+							equationPVData, "N", "N");
+			equationStandardValidation = session.executeValidate(equationStandardValidation);
+			System.out.println("PVDATA: " + equationStandardValidation.getDataOutput());
+			System.out.println("PVDATA: " + equationStandardValidation.getEquationPVData().getDataDsccn());
+			System.out.println("PVDATA: " + equationStandardValidation.getError());
+
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.toString());
+			// Rollback any transactions for the unit
+		}
+	}
+}

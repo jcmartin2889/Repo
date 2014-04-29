@@ -1,0 +1,335 @@
+package com.misys.equation.function.adaptor;
+
+import java.lang.reflect.Constructor;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.dao.beans.GAZRecordDataModel;
+import com.misys.equation.common.files.JournalHeader;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.FunctionClassLoader;
+import com.misys.equation.function.runtime.FunctionMessages;
+import com.misys.equation.function.runtime.UserData;
+import com.misys.equation.function.runtime.UserModifyData;
+import com.misys.equation.function.tools.FunctionRuntimeToolbox;
+import com.misys.equation.function.useraccess.IUserExitFunction;
+import com.misys.equation.function.useraccess.UserExitMessages;
+
+public class UserExitFunctionAdaptor extends Adaptor implements IUserExitFunction
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(UserExitFunctionAdaptor.class);
+
+	private final IFunctionAdaptor functionAdaptorImpl;
+	protected IUserExitFunction userExitFunctionImpl;
+	/**
+	 * Construct a User Exit Function Adaptor
+	 * 
+	 * @param session
+	 *            - the Equation standard session
+	 * @param classLoader
+	 * @param functionAdaptorImpl
+	 * @param optionId
+	 *            - the option id of the Equation service
+	 * @param isMisysUserExit
+	 *            - isMisysUserExit
+	 * @throws EQException
+	 */
+	public UserExitFunctionAdaptor(EquationStandardSession session, FunctionClassLoader classLoader,
+					IFunctionAdaptor functionAdaptorImpl, String optionId, boolean isMisysUserExit) throws EQException
+	{
+		this.functionAdaptorImpl = functionAdaptorImpl;
+		this.userExitFunctionImpl = loadUserExitInstance(session, classLoader, optionId, isMisysUserExit);
+	}
+	/**
+	 * Load the user exit class
+	 * 
+	 * @param session
+	 *            - the Equation standard session
+	 * @param classLoader
+	 * @param optionId
+	 *            - the option id of the Equation service
+	 * @param isMisysUserExit
+	 *            - isMisysUserExit
+	 * @return the class
+	 */
+	public IUserExitFunction loadUserExitInstance(EquationStandardSession session, FunctionClassLoader classLoader,
+					String optionId, boolean isMisysUserExit)
+	{
+		try
+		{
+
+			Class c = null;
+			if (isMisysUserExit)
+			{
+				c = getMisysUserExitClass(session, classLoader, optionId);
+			}
+			else
+			{
+				c = getUserExitClass(session, classLoader, optionId);
+			}
+
+			if (c != null)
+			{
+				Constructor constructor = c.getConstructor();
+				Object instance = constructor.newInstance();
+
+				if (instance instanceof IUserExitFunction)
+				{
+					return (IUserExitFunction) instance;
+				}
+				else
+				{
+					return null;
+				}
+			}
+			else
+			{
+				return null;
+			}
+		}
+
+		catch (Exception e)
+		{
+			LOG.error(e);
+			return null;
+		}
+	}
+	/**
+	 * Return the class definition of a User Exit Function Adaptor
+	 * 
+	 * @param session
+	 *            - the Equation standard session
+	 * @param classLoader
+	 *            - the Function class loader
+	 * @param option
+	 *            id - the option id of the Equation service
+	 * 
+	 * @return the class definition for the option
+	 */
+	public Class<IUserExitFunction> getUserExitClass(EquationStandardSession session, FunctionClassLoader classLoader, String option)
+					throws EQException
+	{
+		if (LOG.isDebugEnabled())
+		{
+			LOG.debug("getInstance - loading definition of class for option [" + option + "]");
+		}
+
+		Class<IUserExitFunction> c = classLoader.loadClass(session, "", option + FunctionRuntimeToolbox.USER_EXIT_FUNCTION_SUFFIX,
+						"", GAZRecordDataModel.TYP_SERVICE_USEREXIT);
+		return c;
+	}
+	/**
+	 * Return the class definition of a MISYS User Exit Function Adaptor
+	 * 
+	 * @param session
+	 *            - the Equation standard session
+	 * @param classLoader
+	 *            - the Function class loader
+	 * @param option
+	 *            id - the option id of the Equation service
+	 * 
+	 * @return the class definition for the option
+	 */
+	public Class<IUserExitFunction> getMisysUserExitClass(EquationStandardSession session, FunctionClassLoader classLoader,
+					String option) throws EQException
+	{
+		if (LOG.isDebugEnabled())
+		{
+			LOG.debug("getInstance - loading definition of class for option [" + option + "]");
+		}
+
+		Class<IUserExitFunction> c = classLoader.loadClass(session, "", option
+						+ FunctionRuntimeToolbox.MISYS_USER_EXIT_FUNCTION_SUFFIX, "", GAZRecordDataModel.TYP_SERVICE_USEREXIT);
+		return c;
+	}
+	/**
+	 * Perform defaulting before the standard validation process
+	 * 
+	 * @param fieldsetId
+	 *            - the field set id
+	 * @param userModifyData
+	 *            - the User modifiable data
+	 */
+	public void defaultMode(String fieldsetId, UserModifyData userModifyData)
+	{
+
+		// call a bank-defined default user exit
+		if (userExitFunctionImpl != null)
+		{
+			userExitFunctionImpl.defaultMode(fieldsetId, userModifyData);
+		}
+	}
+
+	/**
+	 * Perform validation after the standard validation process
+	 * 
+	 * @param fieldsetId
+	 *            - the field set id
+	 * @param userModifyData
+	 *            - the User modifiable data
+	 * @param returnMessages
+	 *            - the list of messages
+	 */
+	public void validateMode(String fieldsetId, UserModifyData userModifyData, UserExitMessages returnMessages)
+	{
+
+		// call a bank-defined validate user exit
+		if (userExitFunctionImpl != null)
+		{
+			// String id = fhd.getScreenSetHandler().rtvScrnSetCurrent().getFunction().getInputFieldSets().get(curScreen).getId();
+			userExitFunctionImpl.validateMode(fieldsetId, userModifyData, functionAdaptorImpl.getReturnMessages());
+		}
+
+	}
+
+	/**
+	 * Perform update before the standard update process
+	 * 
+	 * @param journalHeader
+	 *            - the journal header
+	 * @param userModifyData
+	 *            - the User modifiable data
+	 * @param returnMessages
+	 *            - the list of messages
+	 */
+	public void preUpdate(JournalHeader journalHeader, UserModifyData userModifyData, UserExitMessages returnMessages)
+	{
+
+		// call a bank-defined pre-update user exit
+		if (userExitFunctionImpl != null)
+		{
+			userExitFunctionImpl.preUpdate(journalHeader, userModifyData, functionAdaptorImpl.getReturnMessages());
+		}
+
+	}
+	/**
+	 * Perform update after the standard update process
+	 * 
+	 * @param journalHeader
+	 *            - the journal header
+	 * @param userModifyData
+	 *            - the User modifiable data
+	 * @param returnMessages
+	 *            - the list of messages
+	 */
+	public void postUpdate(JournalHeader journalHeader, UserModifyData userModifyData, UserExitMessages returnMessages)
+	{
+
+		// call a bank-defined post-update user exit
+		if (userExitFunctionImpl != null)
+		{
+			userExitFunctionImpl.postUpdate(journalHeader, userModifyData, functionAdaptorImpl.getReturnMessages());
+		}
+
+	}
+
+	/**
+	 * Perform load before the standard retrieval process
+	 * 
+	 * @param userModifyData
+	 *            - the User modifiable data
+	 * @param returnMessages
+	 *            - the list of messages
+	 */
+	public void preLoad(UserModifyData userModifyData, UserExitMessages returnMessages)
+	{
+
+		// call a bank-defined pre-load user exit
+		if (userExitFunctionImpl != null)
+		{
+			userExitFunctionImpl.preLoad(userModifyData, functionAdaptorImpl.getReturnMessages());
+		}
+
+	}
+
+	/**
+	 * Perform load after the standard retrieval process
+	 * 
+	 * @param userModifyData
+	 *            - the User modifiable data
+	 * @param returnMessages
+	 *            - the list of messages
+	 * 
+	 * @return the function mode
+	 */
+	public String postLoad(UserModifyData userModifyData, UserExitMessages returnMessages)
+	{
+		String mode = null;
+		// call a bank-defined post-load user exit
+		if (userExitFunctionImpl != null)
+		{
+			mode = userExitFunctionImpl.postLoad(userModifyData, functionAdaptorImpl.getReturnMessages());
+
+		}
+		return mode;
+
+	}
+
+	/**
+	 * Perform load after retrieving the default charges for the function
+	 * 
+	 * @param userData
+	 *            - the User Data of the main function
+	 * @param userModifyDataEFC
+	 *            - the User modifiable EFC data
+	 */
+	public void postLoadEFC(UserData userData, UserModifyData userModifyDataEFC)
+	{
+
+		// call a bank-defined post-load user exit
+		if (userExitFunctionImpl != null)
+		{
+			userExitFunctionImpl.postLoadEFC(userData, userModifyDataEFC);
+		}
+
+	}
+	/**
+	 * Perform processing when exiting the function
+	 * 
+	 * @param userModifyData
+	 *            - the User Data
+	 * @param returnMessages
+	 *            - the list of messages
+	 */
+	public void onCancel(UserModifyData userModifyData, UserExitMessages returnMessages)
+	{
+
+		// call a bank-defined on-cancel user exit
+		if (userExitFunctionImpl != null)
+		{
+			userExitFunctionImpl.onCancel(userModifyData, functionAdaptorImpl.getReturnMessages());
+		}
+
+	}
+
+	/**
+	 * Perform processing when doing update (outside of commitment control)
+	 * 
+	 * @param journalHeader
+	 *            - the journal header. NULL if update is not successful and the apiFieldSetId determines the last update it was
+	 *            trying to do
+	 * @param apiFieldSetId
+	 *            - the last API field set id it is trying to processed. This infomation can be combined with the journal header to
+	 *            or failure. If this is "asi" and journal header is null, then it means it failed in processing update api "asi"<br>
+	 * @param userData
+	 *            - the User Data
+	 * @param functionMessages
+	 *            - the list of messages
+	 */
+	public void onFinalUpdate(JournalHeader journalHeader, String apiFieldSetId, UserData userData,
+					FunctionMessages functionMessages)
+	{
+
+		// call a bank-defined on-final user exit
+		if (userExitFunctionImpl != null)
+		{
+			userExitFunctionImpl.onFinalUpdate(journalHeader, apiFieldSetId, userData, functionMessages);
+		}
+
+	}
+
+}

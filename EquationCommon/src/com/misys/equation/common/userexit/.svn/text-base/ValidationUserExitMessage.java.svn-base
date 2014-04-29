@@ -1,0 +1,183 @@
+package com.misys.equation.common.userexit;
+
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * This class represents an Equation message
+ * 
+ * It will be used by Java UserExit code called from Validation Programs. These will return a collection of these messages, to be
+ * returned to the caller (RPG code)
+ * 
+ * @author PERKINJ1
+ * 
+ */
+public class ValidationUserExitMessage
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private static int MESSAGE_ID_LENGTH = 7;
+	private static int PARAMETER_LENGTH = 10;
+	private static int INDICATOR_LENGTH = 2;
+
+	/** Message Identifier (e.g. "KSM2018") */
+	private String messageId;
+	/** First substitution parameter */
+	private String parameter1;
+	/** Second substitution parameter */
+	private String parameter2;
+	/** Third substitution parameter */
+	private String parameter3;
+	/** The field indicator */
+	private int fieldIndicator;
+
+	public ValidationUserExitMessage()
+	{
+		messageId = "";
+		parameter1 = "";
+		parameter2 = "";
+		parameter3 = "";
+	}
+
+	/**
+	 * Constructor that allows specification of the message ID and field indicator
+	 * 
+	 * @param messageId
+	 * @param fieldIndicator
+	 */
+	public ValidationUserExitMessage(String messageId, int fieldIndicator)
+	{
+		this.messageId = messageId;
+		parameter1 = "";
+		parameter2 = "";
+		parameter3 = "";
+		this.fieldIndicator = fieldIndicator;
+	}
+
+	/**
+	 * @return the messageId
+	 */
+	public String getMessageId()
+	{
+		return messageId;
+	}
+	/**
+	 * @param messageId
+	 *            the messageId to set
+	 */
+	public void setMessageId(String messageId)
+	{
+		validateNewMessageId(messageId);
+		this.messageId = messageId;
+	}
+	/**
+	 * @return the first substitution parameter
+	 */
+	public String getParameter1()
+	{
+		return parameter1;
+	}
+	/**
+	 * @param parameter1
+	 *            the first substitution parameter to set
+	 */
+	public void setParameter1(String parameter1)
+	{
+		validateParameter(parameter1);
+		this.parameter1 = parameter1;
+	}
+	/**
+	 * @return the second substitution parameter
+	 */
+	public String getParameter2()
+	{
+		return parameter2;
+	}
+	/**
+	 * @param parameter2
+	 *            the second substitution parameter to set
+	 */
+	public void setParameter2(String parameter2)
+	{
+		validateParameter(parameter2);
+		this.parameter2 = parameter2;
+	}
+	/**
+	 * @return the third substitution parameter
+	 */
+	public String getParameter3()
+	{
+		return parameter3;
+	}
+	/**
+	 * @param parameter3
+	 *            the third substitution parameter to set
+	 */
+	public void setParameter3(String parameter3)
+	{
+		validateParameter(parameter3);
+		this.parameter3 = parameter3;
+	}
+	/**
+	 * @return the fieldIndicator
+	 */
+	public int getFieldIndicator()
+	{
+		return fieldIndicator;
+	}
+	/**
+	 * @param fieldIndicator
+	 *            the fieldIndicator to set
+	 */
+	public void setFieldIndicator(int fieldIndicator)
+	{
+		if (fieldIndicator < 0 || fieldIndicator > 99)
+		{
+			throw new IllegalArgumentException("Field Indicator value is invalid");
+		}
+		this.fieldIndicator = fieldIndicator;
+	}
+
+	private static void validateNewMessageId(String newValue)
+	{
+		if (newValue == null)
+		{
+			throw new IllegalArgumentException("Message ID must not be null");
+		}
+		if (newValue.length() > MESSAGE_ID_LENGTH)
+		{
+			throw new IllegalArgumentException("Message ID value is too long");
+		}
+	}
+
+	private static void validateParameter(String newValue)
+	{
+		if (newValue == null)
+		{
+			throw new IllegalArgumentException("Parameter must not be null");
+		}
+		if (newValue.length() > PARAMETER_LENGTH)
+		{
+			throw new IllegalArgumentException("Parameter is too long");
+		}
+	}
+
+	/**
+	 * Returns a 39 character String in the following format:
+	 * 
+	 * <li>Message ID 1 - 7</li> <li>Parameter1 8 - 17</li> <li>Parameter2 18 - 27</li> <li>Parameter3 28 - 37</li> <li>Indicator 38
+	 * - 39</li>
+	 * 
+	 * @return String
+	 */
+	public String getBuffer()
+	{
+		StringBuffer result = new StringBuffer();
+
+		result.append(Toolbox.pad(messageId, MESSAGE_ID_LENGTH));
+		result.append(Toolbox.pad(parameter1, PARAMETER_LENGTH));
+		result.append(Toolbox.pad(parameter2, PARAMETER_LENGTH));
+		result.append(Toolbox.pad(parameter3, PARAMETER_LENGTH));
+		result.append(Toolbox.leftZeroPad(fieldIndicator, INDICATOR_LENGTH));
+		return result.toString();
+	}
+}

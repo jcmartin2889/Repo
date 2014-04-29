@@ -1,0 +1,202 @@
+package com.misys.equation.common.test;
+
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
+import com.misys.equation.common.access.EquationDataStructure;
+import com.misys.equation.common.access.EquationFieldDefinition;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.dao.DaoFactory;
+import com.misys.equation.common.dao.IGBRecordDao;
+import com.misys.equation.common.dao.beans.GBRecordDataModel;
+import com.misys.equation.common.datastructure.EqDS_DSPFFD;
+import com.misys.equation.common.utilities.EqDataType;
+import com.misys.equation.common.utilities.Toolbox;
+
+public class GenerateEquationTestCase
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: GenerateEquationTestCase.java 6534 2010-03-09 14:15:59Z esther.williams $";
+	private EquationStandardSession session = TestEnvironment.getTestEnvironment().getStandardSession();
+	private String optionId;
+	private String program;
+	private String fct;
+	private String gzFile;
+	private String gsFile;
+	private DaoFactory daoFactory = new DaoFactory();
+
+	// codes
+	private final static String SETFIELDCODE = "transaction.setFieldValue(\"%1\", \"\"); // %2 (%4%3%5)" + "\r\n";
+
+	/**
+	 * Main program
+	 * 
+	 * @param inputParameters
+	 *            - input parameters
+	 */
+	public static void main(String[] inputParameters)
+	{
+		try
+		{
+			GenerateEquationTestCase test;
+			TestCaseDialog dialog = new TestCaseDialog();
+			test = new GenerateEquationTestCase("", "", "", dialog.getJrnFile());
+			// if (dialog.getJrnFile().equals(""))
+			// {
+			// test = new GenerateEquationTestCase("CAA", "F");
+			// }
+			// else
+			// {
+			// }
+			test.generate();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Construct a EquationTestCaseGenerator
+	 * 
+	 * @param optionId
+	 *            - option id
+	 * @param program
+	 *            - program to be called
+	 * @param fct
+	 *            - function mode (A, M, D, F, E, S)
+	 * @param gzFile
+	 *            - GZ journal file
+	 */
+	public GenerateEquationTestCase(String optionId, String program, String fct, String gzFile)
+	{
+		this.optionId = optionId.trim();
+		this.program = program.trim();
+		this.fct = fct.trim();
+		this.gzFile = gzFile.trim();
+		this.gsFile = "";
+	}
+
+	/**
+	 * Construct a EquationTestCaseGenerator
+	 * 
+	 * @param optionId
+	 *            - option id
+	 * @param program
+	 *            - program to be called
+	 * @param fct
+	 *            - function mode (A, M, D, F, E, S)
+	 * @param gzFile
+	 *            - GZ journal file
+	 */
+	public GenerateEquationTestCase(String optionId, String fct)
+	{
+
+		// retrieve the GB record to retrieve the program
+		GBRecordDataModel gbRecord = new GBRecordDataModel(optionId);
+		IGBRecordDao dao = daoFactory.getGBDao(session, gbRecord);
+		gbRecord = dao.getGBRecord();
+
+		// setup the property
+		this.optionId = optionId.trim();
+		this.program = Toolbox.trim(gbRecord.getProgramName(), 4) + "RR";
+		this.gzFile = "GZ" + Toolbox.trim(gbRecord.getProgramName(), 3) + "1";
+		this.gsFile = "";
+	}
+
+	/**
+	 * Generate the test script
+	 * 
+	 * @return true - if the test script has been created successfully
+	 */
+	public boolean generate()
+	{
+		boolean flag = false;
+		try
+		{
+			String str = generateFields(rtvGZFile());
+			System.out.println(str);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		return flag;
+	}
+
+	/**
+	 * Return the Equation Data Structure of the GZ file
+	 * 
+	 * @return the Equation Data Structure of the GZ file
+	 * 
+	 */
+	protected EquationDataStructure rtvGZFile()
+	{
+		EquationDataStructure eqDs = new EqDS_DSPFFD(gzFile, session);
+		return eqDs;
+	}
+
+	/**
+	 * Return the Equation Data Structure of the GS file
+	 * 
+	 * @return the Equation Data Structure of the GS file
+	 * 
+	 */
+	protected EquationDataStructure rtvGSFile()
+	{
+		EquationDataStructure eqDs = new EqDS_DSPFFD(gsFile, session);
+		return eqDs;
+	}
+
+	/**
+	 * Generate the list of fields
+	 * 
+	 * @param eqDs
+	 *            - the Equation Data Structure
+	 * 
+	 * @return the list of fields
+	 */
+
+	protected String generateFields(EquationDataStructure eqDs)
+	{
+		StringBuffer buffer = new StringBuffer();
+		Map<String, EquationFieldDefinition> fieldDefinitions = eqDs.getFieldDefinitions();
+		Set<String> fieldNamesSet = fieldDefinitions.keySet();
+		Iterator<String> fieldNamesIter = fieldNamesSet.iterator();
+
+		while (fieldNamesIter.hasNext())
+		{
+			String fieldName = fieldNamesIter.next();
+			EquationFieldDefinition fieldDefinition = fieldDefinitions.get(fieldName);
+			String codeStr = SETFIELDCODE;
+
+			// replace the field name
+			codeStr = codeStr.replace("%1", fieldDefinition.getFieldName());
+
+			// replace the field label
+			codeStr = codeStr.replace("%2", fieldDefinition.getFieldLabel());
+
+			// replace the field type
+			codeStr = codeStr.replace("%3", fieldDefinition.getFieldDataTypeString());
+
+			// replace the field length
+			codeStr = codeStr.replace("%4", String.valueOf(fieldDefinition.getFieldLength()));
+
+			// field decimal
+			String sdecimal = "";
+			if (!fieldDefinition.getFieldDataTypeString().equals(EqDataType.TYPE_CHAR))
+			{
+				sdecimal = "," + fieldDefinition.getFieldDecimal();
+			}
+			codeStr = codeStr.replace("%5", sdecimal);
+
+			// append to the buffer
+			buffer.append(codeStr);
+		}
+
+		return buffer.toString();
+
+	}
+}

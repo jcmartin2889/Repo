@@ -1,0 +1,247 @@
+package com.misys.equation.function.runtime;
+
+import java.util.List;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationUser;
+import com.misys.equation.common.access.IEquationStandardObject;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.internal.eapi.core.EQMessage;
+import com.misys.equation.function.beans.FunctionData;
+import com.misys.equation.function.journal.ParentTransactionDetail;
+
+public class EquationStandardService implements IEquationStandardObject
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/** Serial UID */
+	private static final long serialVersionUID = 2881210016549932653L;
+
+	private String id;
+	private String mode;
+	private final FunctionHandler fh;
+	private final boolean runnable;
+	private boolean valid;
+	private List<EQMessage> messages;
+	private FunctionData functionData;
+
+	/**
+	 * Construct a standard Equation service
+	 * 
+	 * @param optionId
+	 *            - the option Id
+	 * @param equationStandardSession
+	 *            - the Equation Standard session
+	 * @param eqUser
+	 *            - the Equation user
+	 * @param parentTransactionDetail
+	 *            - the parent journal record (null if to follow function definition)
+	 * @param parentFunctionInfo
+	 *            - the function info of parent
+	 * 
+	 * @throws EQException
+	 */
+	public EquationStandardService(String optionId, EquationStandardSession equationStandardSession, EquationUser eqUser,
+					ParentTransactionDetail parentTransactionDetail, FunctionInfo parentFunctionInfo) throws EQException
+	{
+		FunctionInfo functionInfo = new FunctionInfo(parentFunctionInfo.getSessionId(), "");
+		functionInfo.setCommitProcessing(false);
+
+		// setup journal header
+		if (parentTransactionDetail != null)
+		{
+			functionInfo.setParentTransactionDetail(parentTransactionDetail);
+			functionInfo.setWorkStationId(parentTransactionDetail.getJournalHeader().getWorkstationID());
+		}
+
+		// set session type
+		int sessionType = parentFunctionInfo.getSessionType();
+		if (EquationCommonContext.isRecoverySession(sessionType))
+		{
+			functionInfo.setSessionType(EquationCommonContext.SESSION_LINK_MODE_RECOV);
+		}
+		else if (EquationCommonContext.isExtInpSession(sessionType))
+		{
+			functionInfo.setSessionType(EquationCommonContext.SESSION_LINK_MODE_EXT);
+		}
+		else
+		{
+			functionInfo.setSessionType(EquationCommonContext.SESSION_LINK_MODE);
+		}
+
+		// create the function handler
+		fh = new FunctionHandler(eqUser, functionInfo);
+		runnable = fh.doNewTransaction(optionId, "");
+		if (runnable)
+		{
+			valid = true;
+			functionData = fh.rtvFunctionData();
+			functionData.chgFieldInputValue(FunctionData.FLD_EFC, "N"); // no EFC for linked transaction
+		}
+		else
+		{
+			valid = false;
+			messages = fh.getFhd().getFunctionMsgManager().getOtherMessages().rtvMessages();
+		}
+	}
+
+	/**
+	 * Return the function handler
+	 * 
+	 * @return the function handler
+	 */
+	public FunctionHandler getFh()
+	{
+		return fh;
+	}
+
+	/**
+	 * Return the id of this transaction
+	 * 
+	 * @return the id of this transaction
+	 */
+	public String getId()
+	{
+		return id;
+	}
+
+	/**
+	 * Set the id of this transaction
+	 * 
+	 * @param id
+	 *            - the id of this transaction
+	 */
+	public void setId(String id)
+	{
+		this.id = id;
+	}
+
+	/**
+	 * Return the list of messages
+	 * 
+	 * @return the list of messages
+	 */
+	public List<EQMessage> getMessages()
+	{
+		return messages;
+	}
+
+	/**
+	 * Set the list of messages
+	 * 
+	 * @param messages
+	 *            - the list of messages
+	 */
+	public void setMessages(List<EQMessage> messages)
+	{
+		this.messages = messages;
+	}
+
+	/**
+	 * Return the mode
+	 * 
+	 * @return the mode
+	 */
+	public String getMode()
+	{
+		return mode;
+	}
+
+	/**
+	 * Set the mode
+	 * 
+	 * @param mode
+	 *            - the function mode
+	 */
+	public void setMode(String mode)
+	{
+		this.mode = mode;
+	}
+
+	/**
+	 * Return whether the service is valid or not
+	 * 
+	 * @return true if the service is valid or not
+	 */
+	public boolean getValid()
+	{
+		return valid;
+	}
+
+	/**
+	 * Set whetherthe service is valid or not
+	 * 
+	 * @param valid
+	 *            - true if the service is valid or not
+	 */
+	public void setValid(boolean valid)
+	{
+		this.valid = valid;
+	}
+
+	/**
+	 * Return the data fields in bytes
+	 * 
+	 * Not implemented
+	 */
+	public void setBytes(byte[] data)
+	{
+	}
+
+	/**
+	 * Return the data fields in bytes
+	 * 
+	 * @return not implemented
+	 */
+	public byte[] getBytes()
+	{
+		return null;
+	}
+
+	/**
+	 * Return the field value of the field name
+	 * 
+	 * @param fieldName
+	 *            - the field name
+	 * 
+	 * @return the field value
+	 */
+	public String getFieldValue(String fieldName)
+	{
+		if (runnable)
+		{
+			return functionData.rtvFieldInputValue(fieldName);
+		}
+		return null;
+	}
+
+	/**
+	 * Set the field value of the field name
+	 * 
+	 * @param fieldName
+	 *            - field name
+	 * @param fieldValue
+	 *            - field value
+	 */
+	public void setFieldValue(String fieldName, String fieldValue)
+	{
+		if (runnable)
+		{
+			functionData.chgFieldInputValue(fieldName, fieldValue);
+		}
+	}
+
+	/**
+	 * Return the string representation
+	 * 
+	 * @return the string representation
+	 */
+	@Override
+	public String toString()
+	{
+		return functionData.toString();
+	}
+
+}

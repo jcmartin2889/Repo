@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	  <classpathentry kind="src" path="src"/>
+	  <classpathentry exported="true" kind="lib" path="lib/equation-common-1.2.3.jar"
+                   sourcepath="/EquationCommon/src"/>
+	  <classpathentry exported="true" kind="lib" path="lib/equation-function-1.2.3.jar"
+                   sourcepath="/EquationFunction/src"/>
+	  <classpathentry exported="true" kind="lib" path="lib/log4j-1.2.15.jar"/>
+	  <classpathentry exported="true" kind="lib" path="lib/BFPCommon.jar"/>
+	  <classpathentry exported="true" kind="lib" path="lib/BankFusionBPD.jar"/>
+	  <classpathentry exported="true" kind="lib" path="lib/BankFusionWorkBench.jar"/>
+	  <classpathentry exported="true" kind="lib" path="lib/el-api.jar"/>
+	  <classpathentry exported="true" kind="lib" path="lib/jasper-el.jar"/>
+	  <classpathentry exported="true" kind="lib" path="lib/axis.jar"/>
+	  <classpathentry exported="true" kind="lib" path="lib/batik-css.jar"/>
+	  <classpathentry exported="true" kind="lib" path="lib/batik-util.jar"/>
+	  <classpathentry exported="true" kind="lib" path="lib/commons-beanutils-1.8.0.jar"/>
+	  <classpathentry exported="true" kind="lib" path="lib/commons-digester-1.8.jar"/>
+	  <classpathentry exported="true" kind="lib" path="lib/commons-betwixt-0.8.jar"/>
+	  <classpathentry exported="true" kind="lib" path="lib/jaxrpc.jar"/>
+	  <classpathentry exported="true" kind="lib" path="lib/commons-discovery-0.4.jar"/>
+	  <classpathentry exported="true" kind="lib" path="lib/jt400.jar"/>
+	  <classpathentry exported="true" kind="lib" path="lib/saaj.jar"/>
+	  <classpathentry exported="true" kind="lib" path="lib/sac.jar"/>
+	  <classpathentry exported="true" kind="lib" path="lib/org.springframework.core-3.0.5.RELEASE.jar"/>
+	  <classpathentry exported="true" kind="lib" path="lib/org.springframework.jdbc-3.0.5.RELEASE.jar"/>
+	  <classpathentry exported="true" kind="lib" path="lib/org.springframework.transaction-3.0.5.RELEASE.jar"/>
+	  <classpathentry exported="true" kind="lib" path="lib/org.springframework.beans-3.0.5.RELEASE.jar"/>
+	  <classpathentry exported="true" kind="lib" path="lib/org.springframework.web-3.0.5.RELEASE.jar"/>
+	  <classpathentry exported="true" kind="lib" path="lib/org.springframework.context-3.0.5.RELEASE.jar"/>
+	  <classpathentry exported="true" kind="lib" path="lib/org.springframework.asm-3.0.5.RELEASE.jar"/>
+	  <classpathentry exported="true" kind="lib" path="lib/org.springframework.expression-3.0.5.RELEASE.jar"/>
+	  <classpathentry exported="true" kind="lib" path="lib/xercesImpl-2.9.1.jar"/>
+	  <classpathentry exported="true" kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	  <classpathentry exported="true" kind="lib" path="lib/BankFusionCommonSupport.jar"/>
+	  <classpathentry exported="true" kind="lib" path="lib/BankFusionServer.jar"/>
+	  <classpathentry combineaccessrules="false" kind="src" path="/EquationEclipseCommon"/>
+	  <classpathentry kind="lib" path="lib/BankFusionClient.jar"/>
+	  <classpathentry kind="lib" path="lib/BankFusionDeviceService.jar"/>
+	  <classpathentry kind="lib" path="lib/BankFusionCommander.jar"/>
+	  <classpathentry kind="lib" path="lib/equation-bankfusionclient-1.2.3.jar"/>
+	  <classpathentry kind="lib" path="lib/equation-bankfusionserver-1.2.3.jar"/>
+	  <classpathentry exported="true" kind="lib" path="lib/BankFusionMessaging.jar"/>
+	  <classpathentry combineaccessrules="false" kind="src" path="/EquationCommon"/>
+	  <classpathentry combineaccessrules="false" kind="src" path="/EquationFunction"/>
+	  <classpathentry kind="lib" path="/ExternalJars/lib/tools-1.6.0_11.jar"/>
+	  <classpathentry kind="output" path="bin"/>
+</classpath>

@@ -1,0 +1,44 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
+import com.misys.equation.common.test.AbstractTestSuite;
+
+public class _All_AIG extends AbstractTestSuite
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: _All_AIG.java 7158 2010-05-05 16:03:56Z challip1 $";
+	public static Test suite()
+	{
+		// test suite
+		TestSuite suite = new TestSuite("Test for Additional Information");
+
+		// addTests(suite, AddTest_CII.class); // Maintain Additional Info Items
+		addTests(suite, AddTest_CIG.class); // Maintain Additional Info Groups
+		addTests(suite, AddTest_CII_2.class); // Maintain Additional Info Items
+		addTests(suite, AddTest_CIG_2.class); // Maintain Additional Info Groups
+
+		addTests(suite, AIG_Part1.class); // Assign Information Groups (Add)
+		addTests(suite, AIG_Part2.class); // Assign Information Groups (Maintain)
+		addTests(suite, AIG_Part3.class); // Assign Information Groups (Delete)
+
+		// addTests(suite, CancelTest_CIG.class); // Maintain Additional Info Groups
+		// addTests(suite, CancelTest_CII.class); // Maintain Additional Info Items
+		// addTests(suite, CancelTest_CIG_2.class); // Maintain Additional Info Groups
+		// addTests(suite, CancelTest_CII_2.class); // Maintain Additional Info Items
+
+		return suite;
+	}
+}

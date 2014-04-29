@@ -1,0 +1,561 @@
+package com.misys.equation.function.runtime;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationDataStructure;
+import com.misys.equation.common.access.EquationDataStructureData;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.IEquationStandardObject;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EqDataType;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.function.beans.Function;
+import com.misys.equation.function.beans.FunctionData;
+import com.misys.equation.function.journal.JournalFile;
+import com.misys.equation.function.journal.JournalRecord;
+import com.misys.equation.function.language.LanguageResources;
+import com.misys.equation.function.tools.FunctionRuntimeToolbox;
+import com.misys.equation.function.tools.SupervisorToolbox;
+
+public class FunctionAPI
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: FunctionAPI.java 14803 2012-11-05 11:57:09Z williae1 $";
+
+	private static final EquationLogger LOG = new EquationLogger(FunctionAPI.class);
+	private FunctionHandlerData fhd;
+	private EquationStandardSession equationStandardSession;
+	private FunctionMsgManager functionMsgManager;
+	private FunctionInfo functionInfo;
+	private FunctionData functionDataAft;
+	private final FunctionMessages functionMessages;
+	private Function function;
+	private ScreenSetHandler screenSetHandler;
+	private ScreenSet screenSetMain;
+
+	// Add/Update mode or delete mode
+	private boolean updateMode;
+
+	// Commitment processing (true if this is responsible for commitment processing, otherwise, this is a part of a larger
+	// transaction and let the calling program responsible for the commitment processing
+	private boolean commitProcessing;
+
+	// EFC processing?
+	private boolean efcProcessing;
+
+	/**
+	 * Construct a new function API from an existing Function Handler
+	 * 
+	 * @param functionHandler
+	 *            - the function handler
+	 */
+	public FunctionAPI(FunctionHandlerData fhd)
+	{
+		this(fhd, true, true, true);
+	}
+	/**
+	 * Construct a new function API from an existing Function Handler
+	 * 
+	 * @param functionHandler
+	 *            - the function handler
+	 */
+	public FunctionAPI(FunctionHandlerData fhd, boolean updateMode, boolean commitProcessing, boolean efcProcessing)
+	{
+		setupFromFunctionHandler(fhd);
+		this.functionMessages = new FunctionMessages();
+		this.updateMode = updateMode;
+		this.commitProcessing = commitProcessing;
+		this.efcProcessing = efcProcessing;
+	}
+
+	/**
+	 * Setup properties based on function handler
+	 * 
+	 * @param functionHandler
+	 *            - the function handler
+	 */
+	private void setupFromFunctionHandler(FunctionHandlerData fhd)
+	{
+		this.fhd = fhd;
+		this.equationStandardSession = fhd.getEquationUser().getSession();
+		this.functionMsgManager = fhd.getFunctionMsgManager();
+		this.screenSetHandler = fhd.getScreenSetHandler();
+		this.functionInfo = fhd.getFunctionInfo();
+
+		// main screen set
+		this.screenSetMain = screenSetHandler.rtvScreenSetMain();
+		this.functionDataAft = screenSetMain.getFunctionData();
+		this.function = screenSetMain.getFunction();
+	}
+
+	/**
+	 * Return the function messages
+	 * 
+	 * @return the function messages
+	 */
+	public FunctionMessages getFunctionMessages()
+	{
+		return functionMessages;
+	}
+
+	/**
+	 * Determine whether add/update or delete mode
+	 * 
+	 * @return true if update mode
+	 */
+	public boolean isUpdateMode()
+	{
+		return updateMode;
+	}
+
+	/**
+	 * Return whether in add/update or delete mode
+	 * 
+	 * @param updateMode
+	 *            - true if update mode
+	 */
+	public void setUpdateMode(boolean updateMode)
+	{
+		this.updateMode = updateMode;
+	}
+
+	/**
+	 * Determine whether commit processing
+	 * 
+	 * @return true if commit processing
+	 */
+	public boolean isCommitProcessing()
+	{
+		return commitProcessing;
+	}
+
+	/**
+	 * Set commitment processing
+	 * 
+	 * @param commitProcessing
+	 *            - true if commit processing
+	 */
+	public void setCommitProcessing(boolean commitProcessing)
+	{
+		this.commitProcessing = commitProcessing;
+	}
+
+	/**
+	 * Determine whether to perform EFC processing
+	 * 
+	 * @return true if to perform EFC processing
+	 */
+	public boolean isEfcProcessing()
+	{
+		return efcProcessing;
+	}
+
+	/**
+	 * Set whether to perform EFC processing
+	 * 
+	 * @param efcProcessing
+	 *            - true if to perform EFC processing
+	 */
+	public void setEfcProcessing(boolean efcProcessing)
+	{
+		this.efcProcessing = efcProcessing;
+	}
+
+	/**
+	 * Apply the transaction given the function data
+	 * 
+	 * @param functionData
+	 *            - the details to be applied
+	 * 
+	 * @return the highest message severity
+	 * 
+	 * @throws EQException
+	 */
+	public int applyTransaction(FunctionData functionData) throws EQException
+	{
+		functionDataAft = functionData;
+		return (applyTransaction());
+	}
+
+	/**
+	 * Apply the transaction given the journal record
+	 * 
+	 * @param journalIt
+	 *            record - the details to be applied
+	 * 
+	 * @return the highest message severity
+	 * 
+	 * @throws EQException
+	 */
+	public int applyTransaction(JournalRecord journalRecord) throws EQException
+	{
+		functionDataAft = FunctionRuntimeToolbox.initialiseFunctionData(function, journalRecord, fhd);
+		return (applyTransaction());
+	}
+
+	/**
+	 * Apply the transaction given the journal record in bytes
+	 * 
+	 * @param journalIt
+	 *            record - the details in bytes to be applied
+	 * 
+	 * @return the highest message severity
+	 * 
+	 * @throws EQException
+	 */
+	public int applyTransaction(byte[] gzData) throws EQException
+	{
+		String journalName = JournalFile.getJournalName(function.getId());
+		if (screenSetMain.isLinkService())
+		{
+			journalName = JournalFile.getJournalName(fhd.getOptionId());
+		}
+
+		// Create the data structure data
+		EquationDataStructure eqDs = new EquationDataStructure(journalName, fhd.getEquationUser().getSession());
+		EquationDataStructureData eqDsDta = new EquationDataStructureData(eqDs);
+
+		// Set the bytes
+		eqDsDta.setBytes(gzData);
+
+		// Create the function data
+		FunctionData functionData = new FunctionData(function, fhd);
+		functionData.loadFieldDataFromDS(eqDsDta, false);
+
+		// Set the function data
+		functionDataAft = functionData;
+
+		// change work station id
+		String origWorkId = fhd.getFunctionInfo().getWorkStationId();
+		int msgSev = FunctionMessages.MSG_NONE;
+		try
+		{
+			fhd.getFunctionInfo().setWorkStationId(eqDsDta.getFieldValue("GZWSID"));
+			msgSev = applyTransaction();
+		}
+		finally
+		{
+			fhd.getFunctionInfo().setWorkStationId(origWorkId);
+		}
+
+		return (msgSev);
+	}
+
+	/**
+	 * Apply the transaction given the the journal key
+	 * 
+	 * @param workStation
+	 *            - work station
+	 * @param jrnDay
+	 *            - journal day
+	 * @param jrnTime
+	 *            - journal time
+	 * @param jrnSequence
+	 *            - journal sequence
+	 * @param fct
+	 *            - function mode
+	 * @param library
+	 *            - library where the journal is located
+	 * 
+	 * @return the highest message severity
+	 * 
+	 * @throws EQException
+	 */
+	public int applyTransaction(String workStation, int jrnDay, int jrnTime, int jrnSequence, String image, String fct,
+					String library) throws EQException
+	{
+		// Get the linkage id (if this is a linkage service)
+		String linkageServiceId = FunctionRuntimeToolbox.getLinkageServiceId(screenSetMain);
+
+		// Setup the journal key
+		// JournalRecord journalRecordBef = FunctionRuntimeToolbox.initialiseJournalRecord(function, workStation, jrnDay, jrnTime,
+		// jrnSequence, JournalRecord.IMAGE_BEF, fct, library);
+		JournalRecord journalRecordAft = FunctionRuntimeToolbox.initialiseJournalRecord(function, workStation, jrnDay, jrnTime,
+						jrnSequence, image, fct, library, linkageServiceId);
+
+		// Get a session
+		// boolean afterImage = journalRecordAft.rtvRecord(equationStandardSession);
+		// boolean beforeImage = journalRecordBef.rtvRecord(equationStandardSession);
+
+		// TODO: what to do with BEFORE IMAGE
+
+		// Apply the transaction
+		int msgSev = applyTransaction(journalRecordAft);
+
+		return msgSev;
+	}
+
+	/**
+	 * Apply the transaction in the current function data
+	 * 
+	 * @return the highest message severity
+	 * 
+	 * @throws EQException
+	 */
+	public int applyTransaction() throws EQException
+	{
+		// perform checking if we can do this
+		int msgSev = isFunctionValid();
+		if (msgSev >= FunctionMessages.MSG_ERROR)
+		{
+			return msgSev;
+		}
+
+		// delete mode?
+		if (updateMode)
+		{
+			functionDataAft.chgFieldDbValue(FunctionData.FLD_FCT, fhd.getScreenSetHandler().rtvScreenSetMain().rtvMode());
+		}
+		else
+		{
+			functionDataAft.chgFieldDbValue(FunctionData.FLD_FCT, IEquationStandardObject.FCT_DEL);
+		}
+
+		// recovery, then locked fields
+		// .. note: for linked transaction during recovery, it cannot be locked as it needs
+		// .. to undergo validation in order to populate the primitive value
+		if (functionInfo.getSessionType() == EquationCommonContext.SESSION_RECOVERY)
+		{
+			functionDataAft.lockedInputFields();
+		}
+
+		// no efc?
+		if (!efcProcessing)
+		{
+			functionDataAft.getFieldDatas().get(FunctionData.FLD_EFC).setLocked(false);
+			functionDataAft.chgFieldDbValue(FunctionData.FLD_EFC, EqDataType.NO);
+			functionDataAft.getFieldDatas().get(FunctionData.FLD_EFC).setLocked(true);
+		}
+
+		// before image
+		String beforeImage = "";
+		if (LOG.isDebugEnabled() || LOG.isErrorEnabled())
+		{
+			beforeImage = functionDataAft.toString();
+		}
+
+		// validate it
+		msgSev = validate();
+
+		// No major error and not an enquiry, then try to do update
+		if (msgSev < FunctionMessages.MSG_ERROR && !fhd.getScreenSetHandler().rtvScreenSetMain().chkEnquiry())
+		{
+			msgSev = update();
+		}
+
+		// Error?
+		String id = fhd.getFunctionInfo().getSessionId() + " " + fhd.getOptionId();
+		if (msgSev == FunctionMessages.MSG_ERROR)
+		{
+			LOG.error(LanguageResources.getFormattedString("FunctionAPI.ServiceBefore", id) + "\n" + beforeImage + "\n");
+			LOG.error(LanguageResources.getFormattedString("FunctionAPI.ServiceFailure", id) + "\n" + functionDataAft.toString()
+							+ "\n" + fhd.getFunctionMsgManager().getFunctionMessages().getMessages());
+		}
+		else
+		{
+			LOG.debug(LanguageResources.getFormattedString("FunctionAPI.ServiceBefore", id) + "\n" + beforeImage + "\n");
+			LOG.debug(LanguageResources.getFormattedString("FunctionAPI.ServiceAfter", id) + "\n" + functionDataAft.toString()
+							+ "\n" + fhd.getFunctionMsgManager().getFunctionMessages().getMessages());
+		}
+
+		// Warning, then auto submit to default supervisor if not auto override
+		if (msgSev == FunctionMessages.MSG_WARN && functionInfo.isGenerateWarningInfo())
+		{
+			String superId = functionDataAft.rtvFieldInputValue(FunctionData.FLD_SUPERID);
+			if (superId.length() > 0)
+			{
+				return save(superId);
+			}
+		}
+
+		return msgSev;
+	}
+
+	/**
+	 * Validate the function
+	 * 
+	 * @return the highest message severity
+	 * 
+	 * @throws EQException
+	 */
+	public int validate() throws EQException
+	{
+		// validate all the screen sets
+		screenSetHandler.setCurScreenSet(0);
+		screenSetHandler.rtvScrnSetCurrent().setFunctionData(functionDataAft);
+
+		// loop through all the ScreenSets
+		while (true)
+		{
+			ScreenSet fs = screenSetHandler.rtvScrnSetCurrent();
+
+			// Validate all screens
+			int msgSev = FunctionMessages.MSG_NONE;
+			for (int i = 0; i < fs.getMaxScrnNo(); i++)
+			{
+				screenSetMain.initialiseInputFieldSet(fs.function.getInputFieldSets().get(fs.getScrnNo()));
+				msgSev = fs.validate(i, i);
+				functionMessages.insertMessages(fs.getFunctionMessages());
+
+				// error
+				if (msgSev >= FunctionMessages.MSG_ERROR)
+				{
+					break;
+				}
+				// warning
+				else if (msgSev == FunctionMessages.MSG_WARN)
+				{
+					// add list of overridden warnings so it is not duplicate when screens are revalidated due to
+					// user exit changing the details
+					functionMsgManager.getOverWarnMessages().insertMessages(fs.getFunctionMessages());
+				}
+			}
+
+			// any error?
+			if (msgSev >= FunctionMessages.MSG_ERROR)
+			{
+				break;
+			}
+
+			// for screen set 0, last validation
+			if (fs.getId() == 0)
+			{
+				// fs.getFunctionMessages().clearMessages();
+				// fs.lastValidate();
+				// functionMessages.insertMessages(fs.getFunctionMessages());
+			}
+
+			// validate the next function screen
+			if (!screenSetHandler.nextScreenSet())
+			{
+				break;
+			}
+		}
+
+		// warnings, then transfer the list of overridden messages back to function messages
+		if (functionMessages.getMsgSev() == FunctionMessages.MSG_WARN)
+		{
+			functionMessages.clearMessages();
+			functionMessages.insertMessages(functionMsgManager.getOverWarnMessages());
+			functionMsgManager.getOverWarnMessages().clearMessages();
+		}
+
+		return functionMessages.getMsgSev();
+	}
+
+	/**
+	 * Validate the specified screen of the specified sreenset
+	 * 
+	 * @param screenSet
+	 *            - the screen set number
+	 * @param scrn
+	 *            - the screen number
+	 * 
+	 * @return the highest message severity
+	 * 
+	 * @throws EQException
+	 */
+	public int validate(int screenSet, int scrn) throws EQException
+	{
+		// validate all the screen sets
+		screenSetHandler.setCurScreenSet(screenSet);
+		screenSetHandler.rtvScrnSetCurrent().setFunctionData(functionDataAft);
+
+		// loop through all the screensets
+		ScreenSet fs = screenSetHandler.rtvScrnSetCurrent();
+		fs.validate(scrn, scrn);
+		functionMessages.insertMessages(fs.getFunctionMessages());
+
+		return functionMessages.getMsgSev();
+	}
+
+	/**
+	 * Update the function
+	 * 
+	 * @return the highest message severity
+	 * 
+	 * @throws EQException
+	 */
+	public int update() throws EQException
+	{
+		screenSetHandler.setCurScreenSet(0);
+		FunctionUpdate functionUpdate = new FunctionUpdate(fhd, functionDataAft, null);
+		functionUpdate.setCommitProcessing(commitProcessing);
+		functionUpdate.setGenerateWarningInfo(functionInfo.isGenerateWarningInfo());
+
+		// pass the list of warning messages (if any)
+		functionUpdate.getFunctionMessages().insertMessages(functionMessages);
+
+		// perform update
+		int msgSev = functionUpdate.update(updateMode);
+
+		// messages
+		functionMessages.clearMessages();
+		functionMessages.insertMessages(functionUpdate.getFunctionMessages());
+
+		// set up journal details
+		fhd.setJournalHeader(functionUpdate.getJournalHeader());
+		fhd.setUpdateMade(functionUpdate.isUpdateMade());
+
+		// return highest severity
+		return msgSev;
+	}
+
+	/**
+	 * Save the transaction for authorisation
+	 * 
+	 * @param superId
+	 *            - the supervisor Id
+	 * 
+	 * @return the highest message severity
+	 * 
+	 * @throws EQException
+	 */
+	public int save(String superId) throws EQException
+	{
+		functionMsgManager.getFunctionMessages().insertMessages(functionMessages);
+		screenSetHandler.positionToScreenSet(0, 0);
+		screenSetHandler.setCurScreenSet(0);
+
+		String dsepmsControl = SupervisorToolbox.remoteSupervisor(superId, true, fhd);
+		String sev = dsepmsControl.substring(0, 2);
+		if (sev.equals("00"))
+		{
+			functionMsgManager.generateMessage(equationStandardSession, functionMessages, 0, 0, "", 0, null, "KSM7363" + superId,
+							"", "", FunctionMessages.MSG_NONE);
+		}
+		else
+		{
+			String dsepms = dsepmsControl.substring(2, dsepmsControl.length() - 1);
+			if (dsepms.equals("KSM7340"))
+			{
+				functionMsgManager.generateMessage(equationStandardSession, functionMessages, 0, 0, "", 0, null, dsepms, "", "",
+								FunctionMessages.MSG_NONE);
+			}
+			else
+			{
+				functionMsgManager.getFunctionMessages().insertMessages(functionMsgManager.getOtherMessages());
+			}
+			functionMessages.getMessages().addAll(functionMsgManager.getFunctionMessages().getMessages());
+		}
+		functionMsgManager.clearAllMessages();
+
+		return functionMessages.getMsgSev();
+	}
+
+	/**
+	 * Perform initial checking whether the system can perform apply transaction
+	 * 
+	 * @return the highest message severity
+	 */
+	public int isFunctionValid() throws EQException
+	{
+		// cannot perform update
+		if (fhd.getSecurityLevel().chkNoUpdate())
+		{
+			functionMsgManager.generateMessage(equationStandardSession, functionMessages, 0, 0, "", 0, null, "KSM7370", "", "",
+							FunctionMessages.MSG_NONE);
+		}
+
+		return functionMessages.getMsgSev();
+	}
+}

@@ -1,0 +1,93 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseMaintain;
+
+/**
+ * Equation test cases for Maintain function
+ */
+public class DMC_account extends EquationTestCaseMaintain
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: DMC_account.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	String programName = "D24JRR";
+	String optionId = "DMC";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZAB", "9999"); // Account branch (4A)
+		transaction.setFieldValue("GZAN", "888888"); // Basic part of account number (6A)
+		transaction.setFieldValue("GZAS", "777"); // Account suffix (3A)
+		transaction.setFieldValue("GZONAM", "Zzzzzzzzzzzz"); // Originator's name (20A)
+		transaction.setFieldValue("GZOID", "Yyyyyyy"); // Originator's identifier (10A)
+		transaction.setFieldValue("GZOREF", "Xxxxxxxxxxxx"); // DD originator's reference (20A)
+		transaction.setFieldValue("GZREF", "9999000105000002"); // Internal reference (16A)
+	}	
+
+	/**
+	 * Setup an existing key fields
+	 */
+	@Override
+	public void setupExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZAB", "0000"); // Account branch (4A)
+		transaction.setFieldValue("GZAN", "000001"); // Basic part of account number (6A)
+		transaction.setFieldValue("GZAS", "001"); // Account suffix (3A)
+		transaction.setFieldValue("GZONAM", "Phil1"); // Originator's name (20A)
+		transaction.setFieldValue("GZOID", "PJJD"); // Originator's identifier (10A)
+		transaction.setFieldValue("GZOREF", "PHIL"); // DD originator's reference (20A)
+		transaction.setFieldValue("GZREF", "0000000105000001"); // Internal reference (16A)
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	@Override
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+
+	}
+
+}

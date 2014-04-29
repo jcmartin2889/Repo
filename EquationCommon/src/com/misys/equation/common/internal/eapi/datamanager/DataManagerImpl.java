@@ -1,0 +1,249 @@
+package com.misys.equation.common.internal.eapi.datamanager;
+
+import javax.naming.ConfigurationException;
+
+import com.misys.equation.common.internal.eapi.core.EQClassLoader;
+import com.misys.equation.common.internal.eapi.core.EQEnvironment;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.Toolbox;
+
+public class DataManagerImpl implements IDataManager
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: DataManagerImpl.java 8582 2010-08-11 01:26:18Z esther.williams $";
+	/**
+	 * Logger for this class
+	 */
+	private static final EquationLogger LOG = new EquationLogger(DataManagerImpl.class);
+
+	/*******************************************************************************************************************************
+	 * Copyright <a href="http://www.misys.com"> Misys International Banking Systems Ltd, 2006 </a>
+	 */
+	public static final String copyright = "Copyright Misys International Banking Systems Ltd, 2006";
+
+	// Variable declaration for connection
+	private java.sql.Connection conn = null;
+
+	/**
+	 * Since the construction of intial context takes time cache it by making it the member variable.
+	 */
+	private javax.naming.InitialContext ic = null;
+
+	/**
+	 * Default constructor.
+	 * 
+	 * @throws DataManagerException
+	 */
+	public DataManagerImpl() throws DataManagerException // , B3Exception
+	{
+		try
+		{
+			java.util.Properties pr = new java.util.Properties();
+			ic = new javax.naming.InitialContext(pr);
+		}
+		catch (ConfigurationException ex) // Case when it is not run within WAS
+		{
+			ic = null;
+		}
+		catch (Exception ex)
+		{
+			LOG.error("DataManagerImpl()", ex); //$NON-NLS-1$
+			throw new DataManagerException(Toolbox.getExceptionMessage(ex));
+		}
+	}
+
+	/**
+	 * Return the requested data source connection
+	 * 
+	 * @param sDsnName
+	 *            - the data source name
+	 * 
+	 * @return the database connection
+	 * 
+	 * @throws DataManagerException
+	 */
+	public java.sql.Connection getDatabaseConnection(String sDsnName) throws DataManagerException
+	{
+		if (ic != null)
+		{
+			if (sDsnName != null)
+			{
+				// get the data source name mapped to this logical name
+				// to be retrieved later from system configuration
+				// Obtain the datasource mapped to this logical name from the b3environment file
+				try
+				{
+					javax.sql.DataSource ds = (javax.sql.DataSource) ic.lookup(EQEnvironment.getAppEnvironment().getProperty(
+									sDsnName));
+					conn = ds.getConnection();
+					return conn;
+				}
+				catch (Exception ex)
+				{
+					LOG.error("getDatabaseConnection(String)", ex); //$NON-NLS-1$
+					throw new DataManagerException("Could not get connection: " + Toolbox.getExceptionMessage(ex));
+				}
+			}
+			else
+			{
+				throw new DataManagerException("Initial context not intialized");
+			}
+		}
+		else
+		{
+			throw new DataManagerException("DsnName is null");
+		}
+	}
+
+	/**
+	 * Return the data source connection
+	 * 
+	 * @param strDriver
+	 *            - the driver name
+	 * @param strURL
+	 *            - the data source URL path
+	 * @param strUid
+	 *            - the id
+	 * @param strPwd
+	 *            - the password
+	 * 
+	 * @return the data source connection
+	 * 
+	 * @throws DataManagerException
+	 */
+	public java.sql.Connection getDatabaseConnection(String strDriver, String strURL, String strUid, char[] strPwd)
+					throws DataManagerException
+	{
+		try
+		{
+			EQClassLoader.load(strDriver);
+			conn = java.sql.DriverManager.getConnection(strURL, strUid, new String(strPwd));
+			return conn;
+		}
+		catch (Exception ex)
+		{
+			LOG.error("getDatabaseConnection(String, String, String, char[])", ex); //$NON-NLS-1$
+			throw new DataManagerException("Could not get connection: " + Toolbox.getExceptionMessage(ex));
+		}
+	}
+
+	/**
+	 * Return the database connection
+	 * 
+	 * @return the database connection
+	 * 
+	 * @throws DataManagerException
+	 */
+	public java.sql.Connection getDatabaseConnection() throws DataManagerException
+	{
+		try
+		{
+			if (conn != null)
+			{
+				return conn;
+			}
+			EQEnvironment app = EQEnvironment.getAppEnvironment();
+			// connection defaults
+			String userID = app.getProperty("DB_ProfId");
+			String pwd = app.getProperty("DB_ProfPwd");
+			return this.getDatabaseConnection(userID, pwd.toCharArray());
+		}
+		catch (Exception ex)
+		{
+			LOG.error("getDatabaseConnection()", ex); //$NON-NLS-1$
+			throw new DataManagerException("Could not get connection: " + Toolbox.getExceptionMessage(ex));
+		}
+	}
+
+	/**
+	 * Return the database connection
+	 * 
+	 * @param usrId
+	 *            - the user Id
+	 * @param pwd
+	 *            - the user password
+	 * 
+	 * @return the database connection
+	 * 
+	 * @throws DataManagerException
+	 */
+	public java.sql.Connection getDatabaseConnection(String usrID, char[] pwd) throws DataManagerException
+	{
+		try
+		{
+			if (conn != null)
+			{
+				return conn;
+			}
+			EQEnvironment app = EQEnvironment.getAppEnvironment();
+			String dbURL = app.getProperty("DB_URL");
+			return this.getDatabaseConnection(dbURL, usrID, pwd);
+		}
+		catch (Exception ex)
+		{
+			LOG.error("getDatabaseConnection(String, char[])", ex); //$NON-NLS-1$
+			throw new DataManagerException("Could not get connection: " + Toolbox.getExceptionMessage(ex));
+		}
+	}
+
+	/**
+	 * Return the database connection
+	 * 
+	 * @param dbURL
+	 *            - the data source URL path
+	 * @param usrId
+	 *            - the user Id
+	 * @param pwd
+	 *            - the user password
+	 * 
+	 * @return the database connection
+	 * 
+	 * @throws DataManagerException
+	 */
+	public java.sql.Connection getDatabaseConnection(String dbURL, String usrID, char[] pwd) throws DataManagerException
+	{
+		try
+		{
+			if (conn != null)
+			{
+				return conn;
+			}
+			EQEnvironment app = EQEnvironment.getAppEnvironment();
+			// connection defaults
+			java.util.Properties properties = new java.util.Properties();
+			properties.put("user", usrID);
+			properties.put("password", new String(pwd));
+			properties.put("prompt", app.getProperty("DB_ProfPrompt"));
+			properties.put("driver", app.getProperty("DB_driver_impl"));
+			properties.put("secure", app.getProperty("DB_secure"));
+			properties.put("key ring name", app.getProperty("DB_keyring_name"));
+			properties.put("key ring password", app.getProperty("DB_keyring_password"));
+			properties.put("database name", app.getProperty("DB_database_name", "*SYSBAS"));
+			// optonal trace
+			String clientTraceVal = app.getProperty("DB_JDBC_client_trace");
+			if (clientTraceVal != null && clientTraceVal.length() > 0)
+			{
+				properties.put("trace", clientTraceVal);
+			}
+			String serverTraceVal = app.getProperty("DB_JDBC_server_trace");
+			if (serverTraceVal != null && serverTraceVal.length() > 0)
+			{
+				properties.put("server trace", serverTraceVal);
+			}
+			properties.put("block size", "64");
+			properties.put("cursor hold", "false");
+			properties.put("errors", "full");
+			properties.put("naming", "system");
+			// Get the Connection to the AS/400 Database
+			EQClassLoader.load(app.getProperty("DB_driver"));
+			conn = java.sql.DriverManager.getConnection(dbURL, properties);
+			return conn;
+		}
+		catch (Exception ex)
+		{
+			LOG.error("getDatabaseConnection(String, String, char[])", ex); //$NON-NLS-1$
+			throw new DataManagerException("Could not get connection: " + Toolbox.getExceptionMessage(ex));
+		}
+	}
+
+}

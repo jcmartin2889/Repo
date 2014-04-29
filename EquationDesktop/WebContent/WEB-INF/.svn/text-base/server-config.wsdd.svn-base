@@ -1,0 +1,376 @@
+<ns1:deployment xmlns="http://xml.apache.org/axis/wsdd/" xmlns:java="http://xml.apache.org/axis/wsdd/providers/java" xmlns:ns1="http://xml.apache.org/axis/wsdd/">
+ <ns1:globalConfiguration>
+  <ns1:parameter name="sendMultiRefs" value="true"/>
+  <ns1:parameter name="disablePrettyXML" value="true"/>
+  <ns1:parameter name="adminPassword" value="admin"/>
+  <ns1:parameter name="attachments.Directory" value="E:\IBM\workspace\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\EquationDesktop\WEB-INF\attachments"/>
+  <ns1:parameter name="dotNetSoapEncFix" value="true"/>
+  <ns1:parameter name="enableNamespacePrefixOptimization" value="false"/>
+  <ns1:parameter name="sendXMLDeclaration" value="true"/>
+  <ns1:parameter name="attachments.implementation" value="org.apache.axis.attachments.AttachmentsImpl"/>
+  <ns1:parameter name="sendXsiTypes" value="true"/>
+  <ns1:requestFlow>
+   <ns1:handler type="java:org.apache.axis.handlers.JWSHandler">
+    <ns1:parameter name="scope" value="session"/>
+   </ns1:handler>
+   <ns1:handler type="java:org.apache.axis.handlers.JWSHandler">
+    <ns1:parameter name="scope" value="request"/>
+    <ns1:parameter name="extension" value=".jwr"/>
+   </ns1:handler>
+  </ns1:requestFlow>
+ </ns1:globalConfiguration>
+ <ns1:handler name="URLMapper" type="java:org.apache.axis.handlers.http.URLMapper"/>
+ <ns1:handler name="LocalResponder" type="java:org.apache.axis.transport.local.LocalResponder"/>
+ <ns1:handler name="Authenticate" type="java:org.apache.axis.handlers.SimpleAuthenticationHandler"/>
+ <ns1:service name="ServiceDirectoryTest" provider="java:RPC" style="wrapped" use="literal">
+  <ns2:operation name="xaTests" qname="ns1:xaTests" returnQName="ns1:xaTestsReturn" returnType="xsd:string" soapAction="" xmlns:ns1="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns2="http://xml.apache.org/axis/wsdd/">
+   <ns2:parameter qname="ns1:sessionIdentifier" type="xsd:string"/>
+   <ns2:parameter qname="ns1:transactionIdentifier" type="xsd:string"/>
+  </ns2:operation>
+  <ns1:parameter name="allowedMethods" value="xaTests"/>
+  <ns1:parameter name="wsdlPortType" value="ServiceDirectoryTest"/>
+  <ns1:parameter name="typeMappingVersion" value="1.2"/>
+  <ns1:parameter name="schemaQualified" value="http://services.ui.equation.misys.com"/>
+  <ns1:parameter name="wsdlServicePort" value="ServiceDirectoryTest"/>
+  <ns1:parameter name="className" value="com.misys.equation.ui.services.ServiceDirectoryTest"/>
+  <ns1:parameter name="wsdlTargetNamespace" value="http://services.ui.equation.misys.com"/>
+  <ns1:parameter name="wsdlServiceElement" value="ServiceDirectoryTestService"/>
+ </ns1:service>
+ <ns1:service name="AdminService" provider="java:MSG">
+  <ns1:parameter name="allowedMethods" value="AdminService"/>
+  <ns1:parameter name="enableRemoteAdmin" value="false"/>
+  <ns1:parameter name="className" value="org.apache.axis.utils.Admin"/>
+  <ns1:namespace>http://xml.apache.org/axis/wsdd/</ns1:namespace>
+ </ns1:service>
+ <ns1:service name="ServiceDirectory" provider="java:RPC" style="wrapped" use="literal">
+  <ns1:operation name="getCurrentContext" qname="ns2:getCurrentContext" returnQName="ns2:getCurrentContextReturn" returnType="xsd:string" soapAction="" xmlns:ns2="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns2:sessionIdentifier" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="removeSession" qname="ns3:removeSession" soapAction="" xmlns:ns3="http://services.ui.equation.misys.com">
+   <ns1:parameter qname="ns3:sessionIdentifier" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+   <ns1:parameter qname="ns3:name" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+   <ns1:parameter qname="ns3:optionId" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+   <ns1:parameter qname="ns3:sessionId" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+   <ns1:parameter qname="ns3:transactionId" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+   <ns1:parameter qname="ns3:userId" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+  </ns1:operation>
+  <ns1:operation name="performActionOnUnitCustomer" qname="ns4:performActionOnUnitCustomer" returnQName="ns4:performActionOnUnitCustomerReturn" returnType="xsd:string" soapAction="" xmlns:ns4="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns4:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns4:globaCustomerNum" type="xsd:string"/>
+   <ns1:parameter qname="ns4:action" type="xsd:string"/>
+   <ns1:parameter qname="ns4:sequenceNumber" type="xsd:int"/>
+  </ns1:operation>
+  <ns1:operation name="getGlobalCustomerLinkageList" qname="ns5:getGlobalCustomerLinkageList" returnQName="ns5:getGlobalCustomerLinkageListReturn" returnType="xsd:string" soapAction="" xmlns:ns5="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns5:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns5:globaCustomerNum" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="setCurrentContext" qname="ns6:setCurrentContext" returnQName="ns6:setCurrentContextReturn" returnType="xsd:string" soapAction="" xmlns:ns6="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns6:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns6:valuesToSet" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="resetCurrentContext" qname="ns7:resetCurrentContext" soapAction="" xmlns:ns7="http://services.ui.equation.misys.com">
+   <ns1:parameter qname="ns7:sessionIdentifier" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+  </ns1:operation>
+  <ns1:operation name="getEqSession" qname="ns8:getEqSession" returnQName="ns8:getEqSessionReturn" returnType="xsd:string" soapAction="" xmlns:ns8="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns8:systemId" type="xsd:string"/>
+   <ns1:parameter qname="ns8:unitId" type="xsd:string"/>
+   <ns1:parameter qname="ns8:userId" type="xsd:string"/>
+   <ns1:parameter qname="ns8:password" type="xsd:string"/>
+   <ns1:parameter qname="ns8:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns8:ipAddress" type="xsd:string"/>
+   <ns1:parameter qname="ns8:passwordType" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="exchangeBFKey" qname="ns9:exchangeBFKey" returnQName="ns9:exchangeBFKeyReturn" returnType="xsd:string" soapAction="" xmlns:ns9="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns9:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns9:key" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="userExitValidate" qname="ns10:userExitValidate" returnQName="ns10:userExitValidateReturn" returnType="xsd:string" soapAction="" xmlns:ns10="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns10:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns10:program" type="xsd:string"/>
+   <ns1:parameter qname="ns10:xfct" type="xsd:string"/>
+   <ns1:parameter qname="ns10:xprmt" type="xsd:string"/>
+   <ns1:parameter qname="ns10:xscrn" type="xsd:string"/>
+   <ns1:parameter qname="ns10:xmode" type="xsd:string"/>
+   <ns1:parameter qname="ns10:dsexit" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="getEqDataList" qname="ns11:getEqDataList" returnQName="ns11:getEqDataListReturn" returnType="xsd:string" soapAction="" xmlns:ns11="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns11:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns11:fieldId" type="xsd:string"/>
+   <ns1:parameter qname="ns11:service" type="xsd:string"/>
+   <ns1:parameter qname="ns11:decode" type="xsd:string"/>
+   <ns1:parameter qname="ns11:security" type="xsd:string"/>
+   <ns1:parameter qname="ns11:primaryTable" type="xsd:string"/>
+   <ns1:parameter qname="ns11:serviceKey" type="xsd:string"/>
+   <ns1:parameter qname="ns11:query" type="xsd:string"/>
+   <ns1:parameter qname="ns11:start" type="xsd:string"/>
+   <ns1:parameter qname="ns11:direction" type="xsd:int"/>
+   <ns1:parameter qname="ns11:maxResults" type="xsd:int"/>
+  </ns1:operation>
+  <ns1:operation name="getEqReferral" qname="ns12:getEqReferral" returnQName="ns12:getEqReferralReturn" returnType="xsd:string" soapAction="" xmlns:ns12="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns12:sessionIdentifier" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="getRecentSearches" qname="ns13:getRecentSearches" returnQName="ns13:getRecentSearchesReturn" returnType="xsd:string" soapAction="" xmlns:ns13="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns13:sessionIdentifier" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="getRecentOptionHTML" qname="ns14:getRecentOptionHTML" returnQName="ns14:getRecentOptionHTMLReturn" returnType="xsd:string" soapAction="" xmlns:ns14="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns14:sessionIdentifier" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="getFullMenuHTML" qname="ns15:getFullMenuHTML" returnQName="ns15:getFullMenuHTMLReturn" returnType="xsd:string" soapAction="" xmlns:ns15="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns15:sessionIdentifier" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="getUserSpoolFilesHTML" qname="ns16:getUserSpoolFilesHTML" returnQName="ns16:getUserSpoolFilesHTMLReturn" returnType="xsd:string" soapAction="" xmlns:ns16="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns16:sessionIdentifier" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="getUnitSpoolFilesHTML" qname="ns17:getUnitSpoolFilesHTML" returnQName="ns17:getUnitSpoolFilesHTMLReturn" returnType="xsd:string" soapAction="" xmlns:ns17="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns17:sessionIdentifier" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="getAnySpoolFilesHTML" qname="ns18:getAnySpoolFilesHTML" returnQName="ns18:getAnySpoolFilesHTMLReturn" returnType="xsd:string" soapAction="" xmlns:ns18="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns18:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns18:library" type="xsd:string"/>
+   <ns1:parameter qname="ns18:outq" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="getJobLogHTML" qname="ns19:getJobLogHTML" returnQName="ns19:getJobLogHTMLReturn" returnType="xsd:string" soapAction="" xmlns:ns19="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns19:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns19:jobName" type="xsd:string"/>
+   <ns1:parameter qname="ns19:jobUser" type="xsd:string"/>
+   <ns1:parameter qname="ns19:jobNumber" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="getTaskComment" qname="ns20:getTaskComment" returnQName="ns20:getTaskCommentReturn" returnType="xsd:string" soapAction="" xmlns:ns20="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns20:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns20:processId" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="getJobLogDirHTML" qname="ns21:getJobLogDirHTML" returnQName="ns21:getJobLogDirHTMLReturn" returnType="xsd:string" soapAction="" xmlns:ns21="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns21:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns21:jobName" type="xsd:string"/>
+   <ns1:parameter qname="ns21:jobUser" type="xsd:string"/>
+   <ns1:parameter qname="ns21:jobNumber" type="xsd:string"/>
+   <ns1:parameter qname="ns21:msgPos" type="xsd:string"/>
+   <ns1:parameter qname="ns21:direction" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="getJobLogEntryHTML" qname="ns22:getJobLogEntryHTML" returnQName="ns22:getJobLogEntryHTMLReturn" returnType="xsd:string" soapAction="" xmlns:ns22="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns22:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns22:jobName" type="xsd:string"/>
+   <ns1:parameter qname="ns22:jobUser" type="xsd:string"/>
+   <ns1:parameter qname="ns22:jobNumber" type="xsd:string"/>
+   <ns1:parameter qname="ns22:msgPos" type="xsd:string"/>
+   <ns1:parameter qname="ns22:msgDate" type="xsd:string"/>
+   <ns1:parameter qname="ns22:msgTime" type="xsd:string"/>
+   <ns1:parameter qname="ns22:msgType" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="getMsgQueueHTML" qname="ns23:getMsgQueueHTML" returnQName="ns23:getMsgQueueHTMLReturn" returnType="xsd:string" soapAction="" xmlns:ns23="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns23:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns23:queue" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="getMsgQueueDirHTML" qname="ns24:getMsgQueueDirHTML" returnQName="ns24:getMsgQueueDirHTMLReturn" returnType="xsd:string" soapAction="" xmlns:ns24="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns24:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns24:queue" type="xsd:string"/>
+   <ns1:parameter qname="ns24:msgPos" type="xsd:string"/>
+   <ns1:parameter qname="ns24:direction" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="getMsgQueueEntryHTML" qname="ns25:getMsgQueueEntryHTML" returnQName="ns25:getMsgQueueEntryHTMLReturn" returnType="xsd:string" soapAction="" xmlns:ns25="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns25:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns25:queue" type="xsd:string"/>
+   <ns1:parameter qname="ns25:msgPos" type="xsd:string"/>
+   <ns1:parameter qname="ns25:msgDate" type="xsd:string"/>
+   <ns1:parameter qname="ns25:msgTime" type="xsd:string"/>
+   <ns1:parameter qname="ns25:msgType" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="getMsgFileEntryHTML" qname="ns26:getMsgFileEntryHTML" returnQName="ns26:getMsgFileEntryHTMLReturn" returnType="xsd:string" soapAction="" xmlns:ns26="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns26:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns26:msgd" type="xsd:string"/>
+   <ns1:parameter qname="ns26:secondLevel" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="destroyPools" qname="ns27:destroyPools" soapAction="" xmlns:ns27="http://services.ui.equation.misys.com">
+   <ns1:parameter qname="ns27:sessionIdentifier" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+  </ns1:operation>
+  <ns1:operation name="refreshDesktopCache" qname="ns28:refreshDesktopCache" soapAction="" xmlns:ns28="http://services.ui.equation.misys.com">
+   <ns1:parameter qname="ns28:sessionIdentifier" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+  </ns1:operation>
+  <ns1:operation name="getWorkLoadHTML" qname="ns29:getWorkLoadHTML" returnQName="ns29:getWorkLoadHTMLReturn" returnType="xsd:string" soapAction="" xmlns:ns29="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns29:sessionIdentifier" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="getJournalPrint" qname="ns30:getJournalPrint" returnQName="ns30:getJournalPrintReturn" returnType="xsd:string" soapAction="" xmlns:ns30="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns30:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns30:workStation" type="xsd:string"/>
+   <ns1:parameter qname="ns30:jrnDay" type="xsd:int"/>
+   <ns1:parameter qname="ns30:jrnTime" type="xsd:int"/>
+   <ns1:parameter qname="ns30:jrnSequence" type="xsd:int"/>
+   <ns1:parameter qname="ns30:optionId" type="xsd:string"/>
+   <ns1:parameter qname="ns30:printBlank" type="xsd:string"/>
+   <ns1:parameter qname="ns30:library" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="applyTransaction" qname="ns31:applyTransaction" returnQName="ns31:applyTransactionReturn" returnType="xsd:string" soapAction="" xmlns:ns31="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns31:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns31:workStation" type="xsd:string"/>
+   <ns1:parameter qname="ns31:jrnDay" type="xsd:int"/>
+   <ns1:parameter qname="ns31:jrnTime" type="xsd:int"/>
+   <ns1:parameter qname="ns31:jrnSequence" type="xsd:int"/>
+   <ns1:parameter qname="ns31:image" type="xsd:string"/>
+   <ns1:parameter qname="ns31:fct" type="xsd:string"/>
+   <ns1:parameter qname="ns31:optionId" type="xsd:string"/>
+   <ns1:parameter qname="ns31:library" type="xsd:string"/>
+   <ns1:parameter qname="ns31:journal" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="applyTransactionData" qname="ns32:applyTransactionData" returnQName="ns32:applyTransactionDataReturn" returnType="xsd:string" soapAction="" xmlns:ns32="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns32:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns32:data" type="xsd:string"/>
+   <ns1:parameter qname="ns32:image" type="xsd:string"/>
+   <ns1:parameter qname="ns32:fct" type="xsd:string"/>
+   <ns1:parameter qname="ns32:optionId" type="xsd:string"/>
+   <ns1:parameter qname="ns32:journal" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="remoteSupervisor" qname="ns33:remoteSupervisor" returnQName="ns33:remoteSupervisorReturn" returnType="xsd:string" soapAction="" xmlns:ns33="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns33:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns33:name" type="xsd:string"/>
+   <ns1:parameter qname="ns33:superId" type="xsd:string"/>
+   <ns1:parameter qname="ns33:offline" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="removeSupervisor" qname="ns34:removeSupervisor" soapAction="" xmlns:ns34="http://services.ui.equation.misys.com">
+   <ns1:parameter qname="ns34:sessionIdentifier" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+   <ns1:parameter qname="ns34:name" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+   <ns1:parameter qname="ns34:status" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+  </ns1:operation>
+  <ns1:operation name="checkSessionStatus" qname="ns35:checkSessionStatus" returnQName="ns35:checkSessionStatusReturn" returnType="xsd:string" soapAction="" xmlns:ns35="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns35:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns35:name" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="authoriseBySupervisorOverride" qname="ns36:authoriseBySupervisorOverride" soapAction="" xmlns:ns36="http://services.ui.equation.misys.com">
+   <ns1:parameter qname="ns36:sessionIdentifier" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+   <ns1:parameter qname="ns36:name" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+  </ns1:operation>
+  <ns1:operation name="authoriseBySupervisorRm" qname="ns37:authoriseBySupervisorRm" soapAction="" xmlns:ns37="http://services.ui.equation.misys.com">
+   <ns1:parameter qname="ns37:sessionIdentifier" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+   <ns1:parameter qname="ns37:name" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+   <ns1:parameter qname="ns37:password" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+   <ns1:parameter qname="ns37:ckey" type="xsd:int" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+  </ns1:operation>
+  <ns1:operation name="authoriseBySupervisorId" qname="ns38:authoriseBySupervisorId" returnQName="ns38:authoriseBySupervisorIdReturn" returnType="xsd:string" soapAction="" xmlns:ns38="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns38:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns38:name" type="xsd:string"/>
+   <ns1:parameter qname="ns38:superId" type="xsd:string"/>
+   <ns1:parameter qname="ns38:password" type="xsd:string"/>
+   <ns1:parameter qname="ns38:tranType" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="invalidateValidationUserExit" qname="ns39:invalidateValidationUserExit" soapAction="" xmlns:ns39="http://services.ui.equation.misys.com">
+   <ns1:parameter qname="ns39:systemId" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+   <ns1:parameter qname="ns39:unitId" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+   <ns1:parameter qname="ns39:program" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+   <ns1:parameter qname="ns39:className" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+  </ns1:operation>
+  <ns1:operation name="logoffDesktop" qname="ns40:logoffDesktop" soapAction="" xmlns:ns40="http://services.ui.equation.misys.com">
+   <ns1:parameter qname="ns40:sessionIdentifier" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+   <ns1:parameter qname="ns40:name" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+  </ns1:operation>
+  <ns1:operation name="getPromptHelpDetails" qname="ns41:getPromptHelpDetails" returnQName="ns41:getPromptHelpDetailsReturn" returnType="xsd:string" soapAction="" xmlns:ns41="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns41:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns41:service" type="xsd:string"/>
+   <ns1:parameter qname="ns41:decode" type="xsd:string"/>
+   <ns1:parameter qname="ns41:security" type="xsd:string"/>
+   <ns1:parameter qname="ns41:dsccn" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="addChildFunctionHandler" qname="ns42:addChildFunctionHandler" returnQName="ns42:addChildFunctionHandlerReturn" returnType="xsd:string" soapAction="" xmlns:ns42="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns42:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns42:name" type="xsd:string"/>
+   <ns1:parameter qname="ns42:option" type="xsd:string"/>
+   <ns1:parameter qname="ns42:context" type="xsd:string"/>
+   <ns1:parameter qname="ns42:childType" type="xsd:string"/>
+   <ns1:parameter qname="ns42:rowIndex" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="isSessionAlive" qname="ns43:isSessionAlive" returnQName="ns43:isSessionAliveReturn" returnType="xsd:string" soapAction="" xmlns:ns43="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns43:sessionIdentifier" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="updateFunctionData" qname="ns44:updateFunctionData" returnQName="ns44:updateFunctionDataReturn" returnType="xsd:string" soapAction="" xmlns:ns44="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns44:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns44:name" type="xsd:string"/>
+   <ns1:parameter qname="ns44:fieldValues" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="getJobId" qname="ns45:getJobId" returnQName="ns45:getJobIdReturn" returnType="xsd:string" soapAction="" xmlns:ns45="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns45:sessionIdentifier" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="getPredictiveList" qname="ns46:getPredictiveList" returnQName="ns46:getPredictiveListReturn" returnType="xsd:string" soapAction="" xmlns:ns46="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns46:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns46:id" type="xsd:string"/>
+   <ns1:parameter qname="ns46:service" type="xsd:string"/>
+   <ns1:parameter qname="ns46:decode" type="xsd:string"/>
+   <ns1:parameter qname="ns46:security" type="xsd:string"/>
+   <ns1:parameter qname="ns46:query" type="xsd:string"/>
+   <ns1:parameter qname="ns46:maxResults" type="xsd:int"/>
+  </ns1:operation>
+  <ns1:operation name="removeSpooledFile" qname="ns47:removeSpooledFile" soapAction="" xmlns:ns47="http://services.ui.equation.misys.com">
+   <ns1:parameter qname="ns47:sessionIdentifier" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+   <ns1:parameter qname="ns47:name" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+   <ns1:parameter qname="ns47:spooledName" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+   <ns1:parameter qname="ns47:jobName" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+   <ns1:parameter qname="ns47:jobUser" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+   <ns1:parameter qname="ns47:jobNumber" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+   <ns1:parameter qname="ns47:splfNum" type="xsd:int" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+  </ns1:operation>
+  <ns1:operation name="breakByRepeatingDataAction" qname="ns48:breakByRepeatingDataAction" returnQName="ns48:breakByRepeatingDataActionReturn" returnType="xsd:string" soapAction="" xmlns:ns48="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns48:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns48:name" type="xsd:string"/>
+   <ns1:parameter qname="ns48:repeatingGroupId" type="xsd:string"/>
+   <ns1:parameter qname="ns48:breakby" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="repeatingGroupSortAction" qname="ns49:repeatingGroupSortAction" returnQName="ns49:repeatingGroupSortActionReturn" returnType="xsd:string" soapAction="" xmlns:ns49="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns49:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns49:name" type="xsd:string"/>
+   <ns1:parameter qname="ns49:repeatingGroupId" type="xsd:string"/>
+   <ns1:parameter qname="ns49:contextFields" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="repeatingGroupPageAction" qname="ns50:repeatingGroupPageAction" returnQName="ns50:repeatingGroupPageActionReturn" returnType="xsd:string" soapAction="" xmlns:ns50="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns50:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns50:name" type="xsd:string"/>
+   <ns1:parameter qname="ns50:repeatingGroupId" type="xsd:string"/>
+   <ns1:parameter qname="ns50:pageUp" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="returnSessionToPool" qname="ns51:returnSessionToPool" soapAction="" xmlns:ns51="http://services.ui.equation.misys.com">
+   <ns1:parameter qname="ns51:sessionIdentifier" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+  </ns1:operation>
+  <ns1:operation name="isSessionValid" qname="ns52:isSessionValid" returnQName="ns52:isSessionValidReturn" returnType="xsd:boolean" soapAction="" xmlns:ns52="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns52:sessionIdentifier" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="getListOutputQueue" qname="ns53:getListOutputQueue" returnQName="ns53:getListOutputQueueReturn" returnType="xsd:string" soapAction="" xmlns:ns53="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns53:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns53:library" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="isValidReferToUser" qname="ns54:isValidReferToUser" returnQName="ns54:isValidReferToUserReturn" returnType="xsd:string" soapAction="" xmlns:ns54="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns54:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns54:taskId" type="xsd:string"/>
+   <ns1:parameter qname="ns54:userId" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:operation name="validateCredentials" qname="ns55:validateCredentials" returnQName="ns55:validateCredentialsReturn" returnType="xsd:string" soapAction="" xmlns:ns55="http://services.ui.equation.misys.com" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <ns1:parameter qname="ns55:sessionIdentifier" type="xsd:string"/>
+   <ns1:parameter qname="ns55:user" type="xsd:string"/>
+   <ns1:parameter qname="ns55:password" type="xsd:string"/>
+  </ns1:operation>
+  <ns1:parameter name="allowedMethods" value="getPromptHelpDetails logoffDesktop getTaskComment authoriseBySupervisorOverride getFullMenuHTML performActionOnUnitCustomer getUnitSpoolFilesHTML getUserSpoolFilesHTML invalidateValidationUserExit getListOutputQueue destroyPools getMsgQueueHTML getMsgQueueDirHTML validateCredentials isSessionAlive getWorkLoadHTML applyTransactionData authoriseBySupervisorId getEqSession getMsgFileEntryHTML exchangeBFKey getJournalPrint getJobLogEntryHTML returnSessionToPool breakByRepeatingDataAction getMsgQueueEntryHTML isSessionValid isValidReferToUser getRecentSearches getPredictiveList getJobLogHTML repeatingGroupPageAction getRecentOptionHTML checkSessionStatus getCurrentContext getJobId removeSession removeSupervisor authoriseBySupervisorRm getGlobalCustomerLinkageList getAnySpoolFilesHTML setCurrentContext addChildFunctionHandler repeatingGroupSortAction userExitValidate updateFunctionData applyTransaction resetCurrentContext getJobLogDirHTML removeSpooledFile remoteSupervisor getEqReferral refreshDesktopCache getEqDataList"/>
+  <ns1:parameter name="typeMappingVersion" value="1.2"/>
+  <ns1:parameter name="wsdlPortType" value="ServiceDirectory"/>
+  <ns1:parameter name="className" value="com.misys.equation.ui.services.ServiceDirectory"/>
+  <ns1:parameter name="wsdlServicePort" value="ServiceDirectory"/>
+  <ns1:parameter name="schemaQualified" value="http://services.ui.equation.misys.com"/>
+  <ns1:parameter name="wsdlTargetNamespace" value="http://services.ui.equation.misys.com"/>
+  <ns1:parameter name="wsdlServiceElement" value="ServiceDirectoryService"/>
+ </ns1:service>
+ <ns1:service name="Version" provider="java:RPC">
+  <ns1:parameter name="allowedMethods" value="getVersion"/>
+  <ns1:parameter name="className" value="org.apache.axis.Version"/>
+ </ns1:service>
+ <ns1:transport name="http">
+  <ns1:requestFlow>
+   <ns1:handler type="URLMapper"/>
+   <ns1:handler type="java:org.apache.axis.handlers.http.HTTPAuthHandler"/>
+  </ns1:requestFlow>
+  <ns1:parameter name="qs:list" value="org.apache.axis.transport.http.QSListHandler"/>
+  <ns1:parameter name="qs:wsdl" value="org.apache.axis.transport.http.QSWSDLHandler"/>
+  <ns1:parameter name="qs.list" value="org.apache.axis.transport.http.QSListHandler"/>
+  <ns1:parameter name="qs.method" value="org.apache.axis.transport.http.QSMethodHandler"/>
+  <ns1:parameter name="qs:method" value="org.apache.axis.transport.http.QSMethodHandler"/>
+  <ns1:parameter name="qs.wsdl" value="org.apache.axis.transport.http.QSWSDLHandler"/>
+ </ns1:transport>
+ <ns1:transport name="local">
+  <ns1:responseFlow>
+   <ns1:handler type="LocalResponder"/>
+  </ns1:responseFlow>
+ </ns1:transport>
+</ns1:deployment>

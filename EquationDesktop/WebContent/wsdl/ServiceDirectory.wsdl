@@ -1,0 +1,2932 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://services.ui.equation.misys.com" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://services.ui.equation.misys.com" xmlns:intf="http://services.ui.equation.misys.com" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+ <wsdl:types>
+  <schema elementFormDefault="qualified" targetNamespace="http://services.ui.equation.misys.com" xmlns="http://www.w3.org/2001/XMLSchema">
+   <element name="getCurrentContext">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getCurrentContextResponse">
+    <complexType>
+     <sequence>
+      <element name="getCurrentContextReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="removeSession">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="name" type="xsd:string"/>
+      <element name="optionId" type="xsd:string"/>
+      <element name="sessionId" type="xsd:string"/>
+      <element name="transactionId" type="xsd:string"/>
+      <element name="userId" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="removeSessionResponse">
+    <complexType/>
+   </element>
+   <element name="performActionOnUnitCustomer">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="globaCustomerNum" type="xsd:string"/>
+      <element name="action" type="xsd:string"/>
+      <element name="sequenceNumber" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="performActionOnUnitCustomerResponse">
+    <complexType>
+     <sequence>
+      <element name="performActionOnUnitCustomerReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getGlobalCustomerLinkageList">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="globaCustomerNum" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getGlobalCustomerLinkageListResponse">
+    <complexType>
+     <sequence>
+      <element name="getGlobalCustomerLinkageListReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="setCurrentContext">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="valuesToSet" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="setCurrentContextResponse">
+    <complexType>
+     <sequence>
+      <element name="setCurrentContextReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="resetCurrentContext">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="resetCurrentContextResponse">
+    <complexType/>
+   </element>
+   <element name="getEqSession">
+    <complexType>
+     <sequence>
+      <element name="systemId" type="xsd:string"/>
+      <element name="unitId" type="xsd:string"/>
+      <element name="userId" type="xsd:string"/>
+      <element name="password" type="xsd:string"/>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="ipAddress" type="xsd:string"/>
+      <element name="passwordType" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getEqSessionResponse">
+    <complexType>
+     <sequence>
+      <element name="getEqSessionReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="exchangeBFKey">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="key" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="exchangeBFKeyResponse">
+    <complexType>
+     <sequence>
+      <element name="exchangeBFKeyReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="userExitValidate">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="program" type="xsd:string"/>
+      <element name="xfct" type="xsd:string"/>
+      <element name="xprmt" type="xsd:string"/>
+      <element name="xscrn" type="xsd:string"/>
+      <element name="xmode" type="xsd:string"/>
+      <element name="dsexit" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="userExitValidateResponse">
+    <complexType>
+     <sequence>
+      <element name="userExitValidateReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getEqDataList">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="fieldId" type="xsd:string"/>
+      <element name="service" type="xsd:string"/>
+      <element name="decode" type="xsd:string"/>
+      <element name="security" type="xsd:string"/>
+      <element name="primaryTable" type="xsd:string"/>
+      <element name="serviceKey" type="xsd:string"/>
+      <element name="query" type="xsd:string"/>
+      <element name="start" type="xsd:string"/>
+      <element name="direction" type="xsd:int"/>
+      <element name="maxResults" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getEqDataListResponse">
+    <complexType>
+     <sequence>
+      <element name="getEqDataListReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getEqReferral">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getEqReferralResponse">
+    <complexType>
+     <sequence>
+      <element name="getEqReferralReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getRecentSearches">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getRecentSearchesResponse">
+    <complexType>
+     <sequence>
+      <element name="getRecentSearchesReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getRecentOptionHTML">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getRecentOptionHTMLResponse">
+    <complexType>
+     <sequence>
+      <element name="getRecentOptionHTMLReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getFullMenuHTML">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getFullMenuHTMLResponse">
+    <complexType>
+     <sequence>
+      <element name="getFullMenuHTMLReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getUserSpoolFilesHTML">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getUserSpoolFilesHTMLResponse">
+    <complexType>
+     <sequence>
+      <element name="getUserSpoolFilesHTMLReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getUnitSpoolFilesHTML">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getUnitSpoolFilesHTMLResponse">
+    <complexType>
+     <sequence>
+      <element name="getUnitSpoolFilesHTMLReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getAnySpoolFilesHTML">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="library" type="xsd:string"/>
+      <element name="outq" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getAnySpoolFilesHTMLResponse">
+    <complexType>
+     <sequence>
+      <element name="getAnySpoolFilesHTMLReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getJobLogHTML">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="jobName" type="xsd:string"/>
+      <element name="jobUser" type="xsd:string"/>
+      <element name="jobNumber" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getJobLogHTMLResponse">
+    <complexType>
+     <sequence>
+      <element name="getJobLogHTMLReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getTaskComment">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="processId" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getTaskCommentResponse">
+    <complexType>
+     <sequence>
+      <element name="getTaskCommentReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getJobLogDirHTML">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="jobName" type="xsd:string"/>
+      <element name="jobUser" type="xsd:string"/>
+      <element name="jobNumber" type="xsd:string"/>
+      <element name="msgPos" type="xsd:string"/>
+      <element name="direction" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getJobLogDirHTMLResponse">
+    <complexType>
+     <sequence>
+      <element name="getJobLogDirHTMLReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getJobLogEntryHTML">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="jobName" type="xsd:string"/>
+      <element name="jobUser" type="xsd:string"/>
+      <element name="jobNumber" type="xsd:string"/>
+      <element name="msgPos" type="xsd:string"/>
+      <element name="msgDate" type="xsd:string"/>
+      <element name="msgTime" type="xsd:string"/>
+      <element name="msgType" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getJobLogEntryHTMLResponse">
+    <complexType>
+     <sequence>
+      <element name="getJobLogEntryHTMLReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getMsgQueueHTML">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="queue" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getMsgQueueHTMLResponse">
+    <complexType>
+     <sequence>
+      <element name="getMsgQueueHTMLReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getMsgQueueDirHTML">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="queue" type="xsd:string"/>
+      <element name="msgPos" type="xsd:string"/>
+      <element name="direction" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getMsgQueueDirHTMLResponse">
+    <complexType>
+     <sequence>
+      <element name="getMsgQueueDirHTMLReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getMsgQueueEntryHTML">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="queue" type="xsd:string"/>
+      <element name="msgPos" type="xsd:string"/>
+      <element name="msgDate" type="xsd:string"/>
+      <element name="msgTime" type="xsd:string"/>
+      <element name="msgType" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getMsgQueueEntryHTMLResponse">
+    <complexType>
+     <sequence>
+      <element name="getMsgQueueEntryHTMLReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getMsgFileEntryHTML">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="msgd" type="xsd:string"/>
+      <element name="secondLevel" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getMsgFileEntryHTMLResponse">
+    <complexType>
+     <sequence>
+      <element name="getMsgFileEntryHTMLReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="destroyPools">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="destroyPoolsResponse">
+    <complexType/>
+   </element>
+   <element name="refreshDesktopCache">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="refreshDesktopCacheResponse">
+    <complexType/>
+   </element>
+   <element name="getWorkLoadHTML">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getWorkLoadHTMLResponse">
+    <complexType>
+     <sequence>
+      <element name="getWorkLoadHTMLReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getJournalPrint">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="workStation" type="xsd:string"/>
+      <element name="jrnDay" type="xsd:int"/>
+      <element name="jrnTime" type="xsd:int"/>
+      <element name="jrnSequence" type="xsd:int"/>
+      <element name="optionId" type="xsd:string"/>
+      <element name="printBlank" type="xsd:string"/>
+      <element name="library" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getJournalPrintResponse">
+    <complexType>
+     <sequence>
+      <element name="getJournalPrintReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="applyTransaction">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="workStation" type="xsd:string"/>
+      <element name="jrnDay" type="xsd:int"/>
+      <element name="jrnTime" type="xsd:int"/>
+      <element name="jrnSequence" type="xsd:int"/>
+      <element name="image" type="xsd:string"/>
+      <element name="fct" type="xsd:string"/>
+      <element name="optionId" type="xsd:string"/>
+      <element name="library" type="xsd:string"/>
+      <element name="journal" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="applyTransactionResponse">
+    <complexType>
+     <sequence>
+      <element name="applyTransactionReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="applyTransactionData">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="data" type="xsd:string"/>
+      <element name="image" type="xsd:string"/>
+      <element name="fct" type="xsd:string"/>
+      <element name="optionId" type="xsd:string"/>
+      <element name="journal" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="applyTransactionDataResponse">
+    <complexType>
+     <sequence>
+      <element name="applyTransactionDataReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="remoteSupervisor">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="name" type="xsd:string"/>
+      <element name="superId" type="xsd:string"/>
+      <element name="offline" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="remoteSupervisorResponse">
+    <complexType>
+     <sequence>
+      <element name="remoteSupervisorReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="removeSupervisor">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="name" type="xsd:string"/>
+      <element name="status" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="removeSupervisorResponse">
+    <complexType/>
+   </element>
+   <element name="checkSessionStatus">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="name" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="checkSessionStatusResponse">
+    <complexType>
+     <sequence>
+      <element name="checkSessionStatusReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="authoriseBySupervisorOverride">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="name" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="authoriseBySupervisorOverrideResponse">
+    <complexType/>
+   </element>
+   <element name="authoriseBySupervisorRm">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="name" type="xsd:string"/>
+      <element name="password" type="xsd:string"/>
+      <element name="ckey" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="authoriseBySupervisorRmResponse">
+    <complexType/>
+   </element>
+   <element name="authoriseBySupervisorId">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="name" type="xsd:string"/>
+      <element name="superId" type="xsd:string"/>
+      <element name="password" type="xsd:string"/>
+      <element name="tranType" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="authoriseBySupervisorIdResponse">
+    <complexType>
+     <sequence>
+      <element name="authoriseBySupervisorIdReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="invalidateValidationUserExit">
+    <complexType>
+     <sequence>
+      <element name="systemId" type="xsd:string"/>
+      <element name="unitId" type="xsd:string"/>
+      <element name="program" type="xsd:string"/>
+      <element name="className" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="invalidateValidationUserExitResponse">
+    <complexType/>
+   </element>
+   <element name="logoffDesktop">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="name" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="logoffDesktopResponse">
+    <complexType/>
+   </element>
+   <element name="getPromptHelpDetails">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="service" type="xsd:string"/>
+      <element name="decode" type="xsd:string"/>
+      <element name="security" type="xsd:string"/>
+      <element name="dsccn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getPromptHelpDetailsResponse">
+    <complexType>
+     <sequence>
+      <element name="getPromptHelpDetailsReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addChildFunctionHandler">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="name" type="xsd:string"/>
+      <element name="option" type="xsd:string"/>
+      <element name="context" type="xsd:string"/>
+      <element name="childType" type="xsd:string"/>
+      <element name="rowIndex" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="addChildFunctionHandlerResponse">
+    <complexType>
+     <sequence>
+      <element name="addChildFunctionHandlerReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="isSessionAlive">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="isSessionAliveResponse">
+    <complexType>
+     <sequence>
+      <element name="isSessionAliveReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="updateFunctionData">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="name" type="xsd:string"/>
+      <element name="fieldValues" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="updateFunctionDataResponse">
+    <complexType>
+     <sequence>
+      <element name="updateFunctionDataReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getJobId">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getJobIdResponse">
+    <complexType>
+     <sequence>
+      <element name="getJobIdReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getPredictiveList">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="id" type="xsd:string"/>
+      <element name="service" type="xsd:string"/>
+      <element name="decode" type="xsd:string"/>
+      <element name="security" type="xsd:string"/>
+      <element name="query" type="xsd:string"/>
+      <element name="maxResults" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getPredictiveListResponse">
+    <complexType>
+     <sequence>
+      <element name="getPredictiveListReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="removeSpooledFile">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="name" type="xsd:string"/>
+      <element name="spooledName" type="xsd:string"/>
+      <element name="jobName" type="xsd:string"/>
+      <element name="jobUser" type="xsd:string"/>
+      <element name="jobNumber" type="xsd:string"/>
+      <element name="splfNum" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="removeSpooledFileResponse">
+    <complexType/>
+   </element>
+   <element name="breakByRepeatingDataAction">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="name" type="xsd:string"/>
+      <element name="repeatingGroupId" type="xsd:string"/>
+      <element name="breakby" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="breakByRepeatingDataActionResponse">
+    <complexType>
+     <sequence>
+      <element name="breakByRepeatingDataActionReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="repeatingGroupSortAction">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="name" type="xsd:string"/>
+      <element name="repeatingGroupId" type="xsd:string"/>
+      <element name="contextFields" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="repeatingGroupSortActionResponse">
+    <complexType>
+     <sequence>
+      <element name="repeatingGroupSortActionReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="repeatingGroupPageAction">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="name" type="xsd:string"/>
+      <element name="repeatingGroupId" type="xsd:string"/>
+      <element name="pageUp" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="repeatingGroupPageActionResponse">
+    <complexType>
+     <sequence>
+      <element name="repeatingGroupPageActionReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="returnSessionToPool">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="returnSessionToPoolResponse">
+    <complexType/>
+   </element>
+   <element name="isSessionValid">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="isSessionValidResponse">
+    <complexType>
+     <sequence>
+      <element name="isSessionValidReturn" type="xsd:boolean"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getListOutputQueue">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="library" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getListOutputQueueResponse">
+    <complexType>
+     <sequence>
+      <element name="getListOutputQueueReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="isValidReferToUser">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="taskId" type="xsd:string"/>
+      <element name="userId" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="isValidReferToUserResponse">
+    <complexType>
+     <sequence>
+      <element name="isValidReferToUserReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="validateCredentials">
+    <complexType>
+     <sequence>
+      <element name="sessionIdentifier" type="xsd:string"/>
+      <element name="user" type="xsd:string"/>
+      <element name="password" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="validateCredentialsResponse">
+    <complexType>
+     <sequence>
+      <element name="validateCredentialsReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="getRecentOptionHTMLResponse">
+
+      <wsdl:part element="impl:getRecentOptionHTMLResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getMsgQueueHTMLRequest">
+
+      <wsdl:part element="impl:getMsgQueueHTML" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="updateFunctionDataRequest">
+
+      <wsdl:part element="impl:updateFunctionData" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getMsgQueueEntryHTMLRequest">
+
+      <wsdl:part element="impl:getMsgQueueEntryHTML" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="isValidReferToUserResponse">
+
+      <wsdl:part element="impl:isValidReferToUserResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="setCurrentContextResponse">
+
+      <wsdl:part element="impl:setCurrentContextResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getJobLogDirHTMLResponse">
+
+      <wsdl:part element="impl:getJobLogDirHTMLResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="applyTransactionResponse">
+
+      <wsdl:part element="impl:applyTransactionResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getAnySpoolFilesHTMLResponse">
+
+      <wsdl:part element="impl:getAnySpoolFilesHTMLResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getRecentSearchesResponse">
+
+      <wsdl:part element="impl:getRecentSearchesResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="resetCurrentContextResponse">
+
+      <wsdl:part element="impl:resetCurrentContextResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getJobLogEntryHTMLRequest">
+
+      <wsdl:part element="impl:getJobLogEntryHTML" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getPredictiveListResponse">
+
+      <wsdl:part element="impl:getPredictiveListResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="authoriseBySupervisorRmResponse">
+
+      <wsdl:part element="impl:authoriseBySupervisorRmResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="refreshDesktopCacheRequest">
+
+      <wsdl:part element="impl:refreshDesktopCache" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getGlobalCustomerLinkageListResponse">
+
+      <wsdl:part element="impl:getGlobalCustomerLinkageListResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getWorkLoadHTMLRequest">
+
+      <wsdl:part element="impl:getWorkLoadHTML" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getJobLogHTMLRequest">
+
+      <wsdl:part element="impl:getJobLogHTML" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getListOutputQueueResponse">
+
+      <wsdl:part element="impl:getListOutputQueueResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="removeSessionResponse">
+
+      <wsdl:part element="impl:removeSessionResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="applyTransactionRequest">
+
+      <wsdl:part element="impl:applyTransaction" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="remoteSupervisorResponse">
+
+      <wsdl:part element="impl:remoteSupervisorResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addChildFunctionHandlerRequest">
+
+      <wsdl:part element="impl:addChildFunctionHandler" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="removeSessionRequest">
+
+      <wsdl:part element="impl:removeSession" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="exchangeBFKeyResponse">
+
+      <wsdl:part element="impl:exchangeBFKeyResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getUserSpoolFilesHTMLRequest">
+
+      <wsdl:part element="impl:getUserSpoolFilesHTML" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="isSessionValidRequest">
+
+      <wsdl:part element="impl:isSessionValid" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getFullMenuHTMLRequest">
+
+      <wsdl:part element="impl:getFullMenuHTML" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="applyTransactionDataResponse">
+
+      <wsdl:part element="impl:applyTransactionDataResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getAnySpoolFilesHTMLRequest">
+
+      <wsdl:part element="impl:getAnySpoolFilesHTML" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="refreshDesktopCacheResponse">
+
+      <wsdl:part element="impl:refreshDesktopCacheResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="breakByRepeatingDataActionResponse">
+
+      <wsdl:part element="impl:breakByRepeatingDataActionResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="performActionOnUnitCustomerRequest">
+
+      <wsdl:part element="impl:performActionOnUnitCustomer" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getJobIdRequest">
+
+      <wsdl:part element="impl:getJobId" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getFullMenuHTMLResponse">
+
+      <wsdl:part element="impl:getFullMenuHTMLResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="authoriseBySupervisorIdResponse">
+
+      <wsdl:part element="impl:authoriseBySupervisorIdResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="returnSessionToPoolRequest">
+
+      <wsdl:part element="impl:returnSessionToPool" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="logoffDesktopResponse">
+
+      <wsdl:part element="impl:logoffDesktopResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getPromptHelpDetailsResponse">
+
+      <wsdl:part element="impl:getPromptHelpDetailsResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="userExitValidateRequest">
+
+      <wsdl:part element="impl:userExitValidate" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="userExitValidateResponse">
+
+      <wsdl:part element="impl:userExitValidateResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="authoriseBySupervisorRmRequest">
+
+      <wsdl:part element="impl:authoriseBySupervisorRm" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="isSessionAliveResponse">
+
+      <wsdl:part element="impl:isSessionAliveResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getPredictiveListRequest">
+
+      <wsdl:part element="impl:getPredictiveList" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="returnSessionToPoolResponse">
+
+      <wsdl:part element="impl:returnSessionToPoolResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getEqSessionResponse">
+
+      <wsdl:part element="impl:getEqSessionResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="repeatingGroupPageActionRequest">
+
+      <wsdl:part element="impl:repeatingGroupPageAction" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getPromptHelpDetailsRequest">
+
+      <wsdl:part element="impl:getPromptHelpDetails" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="authoriseBySupervisorOverrideRequest">
+
+      <wsdl:part element="impl:authoriseBySupervisorOverride" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="invalidateValidationUserExitResponse">
+
+      <wsdl:part element="impl:invalidateValidationUserExitResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getGlobalCustomerLinkageListRequest">
+
+      <wsdl:part element="impl:getGlobalCustomerLinkageList" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getRecentSearchesRequest">
+
+      <wsdl:part element="impl:getRecentSearches" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getMsgFileEntryHTMLResponse">
+
+      <wsdl:part element="impl:getMsgFileEntryHTMLResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="destroyPoolsRequest">
+
+      <wsdl:part element="impl:destroyPools" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getUserSpoolFilesHTMLResponse">
+
+      <wsdl:part element="impl:getUserSpoolFilesHTMLResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getCurrentContextResponse">
+
+      <wsdl:part element="impl:getCurrentContextResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="repeatingGroupSortActionRequest">
+
+      <wsdl:part element="impl:repeatingGroupSortAction" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="removeSpooledFileRequest">
+
+      <wsdl:part element="impl:removeSpooledFile" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="validateCredentialsResponse">
+
+      <wsdl:part element="impl:validateCredentialsResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="authoriseBySupervisorIdRequest">
+
+      <wsdl:part element="impl:authoriseBySupervisorId" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="performActionOnUnitCustomerResponse">
+
+      <wsdl:part element="impl:performActionOnUnitCustomerResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="setCurrentContextRequest">
+
+      <wsdl:part element="impl:setCurrentContext" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="authoriseBySupervisorOverrideResponse">
+
+      <wsdl:part element="impl:authoriseBySupervisorOverrideResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getJobLogDirHTMLRequest">
+
+      <wsdl:part element="impl:getJobLogDirHTML" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="destroyPoolsResponse">
+
+      <wsdl:part element="impl:destroyPoolsResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="checkSessionStatusRequest">
+
+      <wsdl:part element="impl:checkSessionStatus" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="breakByRepeatingDataActionRequest">
+
+      <wsdl:part element="impl:breakByRepeatingDataAction" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="isSessionValidResponse">
+
+      <wsdl:part element="impl:isSessionValidResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getMsgQueueDirHTMLRequest">
+
+      <wsdl:part element="impl:getMsgQueueDirHTML" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="addChildFunctionHandlerResponse">
+
+      <wsdl:part element="impl:addChildFunctionHandlerResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="repeatingGroupPageActionResponse">
+
+      <wsdl:part element="impl:repeatingGroupPageActionResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getEqDataListRequest">
+
+      <wsdl:part element="impl:getEqDataList" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getTaskCommentResponse">
+
+      <wsdl:part element="impl:getTaskCommentResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="removeSpooledFileResponse">
+
+      <wsdl:part element="impl:removeSpooledFileResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getJournalPrintResponse">
+
+      <wsdl:part element="impl:getJournalPrintResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getUnitSpoolFilesHTMLResponse">
+
+      <wsdl:part element="impl:getUnitSpoolFilesHTMLResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getEqDataListResponse">
+
+      <wsdl:part element="impl:getEqDataListResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="isSessionAliveRequest">
+
+      <wsdl:part element="impl:isSessionAlive" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getMsgQueueHTMLResponse">
+
+      <wsdl:part element="impl:getMsgQueueHTMLResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getEqSessionRequest">
+
+      <wsdl:part element="impl:getEqSession" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getUnitSpoolFilesHTMLRequest">
+
+      <wsdl:part element="impl:getUnitSpoolFilesHTML" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getJobIdResponse">
+
+      <wsdl:part element="impl:getJobIdResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getJobLogHTMLResponse">
+
+      <wsdl:part element="impl:getJobLogHTMLResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getRecentOptionHTMLRequest">
+
+      <wsdl:part element="impl:getRecentOptionHTML" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="checkSessionStatusResponse">
+
+      <wsdl:part element="impl:checkSessionStatusResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getMsgQueueEntryHTMLResponse">
+
+      <wsdl:part element="impl:getMsgQueueEntryHTMLResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getWorkLoadHTMLResponse">
+
+      <wsdl:part element="impl:getWorkLoadHTMLResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="remoteSupervisorRequest">
+
+      <wsdl:part element="impl:remoteSupervisor" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="exchangeBFKeyRequest">
+
+      <wsdl:part element="impl:exchangeBFKey" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getJournalPrintRequest">
+
+      <wsdl:part element="impl:getJournalPrint" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getMsgQueueDirHTMLResponse">
+
+      <wsdl:part element="impl:getMsgQueueDirHTMLResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="updateFunctionDataResponse">
+
+      <wsdl:part element="impl:updateFunctionDataResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="validateCredentialsRequest">
+
+      <wsdl:part element="impl:validateCredentials" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="isValidReferToUserRequest">
+
+      <wsdl:part element="impl:isValidReferToUser" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getJobLogEntryHTMLResponse">
+
+      <wsdl:part element="impl:getJobLogEntryHTMLResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getCurrentContextRequest">
+
+      <wsdl:part element="impl:getCurrentContext" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="applyTransactionDataRequest">
+
+      <wsdl:part element="impl:applyTransactionData" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getMsgFileEntryHTMLRequest">
+
+      <wsdl:part element="impl:getMsgFileEntryHTML" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="repeatingGroupSortActionResponse">
+
+      <wsdl:part element="impl:repeatingGroupSortActionResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="resetCurrentContextRequest">
+
+      <wsdl:part element="impl:resetCurrentContext" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="removeSupervisorRequest">
+
+      <wsdl:part element="impl:removeSupervisor" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="removeSupervisorResponse">
+
+      <wsdl:part element="impl:removeSupervisorResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getListOutputQueueRequest">
+
+      <wsdl:part element="impl:getListOutputQueue" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getTaskCommentRequest">
+
+      <wsdl:part element="impl:getTaskComment" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="invalidateValidationUserExitRequest">
+
+      <wsdl:part element="impl:invalidateValidationUserExit" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getEqReferralResponse">
+
+      <wsdl:part element="impl:getEqReferralResponse" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="getEqReferralRequest">
+
+      <wsdl:part element="impl:getEqReferral" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="logoffDesktopRequest">
+
+      <wsdl:part element="impl:logoffDesktop" name="parameters"/>
+
+   </wsdl:message>
+
+   <wsdl:portType name="ServiceDirectory">
+
+      <wsdl:operation name="getCurrentContext">
+
+         <wsdl:input message="impl:getCurrentContextRequest" name="getCurrentContextRequest"/>
+
+         <wsdl:output message="impl:getCurrentContextResponse" name="getCurrentContextResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="removeSession">
+
+         <wsdl:input message="impl:removeSessionRequest" name="removeSessionRequest"/>
+
+         <wsdl:output message="impl:removeSessionResponse" name="removeSessionResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="performActionOnUnitCustomer">
+
+         <wsdl:input message="impl:performActionOnUnitCustomerRequest" name="performActionOnUnitCustomerRequest"/>
+
+         <wsdl:output message="impl:performActionOnUnitCustomerResponse" name="performActionOnUnitCustomerResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getGlobalCustomerLinkageList">
+
+         <wsdl:input message="impl:getGlobalCustomerLinkageListRequest" name="getGlobalCustomerLinkageListRequest"/>
+
+         <wsdl:output message="impl:getGlobalCustomerLinkageListResponse" name="getGlobalCustomerLinkageListResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="setCurrentContext">
+
+         <wsdl:input message="impl:setCurrentContextRequest" name="setCurrentContextRequest"/>
+
+         <wsdl:output message="impl:setCurrentContextResponse" name="setCurrentContextResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="resetCurrentContext">
+
+         <wsdl:input message="impl:resetCurrentContextRequest" name="resetCurrentContextRequest"/>
+
+         <wsdl:output message="impl:resetCurrentContextResponse" name="resetCurrentContextResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getEqSession">
+
+         <wsdl:input message="impl:getEqSessionRequest" name="getEqSessionRequest"/>
+
+         <wsdl:output message="impl:getEqSessionResponse" name="getEqSessionResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="exchangeBFKey">
+
+         <wsdl:input message="impl:exchangeBFKeyRequest" name="exchangeBFKeyRequest"/>
+
+         <wsdl:output message="impl:exchangeBFKeyResponse" name="exchangeBFKeyResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="userExitValidate">
+
+         <wsdl:input message="impl:userExitValidateRequest" name="userExitValidateRequest"/>
+
+         <wsdl:output message="impl:userExitValidateResponse" name="userExitValidateResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getEqDataList">
+
+         <wsdl:input message="impl:getEqDataListRequest" name="getEqDataListRequest"/>
+
+         <wsdl:output message="impl:getEqDataListResponse" name="getEqDataListResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getEqReferral">
+
+         <wsdl:input message="impl:getEqReferralRequest" name="getEqReferralRequest"/>
+
+         <wsdl:output message="impl:getEqReferralResponse" name="getEqReferralResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getRecentSearches">
+
+         <wsdl:input message="impl:getRecentSearchesRequest" name="getRecentSearchesRequest"/>
+
+         <wsdl:output message="impl:getRecentSearchesResponse" name="getRecentSearchesResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getRecentOptionHTML">
+
+         <wsdl:input message="impl:getRecentOptionHTMLRequest" name="getRecentOptionHTMLRequest"/>
+
+         <wsdl:output message="impl:getRecentOptionHTMLResponse" name="getRecentOptionHTMLResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getFullMenuHTML">
+
+         <wsdl:input message="impl:getFullMenuHTMLRequest" name="getFullMenuHTMLRequest"/>
+
+         <wsdl:output message="impl:getFullMenuHTMLResponse" name="getFullMenuHTMLResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getUserSpoolFilesHTML">
+
+         <wsdl:input message="impl:getUserSpoolFilesHTMLRequest" name="getUserSpoolFilesHTMLRequest"/>
+
+         <wsdl:output message="impl:getUserSpoolFilesHTMLResponse" name="getUserSpoolFilesHTMLResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getUnitSpoolFilesHTML">
+
+         <wsdl:input message="impl:getUnitSpoolFilesHTMLRequest" name="getUnitSpoolFilesHTMLRequest"/>
+
+         <wsdl:output message="impl:getUnitSpoolFilesHTMLResponse" name="getUnitSpoolFilesHTMLResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getAnySpoolFilesHTML">
+
+         <wsdl:input message="impl:getAnySpoolFilesHTMLRequest" name="getAnySpoolFilesHTMLRequest"/>
+
+         <wsdl:output message="impl:getAnySpoolFilesHTMLResponse" name="getAnySpoolFilesHTMLResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getJobLogHTML">
+
+         <wsdl:input message="impl:getJobLogHTMLRequest" name="getJobLogHTMLRequest"/>
+
+         <wsdl:output message="impl:getJobLogHTMLResponse" name="getJobLogHTMLResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getTaskComment">
+
+         <wsdl:input message="impl:getTaskCommentRequest" name="getTaskCommentRequest"/>
+
+         <wsdl:output message="impl:getTaskCommentResponse" name="getTaskCommentResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getJobLogDirHTML">
+
+         <wsdl:input message="impl:getJobLogDirHTMLRequest" name="getJobLogDirHTMLRequest"/>
+
+         <wsdl:output message="impl:getJobLogDirHTMLResponse" name="getJobLogDirHTMLResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getJobLogEntryHTML">
+
+         <wsdl:input message="impl:getJobLogEntryHTMLRequest" name="getJobLogEntryHTMLRequest"/>
+
+         <wsdl:output message="impl:getJobLogEntryHTMLResponse" name="getJobLogEntryHTMLResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getMsgQueueHTML">
+
+         <wsdl:input message="impl:getMsgQueueHTMLRequest" name="getMsgQueueHTMLRequest"/>
+
+         <wsdl:output message="impl:getMsgQueueHTMLResponse" name="getMsgQueueHTMLResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getMsgQueueDirHTML">
+
+         <wsdl:input message="impl:getMsgQueueDirHTMLRequest" name="getMsgQueueDirHTMLRequest"/>
+
+         <wsdl:output message="impl:getMsgQueueDirHTMLResponse" name="getMsgQueueDirHTMLResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getMsgQueueEntryHTML">
+
+         <wsdl:input message="impl:getMsgQueueEntryHTMLRequest" name="getMsgQueueEntryHTMLRequest"/>
+
+         <wsdl:output message="impl:getMsgQueueEntryHTMLResponse" name="getMsgQueueEntryHTMLResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getMsgFileEntryHTML">
+
+         <wsdl:input message="impl:getMsgFileEntryHTMLRequest" name="getMsgFileEntryHTMLRequest"/>
+
+         <wsdl:output message="impl:getMsgFileEntryHTMLResponse" name="getMsgFileEntryHTMLResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="destroyPools">
+
+         <wsdl:input message="impl:destroyPoolsRequest" name="destroyPoolsRequest"/>
+
+         <wsdl:output message="impl:destroyPoolsResponse" name="destroyPoolsResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="refreshDesktopCache">
+
+         <wsdl:input message="impl:refreshDesktopCacheRequest" name="refreshDesktopCacheRequest"/>
+
+         <wsdl:output message="impl:refreshDesktopCacheResponse" name="refreshDesktopCacheResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getWorkLoadHTML">
+
+         <wsdl:input message="impl:getWorkLoadHTMLRequest" name="getWorkLoadHTMLRequest"/>
+
+         <wsdl:output message="impl:getWorkLoadHTMLResponse" name="getWorkLoadHTMLResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getJournalPrint">
+
+         <wsdl:input message="impl:getJournalPrintRequest" name="getJournalPrintRequest"/>
+
+         <wsdl:output message="impl:getJournalPrintResponse" name="getJournalPrintResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="applyTransaction">
+
+         <wsdl:input message="impl:applyTransactionRequest" name="applyTransactionRequest"/>
+
+         <wsdl:output message="impl:applyTransactionResponse" name="applyTransactionResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="applyTransactionData">
+
+         <wsdl:input message="impl:applyTransactionDataRequest" name="applyTransactionDataRequest"/>
+
+         <wsdl:output message="impl:applyTransactionDataResponse" name="applyTransactionDataResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="remoteSupervisor">
+
+         <wsdl:input message="impl:remoteSupervisorRequest" name="remoteSupervisorRequest"/>
+
+         <wsdl:output message="impl:remoteSupervisorResponse" name="remoteSupervisorResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="removeSupervisor">
+
+         <wsdl:input message="impl:removeSupervisorRequest" name="removeSupervisorRequest"/>
+
+         <wsdl:output message="impl:removeSupervisorResponse" name="removeSupervisorResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="checkSessionStatus">
+
+         <wsdl:input message="impl:checkSessionStatusRequest" name="checkSessionStatusRequest"/>
+
+         <wsdl:output message="impl:checkSessionStatusResponse" name="checkSessionStatusResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="authoriseBySupervisorOverride">
+
+         <wsdl:input message="impl:authoriseBySupervisorOverrideRequest" name="authoriseBySupervisorOverrideRequest"/>
+
+         <wsdl:output message="impl:authoriseBySupervisorOverrideResponse" name="authoriseBySupervisorOverrideResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="authoriseBySupervisorRm">
+
+         <wsdl:input message="impl:authoriseBySupervisorRmRequest" name="authoriseBySupervisorRmRequest"/>
+
+         <wsdl:output message="impl:authoriseBySupervisorRmResponse" name="authoriseBySupervisorRmResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="authoriseBySupervisorId">
+
+         <wsdl:input message="impl:authoriseBySupervisorIdRequest" name="authoriseBySupervisorIdRequest"/>
+
+         <wsdl:output message="impl:authoriseBySupervisorIdResponse" name="authoriseBySupervisorIdResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="invalidateValidationUserExit">
+
+         <wsdl:input message="impl:invalidateValidationUserExitRequest" name="invalidateValidationUserExitRequest"/>
+
+         <wsdl:output message="impl:invalidateValidationUserExitResponse" name="invalidateValidationUserExitResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="logoffDesktop">
+
+         <wsdl:input message="impl:logoffDesktopRequest" name="logoffDesktopRequest"/>
+
+         <wsdl:output message="impl:logoffDesktopResponse" name="logoffDesktopResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getPromptHelpDetails">
+
+         <wsdl:input message="impl:getPromptHelpDetailsRequest" name="getPromptHelpDetailsRequest"/>
+
+         <wsdl:output message="impl:getPromptHelpDetailsResponse" name="getPromptHelpDetailsResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addChildFunctionHandler">
+
+         <wsdl:input message="impl:addChildFunctionHandlerRequest" name="addChildFunctionHandlerRequest"/>
+
+         <wsdl:output message="impl:addChildFunctionHandlerResponse" name="addChildFunctionHandlerResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="isSessionAlive">
+
+         <wsdl:input message="impl:isSessionAliveRequest" name="isSessionAliveRequest"/>
+
+         <wsdl:output message="impl:isSessionAliveResponse" name="isSessionAliveResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="updateFunctionData">
+
+         <wsdl:input message="impl:updateFunctionDataRequest" name="updateFunctionDataRequest"/>
+
+         <wsdl:output message="impl:updateFunctionDataResponse" name="updateFunctionDataResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getJobId">
+
+         <wsdl:input message="impl:getJobIdRequest" name="getJobIdRequest"/>
+
+         <wsdl:output message="impl:getJobIdResponse" name="getJobIdResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getPredictiveList">
+
+         <wsdl:input message="impl:getPredictiveListRequest" name="getPredictiveListRequest"/>
+
+         <wsdl:output message="impl:getPredictiveListResponse" name="getPredictiveListResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="removeSpooledFile">
+
+         <wsdl:input message="impl:removeSpooledFileRequest" name="removeSpooledFileRequest"/>
+
+         <wsdl:output message="impl:removeSpooledFileResponse" name="removeSpooledFileResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="breakByRepeatingDataAction">
+
+         <wsdl:input message="impl:breakByRepeatingDataActionRequest" name="breakByRepeatingDataActionRequest"/>
+
+         <wsdl:output message="impl:breakByRepeatingDataActionResponse" name="breakByRepeatingDataActionResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="repeatingGroupSortAction">
+
+         <wsdl:input message="impl:repeatingGroupSortActionRequest" name="repeatingGroupSortActionRequest"/>
+
+         <wsdl:output message="impl:repeatingGroupSortActionResponse" name="repeatingGroupSortActionResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="repeatingGroupPageAction">
+
+         <wsdl:input message="impl:repeatingGroupPageActionRequest" name="repeatingGroupPageActionRequest"/>
+
+         <wsdl:output message="impl:repeatingGroupPageActionResponse" name="repeatingGroupPageActionResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="returnSessionToPool">
+
+         <wsdl:input message="impl:returnSessionToPoolRequest" name="returnSessionToPoolRequest"/>
+
+         <wsdl:output message="impl:returnSessionToPoolResponse" name="returnSessionToPoolResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="isSessionValid">
+
+         <wsdl:input message="impl:isSessionValidRequest" name="isSessionValidRequest"/>
+
+         <wsdl:output message="impl:isSessionValidResponse" name="isSessionValidResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getListOutputQueue">
+
+         <wsdl:input message="impl:getListOutputQueueRequest" name="getListOutputQueueRequest"/>
+
+         <wsdl:output message="impl:getListOutputQueueResponse" name="getListOutputQueueResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="isValidReferToUser">
+
+         <wsdl:input message="impl:isValidReferToUserRequest" name="isValidReferToUserRequest"/>
+
+         <wsdl:output message="impl:isValidReferToUserResponse" name="isValidReferToUserResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="validateCredentials">
+
+         <wsdl:input message="impl:validateCredentialsRequest" name="validateCredentialsRequest"/>
+
+         <wsdl:output message="impl:validateCredentialsResponse" name="validateCredentialsResponse"/>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="ServiceDirectorySoapBinding" type="impl:ServiceDirectory">
+
+      <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="getCurrentContext">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getCurrentContextRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getCurrentContextResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="removeSession">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="removeSessionRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="removeSessionResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="performActionOnUnitCustomer">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="performActionOnUnitCustomerRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="performActionOnUnitCustomerResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getGlobalCustomerLinkageList">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getGlobalCustomerLinkageListRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getGlobalCustomerLinkageListResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="setCurrentContext">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="setCurrentContextRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="setCurrentContextResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="resetCurrentContext">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="resetCurrentContextRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="resetCurrentContextResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getEqSession">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getEqSessionRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getEqSessionResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="exchangeBFKey">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="exchangeBFKeyRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="exchangeBFKeyResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="userExitValidate">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="userExitValidateRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="userExitValidateResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getEqDataList">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getEqDataListRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getEqDataListResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getEqReferral">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getEqReferralRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getEqReferralResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getRecentSearches">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getRecentSearchesRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getRecentSearchesResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getRecentOptionHTML">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getRecentOptionHTMLRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getRecentOptionHTMLResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getFullMenuHTML">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getFullMenuHTMLRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getFullMenuHTMLResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getUserSpoolFilesHTML">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getUserSpoolFilesHTMLRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getUserSpoolFilesHTMLResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getUnitSpoolFilesHTML">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getUnitSpoolFilesHTMLRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getUnitSpoolFilesHTMLResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getAnySpoolFilesHTML">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getAnySpoolFilesHTMLRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getAnySpoolFilesHTMLResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getJobLogHTML">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getJobLogHTMLRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getJobLogHTMLResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getTaskComment">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getTaskCommentRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getTaskCommentResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getJobLogDirHTML">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getJobLogDirHTMLRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getJobLogDirHTMLResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getJobLogEntryHTML">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getJobLogEntryHTMLRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getJobLogEntryHTMLResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getMsgQueueHTML">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getMsgQueueHTMLRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getMsgQueueHTMLResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getMsgQueueDirHTML">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getMsgQueueDirHTMLRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getMsgQueueDirHTMLResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getMsgQueueEntryHTML">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getMsgQueueEntryHTMLRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getMsgQueueEntryHTMLResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getMsgFileEntryHTML">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getMsgFileEntryHTMLRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getMsgFileEntryHTMLResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="destroyPools">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="destroyPoolsRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="destroyPoolsResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="refreshDesktopCache">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="refreshDesktopCacheRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="refreshDesktopCacheResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getWorkLoadHTML">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getWorkLoadHTMLRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getWorkLoadHTMLResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getJournalPrint">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getJournalPrintRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getJournalPrintResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="applyTransaction">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="applyTransactionRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="applyTransactionResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="applyTransactionData">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="applyTransactionDataRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="applyTransactionDataResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="remoteSupervisor">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="remoteSupervisorRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="remoteSupervisorResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="removeSupervisor">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="removeSupervisorRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="removeSupervisorResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="checkSessionStatus">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="checkSessionStatusRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="checkSessionStatusResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="authoriseBySupervisorOverride">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="authoriseBySupervisorOverrideRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="authoriseBySupervisorOverrideResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="authoriseBySupervisorRm">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="authoriseBySupervisorRmRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="authoriseBySupervisorRmResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="authoriseBySupervisorId">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="authoriseBySupervisorIdRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="authoriseBySupervisorIdResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="invalidateValidationUserExit">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="invalidateValidationUserExitRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="invalidateValidationUserExitResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="logoffDesktop">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="logoffDesktopRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="logoffDesktopResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getPromptHelpDetails">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getPromptHelpDetailsRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getPromptHelpDetailsResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="addChildFunctionHandler">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="addChildFunctionHandlerRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="addChildFunctionHandlerResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="isSessionAlive">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="isSessionAliveRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="isSessionAliveResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="updateFunctionData">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="updateFunctionDataRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="updateFunctionDataResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getJobId">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getJobIdRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getJobIdResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getPredictiveList">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getPredictiveListRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getPredictiveListResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="removeSpooledFile">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="removeSpooledFileRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="removeSpooledFileResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="breakByRepeatingDataAction">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="breakByRepeatingDataActionRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="breakByRepeatingDataActionResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="repeatingGroupSortAction">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="repeatingGroupSortActionRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="repeatingGroupSortActionResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="repeatingGroupPageAction">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="repeatingGroupPageActionRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="repeatingGroupPageActionResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="returnSessionToPool">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="returnSessionToPoolRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="returnSessionToPoolResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="isSessionValid">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="isSessionValidRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="isSessionValidResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getListOutputQueue">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getListOutputQueueRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getListOutputQueueResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="isValidReferToUser">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="isValidReferToUserRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="isValidReferToUserResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="validateCredentials">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="validateCredentialsRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="validateCredentialsResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="ServiceDirectoryService">
+
+      <wsdl:port binding="impl:ServiceDirectorySoapBinding" name="ServiceDirectory">
+
+         <wsdlsoap:address location="http://localhost:8080/EquationDesktop/services/ServiceDirectory"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>

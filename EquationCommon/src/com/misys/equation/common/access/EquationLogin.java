@@ -1,0 +1,499 @@
+/*
+ * Created on 11-Dec-2006
+ * 
+ * TODO To change the template for this generated file go to Window - Preferences - Java - Code Style - Code Templates
+ */
+package com.misys.equation.common.access;
+
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Date;
+
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.internal.eapi.encryption.EQBlowfish;
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * Holds information about a Login to Equation
+ */
+public class EquationLogin implements Serializable
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EquationLogin.java 16593 2013-06-24 15:32:19Z perkinj1 $";
+	private static final long serialVersionUID = 1L;
+
+	/** A hard coded key for encrypting/decrypting passwords */
+	private static byte[] BLOWFISH_KEY = { 0x038, 0x044, 0x07b, 0x044, 0x052, 0x028, 0x02a, 0x026, 0x025, 0x05e, 0x065, 0x069,
+					0x069, 0x06f, 0x073, 0x06c };
+
+	/** The number of characters prepended to the password to specify the actual length */
+	private static int LENGTH_SIZE = 3;
+
+	private String userId = "";
+	private byte[] password;
+	private String unitId = "";
+	private String system = "";
+	private String ipAddress = "";
+	private String sessionId = "";
+	private int sessionType;
+	// User Interface type (e.g. Full desktop, UXP)
+	private int userInterfaceType;
+	private String optId = "";
+	private String optParm = "";
+	private String contextData1 = "";
+	private String contextData2 = "";
+	private String homeUnit = "";
+	private String homeSystem = "";
+
+	private String passwordType = "";
+
+	/** Time the user has signed in */
+	private Date loginDate;
+
+	/** Token time */
+	private Date tokenDate;
+
+	/** Token - this is set if a new token is generated */
+	private String tokenPassword;
+
+	/** Workstation Id - for classic login used only */
+	private String workstationId = "";
+
+	public EquationLogin()
+	{
+	}
+
+	/**
+	 * Constructor to initialise the properties
+	 */
+	public EquationLogin(String user, String password, String unit, String system, String ipAddress, String sessionId)
+					throws EQException
+	{
+		this.userId = user.trim().toUpperCase();
+
+		String tempPassword;
+		// Password may be a token and if so then do not force
+		// to upper case
+		if (password.length() > 10)
+		{
+			tempPassword = password;
+		}
+		else
+		{
+			tempPassword = password.trim().toUpperCase();
+			// Prevents special keyword passwords from getting to iSeries
+			if (tempPassword.contains("*"))
+			{
+				throw new EQException("Invalid password");
+			}
+		}
+
+		setPassword(tempPassword);
+		this.unitId = unit.trim().toUpperCase();
+		this.homeUnit = unit.trim().toUpperCase();
+		this.system = system.trim().toUpperCase();
+		this.homeSystem = system.trim().toUpperCase();
+		this.ipAddress = ipAddress;
+		if (ipAddress == null)
+		{
+			ipAddress = "";
+		}
+		this.sessionId = sessionId;
+		this.sessionType = EquationCommonContext.SESSION_FULL_DESKTOP;
+		this.userInterfaceType = EquationCommonContext.UI_FULL_DESKTOP;
+		this.optId = "";
+		this.optParm = "";
+		this.loginDate = new Date();
+		this.tokenDate = loginDate;
+		this.tokenPassword = null;
+
+		// determine password type
+		this.passwordType = EquationCommonContext.PASSWORD_TYPE_TEXT_PLAIN;
+		if (password.length() > 10)
+		{
+			this.passwordType = EquationCommonContext.PASSWORD_TYPE_PROFILETOKEN_PLAIN;
+		}
+	}
+
+	/**
+	 * Return the session type
+	 * 
+	 * @return the session type
+	 */
+	public int getSessionType()
+	{
+		return sessionType;
+	}
+
+	/**
+	 * Set the session type
+	 * 
+	 * @param sessionType
+	 *            - the session type
+	 */
+	public void setSessionType(int sessionType)
+	{
+		this.sessionType = sessionType;
+	}
+	/**
+	 * Return the user interface type
+	 * 
+	 * @return the user interface type
+	 */
+	public int getUserInterfaceType()
+	{
+		return userInterfaceType;
+	}
+	/**
+	 * Set the user interface type
+	 * 
+	 * @param userInterfaceType
+	 *            - the user interface type
+	 */
+	public void setUserInterfaceType(int userInterfaceType)
+	{
+		this.userInterfaceType = userInterfaceType;
+	}
+
+	/**
+	 * Return the IP address
+	 * 
+	 * @return the IP address
+	 */
+	public String getIpAddress()
+	{
+		return ipAddress;
+	}
+	/**
+	 * Set the IP address
+	 * 
+	 * @param ipAddress
+	 *            - the IP address
+	 */
+	public void setIpAddress(String ipAddress)
+	{
+		this.ipAddress = ipAddress;
+	}
+
+	/**
+	 * Return the password
+	 * 
+	 * @return the password
+	 */
+	public String getPassword()
+	{
+		EQBlowfish cipher = new EQBlowfish(BLOWFISH_KEY);
+		char[] charArray = cipher.decryptBytesToString(password);
+		// length should be in the first LENGTH_SIZE characters:
+		char[] lengthChars = new char[LENGTH_SIZE];
+		System.arraycopy(charArray, 0, lengthChars, 0, LENGTH_SIZE);
+		int passwordLength = Integer.parseInt(new String(lengthChars));
+
+		char[] passwordChars = new char[passwordLength];
+		System.arraycopy(charArray, LENGTH_SIZE, passwordChars, 0, passwordLength);
+		return new String(passwordChars);
+	}
+
+	/**
+	 * Set the password
+	 * 
+	 * @param password
+	 *            - the password
+	 */
+	public void setPassword(String password)
+	{
+		// Prefer use of a char array instead of a String object for passwords
+		char[] suppliedCharArray = password.toCharArray();
+
+		// Add the length to the start of the string e.g. "025......etc"
+		// This is because the Blowfish decryptBytesToString method returns
+		// additional trailing characters, e.g. \u0808 characters
+		char[] lengthChars = Toolbox.padAtFront(Integer.toString(password.length()), "0", LENGTH_SIZE).toCharArray();
+		char[] toEncrypt = new char[password.length() + LENGTH_SIZE];
+		System.arraycopy(lengthChars, 0, toEncrypt, 0, lengthChars.length);
+		System.arraycopy(suppliedCharArray, 0, toEncrypt, 3, suppliedCharArray.length);
+		// blank out password after use
+		Arrays.fill(suppliedCharArray, ' ');
+		EQBlowfish cipher = new EQBlowfish(BLOWFISH_KEY);
+
+		// Set the actual field value
+		this.password = cipher.encryptStringToBytes(toEncrypt);
+		// blank out password after use
+		Arrays.fill(toEncrypt, ' ');
+	}
+
+	/**
+	 * Return the session id
+	 * 
+	 * @return the session id
+	 */
+	public String getSessionId()
+	{
+		return sessionId;
+	}
+
+	/**
+	 * Set the session id
+	 * 
+	 * @param sessionId
+	 *            - the session id
+	 */
+	public void setSessionId(String sessionId)
+	{
+		this.sessionId = sessionId;
+	}
+
+	/**
+	 * Return the system id
+	 * 
+	 * @return the system id
+	 */
+	public String getSystem()
+	{
+		return system;
+	}
+
+	/**
+	 * Set the system id
+	 * 
+	 * @param system
+	 *            - the system id
+	 */
+	public void setSystem(String system)
+	{
+		this.system = system;
+	}
+
+	/**
+	 * Return the unit id
+	 * 
+	 * @return the unit id
+	 */
+	public String getUnitId()
+	{
+		return unitId;
+	}
+
+	/**
+	 * Set the unit id
+	 * 
+	 * @param unitId
+	 *            - the unit id
+	 */
+	public void setUnitId(String unitId)
+	{
+		this.unitId = unitId;
+	}
+
+	/**
+	 * Return the user id
+	 * 
+	 * @return the user id
+	 */
+	public String getUserId()
+	{
+		return userId;
+	}
+
+	/**
+	 * Set the user id
+	 * 
+	 * @param userId
+	 *            - the user id
+	 */
+	public void setUserId(String userId)
+	{
+		this.userId = userId;
+	}
+
+	public String getOptId()
+	{
+		return optId;
+	}
+
+	public void setOptId(String optId)
+	{
+		this.optId = optId;
+	}
+
+	public String getOptParm()
+	{
+		return optParm;
+	}
+
+	public void setOptParm(String optParm)
+	{
+		this.optParm = optParm;
+	}
+
+	public String getContextData1()
+	{
+		return contextData1;
+	}
+
+	public void setContextData1(String contextData)
+	{
+		this.contextData1 = contextData;
+	}
+
+	public String getContextData2()
+	{
+		return contextData2;
+	}
+
+	public void setContextData2(String contextData)
+	{
+		this.contextData2 = contextData;
+	}
+
+	/**
+	 * Returns the home unit
+	 * 
+	 * @return String
+	 */
+	public String getHomeUnit()
+	{
+		return homeUnit;
+	}
+
+	/**
+	 * Returns the home unit
+	 * 
+	 * @param homeUnit
+	 *            The home unit
+	 */
+	public void setHomeUnit(String homeUnit)
+	{
+		this.homeUnit = homeUnit;
+	}
+
+	@Override
+	public String toString()
+	{
+		return system + "/" + unitId + "/" + userId + "/" + ipAddress;
+	}
+
+	public String getHomeSystem()
+	{
+		return homeSystem;
+	}
+	public void setHomeSystem(String homeSystem)
+	{
+		this.homeSystem = homeSystem;
+	}
+
+	/**
+	 * Return the login date
+	 * 
+	 * @return the login date
+	 */
+	public Date getLoginDate()
+	{
+		return loginDate;
+	}
+
+	/**
+	 * Return the approximate time the user token was created
+	 * 
+	 * @return the approximate time the user token was created
+	 */
+	public Date getTokenDate()
+	{
+		return tokenDate;
+	}
+
+	/**
+	 * Return the password type
+	 * 
+	 * @return the password type
+	 */
+	public String getPasswordType()
+	{
+		return passwordType;
+	}
+
+	/**
+	 * Set the password type
+	 * 
+	 * @param passwordType
+	 *            - the password type
+	 */
+	public void setPasswordType(String passwordType)
+	{
+		this.passwordType = passwordType;
+	}
+
+	/**
+	 * Return the password. If using token as password, it checks if the token password has already been expired, if it is, then it
+	 * returns a new token
+	 * 
+	 * @return the password (either the plain password or existing token or new token)
+	 */
+	public String rtvPassword(EquationStandardSession session) throws EQException
+	{
+		String decodedPassword = getPassword();
+		// not token?
+		if (passwordType.equals(EquationCommonContext.PASSWORD_TYPE_TEXT_PLAIN))
+		{
+			return decodedPassword;
+		}
+
+		// is token still valid?
+		Date currentDate = new Date();
+		long deltaDays = (currentDate.getTime() - tokenDate.getTime());
+		if (deltaDays > Toolbox.TOKEN_EXPIRATION_TIME)
+		{
+			tokenDate = new Date();
+			tokenPassword = Toolbox.cvtBytesToHexString(session.getUserToken(session.getUserId(), "", "2"));
+			return tokenPassword;
+		}
+		else if (tokenPassword != null)
+		{
+			return tokenPassword;
+		}
+
+		return decodedPassword;
+	}
+
+	/**
+	 * Is UXP?
+	 * 
+	 * @return true if UXP
+	 */
+	public boolean chkUXPUserInterface()
+	{
+		return userInterfaceType == EquationCommonContext.UI_UXP;
+	}
+
+	/**
+	 * Is Desktop?
+	 * 
+	 * @return true if Desktop
+	 */
+	public boolean chkDesktopUserInterface()
+	{
+		return userInterfaceType == EquationCommonContext.UI_FULL_DESKTOP;
+	}
+
+	/**
+	 * Return the workstation id
+	 * 
+	 * @return the workstation id
+	 */
+	public String getWorkstationId()
+	{
+		return workstationId;
+	}
+
+	/**
+	 * Set the workstation id
+	 * 
+	 * @param workstationId
+	 *            - the workstation id
+	 */
+	public void setWorkstationId(String workstationId)
+	{
+		this.workstationId = workstationId;
+	}
+
+}

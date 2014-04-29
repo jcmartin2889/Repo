@@ -1,0 +1,1402 @@
+package com.misys.equation.common.access;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+
+import com.misys.equation.common.utilities.EquationPVMetaDataHelper;
+import com.misys.equation.common.utilities.KeyedArrayList;
+import com.misys.equation.common.utilities.Toolbox;
+import com.misys.equation.problems.AbsMessageContainer;
+import com.misys.equation.problems.ProblemLocation;
+
+/**
+ * @author Alex Lim
+ */
+public class EquationPVMetaData implements Serializable
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/** Serial UID */
+	private static final long serialVersionUID = 8356173451197450092L;
+	/** Prompt/validate file suffix. Note: This value is stored here because it forms part of the translation text owner id */
+	public static final String PROMPT_VALIDATE_FILE_SUFFIX = ".eqv";
+	private String id;
+	private String description;
+	private String label;
+	private String pFile = "";
+	// DSCCN length will be set by the last character in the dsccn structure
+	private int dsccnLength;
+
+	private List<EquationPVFieldMetaData> fieldMetaData = new ArrayList<EquationPVFieldMetaData>();
+	private List<EquationPVDecodeMetaData> decodeMetaData = new ArrayList<EquationPVDecodeMetaData>();
+	private List<String> hdrNames = new ArrayList<String>();
+	private List<String> hdrPositions = new ArrayList<String>();
+
+	// Data information from the PV
+	private List<String> pvIvals = new ArrayList<String>();
+	private List<String> pvDvals = new ArrayList<String>();
+	private List<String> pvOvals = new ArrayList<String>();
+
+	// Database cross reference to DSCCN
+	private Map<String, String> databaseXref = new Hashtable<String, String>();
+
+	/** Java package name */
+	private String packageName = "";
+
+	/** Version of plug-in used to create the service */
+	private String pluginVersion = "";
+
+	/** Release version of the patch/enhancement of the service */
+	private String releaseVersion = "";
+
+	/** Original (based on) PV name and version */
+	private String originalPVId = "";
+	private String originalReleaseVersion = "";
+	/**
+	 * Flag to indicate if PV may be used by PV wizard as basis for a new one
+	 */
+	private boolean importAllowed = true;
+
+	/** Flag to indicate if the prompt requires paging when loading the data - true should be used for large lists */
+	private boolean pagingRequired = false;
+
+	/** Flag to indicate if the prompt is a consolidated global prompt */
+	private boolean globalConsolidatedPrompt;
+
+	/** Flag to indicate if the prompt is over the global library */
+	private boolean globalLibraryPrompt;
+
+	// Pre-defined column headers
+	public static final String COL_NEXT_LINE = "NT:";
+	public static final String COL_SAME_LINE = "SM:";
+
+	// Static cache for global pvs stored in the resources directory ...
+	public static final Map<String, EquationPVMetaData> GLOBAL_PVS_IN_RESOURCES = new HashMap<String, EquationPVMetaData>();
+
+	// Static cache for unit pvs stored in the resources directory ...
+	public static final Map<String, EquationPVMetaData> UNIT_PVS_IN_RESOURCES = new HashMap<String, EquationPVMetaData>();
+
+	// Determine how the PV was created (e.g. from UTW19R, from XML, etc
+	public static final int PV_SOURCE_UNKNOWN = 0;
+	public static final int PV_SOURCE_UTW19R = 1;
+
+	private int pvSource;
+
+	/** Handle of Service Owner; "MISYS" if owned by Misys, BLANK/empty if owned by Bank **/
+	private String owner = "";
+
+	/** Base Language **/
+	private String baseLanguage = "";
+
+	/** Indicates whether the description contains literal text, or is a code used to retrieve the description text */
+	private String descriptionType;
+
+	/** Module identifier */
+	private String moduleId = "";
+	/** PV Microflow Name */
+	private String pvMicroflowName = "";
+
+	public EquationPVMetaData()
+	{
+	}
+
+	public EquationPVMetaData(String id, String description, String label)
+	{
+		this.id = id;
+		this.description = description;
+		this.label = label;
+		globalConsolidatedPrompt = false;
+		globalLibraryPrompt = false;
+	}
+
+	/**
+	 * Construct an PV meta data
+	 * 
+	 * @param id
+	 *            - PV program name
+	 * @param fieldNames
+	 *            - field names
+	 * @param fieldDescs
+	 *            - field descriptions
+	 * @param fieldTypes
+	 *            - field types
+	 * @param fieldUsages
+	 *            - field usage
+	 * @param fieldLengths
+	 *            - field lengths
+	 * @param fieldDecimals
+	 *            - number of decimal places
+	 * @param decodes
+	 *            - decode characters
+	 * @param decodeDescs
+	 *            - decode description
+	 * @param zpParms
+	 *            - ZP parameters
+	 * @param pFiles
+	 *            - primary files
+	 */
+	public EquationPVMetaData(String id, String fieldNames, String fieldDescs, String fieldTypes, String fieldLengths,
+					String fieldIndexs, String fieldUsages, String fieldDecimals, String fieldHeaders, String fieldDbs,
+					String pvIval, String pvDval, String pvOval, String decodes, String decodeDescs, String zpParms, String pFiles,
+					String keys, String pvd)
+	{
+		this.id = id;
+
+		// Parse the details
+		EquationPVMetaDataHelper pvMetaDataHelper = new EquationPVMetaDataHelper(id, fieldNames, fieldDescs, fieldTypes,
+						fieldLengths, fieldIndexs, fieldUsages, fieldDecimals, fieldHeaders, fieldDbs, decodes, decodeDescs,
+						zpParms, pFiles, keys, pvIval);
+
+		setDSCCNLength(pvMetaDataHelper.getDSCCNLength());
+		// Retrieve the field meta data
+		this.fieldMetaData = new ArrayList<EquationPVFieldMetaData>();
+		for (int i = 0; i < pvMetaDataHelper.getFieldNames().size(); i++)
+		{
+			fieldMetaData.add(pvMetaDataHelper.getFieldMetaData(i));
+		}
+
+		// Retrieve the decode meta data
+		this.decodeMetaData = new ArrayList<EquationPVDecodeMetaData>();
+		for (int i = 0; i < pvMetaDataHelper.getDcdNames().size(); i++)
+		{
+			decodeMetaData.add(pvMetaDataHelper.getDecodeMetaData(i));
+		}
+
+		setupHeaderPos(Toolbox.loadString(Toolbox.trimr(pvd), EquationPVMetaDataHelper.LEN_NAME));
+		this.pvIvals = Toolbox.loadString(Toolbox.trimr(pvIval), EquationPVMetaDataHelper.LEN_NAME);
+		this.pvDvals = Toolbox.loadString(Toolbox.trimr(pvDval), EquationPVMetaDataHelper.LEN_NAME);
+		this.pvOvals = Toolbox.loadString(Toolbox.trimr(pvOval), EquationPVMetaDataHelper.LEN_NAME);
+
+		setupDatabaseXref();
+	}
+	/**
+	 * Setup the database field cross reference to the DSCCN field
+	 */
+	private void setupDatabaseXref()
+	{
+		databaseXref = new Hashtable<String, String>();
+
+		// loop through all the fields
+		for (EquationPVFieldMetaData fmd : fieldMetaData)
+		{
+			String dbField = fmd.getDb().trim();
+			if (!dbField.equals(""))
+			{
+				databaseXref.put(dbField, fmd.getId());
+			}
+		}
+	}
+
+	/**
+	 * Setup header
+	 */
+	private void setupHeaderPos(List<String> columnHeaders)
+	{
+		// loop all column headers
+		int i = 0;
+		while (i < columnHeaders.size())
+		{
+			String header = columnHeaders.get(i);
+
+			if (header.startsWith(COL_NEXT_LINE) || header.startsWith(COL_SAME_LINE))
+			{
+				hdrPositions.add(header);
+				hdrNames.add(columnHeaders.get(i + 1));
+				i++;
+			}
+			else
+			{
+				hdrNames.add(header);
+				hdrPositions.add("");
+			}
+			// next column
+			i++;
+		}
+	}
+	/**
+	 * Return the list of value in DSCCN input format - used rarely when field is input and not related to a database field
+	 * 
+	 * @return the list of value in input format
+	 */
+	public List<String> getPvIvals()
+	{
+		return pvIvals;
+	}
+	/**
+	 * Return the list of value in database format
+	 * 
+	 * @return the list of value in database format
+	 */
+	public List<String> getPvDvals()
+	{
+		return pvDvals;
+	}
+
+	/**
+	 * Return the list of value in output format
+	 * 
+	 * @return the list of value in output format
+	 */
+	public List<String> getPvOvals()
+	{
+		return pvOvals;
+	}
+
+	/**
+	 * Return the field information using field name
+	 * 
+	 * @param fieldName
+	 *            - field name
+	 * 
+	 * @return all the field information
+	 */
+	public EquationPVFieldMetaData rtvFieldMetaData(String fieldName)
+	{
+		int index = rtvIndexOfField(fieldName);
+
+		// found
+		if (index >= 0)
+		{
+			return rtvFieldMetaData(index);
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	/**
+	 * Return the field information using index
+	 * 
+	 * @param index
+	 *            - index to the array
+	 * 
+	 * @return all the field information
+	 */
+	public EquationPVFieldMetaData rtvFieldMetaData(int index)
+	{
+		return fieldMetaData.get(index);
+	}
+
+	/**
+	 * Return the decode information of the decode
+	 * 
+	 * @param decode
+	 *            - the decode
+	 * 
+	 * @return the decode information
+	 */
+	public EquationPVDecodeMetaData getDecodeMetaData(String decode)
+	{
+		// locate the field name in the list of field names
+		int index = rtvIndexOfDecode(decode.trim());
+
+		// found
+		if (index >= 0)
+		{
+			return getDecodeMetaData(index);
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	/**
+	 * Return the decode information using decode
+	 * 
+	 * @param index
+	 *            - index to the array
+	 * 
+	 * @return all the field information
+	 */
+	public EquationPVDecodeMetaData getDecodeMetaData(int index)
+	{
+		return decodeMetaData.get(index);
+	}
+
+	/**
+	 * Return the DSCCN field name related to the DB field
+	 * 
+	 * @return the DSCCN field name related to the DB field
+	 */
+	public String getDSCCNName(String dbName)
+	{
+		return databaseXref.get(dbName);
+	}
+
+	/**
+	 * Return the data in the specified position
+	 * 
+	 * @param start
+	 *            - the start position
+	 * @param length
+	 *            - the length
+	 * @param data
+	 *            - the data
+	 * 
+	 * @return the value within the data in the specified position
+	 */
+	public String rtvDataFromPosition(int start, int length, String data)
+	{
+		try
+		{
+			if (data.length() < start)
+			{
+				return "";
+			}
+			else if (data.length() > start + length)
+			{
+				return data.substring(start, start + length);
+			}
+			else
+			{
+				return data.substring(start);
+			}
+		}
+		catch (IndexOutOfBoundsException e)
+		{
+			return "";
+		}
+	}
+
+	/**
+	 * Return the data specified in the field index
+	 * 
+	 * @param index
+	 *            - index to the field name array
+	 * @param data
+	 *            - the huge data of string
+	 * 
+	 * @return the equivalent value within the data of the field at the specified index
+	 *         <p>
+	 *         null if the index is invalid
+	 */
+	public String rtvDataFromField(int index, String data)
+	{
+		// valid index?
+		if (index >= rtvNumberOfFields())
+		{
+			return null;
+		}
+
+		// retrieve the meta data
+		EquationPVFieldMetaData pvFieldMetaData = fieldMetaData.get(index);
+
+		// determine the field index and length
+		int fieldIndex = pvFieldMetaData.getIndex();
+		int fieldLength = pvFieldMetaData.getLength();
+
+		return rtvDataFromPosition(fieldIndex, fieldLength, data);
+	}
+
+	/**
+	 * Return the data specified in the field name
+	 * 
+	 * @param fieldName
+	 *            - field name to retrieve
+	 * @param data
+	 *            - the huge data of string
+	 * 
+	 * @return the equivalent value within the data of the field at the specifie index
+	 *         <p>
+	 *         null if the index is invalid
+	 */
+	public String rtvDataFromField(String fieldName, String data)
+	{
+		int index = rtvIndexOfField(fieldName);
+		if (index >= 0)
+		{
+			return (rtvDataFromField(index, data));
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	/**
+	 * Return the the index of the field name
+	 * 
+	 * @param fieldName
+	 *            - the field name
+	 * 
+	 * @return the index of the field name
+	 */
+	public int rtvIndexOfField(String fieldName)
+	{
+		// check that the field name exists
+		for (int i = 0; i < rtvNumberOfFields(); i++)
+		{
+			if (fieldMetaData.get(i).getId().equals(fieldName))
+			{
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	/**
+	 * Return the index of the decode
+	 * 
+	 * @param decode
+	 *            - the decode
+	 * 
+	 * @return the index of the decode
+	 */
+	public int rtvIndexOfDecode(String decode)
+	{
+		// check that the field name exists
+		for (int i = 0; i < rtvNumberOfDecodes(); i++)
+		{
+			if (decodeMetaData.get(i).getDecode().trim().equals(decode))
+			{
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	/**
+	 * Print the PV meta data
+	 * 
+	 */
+	@Override
+	public String toString()
+	{
+		StringBuffer string = new StringBuffer("");
+
+		// get field names
+		string.append("FIELD NAMES=================");
+		string.append("\n");
+		for (int i = 0; i < rtvNumberOfFields(); i++)
+		{
+			string.append(fieldMetaData.get(i));
+		}
+
+		// get the decodes
+		string.append("DECODES =================");
+		string.append("\n");
+		for (int i = 0; i < rtvNumberOfDecodes(); i++)
+		{
+			string.append(decodeMetaData.get(i));
+		}
+
+		// get the column
+		string.append("COLUMN HEADERS=================");
+		string.append("\n");
+		string.append(getHdrNames());
+		string.append("\n");
+		string.append(getHdrPositions());
+		string.append("\n");
+		string.append("\n");
+
+		// display the output
+		string.append("OUTPUT=================");
+		string.append("\n");
+		string.append("IVAL = " + getPvIvals());
+		string.append("\n");
+		string.append("DVAL = " + getPvDvals());
+		string.append("\n");
+		string.append("OVAL = " + getPvOvals());
+		string.append("\n");
+		string.append("\n");
+
+		return string.toString();
+	}
+
+	/**
+	 * Generate an Equation Data Structure Data for the PV fields
+	 * 
+	 * @return the Equation Data Structure Data of the PV meta data
+	 */
+	public Hashtable<String, String> generateHashTable()
+	{
+		Hashtable<String, String> pvDsData = new Hashtable<String, String>();
+
+		// initialise the data to NULL
+		for (EquationPVFieldMetaData fmd : fieldMetaData)
+		{
+			String pvField = fmd.getId();
+			pvDsData.put(pvField, "");
+		}
+
+		return pvDsData;
+	}
+
+	/**
+	 * Return the number of PV fields
+	 * 
+	 * @return the number of PV fields
+	 */
+	public int rtvNumberOfFields()
+	{
+		return fieldMetaData.size();
+	}
+
+	/**
+	 * Return the number of PV fields
+	 * 
+	 * @return the number of PV fields
+	 */
+	public int rtvNumberOfDecodes()
+	{
+		return decodeMetaData.size();
+	}
+
+	/**
+	 * Return the number of PV fields
+	 * 
+	 * @return the number of PV fields
+	 */
+	public int rtvNumberOfColumn()
+	{
+		return hdrNames.size();
+	}
+
+	/**
+	 * Return the promptable field names
+	 * 
+	 * @return the promptable field names
+	 */
+	public List<String> getHdrNames()
+	{
+		return hdrNames;
+	}
+
+	public void addHdrName(String hdrName)
+	{
+		if (!hdrNames.contains(hdrName))
+		{
+			hdrNames.add(hdrName);
+			hdrPositions.add(" ");
+		}
+	}
+
+	/**
+	 * Remove a header name
+	 * 
+	 * @param hdrName
+	 */
+	public void removeHdrName(String hdrName)
+	{
+		if (hdrNames.contains(hdrName))
+		{
+			int pos = hdrNames.indexOf(hdrName);
+			hdrNames.remove(hdrName);
+			hdrPositions.remove(pos);
+		}
+	}
+
+	/**
+	 * @param hdrName
+	 *            - the header name
+	 * @return whether the PV contains the header name
+	 */
+	public boolean containsHdrName(String hdrName)
+	{
+		return hdrNames.contains(hdrName);
+	}
+
+	/**
+	 * Adds a header position
+	 * 
+	 * @param hdrPosition
+	 *            - the header position
+	 */
+	public void addHdrPosition(String hdrPosition)
+	{
+		if (!hdrPositions.contains(hdrPosition))
+		{
+			hdrPositions.add(hdrPosition);
+		}
+	}
+
+	/**
+	 * @return a <code>Map</code> of database x-ref fields
+	 */
+	public Map<String, String> getDatabaseXref()
+	{
+		return databaseXref;
+	}
+
+	/**
+	 * Sets the Map of database x-ref fields
+	 * 
+	 * @param databaseXref
+	 */
+	public void setDatabaseXref(Map<String, String> databaseXref)
+	{
+		this.databaseXref = databaseXref;
+	}
+
+	/**
+	 * Sets the List of <code>EquationPVFieldMetaData</code> fields
+	 * 
+	 * @param fieldMetaData
+	 *            - the fields to set
+	 */
+	public void setFieldMetaData(List<EquationPVFieldMetaData> fieldMetaData)
+	{
+		this.fieldMetaData = fieldMetaData;
+	}
+
+	/**
+	 * Sets the List of <code>EquationPVDecodeMetaData</code> fields
+	 * 
+	 * @param decodeMetaData
+	 *            - the decode meta data to set
+	 */
+	public void setDecodeMetaData(List<EquationPVDecodeMetaData> decodeMetaData)
+	{
+		this.decodeMetaData = decodeMetaData;
+	}
+
+	/**
+	 * Sets the List of header names
+	 * 
+	 * @param hdrNames
+	 *            - the header names to set
+	 */
+	public void setHdrNames(List<String> hdrNames)
+	{
+		this.hdrNames = hdrNames;
+	}
+
+	/**
+	 * Sets the List of header positions
+	 * 
+	 * @param hdrPositions
+	 *            - the header positions to set
+	 */
+	public void setHdrPositions(List<String> hdrPositions)
+	{
+		this.hdrPositions = hdrPositions;
+	}
+
+	/**
+	 * Return the header (promptable field names) positions
+	 * 
+	 * @return the header (promptable field names) positions
+	 */
+	public List<String> getHdrPositions()
+	{
+		return hdrPositions;
+	}
+	/**
+	 * Determine if IVAL exists for the PV
+	 * 
+	 * @return true if IVAL exists for the PV
+	 */
+	public boolean ivalsExist()
+	{
+		return (pvIvals.size() > 0);
+	}
+	/**
+	 * Determine if DVAL exists for the PV
+	 * 
+	 * @return true if DVAL exists for the PV
+	 */
+	public boolean dvalsExist()
+	{
+		return (pvDvals.size() > 0);
+	}
+
+	/**
+	 * Determine if OVAL exists for the PV
+	 * 
+	 * @return true if OVAL exists for the PV
+	 */
+	public boolean ovalsExist()
+	{
+		return (pvOvals.size() > 0);
+	}
+
+	/**
+	 * @return the ID of the PV module
+	 */
+	public String getId()
+	{
+		return id;
+	}
+
+	/**
+	 * Sets the ID of the PV module
+	 * 
+	 * @param id
+	 *            - the ID
+	 */
+	public void setId(String id)
+	{
+		this.id = id;
+	}
+
+	public String getPackageName()
+	{
+		// TODO: Remove this temporary defaulting
+		if (packageName == null)
+		{
+			packageName = "com.misys.equation.pvs";
+		}
+		return packageName;
+	}
+
+	/**
+	 * Sets the package name of the PV module
+	 * 
+	 * @param packageName
+	 */
+	public void setPackageName(String packageName)
+	{
+		this.packageName = packageName;
+	}
+
+	/**
+	 * @return the label of the PV module
+	 */
+	public String getLabel()
+	{
+		return label;
+	}
+
+	/**
+	 * Sets the label of the PV module
+	 * 
+	 * @param label
+	 *            - the label
+	 */
+	public void setLabel(String label)
+	{
+		this.label = label;
+	}
+
+	/**
+	 * @return the description of the PV module
+	 */
+	public String getDescription()
+	{
+		return description;
+	}
+
+	/**
+	 * Sets the description of the PV module
+	 * 
+	 * @param description
+	 */
+	public void setDescription(String description)
+	{
+		this.description = description;
+	}
+	/**
+	 * Sets the list of input values for the PV module
+	 * 
+	 * @param pvIvals
+	 *            - a List<String> of values
+	 */
+	public void setPvIvals(List<String> pvIvals)
+	{
+		this.pvIvals = pvIvals;
+	}
+	/**
+	 * Sets the list of database values for the PV module
+	 * 
+	 * @param pvDvals
+	 *            - a List<String> of values
+	 */
+	public void setPvDvals(List<String> pvDvals)
+	{
+		this.pvDvals = pvDvals;
+	}
+
+	/**
+	 * Sets the list of output values for the PV module
+	 * 
+	 * @param pvOvals
+	 *            - a List of String output values
+	 */
+	public void setPvOvals(List<String> pvOvals)
+	{
+		this.pvOvals = pvOvals;
+	}
+
+	/**
+	 * Adds an output value to the list of output values on the PV module
+	 * 
+	 * @param pvOval
+	 *            - the output value to add
+	 */
+	public void addPvOval(String pvOval)
+	{
+		if (!pvOvals.contains(pvOval))
+		{
+			pvOvals.add(pvOval);
+		}
+	}
+
+	/**
+	 * Adds a database value to the list of database values on the PV module
+	 * 
+	 * @param pvDval
+	 *            - the database value to add
+	 */
+	public void addPvDval(String pvDval)
+	{
+		if (!pvDvals.contains(pvDval))
+		{
+			pvDvals.add(pvDval);
+		}
+	}
+
+	/**
+	 * @return the list of <code>EquationPVFieldMetaData</code> on the PV module
+	 */
+	public List<EquationPVFieldMetaData> getFieldMetaData()
+	{
+		return fieldMetaData;
+	}
+
+	/**
+	 * @return the list of <code>EquationPVDecodeMetaData</code> on the PV module
+	 */
+	public List<EquationPVDecodeMetaData> getDecodeMetaData()
+	{
+		return decodeMetaData;
+	}
+
+	/**
+	 * @param fieldId
+	 *            - the ID of the field to check
+	 * @return true if the PV module contains the field ID specified, otherwise false
+	 */
+	public boolean containsField(String fieldId)
+	{
+		for (EquationPVFieldMetaData field : fieldMetaData)
+		{
+			if (field.getId().equals(fieldId))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Adds a <code>EquationPVFieldMetaData</code> to the PV module
+	 * 
+	 * @param field
+	 *            - the field to add
+	 */
+	public void addFieldMetaData(EquationPVFieldMetaData field)
+	{
+		if (!fieldMetaData.contains(field))
+		{
+			fieldMetaData.add(field);
+		}
+	}
+
+	/**
+	 * Adds a <code>EquationPVDecodeMetaData</code> to the PV module
+	 * 
+	 * @param decode
+	 *            - the decode to add
+	 */
+	public void addDecodeMetaData(EquationPVDecodeMetaData decode)
+	{
+		if (!decodeMetaData.contains(decode))
+		{
+			decodeMetaData.add(decode);
+		}
+	}
+
+	/**
+	 * Removes a <code>EquationPVDecodeMetaData</code> to the PV module
+	 * 
+	 * @param decode
+	 *            - the decode to remove
+	 */
+	public void removeDecodeMetaData(EquationPVDecodeMetaData decode)
+	{
+		if (decodeMetaData.contains(decode))
+		{
+			decodeMetaData.remove(decode);
+		}
+	}
+
+	/**
+	 * @param decodeId
+	 *            - the decode ID
+	 * @return true of the PV module contains the specified decode, otherwise false
+	 */
+	public boolean containsDecodeMetaData(String decodeId)
+	{
+		for (EquationPVDecodeMetaData decode : decodeMetaData)
+		{
+			if (decode.getDecode().equals(decodeId))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Removes an <code>EquationPVFieldMetaData</code> specified
+	 * 
+	 * @param field
+	 *            - the field to remove
+	 */
+	public void removePvFieldMetaData(EquationPVFieldMetaData field)
+	{
+		if (fieldMetaData.contains(field))
+		{
+			fieldMetaData.remove(field);
+		}
+	}
+
+	/**
+	 * @return a <code>List<String></code> of the field IDs on the PV module
+	 */
+	public List<String> rtvFieldIds()
+	{
+		List<String> fields = new ArrayList<String>();
+		for (EquationPVFieldMetaData field : fieldMetaData)
+		{
+			fields.add(field.getId());
+		}
+		return fields;
+	}
+
+	/**
+	 * @return a <code>List<String></code> of the field keys on the PV module
+	 */
+	public List<String> rtvKeyIds()
+	{
+		List<String> keys = new ArrayList<String>();
+		for (EquationPVFieldMetaData field : fieldMetaData)
+		{
+			if (field.isKey())
+			{
+				keys.add(field.getId());
+			}
+		}
+		return keys;
+	}
+
+	/**
+	 * @return a delimeted list of the keys
+	 */
+	public String rtvDelimetedKeyList()
+	{
+		StringBuilder keyFields = new StringBuilder();
+		boolean first = true;
+		for (EquationPVFieldMetaData field : fieldMetaData)
+		{
+			if (field.isKey())
+			{
+				if (!first)
+				{
+					keyFields.append(":");
+				}
+				keyFields.append(field.getId());
+				first = false;
+			}
+		}
+		return keyFields.toString();
+	}
+
+	/**
+	 * @return the primary file of this PV
+	 */
+	public String getPFile()
+	{
+		return pFile;
+	}
+
+	/**
+	 * Set the primary file of this PV
+	 * 
+	 * @param pFile
+	 *            - a String ID of the primary file
+	 */
+	public void setPFile(String pFile)
+	{
+		this.pFile = pFile;
+	}
+
+	/**
+	 * Return the DSCCN length - position of last character in DSCCN structure
+	 * 
+	 * @return the DSCCN length
+	 */
+	public int getDSCCNLength()
+	{
+		return dsccnLength;
+	}
+
+	/**
+	 * Set the length of DSCCN
+	 * 
+	 * @param dsccnLength
+	 *            - an integer representing the last used character position in DSCCN
+	 */
+	public void setDSCCNLength(int dsccnLength)
+	{
+		this.dsccnLength = dsccnLength;
+	}
+
+	/**
+	 * Return the DSCCN length - either the calculated DSCCN length or the actual DSCCN length
+	 * 
+	 * @return the maximum DSCCN length
+	 */
+	public int rtvDSCCNLength(int length)
+	{
+		if (length > dsccnLength)
+		{
+			return length;
+		}
+		else
+		{
+			return dsccnLength;
+		}
+	}
+
+	/**
+	 * Re-compute the indices of the fields
+	 */
+	public void updateFieldIndices()
+	{
+		int index = 0;
+		for (EquationPVFieldMetaData field : fieldMetaData)
+		{
+			field.setIndex(index);
+			index += field.getLength();
+		}
+	}
+	/**
+	 * @return if paging is required to load the data
+	 */
+	public boolean isPagingRequired()
+	{
+		return pagingRequired;
+	}
+	/**
+	 * Set whether paging is required to load the data
+	 * 
+	 * @param pagingRequired
+	 */
+	public void setPagingRequired(boolean pagingRequired)
+	{
+		this.pagingRequired = pagingRequired;
+	}
+
+	/**
+	 * @return if the prompt is global or not
+	 */
+	public boolean isGlobalConsolidatedPrompt()
+	{
+		return globalConsolidatedPrompt;
+	}
+
+	/**
+	 * Set whether the prompt is a consolidated global prompt or not
+	 * 
+	 * @param isGlobal
+	 */
+	public void setGlobalConsolidatedPrompt(boolean isGlobal)
+	{
+		this.globalConsolidatedPrompt = isGlobal;
+	}
+
+	/**
+	 * Return the flag on how the PV was created
+	 * 
+	 * @return the flag on how the PV was created
+	 */
+	public int getPvSource()
+	{
+		return pvSource;
+	}
+
+	/**
+	 * Set the flag on how the PV was created
+	 * 
+	 * @param pvSource
+	 *            - the flag on how the PV was created
+	 */
+	public void setPvSource(int pvSource)
+	{
+		this.pvSource = pvSource;
+	}
+
+	/**
+	 * @return the Module ID for this PV
+	 */
+	public String getModuleId()
+	{
+		return moduleId;
+	}
+
+	/**
+	 * Sets the Module ID for this PV
+	 * 
+	 * @param moduleId
+	 *            - the Module ID
+	 */
+	public void setModuleId(String moduleId)
+	{
+		this.moduleId = moduleId;
+	}
+
+	/**
+	 * @return the PV Microflow Name for this PV
+	 */
+	public String getPvMicroflowName()
+	{
+		return pvMicroflowName;
+	}
+
+	/**
+	 * Sets the PV Microflow Name for this PV
+	 * 
+	 * @param pvMicroflowName
+	 *            - the PV Microflow Name
+	 */
+	public void setPvMicroflowName(String pvMicroflowName)
+	{
+		this.pvMicroflowName = pvMicroflowName;
+	}
+
+	/**
+	 * @return whether the prompt is over a table in the global library or not
+	 */
+	public boolean isGlobalLibraryPrompt()
+	{
+		return globalLibraryPrompt;
+	}
+
+	/**
+	 * Set whether the prompt is over a table in the global library or not
+	 * 
+	 * @param globalLibraryPrompt
+	 */
+	public void setGlobalLibraryPrompt(boolean globalLibraryPrompt)
+	{
+		this.globalLibraryPrompt = globalLibraryPrompt;
+	}
+	/**
+	 * Gets the plug-in version
+	 * 
+	 * @return The version of plug-in used to create the service
+	 */
+	public String getPluginVersion()
+	{
+		return pluginVersion;
+	}
+
+	/**
+	 * Sets the plug-in version
+	 * 
+	 * @param pluginVersion
+	 *            - the version of plug-in used to create the service
+	 */
+	public void setPluginVersion(String pluginVersion)
+	{
+		this.pluginVersion = pluginVersion;
+	}
+
+	/**
+	 * Gets the release version
+	 * 
+	 * @return The patch/enhancement used to despatch/install the service
+	 */
+	public String getReleaseVersion()
+	{
+		return releaseVersion;
+	}
+
+	/**
+	 * Sets the release version
+	 * 
+	 * @param releaseVersion
+	 *            The patch/enhancement used to despatch/install the service
+	 */
+	public void setReleaseVersion(String releaseVersion)
+	{
+		this.releaseVersion = releaseVersion;
+	}
+
+	/**
+	 * @return whether the prompt may be imported or not
+	 */
+	public boolean isImportAllowed()
+	{
+		return importAllowed;
+	}
+
+	/**
+	 * Set whether this prompt may be imported
+	 * 
+	 * @param importAllowed
+	 *            - true if this function may be imported
+	 */
+	public void setImportAllowed(boolean importAllowed)
+	{
+		this.importAllowed = importAllowed;
+	}
+
+	/**
+	 * Set original name of PV upon which this one is based
+	 * 
+	 * @param originalPVId
+	 */
+	public void setOriginalPVId(String originalPVId)
+	{
+		this.originalPVId = originalPVId;
+	}
+
+	/**
+	 * @return original name of PV upon which this one is based
+	 */
+	public String getOriginalPVId()
+	{
+		return originalPVId;
+	}
+
+	/**
+	 * Set original release version
+	 * 
+	 * @param originalReleaseVersion
+	 */
+	public void setOriginalReleaseVersion(String originalReleaseVersion)
+	{
+		this.originalReleaseVersion = originalReleaseVersion;
+	}
+
+	/**
+	 * @return original release version
+	 */
+	public String getOriginalReleaseVersion()
+	{
+		return originalReleaseVersion;
+	}
+
+	/**
+	 * 
+	 * @return a <code>String</code> containing PV Owner
+	 */
+	public String getOwner()
+	{
+		return owner;
+	}
+
+	/**
+	 * Set PV Owner
+	 * 
+	 * @param owner
+	 */
+	public void setOwner(String owner)
+	{
+		this.owner = owner;
+	}
+
+	/**
+	 * This validation will ensure that Import Allowed is true when Service Composer is used by a bank.
+	 * 
+	 * @param messageContainer
+	 * @param isMisysMode
+	 *            - true if SC is used by Misys
+	 * @return boolean
+	 */
+	public boolean isImportAllowedValid(AbsMessageContainer messageContainer, boolean isMisysMode)
+	{
+		ProblemLocation problemLocation = new ProblemLocation(EquationPVMetaData.class.getSimpleName(), getId());
+
+		// If service composer is used by a bank, Import Allowed should be true
+		if (!isMisysMode && !isImportAllowed())
+		{
+			messageContainer.addErrorMessageId("Language.BankImportAllowedMustBeTrue", problemLocation);
+		}
+
+		return false;
+	}
+	/**
+	 * 
+	 * @return a <code>String</code> containing Base Language
+	 */
+	public String getBaseLanguage()
+	{
+		return baseLanguage;
+	}
+
+	/**
+	 * Set Base Language
+	 * 
+	 * @param baseLanguage
+	 */
+	public void setBaseLanguage(String baseLanguage)
+	{
+		this.baseLanguage = baseLanguage;
+	}
+
+	/**
+	 * This checks if the entered base language is valid
+	 * 
+	 * @param messageContainer
+	 * @param baseLanguageCodes
+	 * 
+	 * @return A boolean, which is true if the base language is valid
+	 */
+	public boolean isBaseLanguageValid(AbsMessageContainer messageContainer, KeyedArrayList<String> baseLanguageCodes)
+	{
+		boolean isValid = false;
+		ProblemLocation problemLocation = new ProblemLocation(EquationPVMetaData.class.getSimpleName(), getId());
+		String baseLanguage = getBaseLanguage().trim().toUpperCase();
+
+		if (baseLanguage.length() == 0)
+		{
+			messageContainer.addErrorMessageId("Language.BaseLanguageMustBeEntered", problemLocation);
+		}
+
+		if (baseLanguage.length() > 0 && baseLanguageCodes.contains(baseLanguage))
+		{
+			isValid = true;
+		}
+		if (!isValid)
+		{
+			messageContainer.addErrorMessageId("Language.BaseLanguageIsInvalid", problemLocation);
+		}
+		return isValid;
+	}
+	/**
+	 * Returns the text owner
+	 * 
+	 * @return text owner. This will be stored in text beans in the translation/language beans.
+	 */
+	public String rtvTextOwner()
+	{
+		return getId() + PROMPT_VALIDATE_FILE_SUFFIX;
+	}
+	/**
+	 * Indicates whether the description is text, reference or reusable reference
+	 * 
+	 */
+	public String getDescriptionType()
+	{
+		return descriptionType;
+	}
+
+	/**
+	 * Sets whether the description is text, reference or reusable reference
+	 * 
+	 */
+	public void setDescriptionType(String descriptionType)
+	{
+		this.descriptionType = descriptionType;
+	}
+}

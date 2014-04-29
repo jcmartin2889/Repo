@@ -1,0 +1,135 @@
+/*
+ * This sample code is provided by Misys for illustrative purposes only.
+ * 
+ * These examples have not been thoroughly tested under all conditions.
+ * 
+ * Misys, therefore, cannot guarantee or imply reliability, serviceability, or function of these programs.
+ * 
+ * All programs contained herein are provided to you "AS IS" without any warranties of any kind. The implied warranties of
+ * non-infringement, merchantability and fitness for a particular purpose are expressly disclaimed.
+ */
+package com.misys.equation.common.test.xapi.standard;
+
+import com.misys.equation.common.access.EquationStandardListEnquiry;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.test.TestEnvironment;
+
+// *************************************************************************************************
+/**
+ * 
+ * 
+ */
+// *************************************************************************************************
+public class RCE3
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	String inputBrnmStr = "LOND";
+	EquationStandardSession session;
+	long startTime = System.currentTimeMillis();
+	long currentTime = startTime;
+	// *********************************************************************************************
+	/**
+	 * 
+	 */
+	// *********************************************************************************************
+	private RCE3()
+	{
+		try
+		{
+			session = TestEnvironment.getTestEnvironment().getStandardSession();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+	public static void main(String[] inputParameters)
+	{
+		RCE3 test = new RCE3();
+		test.test();
+	}
+	// *********************************************************************************************
+	/**
+	 * 
+	 */
+	// *********************************************************************************************
+	public void test()
+	{
+		// Have a bash...
+		try
+		{
+			// Get us an empty customer transaction class
+			EquationStandardListEnquiry loanRepaymentCalculatorEnquiry = new EquationStandardListEnquiry("I31DER", session);
+
+			// Set some transaction fields up
+			String HZDLP = "CD1";
+			String HZCCY = "GBP";
+			String HZDLA = "0000000100000000";
+			String HZSDTE = "1000101";
+			String HZIDB = "3";
+			String HZRAT = "000150000000";
+			String HZNCD = "1000131";
+			String HZRFRQ = "V31";
+			String HZNDT = "1000131";
+			String HZNPY = "6";
+			String HZDIF = "Y";
+			String HZMODE = "0";
+
+			// mode = 1 (key screen)
+			loanRepaymentCalculatorEnquiry.setFieldValue("HZMODE", "1");
+			loanRepaymentCalculatorEnquiry.setFieldValue("HZDLP", HZDLP);
+			loanRepaymentCalculatorEnquiry.setFieldValue("HZAPI", "Y");
+			loanRepaymentCalculatorEnquiry = session.executeIncrementalListEnquiry(loanRepaymentCalculatorEnquiry);
+
+			// mode = 2 (detail screen)
+			loanRepaymentCalculatorEnquiry.setFieldValue("HZAPI", "Y");
+			loanRepaymentCalculatorEnquiry.setFieldValue("HZMODE", "2");
+			loanRepaymentCalculatorEnquiry.setFieldValue("HZCCY", HZCCY);
+			loanRepaymentCalculatorEnquiry.setFieldValue("HZDLA", HZDLA);
+			loanRepaymentCalculatorEnquiry.setFieldValue("HZSDTE", HZSDTE);
+			loanRepaymentCalculatorEnquiry.setFieldValue("HZIDB", HZIDB);
+			loanRepaymentCalculatorEnquiry.setFieldValue("HZRAT", HZRAT);
+			loanRepaymentCalculatorEnquiry.setFieldValue("HZNCD", HZNCD);
+			loanRepaymentCalculatorEnquiry.setFieldValue("HZRFRQ", HZRFRQ);
+			loanRepaymentCalculatorEnquiry.setFieldValue("HZNDT", HZNDT);
+			loanRepaymentCalculatorEnquiry.setFieldValue("HZNPY", HZNPY);
+			loanRepaymentCalculatorEnquiry.setFieldValue("HZDIF", HZDIF);
+			loanRepaymentCalculatorEnquiry = session.executeIncrementalListEnquiry(loanRepaymentCalculatorEnquiry);
+
+			// mode = 7 (interest rate change)
+			loanRepaymentCalculatorEnquiry.setFieldValue("HZMODE", "7");
+			loanRepaymentCalculatorEnquiry.setFieldValue("HZ4DEL", "N");
+			loanRepaymentCalculatorEnquiry.setFieldValue("HZ4DTE", "1000201");
+			loanRepaymentCalculatorEnquiry.setFieldValue("HZ4RAT", "000200000000");
+			loanRepaymentCalculatorEnquiry.setFieldValue("HZ4RTM", "000000000000");
+			loanRepaymentCalculatorEnquiry = session.executeIncrementalListEnquiry(loanRepaymentCalculatorEnquiry);
+
+			// mode = 3 (generate schedule)
+			loanRepaymentCalculatorEnquiry.setFieldValue("HZMODE", "3");
+			loanRepaymentCalculatorEnquiry = session.executeIncrementalListEnquiry(loanRepaymentCalculatorEnquiry);
+
+			// mode = 4 (retrieve first page)
+			loanRepaymentCalculatorEnquiry.setFieldValue("HZMODE", "4");
+			loanRepaymentCalculatorEnquiry.setFieldValue("HZERN", "00001");
+			loanRepaymentCalculatorEnquiry.setFieldValue("HZ4DTE", "0000000");
+			loanRepaymentCalculatorEnquiry = session.executeIncrementalListEnquiry(loanRepaymentCalculatorEnquiry);
+			System.out.println(loanRepaymentCalculatorEnquiry);
+
+			while (!loanRepaymentCalculatorEnquiry.isComplete())
+			{
+				loanRepaymentCalculatorEnquiry.setFieldValue("HZMODE", "4");
+				loanRepaymentCalculatorEnquiry = session.executeIncrementalListEnquiry(loanRepaymentCalculatorEnquiry);
+				System.out.println(loanRepaymentCalculatorEnquiry);
+			}
+
+			// loanRepaymentCalculatorEnquiry.printFields();
+			// loanRepaymentCalculatorEnquiry.printListFields();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.toString());
+		}
+	}
+}

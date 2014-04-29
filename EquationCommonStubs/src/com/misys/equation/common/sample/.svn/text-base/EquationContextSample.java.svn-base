@@ -1,0 +1,238 @@
+package com.misys.equation.common.sample;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Hashtable;
+import java.util.Properties;
+import java.util.Map.Entry;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.globalprocessing.SystemStatusManager;
+import com.misys.equation.common.globalprocessing.UnitStatus;
+import com.misys.equation.common.internal.eapi.core.EQException;
+
+/**
+ * This is a singleton, holding state for the Equation Application
+ */
+public class EquationContextSample
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private static EquationContextSample singletonContextSample;
+	private static Hashtable<String, Properties> sampleProperties = new Hashtable<String, Properties>();
+	private static final String CONFIGURATION_PROPERTY_FILE = "sampleConfiguration.properties";
+	private static URL propertiesURL = getPropertyFileInUrlFormat();
+	private static Hashtable<String, UnitStatus> unitStatusCollection = new Hashtable<String, UnitStatus>();
+
+	private EquationContextSample()
+	{
+		try
+		{
+			String runUnitStatusMonitor = EquationContextSample.getConfigProperty("runUnitStatusMonitor");
+			// If unit status monitor is to be used then setup. Our unit status monitor will be notified it the unit status changes.
+			if (runUnitStatusMonitor.equals("true"))
+			{
+				// Determine units used by the appliication
+				String[] unitIds = EquationContextSample.getConfigProperty("unitStatus.units").split(",");
+				String[] systemIds = EquationContextSample.getConfigProperty("unitStatus.systems").split(",");
+				String[] userIds = EquationContextSample.getConfigProperty("unitStatus.admin.users").split(",");
+				String[] passwords = EquationContextSample.getConfigProperty("unitStatus.admin.passwords").split(",");
+				int sleepTime = new Integer(EquationContextSample.getConfigProperty("unitStatus.sleep.time")).intValue();
+				// Start system status monitor
+				EquationCommonContext.getContext().runSystemStatusManagerMonitor(unitIds, systemIds, userIds, passwords, sleepTime);
+				// Add our monitor to unit status changes
+				for (int i = 0; i < unitIds.length; i++)
+				{
+					UnitStatus unitStatus = SystemStatusManager.getInstance().getUnitStatus(systemIds[i], unitIds[i]);
+
+					unitStatus.addObserver(new UnitStatusObserverSample());
+
+					unitStatusCollection.put(unitIds[i], unitStatus);
+				}
+			}
+
+		}
+		catch (EQException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	/**
+	 * Get the singleton context
+	 * 
+	 */
+	public static synchronized EquationContextSample getContext()
+	{
+		// Create our one and only instance of this class
+		if (singletonContextSample == null)
+		{
+			singletonContextSample = new EquationContextSample();
+		}
+		return singletonContextSample;
+	}
+
+	/**
+	 * Protected against cloning
+	 */
+	@Override
+	public Object clone() throws CloneNotSupportedException
+	{
+		throw new CloneNotSupportedException();
+	}
+	/**
+	 * Get an Equation session
+	 * 
+	 * @param systemId
+	 * @param unitId
+	 * @param userId
+	 * @param password
+	 * @param sessionIdentifier
+	 * @param ipAddress
+	 * @param inputBranch
+	 * @return an Equation session
+	 * @throws EQException
+	 */
+	public EquationStandardSession getEquationSession(String systemId, String unitId, String userId, String password,
+					String sessionIdentifier, String ipAddress, String inputBranch) throws EQException
+	{
+		// Get a connection to the iSeries. A QZDASONIT job is created and a session identifier is returned.
+		String sessionIdentifierReturned = EquationCommonContext.getContext().getEqSession(systemId, unitId, userId, password,
+						sessionIdentifier, ipAddress, EquationCommonContext.PASSWORD_TYPE_TEXT_PLAIN,
+						EquationCommonContext.SESSION_OTHER_MODE, false);
+
+		// Get the session using the session identifier
+		EquationStandardSession session = EquationCommonContext.getContext().getEquationUser(sessionIdentifierReturned)
+						.getSession();
+		// Log the job details
+		System.out.println("JobId = " + session.getConnectionWrapper().getJobId() + "\n");
+
+		// Setup job defaults
+		session.setBranchId(inputBranch);
+		// Return the session;
+		return session;
+	}
+	/**
+	 * Get an Equation session with sample login details
+	 * 
+	 * @return an Equation session
+	 * @throws EQException
+	 */
+
+	public EquationStandardSession getSampleSession() throws EQException
+	{
+		// Connection fields
+		String systemId = EquationContextSample.getConfigProperty("sample.systemId");
+		String unitId = EquationContextSample.getConfigProperty("sample.unitId");
+		String userId = EquationContextSample.getConfigProperty("sample.userId");
+		String password = EquationContextSample.getConfigProperty("sample.password");
+		String ipAddress = EquationContextSample.getConfigProperty("sample.ipAddress");
+		String sessionIdentifier = EquationContextSample.getConfigProperty("sample.sessionIdentifier");
+
+		// Session fields
+		String inputBranch = EquationContextSample.getConfigProperty("sample.inputBranch");
+
+		// Get the session using the session identifier
+		EquationStandardSession session = EquationContextSample.getContext().getEquationSession(systemId, unitId, userId, password,
+						sessionIdentifier, ipAddress, inputBranch);
+		// Log the job details
+		System.out.println("JobId = " + session.getConnectionWrapper().getJobId() + "\n");
+
+		// Setup job defaults
+		session.setBranchId(inputBranch);
+		// Return the session;
+		return session;
+	}
+	/**
+	 * Retrieves the Properties object from the equationConfiguration.properties file
+	 * 
+	 * @return Properties object.
+	 */
+	public static Properties getConfigProperties()
+	{
+		Properties properties = null;
+		if (sampleProperties.containsKey(CONFIGURATION_PROPERTY_FILE))
+		{
+			properties = sampleProperties.get(CONFIGURATION_PROPERTY_FILE);
+		}
+		else
+		{
+			// Need to check if we can load the properties file for the given key name
+
+			URL resourceURL = getPropertyFileInUrlFormat();
+
+			properties = new Properties();
+			try
+			{
+
+				InputStream propertiesIS = resourceURL.openStream();
+
+				properties.load(propertiesIS);
+				for (Entry<Object, Object> propertyName : properties.entrySet())
+				{
+					System.out.println("Equation Configuration Property name [" + propertyName.getKey() + "], value ["
+									+ properties.get(propertyName.getKey()) + "]");
+				}
+
+				sampleProperties.put(CONFIGURATION_PROPERTY_FILE, properties);
+			}
+			catch (IOException e)
+			{
+				System.out.println("Cannot Load Properties " + e);
+			}
+		}
+
+		return properties;
+	}
+	/**
+	 * get property file URL
+	 * 
+	 * @return URL containing property file
+	 */
+	private static URL getPropertyFileInUrlFormat()
+	{
+		URL resourceURL = null;
+		String systemPropertyValue = null;
+		if (propertiesURL != null)
+		{
+			return propertiesURL;
+		}
+		// The property is named after the property file.
+		systemPropertyValue = System.getProperty(CONFIGURATION_PROPERTY_FILE);
+		if (systemPropertyValue != null && systemPropertyValue.length() > 0)
+		{
+			try
+			{
+				resourceURL = new URL(new StringBuilder("file:").append(systemPropertyValue.replace("\\", "/")).toString());
+			}
+			catch (Exception exception)
+			{
+				System.out.println(exception);
+			}
+		}
+		else
+		{
+			resourceURL = Thread.currentThread().getContextClassLoader().getResource(CONFIGURATION_PROPERTY_FILE);
+		}
+		propertiesURL = resourceURL;
+		return propertiesURL;
+	}
+	/**
+	 * Get a property from the properties file given a key
+	 * 
+	 * @param key
+	 *            - the key
+	 * @return a String of the the property requested, or null.
+	 */
+	public static String getConfigProperty(String key)
+	{
+		Properties properties = getConfigProperties();
+
+		String property = properties != null ? properties.getProperty(key, "") : "";
+		return property.trim() != null ? property : "";
+	}
+
+}

@@ -1,0 +1,274 @@
+package com.misys.equation.function.useraccess;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.misys.equation.common.internal.eapi.core.EQMessage;
+import com.misys.equation.common.utilities.Toolbox;
+import com.misys.equation.function.beans.FieldData;
+import com.misys.equation.function.beans.FunctionData;
+import com.misys.equation.function.beans.RepeatingFieldData;
+
+public class UserExitMessages
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: UserExitMessages.java 14805 2012-11-05 11:57:52Z williae1 $";
+	List<UserExitMessage> returnMessages = new ArrayList<UserExitMessage>();
+
+	private FunctionData functionData;
+
+	/**
+	 * Construct an empty return messages
+	 */
+	public UserExitMessages()
+	{
+	}
+
+	/**
+	 * Return the messages
+	 * 
+	 * @return the messages
+	 */
+	public List<UserExitMessage> getReturnMessages()
+	{
+		return returnMessages;
+	}
+
+	/**
+	 * Clear any messages
+	 */
+	public void clear()
+	{
+		returnMessages.clear();
+	}
+
+	/**
+	 * Add a message
+	 * 
+	 * @param ksmId
+	 *            - the KSM message Id
+	 * @return the user exit message
+	 */
+	public UserExitMessage addMessage(String ksmId)
+	{
+		return addMessage(ksmId, "");
+	}
+
+	/**
+	 * Add a message to a field
+	 * 
+	 * @param ksmId
+	 *            - the KSM message Id
+	 * @param fieldName
+	 *            - the field name to attached the message
+	 * @return the user exit message
+	 */
+	public UserExitMessage addMessage(String ksmId, String fieldName)
+	{
+		UserExitMessage rm = new UserExitMessage(fieldName, ksmId);
+		returnMessages.add(rm);
+		int sequence = getRowNumber(fieldName);
+		rm.setSequence(sequence);
+
+		return rm;
+	}
+
+	/**
+	 * Return the row number of the field
+	 * 
+	 * @param fieldName
+	 *            - the field name to be checked
+	 * @return the row number of the given field
+	 */
+	private int getRowNumber(String fieldName)
+	{
+		String[] fNameArray = fieldName.split(":");
+		if (fNameArray[0] == "")
+		{
+			return 0;
+		}
+		FieldData fdd = functionData.rtvFieldData(fNameArray[0]);
+		if (fdd instanceof RepeatingFieldData)
+		{
+			RepeatingFieldData repeatingFieldData = (RepeatingFieldData) functionData.getFieldDatas().get(fNameArray[0]);
+			return repeatingFieldData.rtvRepeatingDataManager().currentRowNumber() + 1;
+		}
+
+		if (fdd == null || fdd instanceof FieldData)
+		{
+			return 0;
+		}
+
+		return 0;
+	}
+
+	/**
+	 * Add a message with parameters
+	 * 
+	 * @param ksmId
+	 *            - the KSM message Id
+	 * @param parm1
+	 *            - parameter 1
+	 * @param parm2
+	 *            - parameter 2
+	 * @param parm3
+	 *            - parameter 3
+	 * @return the user exit message
+	 */
+	public UserExitMessage addMessageParam(String ksmId, String parm1, String parm2, String parm3)
+	{
+		return addMessageParam(ksmId, parm1, parm2, parm3, "");
+	}
+
+	/**
+	 * Add a message with parameters to a field
+	 * 
+	 * @param ksmId
+	 *            - the KSM message Id
+	 * @param parm1
+	 *            - parameter 1
+	 * @param parm2
+	 *            - parameter 2
+	 * @param parm3
+	 *            - parameter 3
+	 * @param fieldName
+	 *            - the field name to attached the message
+	 * @return the user exit message
+	 */
+	public UserExitMessage addMessageParam(String ksmId, String parm1, String parm2, String parm3, String fieldName)
+	{
+		String dsepms = Toolbox.getDSEPMS(ksmId, parm1, parm2, parm3);
+		return addMessage(dsepms, fieldName);
+	}
+
+	/**
+	 * Add an error message
+	 * 
+	 * @param text
+	 *            - the message text
+	 * @return the user exit message
+	 */
+	public UserExitMessage addError(String text)
+	{
+		return addError(text, "");
+	}
+
+	/**
+	 * Add an error message to a field
+	 * 
+	 * @param text
+	 *            - the message text
+	 * @param fieldName
+	 *            - the field name to attach to the message
+	 * @return the user exit message
+	 */
+	public UserExitMessage addError(String text, String fieldName)
+	{
+		return addMessage("KSM7340" + text, fieldName);
+	}
+
+	/**
+	 * Add an warning message
+	 * 
+	 * @param text
+	 *            - the message text
+	 * @return the user exit message
+	 */
+	public UserExitMessage addWarning(String text)
+	{
+		return addWarning(text, "");
+	}
+
+	/**
+	 * Add an warning message to a field
+	 * 
+	 * @param text
+	 *            - the message text
+	 * @param fieldName
+	 *            - the field name to attach to the message
+	 * @return the user exit message
+	 */
+	public UserExitMessage addWarning(String text, String fieldName)
+	{
+		return addMessage("KSM1999" + text, fieldName);
+	}
+
+	/**
+	 * Add an informational message
+	 * 
+	 * @param text
+	 *            - the message text
+	 * @return the user exit message
+	 */
+	public UserExitMessage addInfo(String text)
+	{
+		return addInfo(text, "");
+	}
+
+	/**
+	 * Add an informational message to a field
+	 * 
+	 * @param text
+	 *            - the message text
+	 * @param fieldName
+	 *            - the field name to attach to the message
+	 * @return the user exit message
+	 */
+	public UserExitMessage addInfo(String text, String fieldName)
+	{
+		return addMessage("KSM7348" + text, fieldName);
+	}
+
+	/**
+	 * Return the String representation
+	 * 
+	 * @return the String representation
+	 */
+	@Override
+	public String toString()
+	{
+		StringBuilder buffer = new StringBuilder();
+		for (UserExitMessage returnMessage : returnMessages)
+		{
+			buffer.append(returnMessage.toString());
+		}
+		return buffer.toString();
+	}
+
+	/**
+	 * Set the function data
+	 * 
+	 * @param functionData
+	 *            - the function data
+	 */
+	public void setFunctionData(FunctionData functionData)
+	{
+		this.functionData = functionData;
+	}
+
+	/**
+	 * Add list of messages in UserExitMessage format
+	 * 
+	 * @param messages
+	 *            - the list of messages
+	 */
+	public void addMessages(List<UserExitMessage> messages)
+	{
+		returnMessages.addAll(messages);
+	}
+
+	/**
+	 * Add list of messages in EQMessage format
+	 * 
+	 * @param messages
+	 *            - the list of messages
+	 */
+	public void addAPIMessages(List<EQMessage> messages)
+	{
+		for (EQMessage message : messages)
+		{
+			addMessage(message.getDsepms());
+		}
+	}
+
+}

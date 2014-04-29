@@ -1,0 +1,245 @@
+package com.misys.equation.function.adaptor;
+
+import java.lang.reflect.Constructor;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.dao.beans.GAZRecordDataModel;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.internal.eapi.core.EQRuntimeException;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.FunctionClassLoader;
+import com.misys.equation.function.beans.DisplayAttributes;
+import com.misys.equation.function.beans.DisplayGroup;
+import com.misys.equation.function.el.ELRuntime;
+import com.misys.equation.function.useraccess.UserExitListColumnData;
+
+/**
+ * This class manages the runtime interaction with the user exit code for DisplayAttributes
+ * <p>
+ * The class encapsulates the visible and protected state checking, and will call the appropriate user exit class method
+ * implementation if appropriate.
+ */
+public class DisplayGroupAdaptor extends Adaptor
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(DisplayGroupAdaptor.class);
+
+	private ILayoutAdaptor layoutAdaptorImpl;
+	private Class<IDisplayGroupAdaptor> displayGroupAdaptorClass;
+	private IDisplayGroupAdaptor displayGroupAdaptorImpl;
+
+	/**
+	 * Construct an Attributes Adaptor
+	 * 
+	 * @param layoutAdaptorImpl
+	 *            - an instance of the outer class
+	 * @param fieldId
+	 *            - the field name
+	 */
+	@SuppressWarnings("unchecked")
+	public DisplayGroupAdaptor(EquationStandardSession session, FunctionClassLoader classLoader, ILayoutAdaptor layoutAdaptorImpl,
+					String optionId, String groupId, String subgroupId, LayoutAdaptor layoutAdaptor) throws EQException
+	{
+		this.userData = null;
+		this.layoutAdaptorImpl = layoutAdaptorImpl;
+
+		if (layoutAdaptorImpl != null)
+		{
+			this.displayGroupAdaptorClass = layoutAdaptor.getClass(session, classLoader, optionId, groupId, subgroupId,
+							GAZRecordDataModel.TYP_GROUP_ATTRIBUTES);
+		}
+
+		if (this.displayGroupAdaptorClass != null)
+		{
+			this.displayGroupAdaptorImpl = getInstance(layoutAdaptorImpl, displayGroupAdaptorClass);
+		}
+	}
+
+	/**
+	 * Return the layout adaptor implementation
+	 * 
+	 * @return the layout adaptor implementation
+	 */
+	public ILayoutAdaptor getLayoutAdaptorImpl()
+	{
+		return layoutAdaptorImpl;
+	}
+
+	/**
+	 * Return the display group adaptor class
+	 * 
+	 * @return the field adaptor class
+	 */
+	public Class<IDisplayGroupAdaptor> getDisplayGroupAdaptorClass()
+	{
+		return displayGroupAdaptorClass;
+	}
+
+	/**
+	 * Return the attributes adaptor implementation
+	 * 
+	 * @return the attributes adaptor implementation
+	 */
+	public IDisplayGroupAdaptor getDisplayGroupAdaptorImpl()
+	{
+		return displayGroupAdaptorImpl;
+	}
+
+	/**
+	 * Return an instance of the specified inner class of an outer class
+	 * 
+	 * @param layoutAdaptor
+	 *            - the outer class instance
+	 * @param innerClass
+	 *            - the class definition of the inner class
+	 * 
+	 * @return an instance of the inner class
+	 */
+	private IDisplayGroupAdaptor getInstance(ILayoutAdaptor layoutAdaptor, Class<IDisplayGroupAdaptor> innerClass)
+	{
+		try
+		{
+			if (LOG.isDebugEnabled())
+			{
+				LOG.debug("getInstance - creating a new instance of inner class [" + innerClass.getName() + "]");
+			}
+			Constructor<IDisplayGroupAdaptor> constructor = innerClass.getConstructor(layoutAdaptor.getClass());
+			IDisplayGroupAdaptor instance = constructor.newInstance(layoutAdaptor);
+			return instance;
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Determine whether the field is visible or not
+	 * 
+	 * @param attributes
+	 *            - DisplayAttributes for the field. These specify whether the field is definitely visible or not, or whether this
+	 *            should be determined by calling the isVisible method on the Java user exit
+	 * 
+	 * @return true if visible
+	 */
+	public boolean isVisible(DisplayGroup displayGroup)
+	{
+		if (DisplayAttributes.VISIBLE_NO.equals(displayGroup.getVisible()))
+		{
+			LOG.debug("isVisible for DisplayGroup [" + displayGroup.getId() + "] returning false (NO)");
+			return false;
+		}
+		else if (DisplayAttributes.VISIBLE_YES.equals(displayGroup.getVisible()))
+		{
+			LOG.debug("isVisible for DisplayGroup [" + displayGroup.getId() + "] returning true (YES)");
+			return true;
+		}
+		else if (DisplayAttributes.VISIBLE_SCRIPT.equals(displayGroup.getVisible()))
+		{
+			boolean scriptResult = ELRuntime.runBooleanScript(displayGroup.getVisibleExpression(), functionData,
+							displayGroup.getId(), "visible", true, ELRuntime.REALTYPE_VALUE);
+			LOG.debug("isVisible for DisplayGroup [" + displayGroup.getId() + "] returning returning [" + scriptResult
+							+ "] (SCRIPT)");
+			return scriptResult;
+		}
+		else if (DisplayAttributes.VISIBLE_CODE.equals(displayGroup.getVisible()))
+		{
+			if (displayGroupAdaptorImpl == null)
+			{
+				LOG.error("isVisible for DisplayGroup [" + displayGroup.getId()
+								+ "] returning false(because CODE class not loaded)");
+				return false;
+			}
+			else
+			{
+				boolean codeResult = displayGroupAdaptorImpl.isVisible(userData);
+				LOG.debug("isVisible for DisplayGroup [" + displayGroup.getId() + "] returning [" + codeResult + "] (SCRIPT)");
+				return codeResult;
+			}
+		}
+		else
+		{
+			throw new EQRuntimeException("DisplayGroup [" + displayGroup.getId() + "] visibleStatus contains invalid value ["
+							+ displayGroup.getVisible() + "]");
+		}
+	}
+
+	/**
+	 * Call the user exit procedure to retrieve the additional (above) text for the specified column
+	 * 
+	 * @param counter
+	 *            - determines the nth user defined row
+	 * @param fieldName
+	 *            - the field name to generate the column details
+	 * 
+	 * @return the text to be displayed
+	 */
+	public UserExitListColumnData getTopColumnDetails(int counter, String fieldName)
+	{
+		if (displayGroupAdaptorImpl != null)
+		{
+			return displayGroupAdaptorImpl.getTopColumnDetails(userData, fieldName, counter);
+		}
+		return null;
+	}
+
+	/**
+	 * Call the user exit procedure to retrieve the additional bottom text for the specified column
+	 * 
+	 * @param counter
+	 *            - determines the nth user defined row
+	 * @param fieldName
+	 *            - the field name to generate the column details
+	 * 
+	 * @return the text to be displayed
+	 */
+	public UserExitListColumnData getBottomColumnDetails(int counter, String fieldName)
+	{
+		if (displayGroupAdaptorImpl != null)
+		{
+			return displayGroupAdaptorImpl.getBottomColumnDetails(userData, fieldName, counter);
+		}
+		return null;
+	}
+
+	/**
+	 * Call the user exit procedure to retrieve the additional (above) text for the specified column
+	 * 
+	 * @param counter
+	 *            - determines the nth user defined row
+	 * @param fieldName
+	 *            - the field name to generate the column details
+	 * 
+	 * @return the text to be displayed
+	 */
+	public UserExitListColumnData getAboveRowColumnDetails(int counter, String fieldName)
+	{
+		if (displayGroupAdaptorImpl != null)
+		{
+			return displayGroupAdaptorImpl.getAboveRowColumnDetails(userData, fieldName, counter);
+		}
+		return null;
+	}
+
+	/**
+	 * Call the user exit procedure to retrieve the additional (below) text for the specified column
+	 * 
+	 * @param counter
+	 *            - determines the nth user defined row
+	 * @param fieldName
+	 *            - the field name to generate the column details
+	 * 
+	 * @return the text to be displayed
+	 */
+	public UserExitListColumnData getBelowRowColumnDetails(int counter, String fieldName)
+	{
+		if (displayGroupAdaptorImpl != null)
+		{
+			return displayGroupAdaptorImpl.getBelowRowColumnDetails(userData, fieldName, counter);
+		}
+		return null;
+	}
+}

@@ -1,0 +1,275 @@
+/*
+ * This class was automatically generated with 
+ * <a href="http://www.castor.org">Castor 1.1.1</a>, using an XML
+ * Schema.
+ * $Id$
+ */
+
+package bf.com.misys.eq4.search.hwr20r;
+
+  //---------------------------------/
+ //- Imported classes and packages -/
+//---------------------------------/
+
+import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.Unmarshaller;
+
+/**
+ * Class HWR20R.
+ * 
+ * @version $Revision$ $Date$
+ */
+public class HWR20R implements java.io.Serializable {
+
+
+      //--------------------------/
+     //- Class/Member Variables -/
+    //--------------------------/
+
+    /**
+     * Field _PV_rowList.
+     */
+    private java.util.Vector _PV_rowList;
+
+
+      //----------------/
+     //- Constructors -/
+    //----------------/
+
+    public HWR20R() {
+        super();
+        this._PV_rowList = new java.util.Vector();
+    }
+
+
+      //-----------/
+     //- Methods -/
+    //-----------/
+
+    /**
+     * 
+     * 
+     * @param vPV_row
+     * @throws java.lang.IndexOutOfBoundsException if the index
+     * given is outside the bounds of the collection
+     */
+    public void addPV_row(
+            final bf.com.misys.eq4.search.hwr20r.PV_row vPV_row)
+    throws java.lang.IndexOutOfBoundsException {
+        this._PV_rowList.addElement(vPV_row);
+    }
+
+    /**
+     * 
+     * 
+     * @param index
+     * @param vPV_row
+     * @throws java.lang.IndexOutOfBoundsException if the index
+     * given is outside the bounds of the collection
+     */
+    public void addPV_row(
+            final int index,
+            final bf.com.misys.eq4.search.hwr20r.PV_row vPV_row)
+    throws java.lang.IndexOutOfBoundsException {
+        this._PV_rowList.add(index, vPV_row);
+    }
+
+    /**
+     * Method enumeratePV_row.
+     * 
+     * @return an Enumeration over all
+     * bf.com.misys.eq4.search.hwr20r.PV_row elements
+     */
+    public java.util.Enumeration enumeratePV_row(
+    ) {
+        return this._PV_rowList.elements();
+    }
+
+    /**
+     * Method getPV_row.
+     * 
+     * @param index
+     * @throws java.lang.IndexOutOfBoundsException if the index
+     * given is outside the bounds of the collection
+     * @return the value of the
+     * bf.com.misys.eq4.search.hwr20r.PV_row at the given index
+     */
+    public bf.com.misys.eq4.search.hwr20r.PV_row getPV_row(
+            final int index)
+    throws java.lang.IndexOutOfBoundsException {
+        // check bounds for index
+        if (index < 0 || index >= this._PV_rowList.size()) {
+            throw new IndexOutOfBoundsException("getPV_row: Index value '" + index + "' not in range [0.." + (this._PV_rowList.size() - 1) + "]");
+        }
+        
+        return (bf.com.misys.eq4.search.hwr20r.PV_row) _PV_rowList.get(index);
+    }
+
+    /**
+     * Method getPV_row.Returns the contents of the collection in
+     * an Array.  <p>Note:  Just in case the collection contents
+     * are changing in another thread, we pass a 0-length Array of
+     * the correct type into the API call.  This way we <i>know</i>
+     * that the Array returned is of exactly the correct length.
+     * 
+     * @return this collection as an Array
+     */
+    public bf.com.misys.eq4.search.hwr20r.PV_row[] getPV_row(
+    ) {
+        bf.com.misys.eq4.search.hwr20r.PV_row[] array = new bf.com.misys.eq4.search.hwr20r.PV_row[0];
+        return (bf.com.misys.eq4.search.hwr20r.PV_row[]) this._PV_rowList.toArray(array);
+    }
+
+    /**
+     * Method getPV_rowCount.
+     * 
+     * @return the size of this collection
+     */
+    public int getPV_rowCount(
+    ) {
+        return this._PV_rowList.size();
+    }
+
+    /**
+     * Method isValid.
+     * 
+     * @return true if this object is valid according to the schema
+     */
+    public boolean isValid(
+    ) {
+        try {
+            validate();
+        } catch (org.exolab.castor.xml.ValidationException vex) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 
+     * 
+     * @param out
+     * @throws org.exolab.castor.xml.MarshalException if object is
+     * null or if any SAXException is thrown during marshaling
+     * @throws org.exolab.castor.xml.ValidationException if this
+     * object is an invalid instance according to the schema
+     */
+    public void marshal(
+            final java.io.Writer out)
+    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
+        Marshaller.marshal(this, out);
+    }
+
+    /**
+     * 
+     * 
+     * @param handler
+     * @throws java.io.IOException if an IOException occurs during
+     * marshaling
+     * @throws org.exolab.castor.xml.ValidationException if this
+     * object is an invalid instance according to the schema
+     * @throws org.exolab.castor.xml.MarshalException if object is
+     * null or if any SAXException is thrown during marshaling
+     */
+    public void marshal(
+            final org.xml.sax.ContentHandler handler)
+    throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
+        Marshaller.marshal(this, handler);
+    }
+
+    /**
+     */
+    public void removeAllPV_row(
+    ) {
+        this._PV_rowList.clear();
+    }
+
+    /**
+     * Method removePV_row.
+     * 
+     * @param vPV_row
+     * @return true if the object was removed from the collection.
+     */
+    public boolean removePV_row(
+            final bf.com.misys.eq4.search.hwr20r.PV_row vPV_row) {
+        boolean removed = _PV_rowList.remove(vPV_row);
+        return removed;
+    }
+
+    /**
+     * Method removePV_rowAt.
+     * 
+     * @param index
+     * @return the element removed from the collection
+     */
+    public bf.com.misys.eq4.search.hwr20r.PV_row removePV_rowAt(
+            final int index) {
+        java.lang.Object obj = this._PV_rowList.remove(index);
+        return (bf.com.misys.eq4.search.hwr20r.PV_row) obj;
+    }
+
+    /**
+     * 
+     * 
+     * @param index
+     * @param vPV_row
+     * @throws java.lang.IndexOutOfBoundsException if the index
+     * given is outside the bounds of the collection
+     */
+    public void setPV_row(
+            final int index,
+            final bf.com.misys.eq4.search.hwr20r.PV_row vPV_row)
+    throws java.lang.IndexOutOfBoundsException {
+        // check bounds for index
+        if (index < 0 || index >= this._PV_rowList.size()) {
+            throw new IndexOutOfBoundsException("setPV_row: Index value '" + index + "' not in range [0.." + (this._PV_rowList.size() - 1) + "]");
+        }
+        
+        this._PV_rowList.set(index, vPV_row);
+    }
+
+    /**
+     * 
+     * 
+     * @param vPV_rowArray
+     */
+    public void setPV_row(
+            final bf.com.misys.eq4.search.hwr20r.PV_row[] vPV_rowArray) {
+        //-- copy array
+        _PV_rowList.clear();
+        
+        for (int i = 0; i < vPV_rowArray.length; i++) {
+                this._PV_rowList.add(vPV_rowArray[i]);
+        }
+    }
+
+    /**
+     * Method unmarshalHWR20R.
+     * 
+     * @param reader
+     * @throws org.exolab.castor.xml.MarshalException if object is
+     * null or if any SAXException is thrown during marshaling
+     * @throws org.exolab.castor.xml.ValidationException if this
+     * object is an invalid instance according to the schema
+     * @return the unmarshaled bf.com.misys.eq4.search.hwr20r.HWR20R
+     */
+    public static bf.com.misys.eq4.search.hwr20r.HWR20R unmarshalHWR20R(
+            final java.io.Reader reader)
+    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
+        return (bf.com.misys.eq4.search.hwr20r.HWR20R) Unmarshaller.unmarshal(bf.com.misys.eq4.search.hwr20r.HWR20R.class, reader);
+    }
+
+    /**
+     * 
+     * 
+     * @throws org.exolab.castor.xml.ValidationException if this
+     * object is an invalid instance according to the schema
+     */
+    public void validate(
+    )
+    throws org.exolab.castor.xml.ValidationException {
+        org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
+        validator.validate(this);
+    }
+
+}

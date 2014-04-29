@@ -1,0 +1,57 @@
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.access.EquationUser;
+import com.misys.equation.common.access.IEquationStandardObject;
+import com.misys.equation.common.test.TestEnvironment;
+
+public class GZH611
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: GZH611.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	public static void main(String[] args) throws Exception
+	{
+		EquationUser user = TestEnvironment.getTestEnvironment().getEquationUser();
+		EquationStandardSession session = user.getSession();
+		new GZH611(session);
+	}
+
+	public GZH611(EquationStandardSession session)
+	{
+		try
+		{
+			EquationStandardTransaction transaction = getEquationStandardTransaction("H61LRRXXX", 28, session);
+			String fieldName = "0374";
+			transaction.setFieldValue("GZTYP", "3");
+			transaction.setFieldValue("GZSGP", "AS");
+			transaction.setFieldValue("GZSGP1", "");
+			transaction.setFieldValue("GZFLN", fieldName);
+			transaction.setGSFieldValue("GSFLN", fieldName);
+			transaction.setGSFieldValue("GSVAL", "YES");
+
+			transaction.setMode(IEquationStandardObject.FCT_MNT);
+
+			session.addEquationTransaction(transaction);
+			session.applyTransactions();
+			session.commitTransactions();
+			System.out.println(transaction);
+			System.out.println("Errors: " + transaction.getErrorList() + "\r\n");
+			System.out.println(transaction.getWarningList());
+
+			/*
+			 * GZTYP Variable type GZSGP System variable group GZSGP1 System variable sub-group GZFLN Field name
+			 */
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	private EquationStandardTransaction getEquationStandardTransaction(String identifier, int gsOffset,
+					EquationStandardSession session) throws Exception
+	{
+		return new EquationStandardTransaction(identifier, session, gsOffset);
+	}
+}

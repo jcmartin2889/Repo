@@ -1,0 +1,83 @@
+package com.misys.equation.ui.servlets;
+
+import javax.servlet.http.HttpSessionAttributeListener;
+import javax.servlet.http.HttpSessionBindingEvent;
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationLogin;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.ui.context.EquationDesktopContext;
+import com.misys.equation.ui.tools.EqDesktopToolBox;
+
+public class DesktopSessionListener implements HttpSessionListener, HttpSessionAttributeListener
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(DesktopStartupServlet.class);
+
+	/**
+	 * Processing for session initialisation
+	 * 
+	 * @param sbe
+	 *            - HTTP session event
+	 */
+	public void sessionCreated(HttpSessionEvent sbe)
+	{
+		LOG.debug("Session created [" + sbe.getSession().getId() + "]");
+		EquationCommonContext.setWebFacing(EqDesktopToolBox.isWebFacingInHTTPSession(sbe.getSession()));
+	}
+	
+	/**
+	 * Processing for session destruction
+	 * 
+	 * @param sbe
+	 *            - HTTP session event
+	 */
+	public void sessionDestroyed(HttpSessionEvent sbe)
+	{
+		LOG.debug("Session destroyed from HTTP Session [" + sbe.getSession().getId() + "]");
+		EquationLogin equationLogin = (EquationLogin) sbe.getSession().getAttribute("equationLogin");
+		if (equationLogin != null)
+		{
+			LOG.debug("Session destroyed from Equation Login [" + equationLogin.getSessionId() + "]");
+			EquationDesktopContext.getContext().logOffDesktop(equationLogin.getSessionId(), "", true);
+		}
+	}
+
+	/**
+	 * Processing for new session attribute
+	 * 
+	 * @param sbe
+	 *            - HTTP session event
+	 */
+	public void attributeAdded(HttpSessionBindingEvent sbe)
+	{
+		LOG.debug("attribute [" + sbe.getName() + "] added for session [" + sbe.getSession().getId() + "]");
+	}
+
+	/**
+	 * Processing for deleted session attribute
+	 * 
+	 * @param sbe
+	 *            - HTTP session event
+	 */
+	public void attributeRemoved(HttpSessionBindingEvent sbe)
+	{
+		LOG.debug("attribute [" + sbe.getName() + "] removed from session [" + sbe.getSession().getId() + "]");
+	}
+
+	/**
+	 * Processing for changed session attribute
+	 * 
+	 * @param sbe
+	 *            - HTTP session event
+	 */
+	public void attributeReplaced(HttpSessionBindingEvent sbe)
+	{
+		LOG.debug("attribute [" + sbe.getName() + "] Replaced in session [" + sbe.getSession().getId() + "]");
+	}
+}

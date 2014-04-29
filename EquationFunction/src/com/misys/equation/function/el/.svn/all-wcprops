@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/el
+END
+StringFunctions.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/el/StringFunctions.java
+END
+EquationFunctionMapperImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/el/EquationFunctionMapperImpl.java
+END
+ELRuntime.java
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/el/ELRuntime.java
+END
+ELContextImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/el/ELContextImpl.java
+END
+VariableMapperImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/el/VariableMapperImpl.java
+END

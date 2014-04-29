@@ -1,0 +1,115 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseFully;
+
+/**
+ * Equation test cases for Add/Maintain Derivative Deal Types
+ */
+public class DTD extends EquationTestCaseFully
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: DTD.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	String programName = "N41FRR";
+	String optionId = "DTD";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		retrieveBeforeCancel = false;
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZDLP", "NW5"); // Deal type
+		transaction.setFieldValue("GZAPP", "IR"); // Application code; FX, MM, " ", SW, CL, MS, CP, IR,
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	@Override
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZDPD", "DESC"); // Deal type description
+		transaction.setFieldValue("GZYPST", "N"); // Post revaluation
+		transaction.setFieldValue("GZTDT", "L"); // Term deal type; L=Loan, D=Deposit
+		transaction.setFieldValue("GZACTA", "SC"); // Account type
+		transaction.setFieldValue("GZTCDT", "FD1"); // Deal transaction code
+		transaction.setFieldValue("GZTCIS", "BBB"); // Interest settlement transaction code
+		transaction.setFieldValue("GZWIIP", "1"); // When is interest posted for this deal type
+		transaction.setFieldValue("GZTCDD", "FD1"); // Cancellation transaction code - debit
+		transaction.setFieldValue("GZTCDC", "FC1"); // Cancellation transaction code - credit
+		transaction.setFieldValue("GZINTT", "1"); // Interest rate type for this deal type
+		transaction.setFieldValue("GZYDDB", "N"); // Force default interest day's basis on deal input?
+		transaction.setFieldValue("GZYPSF", "N"); // Exclude from positions?
+		transaction.setFieldValue("GZEXMM", "N"); // Exclude from MM limits
+		transaction.setFieldValue("GZEXFS", "N"); // Exclude from funds summary
+		transaction.setFieldValue("GZYSDA", "N"); // Sundry deals allowed
+		transaction.setFieldValue("GZSODM", "N"); // Mature at start of day
+		transaction.setFieldValue("GZMPR", "12"); // Number of months interest is forecast for
+	}
+
+	/**
+	 * Setup the mandatory fields (maintain mode)
+	 */
+	@Override
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZDPD", "DESC 1"); // Deal type description
+		transaction.setFieldValue("GZYPST", "N"); // Post revaluation
+		transaction.setFieldValue("GZTDT", "L"); // Term deal type; L=Loan, D=Deposit
+		transaction.setFieldValue("GZACTA", "SC"); // Account type
+		transaction.setFieldValue("GZTCDT", "FD1"); // Deal transaction code
+		transaction.setFieldValue("GZTCIS", "BBB"); // Interest settlement transaction code
+		transaction.setFieldValue("GZWIIP", "1"); // When is interest posted for this deal type
+		transaction.setFieldValue("GZTCDD", "FD1"); // Cancellation transaction code - debit
+		transaction.setFieldValue("GZTCDC", "FC1"); // Cancellation transaction code - credit
+		transaction.setFieldValue("GZINTT", "1"); // Interest rate type for this deal type
+		transaction.setFieldValue("GZYDDB", "N"); // Force default interest day's basis on deal input?
+		transaction.setFieldValue("GZYPSF", "N"); // Exclude from positions?
+		transaction.setFieldValue("GZEXMM", "N"); // Exclude from MM limits
+		transaction.setFieldValue("GZEXFS", "N"); // Exclude from funds summary
+		transaction.setFieldValue("GZYSDA", "N"); // Sundry deals allowed
+		transaction.setFieldValue("GZSODM", "N"); // Mature at start of day
+		transaction.setFieldValue("GZMPR", "12"); // Number of months interest is forecast for
+	}
+
+}

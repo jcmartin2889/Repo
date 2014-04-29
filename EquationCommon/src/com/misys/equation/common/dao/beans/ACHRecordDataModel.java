@@ -1,0 +1,107 @@
+package com.misys.equation.common.dao.beans;
+
+/**
+ * ACHRecord data-model.
+ * 
+ * @author deroset
+ * 
+ */
+public class ACHRecordDataModel extends AbsRecord
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: ACHRecordDataModel.java 4475 2009-08-17 20:15:44Z esther.williams $";
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private final static String RECORD_NAME = "ACHPF";
+
+	private String achrfld = ""; // ACHRFLD
+	private String achiob = ""; // ACHIOB
+	private String achwid = ""; // ACHWID
+
+	/**
+	 * Default constructor
+	 */
+	public ACHRecordDataModel()
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+
+	}
+
+	/**
+	 * Construct with a reference field
+	 */
+	public ACHRecordDataModel(String achrfld)
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+		this.achrfld = achrfld;
+	}
+
+	// ---getters and setters----//
+
+	/**
+	 * Return the reference field
+	 */
+	public String getAchrfld()
+	{
+		return achrfld;
+	}
+
+	/**
+	 * Set the reference field
+	 * 
+	 * @param achrfld
+	 *            - the reference field
+	 */
+	public void setAchrfld(String achrfld)
+	{
+		this.achrfld = achrfld;
+	}
+
+	/**
+	 * Return the field usage
+	 * 
+	 * @return the field usage
+	 */
+	public String getAchiob()
+	{
+		return achiob;
+	}
+
+	/**
+	 * Set the field usage
+	 * 
+	 * @param achiob
+	 *            - the field usage
+	 */
+	public void setAchiob(String achiob)
+	{
+		this.achiob = achiob;
+	}
+
+	/**
+	 * Return the default widget
+	 * 
+	 * @return the default widget
+	 */
+	public String getAchwid()
+	{
+		return achwid;
+	}
+
+	/**
+	 * Set the default widget
+	 * 
+	 * @param achwid
+	 *            - the default widget
+	 */
+	public void setAchwid(String achwid)
+	{
+		this.achwid = achwid;
+	}
+
+}

@@ -1,0 +1,113 @@
+package com.misys.equation.function.testmain;
+
+import java.util.ArrayList;
+
+import com.misys.equation.common.access.EquationPVFieldMetaData;
+import com.misys.equation.common.access.EquationPVMetaData;
+import com.misys.equation.common.utilities.EqBeanFactory;
+import com.misys.equation.common.utilities.EqDataType;
+import com.misys.equation.common.utilities.EqTimingTest;
+import com.misys.equation.function.beans.DisplayAttributes;
+import com.misys.equation.function.beans.ReplacementToken;
+import com.misys.equation.function.el.StringFunctions;
+import com.misys.equation.function.test.run.FunctionHandlerStubTestCase;
+
+public class TestMain3 extends FunctionHandlerStubTestCase
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	public static void main(String[] inputParameters)
+	{
+		try
+		{
+			ArrayList<EquationPVFieldMetaData> fieldMetaData = new ArrayList<EquationPVFieldMetaData>();
+			for (int i = 0; i < 1000; i++)
+			{
+				fieldMetaData.add(new EquationPVFieldMetaData(String.valueOf(i), String.valueOf(i), "", "", "", 0, 0, 0, "", "",
+								false));
+			}
+
+			// EquationPVMetaData pvMetaData = session.getUnit().getPVMetaData("C8R01R");
+			EquationPVMetaData pvMetaData = new EquationPVMetaData();
+			pvMetaData.setFieldMetaData(fieldMetaData);
+
+			EqTimingTest.printTime("Loop", "looping via traditional loop");
+			for (int i = 0; i < pvMetaData.rtvNumberOfFields(); i++)
+			{
+				EquationPVFieldMetaData p = pvMetaData.getFieldMetaData().get(i);
+				System.out.println(p.getId());
+			}
+			EqTimingTest.printTime("Loop", "looping via traditional loop");
+
+			EqTimingTest.printTime("Loop2", "looping via enumeration");
+			for (EquationPVFieldMetaData p : pvMetaData.getFieldMetaData())
+			{
+				System.out.println(p.getId());
+			}
+			EqTimingTest.printTime("Loop2", "looping via enumeration");
+
+			ReplacementToken token = new ReplacementToken("search", "replace");
+			EqBeanFactory beanFactory = EqBeanFactory.getEqBeanFactory();
+			String tokenAsXML = beanFactory.serialiseBeanAsXML(token);
+			ReplacementToken token2 = (ReplacementToken) beanFactory.deserialiseXMLAsBean(tokenAsXML, ReplacementToken.class);
+			System.out.println(token);
+			System.out.println(token2);
+
+			DisplayAttributes displayAttributes = new DisplayAttributes("id", "label", "desc");
+			displayAttributes.getEditCodeParameterReplacements().add(new ReplacementToken("*HIVAL", "'Maximum value'"));
+			displayAttributes.getEditCodeParameterReplacements().add(new ReplacementToken("*HIVAL", "'Minimum value'"));
+			displayAttributes.getEditCodeParameterReplacements().add(new ReplacementToken("1", "'One'"));
+			displayAttributes.getEditCodeParameterReplacements().add(new ReplacementToken("10", "'Ten'"));
+			displayAttributes.getEditCodeParameterReplacements().add(
+							new ReplacementToken("20", "fn:parseLong(NUMERIC)==20? 'twenty' : 'thirty'"));
+			displayAttributes.getEditCodeParameterReplacements().add(
+							new ReplacementToken("30", "fn:parseLong(NUMERIC)==20? 'twenty' : 'thirty'"));
+			String attributesAsXML = beanFactory.serialiseBeanAsXML(displayAttributes);
+			DisplayAttributes displayAttributes2 = (DisplayAttributes) beanFactory.deserialiseXMLAsBean(attributesAsXML,
+							DisplayAttributes.class);
+			System.out.println(displayAttributes);
+			System.out.println(displayAttributes2);
+			System.out.println(displayAttributes.getEditCodeParameterReplacements().size());
+			System.out.println(displayAttributes2.getEditCodeParameterReplacements().size());
+
+			// print bytes
+			System.out.println("1500Z = " + StringFunctions.formatInteger("1500", 10));
+			System.out.println("1500P = " + StringFunctions.formatDouble("1500", 10, 2));
+
+			System.out.println("-1500Z = " + StringFunctions.formatInteger("-1500", 10));
+			System.out.println("-1500P = " + StringFunctions.formatDouble("-1500", 10, 2));
+
+			// date test
+			System.out.println(EqDataType.cvtDbDateToInput6D("1000501", EqDataType.DATE_DMY, "O"));
+			System.out.println(EqDataType.cvtDbDateToInput6D("1000501", EqDataType.DATE_MDY, "O"));
+			System.out.println(EqDataType.cvtDbDateToInput6D("1000501", EqDataType.DATE_YMD, "O"));
+			System.out.println("");
+
+			System.out.println(EqDataType.cvtDbDateToInput6D("0990501", EqDataType.DATE_DMY, "O"));
+			System.out.println(EqDataType.cvtDbDateToInput6D("0990501", EqDataType.DATE_MDY, "O"));
+			System.out.println(EqDataType.cvtDbDateToInput6D("0990501", EqDataType.DATE_YMD, "O"));
+			System.out.println("");
+
+			System.out.println(EqDataType.cvtDate6DToDb("010500", EqDataType.DATE_DMY, "O"));
+			System.out.println(EqDataType.cvtDate6DToDb("010500", EqDataType.DATE_MDY, "O"));
+			System.out.println(EqDataType.cvtDate6DToDb("010500", EqDataType.DATE_YMD, "O"));
+			System.out.println("");
+
+			System.out.println(EqDataType.cvtDate8DToDb("01052000", EqDataType.DATE_DMY, "O"));
+			System.out.println(EqDataType.cvtDate8DToDb("01052000", EqDataType.DATE_MDY, "O"));
+			System.out.println(EqDataType.cvtDate8DToDb("20000501", EqDataType.DATE_YMD, "O"));
+			System.out.println("");
+
+			System.out.println(EqDataType.cvtDate8DToDb("01051999", EqDataType.DATE_DMY, "O"));
+			System.out.println(EqDataType.cvtDate8DToDb("01051999", EqDataType.DATE_MDY, "O"));
+			System.out.println(EqDataType.cvtDate8DToDb("19990501", EqDataType.DATE_YMD, "O"));
+			System.out.println("");
+		}
+
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+}

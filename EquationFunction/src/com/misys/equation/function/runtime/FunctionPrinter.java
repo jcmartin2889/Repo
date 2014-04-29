@@ -1,0 +1,606 @@
+package com.misys.equation.function.runtime;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.internal.eapi.core.EQMessage;
+import com.misys.equation.common.utilities.EqDataType;
+import com.misys.equation.common.utilities.Toolbox;
+import com.misys.equation.function.beans.DisplayAttributes;
+import com.misys.equation.function.beans.DisplayAttributesSet;
+import com.misys.equation.function.beans.DisplayGroup;
+import com.misys.equation.function.beans.DisplayItemList;
+import com.misys.equation.function.beans.Field;
+import com.misys.equation.function.beans.FieldData;
+import com.misys.equation.function.beans.FunctionData;
+import com.misys.equation.function.beans.IDisplayItem;
+import com.misys.equation.function.beans.InputField;
+import com.misys.equation.function.beans.InputFieldSet;
+import com.misys.equation.function.beans.Layout;
+import com.misys.equation.function.beans.RepeatingDataManager;
+import com.misys.equation.function.journal.JournalRecord;
+import com.misys.equation.function.tools.FunctionRuntimeToolbox;
+
+/**
+ * This class a represents a function printer
+ * 
+ */
+public class FunctionPrinter
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: FunctionPrinter.java 14803 2012-11-05 11:57:09Z williae1 $";
+
+	private FunctionHandlerData fhd;
+	private List<String> lines;
+
+	// Before and after image
+	private ScreenSet screenSetPrint;
+	private FunctionData functionDataAft;
+	private FunctionData functionDataBef;
+
+	// Before image only?
+	// True - if displaying before image only
+	// False - all other cases (default)
+	private boolean beforeImage;
+
+	// Print blank lines?
+	// True - print blank lines
+	// False - suppress blank lines (default)
+	private boolean printBlankLine;
+
+	// Print field only?
+	// True - do not print header
+	// False - print header (default)
+	private boolean printHeader;
+
+	// Print hidden fields?
+	// Only YES or NO are suppported, no expression or JAVA user exit
+	private boolean printHiddenFields;
+
+	// Formatter
+	private FunctionPrinterFormatter printerFormatter;
+
+	/**
+	 * Construct a new function printer given the Function Handler
+	 * 
+	 */
+	public FunctionPrinter(FunctionHandlerData fhd)
+	{
+		this.fhd = fhd;
+		this.beforeImage = false;
+		this.printBlankLine = true;
+		this.printHeader = false;
+		this.printHiddenFields = true;
+		this.printerFormatter = new FunctionPrinterFormatter();
+		this.lines = new ArrayList<String>();
+	}
+
+	/**
+	 * Return the generated lines
+	 * 
+	 * @return the generated lines
+	 */
+	public List<String> getLines()
+	{
+		return lines;
+	}
+
+	/**
+	 * Determine whether this will print before image only
+	 * 
+	 * @return true - if printing before image only.
+	 */
+	public boolean isBeforeImage()
+	{
+		return beforeImage;
+	}
+
+	/**
+	 * Set whether to print before image only
+	 * 
+	 * @param beforeImage
+	 *            - true if only the before image is printed
+	 */
+	public void setBeforeImage(boolean beforeImage)
+	{
+		this.beforeImage = beforeImage;
+	}
+
+	/**
+	 * Determine whether to print blank lines
+	 * 
+	 * @return true - if printing blank lines
+	 */
+	public boolean isPrintBlankLine()
+	{
+		return printBlankLine;
+	}
+
+	/**
+	 * Set whether to print blank lines
+	 * 
+	 * @param printBlankLine
+	 *            - true if only to print blank lines
+	 */
+	public void setPrintBlankLine(boolean printBlankLine)
+	{
+		this.printBlankLine = printBlankLine;
+	}
+
+	/**
+	 * Determine whether to print header
+	 * 
+	 * @return true - if printing header
+	 */
+	public boolean isPrintHeader()
+	{
+		return printHeader;
+	}
+
+	/**
+	 * Set whether to print header
+	 * 
+	 * @param printHeader
+	 *            - true - if only to print header
+	 */
+	public void setPrintHeader(boolean printHeader)
+	{
+		this.printHeader = printHeader;
+	}
+
+	/**
+	 * Determine whether to print hidden fields (as per field's visible property)
+	 * 
+	 * @return true - if print hidden fields (as per field's visible property)
+	 */
+	public boolean isPrintHiddenFields()
+	{
+		return printHiddenFields;
+	}
+
+	/**
+	 * Set whether to print hidden fields (as per field's visible property)
+	 * 
+	 * @param printHiddenFields
+	 *            - true - if print hidden fields (as per field's visible property)
+	 */
+	public void setPrintHiddenFields(boolean printHiddenFields)
+	{
+		this.printHiddenFields = printHiddenFields;
+	}
+
+	/**
+	 * Return the lines in one string
+	 * 
+	 * @return all the journal lines in one string. Each line will be 132 characters long
+	 */
+	public String rtvAsString()
+	{
+		// any lines to return?
+		if (lines.size() == 0)
+		{
+			return printerFormatter.rtvJournalNotFound();
+		}
+
+		// Concatenate the list
+		StringBuffer str = new StringBuffer();
+		for (int i = 0; i < lines.size(); i++)
+		{
+			str.append(lines.get(i) + EqDataType.GLOBAL_DELIMETER);
+		}
+		return str.toString();
+	}
+
+	/**
+	 * Print the screen set
+	 * 
+	 * @param screenSetPrint
+	 *            - the screen set to print
+	 * 
+	 * @throws EQException
+	 */
+	public void print(ScreenSet screenSetPrint) throws EQException
+	{
+		print(screenSetPrint, screenSetPrint.getFunctionData(), null);
+	}
+
+	/**
+	 * Print the After and Before image Function Data
+	 * 
+	 * @param screenSetPrint
+	 *            - the screen set to print
+	 * @param srcFunctionDataAft
+	 *            - After image function data
+	 * @param srcFunctionDataBef
+	 *            - Before image function data
+	 * @throws EQException
+	 */
+	public void print(ScreenSet screenSetPrint, FunctionData srcFunctionDataAft, FunctionData srcFunctionDataBef)
+					throws EQException
+	{
+		// Screenset to print
+		this.screenSetPrint = screenSetPrint;
+
+		// Create a copy of after image
+		this.functionDataAft = srcFunctionDataAft.duplicateFunctionData();
+		this.functionDataAft.lockedInputFields();
+		validateFunctionData(this.functionDataAft);
+
+		// Create a copy of before image;
+		if (srcFunctionDataBef != null)
+		{
+			beforeImage = false;
+			this.functionDataBef = srcFunctionDataBef.duplicateFunctionData();
+			this.functionDataBef.lockedInputFields();
+			validateFunctionData(this.functionDataBef);
+		}
+
+		// print
+		print();
+	}
+
+	/**
+	 * Print the Journal record
+	 * 
+	 * @param journalRecord
+	 *            journal record to be printed
+	 * @throws EQException
+	 */
+	public void print(JournalRecord journalRecord) throws EQException
+	{
+		print(journalRecord, null);
+	}
+
+	/**
+	 * Print the After and Before image Journal records
+	 * 
+	 * @param journalRecordAft
+	 *            - After image journal record
+	 * @param journalRecordBef
+	 *            - Before image journal record
+	 * @throws EQException
+	 */
+	public void print(JournalRecord journalRecordAft, JournalRecord journalRecordBef) throws EQException
+	{
+		// Screen set to print
+		screenSetPrint = fhd.getScreenSetHandler().rtvScreenSetMain();
+
+		// Setup the after image
+		functionDataAft = new FunctionData(screenSetPrint.getFunction(), fhd);
+		functionDataAft.loadFieldDataFromJournalRecord(journalRecordAft);
+
+		// Setup the before image
+		functionDataBef = null;
+		if (journalRecordBef != null)
+		{
+			functionDataBef = new FunctionData(screenSetPrint.getFunction(), fhd);
+			functionDataBef.loadFieldDataFromJournalRecord(journalRecordBef);
+		}
+
+		// print it
+		print(screenSetPrint, functionDataAft, functionDataBef);
+	}
+
+	/**
+	 * Print the After and Before image given the journal key
+	 * 
+	 * @param workStation
+	 *            - work station
+	 * @param jrnDay
+	 *            - journal day
+	 * @param jrnTime
+	 *            - journal time
+	 * @param jrnSequence
+	 *            - journal sequence
+	 * @param library
+	 *            - library where the journal is located
+	 * 
+	 * @return the journal print entries
+	 * 
+	 * @throws EQException
+	 */
+	public void print(String workStation, int jrnDay, int jrnTime, int jrnSequence, String library) throws EQException
+	{
+		// Screen set to print
+		screenSetPrint = fhd.getScreenSetHandler().rtvScreenSetMain();
+
+		// Get the linkage id (if this is a linkage service)
+		String linkageServiceId = FunctionRuntimeToolbox.getLinkageServiceId(screenSetPrint);
+
+		// Setup the journal key (after image)
+		JournalRecord journalRecordAft = FunctionRuntimeToolbox.initialiseJournalRecord(screenSetPrint.getFunction(), workStation,
+						jrnDay, jrnTime, jrnSequence, JournalRecord.IMAGE_AFT, "", library, linkageServiceId);
+
+		// Setup the journal key (before image)
+		JournalRecord journalRecordBef = FunctionRuntimeToolbox.initialiseJournalRecord(screenSetPrint.getFunction(), workStation,
+						jrnDay, jrnTime, jrnSequence, JournalRecord.IMAGE_BEF, "", library, linkageServiceId);
+
+		// Retrieve the journal record
+		boolean afterImage;
+		boolean beforeImage;
+		afterImage = journalRecordAft.rtvRecord(fhd.getEquationUser().getSession());
+		beforeImage = journalRecordBef.rtvRecord(fhd.getEquationUser().getSession());
+
+		// After and before image
+		if (afterImage && beforeImage)
+		{
+			print(journalRecordAft, journalRecordBef);
+		}
+		// After image only
+		else if (afterImage)
+		{
+			print(journalRecordAft);
+		}
+		// Before image only
+		else if (beforeImage)
+		{
+			setBeforeImage(true);
+			print(journalRecordBef);
+		}
+		// No journal record found
+		else
+		{
+			EQMessage eqMessage = fhd.getEquationUser().getSession().getMessage("KSM2056");
+			lines.add(eqMessage.getFormattedMessage());
+		}
+	}
+
+	/**
+	 * Validate the function data
+	 * 
+	 * @param functionData
+	 *            - the Function Data
+	 * 
+	 * @throws EQException
+	 */
+	private void validateFunctionData(FunctionData functionData) throws EQException
+	{
+		FunctionValidate functionValidate = new FunctionValidate(fhd, screenSetPrint, functionData);
+		functionValidate.setHaltOnError(false);
+		functionValidate.setDefaultValues(false);
+		functionValidate.setApplicationValidate(false);
+		functionValidate.validate();
+	}
+
+	/**
+	 * Print a field
+	 * 
+	 * @param field
+	 *            - field to be printed
+	 */
+	private void printField(Field field, DisplayAttributes displayAttribute)
+	{
+		// field
+		String fieldKey = field.getId();
+
+		// field text
+		String label = displayAttribute.rtvLabel(fhd.getEquationUser());
+		if (label == null || label.trim().length() == 0)
+		{
+			label = field.getLabel();
+		}
+		printerFormatter.printFieldTitle(label);
+
+		// after image
+		FieldData fieldDataAft = functionDataAft.rtvFieldData(fieldKey);
+		String fieldInputValueAft = fieldDataAft.getInputValue();
+		String fieldOutputValueAft = fieldDataAft.rtvOutputMaskValue(functionDataAft, displayAttribute.rtvMask(fhd
+						.getEquationUser()), false);
+
+		// before image
+		String fieldInputValueBef = "";
+		String fieldOutputValueBef = "";
+		if (functionDataBef != null)
+		{
+			FieldData fieldDataBef = functionDataBef.rtvFieldData(fieldKey);
+			fieldInputValueBef = fieldDataBef.getInputValue();
+			fieldOutputValueBef = fieldDataBef.rtvOutputMaskValue(functionDataBef, displayAttribute.rtvMask(fhd.getEquationUser()),
+							false);
+
+			// Equal, then don't print it
+			if (fieldInputValueAft.equals(fieldInputValueBef))
+			{
+				fieldInputValueBef = "";
+				fieldOutputValueBef = "";
+			}
+
+			// Not equal, then print it. When blank, set to asterisk
+			else
+			{
+				if (fieldInputValueBef.equals(""))
+				{
+					fieldInputValueBef = Toolbox.pad("", "*", fieldDataBef.getFieldLength());
+					if (!fieldOutputValueBef.equals(""))
+					{
+						fieldOutputValueBef = Toolbox.pad("", "*", fieldDataBef.getFieldLength());
+					}
+				}
+			}
+		}
+
+		// print the field
+		if (printBlankLine || !fieldInputValueAft.equals("") || !fieldInputValueBef.equals(""))
+		{
+			printerFormatter.printAfterImage(fieldInputValueAft, fieldOutputValueAft);
+			if (functionDataBef != null)
+			{
+				printerFormatter.printBeforeImage(fieldInputValueBef, fieldOutputValueBef);
+			}
+
+			// Add to the array list
+			addLine();
+		}
+		else
+		{
+			printerFormatter.clearLine();
+		}
+
+	}
+
+	/**
+	 * Add the line to the lines
+	 * 
+	 * @param line
+	 *            - line to be added
+	 */
+	private void addLine()
+	{
+		lines.add(printerFormatter.markEOL());
+	}
+
+	/**
+	 * Print the details of the display item list
+	 * 
+	 * @param inputFieldSet
+	 *            - the input field set
+	 * @param displayAttributeSet
+	 *            - the display attribute field set
+	 * @param displayItems
+	 *            - the list of items to be printed
+	 * 
+	 * @throws EQException
+	 */
+	private void print(InputFieldSet inputFieldSet, DisplayAttributesSet displayAttributeSet, DisplayItemList displayItems)
+					throws EQException
+	{
+		// display all details
+		for (IDisplayItem displayItem : displayItems)
+		{
+			if (displayItem instanceof DisplayAttributes)
+			{
+				DisplayAttributes displayAttributes = (DisplayAttributes) displayItem;
+				InputField inputField = inputFieldSet.getInputField(displayAttributes.getId());
+
+				if (printHiddenFields || !displayAttributes.getVisible().equals(DisplayAttributes.VISIBLE_NO))
+				{
+					printField(inputField, displayAttributes);
+				}
+			}
+			else if (displayItem instanceof DisplayGroup)
+			{
+				DisplayGroup displayGroup = (DisplayGroup) displayItem;
+
+				// non-repeating group only
+				if (displayGroup.getRepeatingGroup().length() == 0)
+				{
+					if (printHiddenFields || !displayGroup.getVisible().equals(DisplayAttributes.VISIBLE_NO))
+					{
+						print(inputFieldSet, displayAttributeSet, displayGroup.getDisplayItems());
+					}
+				}
+
+				// repeating group
+				else
+				{
+					printRepeatingData(functionDataAft.getRepeatingDataManager(displayGroup.getRepeatingGroup()), inputFieldSet,
+									displayGroup);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Print detail of a repeating data
+	 * 
+	 * @param repeatingDataManager
+	 *            - the repeating data manager
+	 * @param inputFieldSet
+	 *            - the input field set
+	 * @param dislayGroup
+	 *            - the display group of the repeating data
+	 * 
+	 * @throws EQException
+	 */
+	private void printRepeatingData(RepeatingDataManager repeatingDataManager, InputFieldSet inputFieldSet, DisplayGroup dislayGroup)
+					throws EQException
+	{
+		// print the repeating group id
+		addLine();
+		String label = dislayGroup.rtvLabel(fhd.getEquationUser());
+		printerFormatter.printFieldTitle(label);
+		addLine();
+
+		// loop through all the data
+		repeatingDataManager.moveFirst();
+		while (repeatingDataManager.next())
+		{
+			for (IDisplayItem displayItem : dislayGroup.getDisplayItems())
+			{
+				if (displayItem instanceof DisplayAttributes)
+				{
+					DisplayAttributes displayAttributes = (DisplayAttributes) displayItem;
+					InputField inputField = inputFieldSet.getInputField(displayAttributes.getId());
+
+					if (printHiddenFields || !displayAttributes.getVisible().equals(DisplayAttributes.VISIBLE_NO))
+					{
+						printField(inputField, displayAttributes);
+					}
+				}
+			}
+			addLine();
+		}
+		addLine();
+	}
+
+	/**
+	 * Print the details in the before and after image function data
+	 * 
+	 */
+	private List<String> print() throws EQException
+	{
+		// Retrieve the layout
+		Layout layout = screenSetPrint.getLayout();
+
+		// Setup the array list
+		lines.clear();
+
+		// LINE 1: function title
+		if (printHeader)
+		{
+			printerFormatter.printFieldTitle(screenSetPrint.getLayout().rtvLabel(fhd.getEquationUser()));
+			addLine();
+			addLine();
+		}
+
+		// LINE 2: before and after image column header
+		if (functionDataBef != null)
+		{
+			printerFormatter.printColumnHeader(true, true);
+		}
+		else if (functionDataBef == null && beforeImage)
+		{
+			printerFormatter.printColumnHeader(false, true);
+		}
+		else
+		{
+			printerFormatter.printColumnHeader(true, false);
+		}
+		addLine();
+
+		// LINE 3 and onwards
+
+		// get all the output fieldSets
+		List<InputFieldSet> fieldSets = screenSetPrint.getFunction().getInputFieldSets();
+		for (int i = 0; i < fieldSets.size(); i++)
+		{
+			// Retrieve the field set
+			InputFieldSet fieldSet = fieldSets.get(i);
+
+			// Print the record name
+			if (printHeader)
+			{
+				addLine();
+				printerFormatter.printRecordName(fieldSet.getId(), fieldSet.rtvLabel(fhd.getEquationUser()));
+				addLine();
+			}
+
+			// Retrieve the layout for this screen set
+			DisplayAttributesSet displayAttributeSet = layout.getDisplayAttributesSet(fieldSet.getId());
+			print(fieldSet, displayAttributeSet, displayAttributeSet.getDisplayItems());
+		}
+
+		return (getLines());
+	}
+
+}

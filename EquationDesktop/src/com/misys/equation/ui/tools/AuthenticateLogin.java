@@ -1,0 +1,329 @@
+package com.misys.equation.ui.tools;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.struts.action.ActionServlet;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationLogin;
+import com.misys.equation.common.access.EquationSystem;
+import com.misys.equation.common.globalprocessing.audit.GlobalAuditingManager;
+import com.misys.equation.common.internal.eapi.core.EQActionErrorException;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.internal.eapi.core.EQPasswordExpiredException;
+import com.misys.equation.function.context.EquationFunctionContext;
+import com.misys.equation.function.runtime.FunctionContextHandler;
+import com.misys.equation.function.runtime.FunctionHandler;
+import com.misys.equation.function.runtime.FunctionHandlerData;
+import com.misys.equation.ui.actions.SwitchToHomeUnitAction;
+import com.misys.equation.ui.beans.EqMenu;
+import com.misys.equation.ui.context.EquationDesktopContext;
+import com.misys.equation.ui.forms.LoginForm;
+import com.misys.equation.ui.helpers.EqNavigator;
+
+public class AuthenticateLogin
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: AuthenticateLogin.java 16593 2013-06-24 15:32:19Z perkinj1 $";
+	private static final String PASSWORD_EXPIRED = "Password is expired.";
+	private static final String PAGE_CLASSIC = "classic";
+	private static final String PAGE_DIRECT_TRAN = "directtran";
+	private static final String PAGE_VALID = "valid";
+	private static final String PAGE_INVALID = "invalid";
+	private int sessionType;
+	private LoginForm form;
+	private boolean isNewSystem;
+	private String sessionId;
+	private HttpServletRequest request;
+	private boolean isTransactionValid;
+	private ActionServlet servlet;
+	private boolean isLoginPage;
+	private boolean isAutoChangePassword;
+	public AuthenticateLogin(LoginForm form, HttpServletRequest request, ActionServlet servlet, boolean isLoginPage)
+					throws EQException
+	{
+		this.form = form;
+		this.request = request;
+		this.servlet = servlet;
+		this.isLoginPage = isLoginPage;
+		try
+		{
+			init();
+		}
+		catch (EQException e)
+		{
+			// For password expiry, throw a specific Exception
+			if (e instanceof EQActionErrorException && ((EQActionErrorException) e).getParameter().equals(PASSWORD_EXPIRED))
+			{
+				throw new EQPasswordExpiredException(e.getMessage(), "error.password.expired");
+			}
+			// Otherwise, re-throw the original exception
+			throw e;
+		}
+	}
+	private void init() throws EQException
+	{
+		checkIfSessionExist();
+		setSessionType();
+		validateSystem();
+		setSessionId();
+		setGPSession();
+		setTransactionValid();
+		if (isTransactionValid())
+		{
+			setOptionIdParameter();
+		}
+	}
+
+	private void checkIfSessionExist() throws EQActionErrorException
+	{
+		String sessionIdFromRequest = EquationDesktopContext.getSessionId(request);
+		if (this.isLoginPage && EquationDesktopContext.getContext().getEqInfo(sessionIdFromRequest) != null)
+		{
+			throw new EQActionErrorException("error.parameterised", "error.duplicate.session");
+		}
+	}
+	private void setSessionType() throws EQActionErrorException
+	{
+		if (!form.getOptId().equals(""))
+		{
+			if (!request.getParameter("newPassword").equals("null"))
+			{
+				request.setAttribute("newPassword", request.getParameter("newPassword"));
+				request.setAttribute("oldPassword", form.getPassWord());
+				setAutoChangePassword(true);
+			}
+			sessionType = EquationCommonContext.SESSION_DIRECT_TRANS_DESKTOP;
+		}
+		else if (form.getIsClassic().equals(Integer.toString(EquationCommonContext.SESSION_FULL_DESKTOP)))
+		{
+			sessionType = EquationCommonContext.SESSION_FULL_DESKTOP;
+		}
+		else if (form.getIsClassic().equals(Integer.toString(EquationCommonContext.SESSION_CLASSIC_DESKTOP)))
+		{
+			sessionType = EquationCommonContext.SESSION_CLASSIC_DESKTOP;
+		}
+		else
+		{
+			throw new EQActionErrorException("error.parameterised", "error.invalid.type");
+		}
+	}
+
+	private void validateSystem() throws EQException
+	{
+		boolean newSystem = false;
+		// Retrieves the Equation system, if none existing, then authenticate this user and create one
+		EquationSystem system = EquationCommonContext.getContext().getEquationSystem(form.getSystemName());
+		if (system == null)
+		{
+			if (EquationFunctionContext.getContext().isEquationAuthentication())
+			{
+				newSystem = true;
+				EquationCommonContext.getContext().authenticate(form.getSystemName(), form.getUnitName(), form.getUserId(),
+								form.getPassWord(), EquationCommonContext.PASSWORD_TYPE_TEXT_PLAIN);
+				// Retrieve the Equation system again, at this point, it must be already existing
+				system = EquationCommonContext.getContext().getEquationSystem(form.getSystemName());
+				if (system == null)
+				{
+					throw new EQActionErrorException("error.parameterised", "error.invalid.systemName");
+				}
+			}
+			else
+			{
+				// If using BF authentication, system/unit must already be initialised
+				throw new EQActionErrorException("error.parameterised", "error.system.not.initialised");
+			}
+		}
+		authSystemUnit(system);
+		setNewSystem(newSystem);
+	}
+
+	private void authSystemUnit(EquationSystem system) throws EQException
+	{
+		String aerror = null;
+
+		String user = form.getUserId();
+		// Authenticate whether user is valid to the system/unit
+		if (!EquationFunctionContext.getContext().isEquationAuthentication())
+		{
+			if (!system.getUnits().containsKey(form.getUnitName()))
+			{
+				// 1st step; if the unit hasn't been configured, then
+				// It cannot be initialized
+				if (EquationFunctionContext.getContext().getConfiguredUnitCredentials(system.getSystemId(), form.getUnitName()) == null)
+				{
+					// If using BF authentication, the unit must be initialized
+					aerror = "error.unit.not.initialised";
+				}
+				else
+				{
+					// Unit was initialized, but has been suspended, so need to
+					// check if we're the GUI Administrator etc.
+					user = system.getiSeriesUserForCASUser(form.getUnitName(), user);
+					aerror = system.newUnitChecks(form.getUnitName(), user);
+				}
+			}
+		}
+		else
+		{
+			aerror = system.authenticate(form.getUnitName(), user, form.getPassWord());
+		}
+
+		// Return the error
+		if (aerror != null)
+		{
+			throw new EQActionErrorException("error.parameterised", aerror);
+		}
+	}
+	private void setSessionId() throws EQException
+	{
+		this.sessionId = EquationDesktopContext.getContext().getEqSession(form.getSystemName(), form.getUnitName(),
+						form.getUserId(), form.getPassWord(), request, sessionType);
+		if (this.sessionId == null)
+		{
+			throw new EQActionErrorException("error.parameterised", "error.invalid.nosession");
+		}
+
+	}
+	private void setTransactionValid() throws EQException
+	{
+		isTransactionValid = true;
+		if (sessionType == EquationCommonContext.SESSION_DIRECT_TRANS_DESKTOP)
+		{
+			EqMenu eqMenu = ((EqNavigator) request.getSession().getAttribute("eqNavigator")).getEqMenu();
+			if (!eqMenu.isValidOption(EqDesktopToolBox.getFixSizeStr(form.getOptId(), 3)))
+			{
+				isTransactionValid = false;
+			}
+		}
+		if (isTransactionValid)
+		{
+			addWorkStationId();
+		}
+	}
+	private void addWorkStationId()
+	{
+		// if workstation Id must be unique, add it to the list in EquationDesktopContext
+		String workstationIdUnique = EquationCommonContext.getConfigProperty("eq.workstationId.unique");
+		if (workstationIdUnique != null && workstationIdUnique.equals("true"))
+		{
+			boolean forceWorkstationId = Boolean.parseBoolean(form.getForceWorkstationId());
+			EquationDesktopContext.getContext().addWorkstationId(form.getSystemName(), form.getUnitName(), form.getWorkstationId(),
+							!forceWorkstationId);
+		}
+	}
+	public boolean isTransactionValid()
+	{
+		return this.isTransactionValid;
+	}
+	private void setGPSession()
+	{
+		if (sessionType != EquationCommonContext.SESSION_CLASSIC_DESKTOP)
+		{
+			Boolean result = Boolean.valueOf(EquationCommonContext.getContext().checkIfGPIsInstalled(sessionId));
+			request.getSession().setAttribute("isAGPSession", result);
+		}
+
+	}
+	private void setOptionIdParameter()
+	{
+		// get EqLogin and set the option id and option parameter
+		EquationLogin eqLogin = (EquationLogin) request.getSession().getAttribute(EquationDesktopContext.SESSION_LOGIN);
+		eqLogin.setOptId(form.getOptId());
+		eqLogin.setOptParm(form.getOptParm());
+		eqLogin.setContextData1(EqDesktopToolBox.generateContextData1(form));
+		eqLogin.setContextData2(EqDesktopToolBox.generateContextData2(form));
+		setContextDataArea(request, eqLogin); // Used for global processing switch unit (need to get the saved context)
+
+		String logonUser;
+		if (EquationFunctionContext.getContext().isEquationAuthentication())
+		{
+			logonUser = eqLogin.getUserId().toLowerCase();
+		}
+		else
+		{
+			// For CAS mode use the user id as entered in the login form
+			logonUser = form.getUserId();
+		}
+		// set the style sheet
+		EqDesktopToolBox.initStyleSheetMain(request, this.servlet.getServletContext(), eqLogin.getSystem().toLowerCase(), eqLogin
+						.getUnitId().toLowerCase(), logonUser);
+	}
+	public String getPageName() throws Exception
+	{
+		// display appropriate page
+		if (sessionType == EquationCommonContext.SESSION_CLASSIC_DESKTOP)
+		{
+			return PAGE_CLASSIC;
+		}
+		else if (sessionType == EquationCommonContext.SESSION_DIRECT_TRANS_DESKTOP)
+		{
+			return PAGE_DIRECT_TRAN;
+		}
+		else
+		{
+			String sessionIdFromRequest = EquationDesktopContext.getSessionId(request);
+			if (EquationCommonContext.getContext().checkIfGPIsInstalled(sessionIdFromRequest))
+			{
+				GlobalAuditingManager globalAuditingManager = new GlobalAuditingManager(EquationCommonContext.getContext()
+								.getEquationUser(sessionIdFromRequest).getSession());
+				globalAuditingManager.auditLogin();
+			}
+
+			return PAGE_VALID;
+		}
+	}
+	public int getSessionType()
+	{
+		return sessionType;
+	}
+	public boolean isNewSystem()
+	{
+		return isNewSystem;
+	}
+	private void setNewSystem(boolean isNewSystem)
+	{
+		this.isNewSystem = isNewSystem;
+	}
+
+	public String getSessionId()
+	{
+		return sessionId;
+	}
+
+	public boolean isAutoChangePassword()
+	{
+		return isAutoChangePassword;
+	}
+	private void setAutoChangePassword(boolean isAutoChangePassword)
+	{
+		this.isAutoChangePassword = isAutoChangePassword;
+	}
+	/**
+	 * This method (used for global processing) sets the the context data area for the new login by retrieving it from the session.
+	 * The context is retrieved from the session. The SwitchUnitAction is responsible to save the old context from the previous unit
+	 * onto the session.
+	 * 
+	 * @param request
+	 *            HttpServletRequest
+	 * @param eqLogin
+	 *            EquationLogin
+	 */
+	private void setContextDataArea(final HttpServletRequest request, final EquationLogin eqLogin)
+	{
+		// Try to get the value from the session. It will only be there if the call to the login was triggered
+		// from the switch unit process ...
+		final String contextDataAreaString = (String) request.getSession().getAttribute(SwitchToHomeUnitAction.DATAAREA_KEY);
+		final String contextDataAreaString2 = (String) request.getSession().getAttribute(SwitchToHomeUnitAction.DATAAREA_KEY2);
+		if (contextDataAreaString != null)
+		{
+			String sessionIdFromRequest = EquationDesktopContext.getSessionId(request);
+			FunctionHandler functionHandler = EquationFunctionContext.getContext().getFunctionHandler(sessionIdFromRequest);
+			FunctionHandlerData functionHandlerData = functionHandler.getFhd();
+			FunctionContextHandler functionContextHandler = functionHandlerData.getContextHandler();
+			functionContextHandler.setContext(contextDataAreaString, contextDataAreaString2);
+			eqLogin.setContextData1(contextDataAreaString);
+			eqLogin.setContextData2(contextDataAreaString2);
+		}
+	}
+}

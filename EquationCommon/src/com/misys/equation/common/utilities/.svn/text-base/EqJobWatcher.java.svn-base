@@ -1,0 +1,179 @@
+package com.misys.equation.common.utilities;
+
+import java.util.Enumeration;
+
+import com.ibm.as400.access.AS400;
+import com.ibm.as400.access.Job;
+import com.ibm.as400.access.MessageQueue;
+import com.ibm.as400.access.QueuedMessage;
+import com.misys.equation.common.access.EquationUnit;
+import com.misys.equation.common.internal.eapi.core.EQException;
+
+public class EqJobWatcher
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	// An AS400 job to do monitoring on the main job
+	private final AS400 as400Monitor;
+	private static String JOBACTIVE = "*ACTIVE";
+	private final String jobName;
+	private final String jobUser;
+	private final String jobNumber;
+
+	/**
+	 * Create a job log session
+	 * 
+	 * @param eqAS400
+	 *            - the AS400 job
+	 * @param jobName
+	 *            - the job name
+	 * @param jobUser
+	 *            - the job user
+	 * @param jobNumber
+	 *            - the job number
+	 * @param pos
+	 *            - position
+	 * @param njoblogs
+	 *            - number of joblog entries
+	 */
+	public EqJobWatcher(EquationUnit unit, String jobName, String jobUser, String jobNumber) throws EQException
+	{
+		// Get a new AS400 Job to monitor the session we already have
+		as400Monitor = unit.getEquationSystem().getAS400();
+		this.jobName = jobName;
+		this.jobUser = jobUser;
+		this.jobNumber = jobNumber;
+	}
+
+	public EqJobWatcher(EquationUnit unit, Job job) throws EQException
+	{
+		// Get a new AS400 Job to monitor the session we already have
+		as400Monitor = unit.getEquationSystem().getAS400();
+		this.jobName = job.getName();
+		this.jobUser = job.getUser();
+		this.jobNumber = job.getNumber();
+	}
+
+	private Job getServerJob()
+	{
+		return new Job(as400Monitor, jobName, jobUser, jobNumber);
+	}
+
+	public void endAS400Services() throws Exception
+	{
+		try
+		{
+			if (as400Monitor != null)
+			{
+				as400Monitor.disconnectAllServices();
+			}
+		}
+		catch (Exception e)
+		{
+
+		}
+	}
+
+	public boolean isServerJobActive() throws Exception
+	{
+		try
+		{
+			return getServerJob().getStatus().equals(JOBACTIVE);
+		}
+		catch (Exception e)
+		{
+			return false;
+		}
+	}
+	@SuppressWarnings("unchecked")
+	public Enumeration<QueuedMessage> getServerJobJoblog() throws Exception
+	{
+		return getServerJob().getJobLog().getMessages();
+	}
+
+	@SuppressWarnings("unchecked")
+	public QueuedMessage getServerJobMessageWait() throws Exception
+	{
+		Job serverJob = getServerJob();
+		Enumeration<QueuedMessage> msgs = serverJob.getJobLog().getMessages();
+		while (msgs.hasMoreElements())
+		{
+			QueuedMessage message = msgs.nextElement();
+			if (message.getReplyStatus().equals("W"))
+			{
+				MessageQueue queue = message.getQueue();
+				if (queue == null)
+				{
+					queue = new MessageQueue(as400Monitor, "/QSYS.LIB/QSYSOPR.MSGQ");
+					queue.setListDirection(false);
+					queue.setSelectMessagesNeedReply(true);
+					queue.setSelectMessagesNoNeedReply(false);
+					Enumeration<QueuedMessage> qsysoprmsgs = queue.getMessages();
+					while (qsysoprmsgs.hasMoreElements())
+					{
+						QueuedMessage qsysoprmessage = qsysoprmsgs.nextElement();
+						if (qsysoprmessage.getFromJobName().equals(serverJob.getName())
+										&& qsysoprmessage.getFromJobNumber().equals(serverJob.getNumber())
+										&& qsysoprmessage.getUser().equals(serverJob.getUser()))
+						{
+							return qsysoprmessage;
+						}
+					}
+				}
+				else
+				{
+					return message;
+				}
+			}
+		}
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public void replyServerJobMessageWait(QueuedMessage originalMessage, String reply) throws Exception
+	{
+		Job serverJob = getServerJob();
+		Enumeration<QueuedMessage> msgs = serverJob.getJobLog().getMessages();
+		while (msgs.hasMoreElements())
+		{
+			QueuedMessage message = msgs.nextElement();
+			if (message.getReplyStatus().equals("W"))
+			{
+				MessageQueue queue = message.getQueue();
+				if (queue == null)
+				{
+					queue = new MessageQueue(as400Monitor, "/QSYS.LIB/QSYSOPR.MSGQ");
+					queue.setListDirection(false);
+					queue.setSelectMessagesNeedReply(true);
+					queue.setSelectMessagesNoNeedReply(false);
+					Enumeration<QueuedMessage> qsysoprmsgs = queue.getMessages();
+					while (qsysoprmsgs.hasMoreElements())
+					{
+						QueuedMessage qsysoprmessage = qsysoprmsgs.nextElement();
+
+						if (qsysoprmessage.getID().equals(originalMessage.getID()))
+						{
+							queue.reply(qsysoprmessage.getKey(), reply);
+						}
+						return;
+					}
+				}
+				else
+				{
+					byte[] key = message.getKey();
+					if (message.getID().equals(originalMessage.getID()))
+					{
+						queue.reply(key, reply);
+						return;
+					}
+				}
+			}
+		}
+	}
+
+	public static String formatServerJobId(String jobId)
+	{
+		return jobId.substring(20).trim() + "/" + jobId.substring(10, 20).trim() + "/" + jobId.substring(0, 10).trim();
+	}
+}

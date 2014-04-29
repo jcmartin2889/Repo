@@ -1,0 +1,139 @@
+package com.misys.equation.common.utilities;
+
+import java.util.Enumeration;
+
+import org.apache.log4j.Appender;
+import org.apache.log4j.Logger;
+
+/**
+ * This is a singleton, holding state for the Log4J
+ */
+public class EquationLoggingContext
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	/** Logger instance */
+	private static final Logger log4jLogger = Logger.getLogger(EquationLoggingContext.class);
+	/** Singleton instance */
+	private static EquationLoggingContext singletonLoggingContext;
+	private static final String userLabel = "user.";
+	private static final String ipAddressLabel = "ipAddress.";
+	private String userToLog;
+	private String ipAddressToLog;
+
+	/*
+	 * Constructor
+	 */
+	private EquationLoggingContext()
+	{
+
+	}
+
+	/**
+	 * Get the singleton context
+	 */
+	public static synchronized EquationLoggingContext getLoggingContext()
+	{
+		// Create our one and only instance of this class
+		if (singletonLoggingContext == null)
+		{
+			singletonLoggingContext = new EquationLoggingContext();
+			// ain't nobody creating one of me, except me!
+			singletonLoggingContext.setUserToLog();
+			singletonLoggingContext.setIpAddressToLog();
+		}
+		return singletonLoggingContext;
+	}
+
+	/**
+	 * Protected against cloning
+	 */
+	@Override
+	public Object clone() throws CloneNotSupportedException
+	{
+		throw new CloneNotSupportedException();
+		// that'll teach 'em
+	}
+
+	/**
+	 * Return the log4j logger
+	 * 
+	 * @return the logger
+	 */
+	public Logger getLog4jLogger()
+	{
+		return log4jLogger;
+	}
+
+	/**
+	 * Get user to log from EquationLoggingContext singleton
+	 * 
+	 * @return the user to log
+	 */
+	public String getUserToLog()
+	{
+		return userToLog;
+	}
+
+	/**
+	 * Set user to log from log4j.xml appender information
+	 */
+	@SuppressWarnings("unchecked")
+	private void setUserToLog()
+	{
+		userToLog = null;
+
+		Enumeration<Appender> appenders = log4jLogger.getParent().getAllAppenders();
+
+		while (appenders.hasMoreElements())
+		{
+			Appender appender = appenders.nextElement();
+			String appenderName = appender.getName();
+			if (appenderName.contains(userLabel))
+			{
+				int userStart = appenderName.indexOf(userLabel);
+
+				if (userStart == 0)
+				{
+					userToLog = appenderName.substring(userStart + 5);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Get IP address to log from EquationLoggingContext singleton
+	 * 
+	 * @return the IP address to log
+	 */
+	public String getIpAddressToLog()
+	{
+		return ipAddressToLog;
+	}
+
+	/**
+	 * Set IP address to log from log4j.xml appender information
+	 */
+	@SuppressWarnings("unchecked")
+	private void setIpAddressToLog()
+	{
+		ipAddressToLog = null;
+
+		Enumeration<Appender> appenders = log4jLogger.getParent().getAllAppenders();
+
+		while (appenders.hasMoreElements())
+		{
+			Appender appender = appenders.nextElement();
+			String appenderName = appender.getName();
+			if (appenderName.contains(ipAddressLabel))
+			{
+				int ipAddressStart = appenderName.indexOf(ipAddressLabel);
+
+				if (ipAddressStart == 0)
+				{
+					ipAddressToLog = appenderName.substring(ipAddressStart + 10);
+				}
+			}
+		}
+	}
+}

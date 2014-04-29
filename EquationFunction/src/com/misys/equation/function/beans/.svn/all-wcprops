@@ -1,0 +1,281 @@
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/repos/bfeq_src/!svn/ver/17517/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans
+END
+ReplacementToken.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/ReplacementToken.java
+END
+RepeatingDataRow.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/RepeatingDataRow.java
+END
+InputField.java
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/repos/bfeq_src/!svn/ver/17517/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/InputField.java
+END
+DisplayLabel.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/DisplayLabel.java
+END
+PVFieldSet.java
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/PVFieldSet.java
+END
+ValidationExpression.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/ValidationExpression.java
+END
+InputGroup.java
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/repos/bfeq_src/!svn/ver/17190/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/InputGroup.java
+END
+LinkedFunction.java
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/LinkedFunction.java
+END
+Layout.java
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/Layout.java
+END
+FieldData.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/FieldData.java
+END
+LinkService.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/LinkService.java
+END
+InputFieldSet.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/repos/bfeq_src/!svn/ver/17190/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/InputFieldSet.java
+END
+DisplayButtonLink.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/DisplayButtonLink.java
+END
+DisplayItemList.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/DisplayItemList.java
+END
+Field.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/Field.java
+END
+WorkField.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/WorkField.java
+END
+DisplayAttributesSet.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/DisplayAttributesSet.java
+END
+ServiceUserExit.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/ServiceUserExit.java
+END
+ValidationHelper.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/ValidationHelper.java
+END
+FieldDefinition.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/FieldDefinition.java
+END
+IDisplayItem.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/IDisplayItem.java
+END
+Translation.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/Translation.java
+END
+FieldSet.java
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/repos/bfeq_src/!svn/ver/17190/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/FieldSet.java
+END
+RepeatingGroupStatus.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/RepeatingGroupStatus.java
+END
+ClassList.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/ClassList.java
+END
+LoadFieldSetStatus.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/LoadFieldSetStatus.java
+END
+RepeatingDataManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/RepeatingDataManager.java
+END
+FieldValues.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/FieldValues.java
+END
+RelatedFields.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/RelatedFields.java
+END
+UserExit.java
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/UserExit.java
+END
+TextBean.java
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/TextBean.java
+END
+NextAction.java
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/NextAction.java
+END
+RepeatingFieldData.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/RepeatingFieldData.java
+END
+DisplayAttributes.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/17504/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/DisplayAttributes.java
+END
+APIField.java
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/APIField.java
+END
+XSDStructure.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/17290/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/XSDStructure.java
+END
+FunctionData.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/17334/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/FunctionData.java
+END
+FunctionControlData.java
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/FunctionControlData.java
+END
+DisplayGroup.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/DisplayGroup.java
+END
+Language.java
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/Language.java
+END
+Function.java
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/repos/bfeq_src/!svn/ver/17190/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/Function.java
+END
+Element.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/repos/bfeq_src/!svn/ver/17190/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/Element.java
+END
+ValidationUserExitFilter.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/ValidationUserExitFilter.java
+END
+PVField.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/PVField.java
+END
+APIFieldSet.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/APIFieldSet.java
+END
+Mapping.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/repos/bfeq_src/!svn/ver/17190/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/beans/Mapping.java
+END

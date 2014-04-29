@@ -1,0 +1,114 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseAddMore;
+import com.misys.equation.common.test.TestEnvironment;
+
+/**
+ * Equation test cases for Pay Direct Debit
+ */
+public class PDD_add extends EquationTestCaseAddMore
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: PDD_add.java 8426 2010-07-29 17:32:49Z CHALLIP1 $";
+	String programName = "D21FRR";
+	String optionId = "PDD";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		Thread.sleep(1000);
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZAB", "0000"); // Account branch (4A)
+		transaction.setFieldValue("GZAN", "000000"); // Basic part of account number (6A)
+		transaction.setFieldValue("GZAS", "000"); // Account suffix (3A)
+		transaction.setFieldValue("GZONAM", "Name"); // Originator's name (20A)
+		transaction.setFieldValue("GZOID", "Identifier"); // Originator's identifier (10A)
+		transaction.setFieldValue("GZOREF", "CRG-XX"); // DD originator's reference (20A)
+		transaction.setFieldValue("GZPCDE", "999"); // Payment code (3A)
+	}
+
+	/**
+	 * Setup an existing key fields
+	 */
+	@Override
+	public void setupExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZAB", "0132"); // Account branch (4A)
+		transaction.setFieldValue("GZAN", "012008"); // Basic part of account number (6A)
+		transaction.setFieldValue("GZAS", "050"); // Account suffix (3A)
+		transaction.setFieldValue("GZONAM", "Name"); // Originator's name (20A)
+		transaction.setFieldValue("GZOID", "Identifier"); // Originator's identifier (10A)
+		transaction.setFieldValue("GZOREF", "CRG-25"); // DD originator's reference (20A)
+		transaction.setFieldValue("GZPCDE", "001"); // Payment code (3A)
+	}
+
+	/**
+	 * Setup the mandatory fields
+	 */
+	@Override
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZTCDE", "020"); // Transaction code (3A)
+		transaction.setFieldValue("GZTCCY", "GBP"); // Transaction currency (3A)
+		transaction.setFieldValue("GZTAMT", "10000"); // Transaction amount (15P,0)
+		transaction.setFieldValue("GZVDTE", "1000105"); // Value from date
+		transaction.setFieldValue("GZACCY", "GBP"); // Account/posting currency (3A)
+		transaction.setFieldValue("GZAAMT", "10000"); // Account/posting amount (15P,0)
+	}
+
+	/**
+	 * Test: add mode: new record<br>
+	 * Expected result: Success<br>
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public void test00500Add_NewRecord() throws Exception
+	{
+		// Save the Internal Reference
+		super.test00500Add_NewRecord();
+		TestEnvironment.getTestEnvironment().removeParameter(optionId);
+		TestEnvironment.getTestEnvironment().putParameter(optionId, currentTransaction.getFieldValue("GZREF"));
+	}
+}

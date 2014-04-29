@@ -1,0 +1,162 @@
+package com.misys.equation.common.test;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.access.IEquationStandardObject;
+
+/**
+ * Test cases for Maintain function
+ */
+abstract public class EquationTestCaseMaintain extends EquationTestCase
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EquationTestCaseMaintain.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	// ------------------------------------------------------------------------ Abstract methods
+	abstract public void setupExistKeyFields(EquationStandardTransaction transaction);
+	abstract public void setupNonExistKeyFields(EquationStandardTransaction transaction);
+	abstract public void setupMaintFields(EquationStandardTransaction transaction);
+	abstract public EquationStandardTransaction getTransaction() throws Exception;
+	protected EquationStandardTransaction currentTransaction;
+	
+	boolean isDelayExecuted = false;
+
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		
+		if (!isDelayExecuted)
+		{
+
+			Thread.sleep(1500);
+			isDelayExecuted = true;
+		}
+		
+
+	}
+
+	// ------------------------------------------------------------------------ Test cases
+
+	/**
+	 * Test: validate mode: non-existing record<br>
+	 * Expected result: Fail<br>
+	 * 
+	 * @throws Exception
+	 */
+	public void test00100Maint_Validate_NonExistingRecord() throws Exception
+	{
+		System.out.println("test00100Maint_Validate_NonExistingRecord()");
+		EquationStandardTransaction transaction = getTransaction();
+		transaction.setMode(IEquationStandardObject.FCT_MNT);
+		setupNonExistKeyFields(transaction);
+		setupMaintFields(transaction);
+		applyValidate(transaction, false);
+		currentTransaction = transaction;
+	}
+
+	/**
+	 * Test: retrieval mode: non-existing record<br>
+	 * Expected result: Fail<br>
+	 * 
+	 * @throws Exception
+	 */
+	public void test00200Maint_Retrieval_NonExistingRecord() throws Exception
+	{
+		System.out.println("test00200Maint_Retrieval_NonExistingRecord()");
+		EquationStandardTransaction transaction = getTransaction();
+		transaction.setMode(IEquationStandardObject.FCT_MNT);
+		setupNonExistKeyFields(transaction);
+		applyRetrieval(transaction, false);
+		currentTransaction = transaction;
+	}
+
+	/**
+	 * Test: maintain mode: non-existing record<br>
+	 * Expected result: Fail<br>
+	 * 
+	 * @throws Exception
+	 */
+	public void test00300Maint_NonExistingRecord() throws Exception
+	{
+		System.out.println("test00300Maint_NonExistingRecord()");
+		EquationStandardTransaction transaction = getTransaction();
+		transaction.setMode(IEquationStandardObject.FCT_MNT);
+		setupNonExistKeyFields(transaction);
+		setupMaintFields(transaction);
+		applyTransaction(transaction, false);
+		currentTransaction = transaction;
+	}
+
+	/**
+	 * Test: retrieval mode: existing record<br>
+	 * Expected result: Success<br>
+	 * 
+	 * @throws Exception
+	 */
+	public void test00400Maint_Retrieval_ExistingRecord() throws Exception
+	{
+		System.out.println("test00400Maint_Retrieval_ExistingRecord()");
+		EquationStandardTransaction transaction = getTransaction();
+		transaction.setMode(IEquationStandardObject.FCT_MNT);
+		setupExistKeyFields(transaction);
+		applyRetrieval(transaction, true);
+		currentTransaction = transaction;
+	}
+	/**
+	 * Test: validate mode: existing record<br>
+	 * Expected result: Success<br>
+	 * 
+	 * @throws Exception
+	 */
+	public void test00500Maint_Validate_ExistingRecord() throws Exception
+	{
+		System.out.println("test00500Maint_Validate_ExistingRecord()");
+		EquationStandardTransaction transaction = getTransaction();
+		transaction.setMode(IEquationStandardObject.FCT_MNT);
+		setupExistKeyFields(transaction);
+		session.retrieveEquationTransaction(transaction);
+		setupMaintFields(transaction);
+		applyValidate(transaction, true);
+		currentTransaction = transaction;
+	}
+
+	/**
+	 * Test: maintain mode: existing record<br>
+	 * Expected result: Success<br>
+	 * 
+	 * @throws Exception
+	 */
+	public void test00600Maint_ExistingRecord() throws Exception
+	{
+		System.out.println("test00600Maint_ExistingRecord()");
+		EquationStandardTransaction transaction = getTransaction();
+		transaction.setMode(IEquationStandardObject.FCT_MNT);
+		setupExistKeyFields(transaction);
+		session.retrieveEquationTransaction(transaction);
+		setupMaintFields(transaction);
+		applyTransaction(transaction, true);
+		currentTransaction = transaction;
+	}
+
+	/**
+	 * Test: retrieval mode: existing record<br>
+	 * Expected result: Success<br>
+	 * 
+	 * @throws Exception
+	 */
+	public void test00700Maint_RetrievalMaintain_ExistingRecord() throws Exception
+	{
+		System.out.println("test00700Maint_RetrievalMaintain_ExistingRecord()");
+		EquationStandardTransaction transaction = getTransaction();
+		transaction.setMode(IEquationStandardObject.FCT_MNT);
+		setupExistKeyFields(transaction);
+		session.retrieveEquationTransaction(transaction);
+		applyTransaction(transaction, true);
+		currentTransaction = transaction;
+	}
+}

@@ -1,0 +1,127 @@
+/*
+ * 
+ */
+package com.misys.equation.common.test.userexits;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
+import com.misys.equation.common.userexit.GenericValidationUserExit;
+
+/**
+ * 
+ */
+public class V30FVX extends GenericValidationUserExit
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: V30FVX.java 4721 2009-09-15 11:14:17Z weddelc1 $";
+	/*
+	 * Constructor
+	 */
+	public V30FVX()
+	{
+		fetchConfig();
+	}
+	public void execute(String xfct, String xscrn, String xmode)
+	{
+		if (xfct.equals("A") && xscrn.equals("3") && xmode.equals("V"))
+		{
+			String emailAddress = getFieldValue("ZLEAD1");
+			System.out.println("Trying to send an email to: " + emailAddress);
+			sendEmail(emailAddress, "Congratulations you have become an Equation customer",
+							"Please look forward to your welcome bundle in the post.");
+		}
+	}
+	/**
+	 * Send a single email.
+	 */
+	public void sendEmail(String aToEmailAddr, String aSubject, String aBody)
+	{
+		// Here, no Authenticator argument is used (it is null).
+		// Authenticators are used to prompt the user for user
+		// name and password.
+		Session session = Session.getDefaultInstance(fMailServerConfig, null);
+		MimeMessage message = new MimeMessage(session);
+		try
+		{
+			// the "from" address may be set in code, or set in the
+			// config file under "mail.from" ; here, the latter style is used
+			// message.setFrom( new InternetAddress(aFromEmailAddr) );
+			message.addRecipient(Message.RecipientType.TO, new InternetAddress(aToEmailAddr));
+			message.setSubject(aSubject);
+			message.setText(aBody);
+			Transport.send(message);
+		}
+		catch (MessagingException ex)
+		{
+			System.err.println("Cannot send email. " + ex);
+		}
+	}
+	/**
+	 * Allows the config to be refreshed at runtime, instead of requiring a restart.
+	 */
+	public void refreshConfig()
+	{
+		fMailServerConfig.clear();
+		fetchConfig();
+	}
+	// PRIVATE //
+	private final Properties fMailServerConfig = new Properties();
+	/**
+	 * Open a specific text file containing mail server parameters, and populate a corresponding Properties object.
+	 */
+	@SuppressWarnings("unchecked")
+	private void fetchConfig()
+	{
+		InputStream input = null;
+		try
+		{
+			// If possible, one should try to avoid hard-coding a path in this
+			// manner; in a web application, one should place such a file in
+			// WEB-INF, and access it using ServletContext.getResourceAsStream.
+			// Another alternative is Class.getResourceAsStream.
+			// This file contains the javax.mail config properties mentioned above.
+			InputStream inputstream = null;
+			Class class1 = getClass();
+			inputstream = class1.getClassLoader().getResourceAsStream("email.properties");
+			if (inputstream == null)
+			{
+				throw new FileNotFoundException();
+			}
+			else
+			{
+				fMailServerConfig.load(inputstream);
+				inputstream.close();
+			}
+		}
+		catch (IOException ex)
+		{
+			fMailServerConfig.put("mail.smtp.host", "MailSlough.misys.global.ad");
+			fMailServerConfig.put("mail.smtp.from", "GlobalUserConference@misys.com");
+			System.err.println("Cannot open and load mail server properties file.");
+		}
+		finally
+		{
+			try
+			{
+				if (input != null)
+				{
+					input.close();
+				}
+			}
+			catch (IOException ex)
+			{
+				System.err.println("Cannot close mail server properties file.");
+			}
+		}
+	}
+}

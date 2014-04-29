@@ -1,0 +1,613 @@
+package com.misys.equation.common.ant.builder.helpconverter;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Hashtable;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
+import org.apache.xml.serialize.OutputFormat;
+import org.apache.xml.serialize.XMLSerializer;
+import org.w3c.dom.Document;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+import com.misys.equation.common.ant.builder.core.EquationLogger;
+import com.misys.equation.common.ant.builder.helpers.FileHelper;
+
+/**
+ * Alternative to the AuthorIt converter for use with RoboHelp
+ * <p>
+ * 
+ * RoboHelp outputs the help already in Eclipse format with a toc.xml So a different set of .xsl files are used to: <br>
+ * - edit the toc.xml to add 'html/' to the file paths <br>
+ * - create the context.xml from toc.xml <br>
+ * - create the helpFilesXref.properties from toc.xml
+ * <p>
+ * For now just run this class manually from the Eclipse workspace to convert the help after updating the
+ * {@link #HELP_FILES_LOCATION_ON_YOUR_PC} value at the end of this file.
+ * 
+ * @author Whittap1
+ * 
+ */
+public class RoboHelpToEclipseConverter
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: RoboHelpToEclipseConverter.java 17234 2013-09-09 12:01:38Z Whittap1 $";
+
+	/**
+	 * Logger for this class
+	 */
+	private static final EquationLogger LOG = new EquationLogger(RoboHelpToEclipseConverter.class);
+	private final FileHelper fileHelper = FileHelper.getInstance();
+	private static RoboHelpToEclipseConverter currentInstance;
+
+	private String source;
+	private String docOutputProject;
+	private String helpFilesXrefProject;
+	private String version;
+
+	private String resources;
+	private String tocConverter;
+	private String tocFileOutputPath;
+	private String contextConverter;
+	private String helpFilesXrefConverter;
+
+	// these are the directories input/output.
+	private File destinationDirectory;
+	private File sourceDirectory;
+
+	private final String TOC_CONVERTER = "roboHelp/tocConverter.xsl";
+	private final String CONTEXT_CONVERTER = "roboHelp/contextConverter.xsl";
+	private final String HELPFILES_XREF_CONVERTER = "roboHelp/helpFilesXrefConverter.xsl";
+
+	public String getResources()
+	{
+		return resources;
+	}
+
+	public void setResources(String resources)
+	{
+		this.resources = resources;
+	}
+
+	private RoboHelpToEclipseConverter()
+	{
+	}
+
+	public static RoboHelpToEclipseConverter getInstance()
+	{
+		synchronized (RoboHelpToEclipseConverter.class)
+		{
+			if (currentInstance == null)
+			{
+				currentInstance = new RoboHelpToEclipseConverter();
+			}
+		}
+		return currentInstance;
+	}
+
+	public void process()
+	{
+		setResourcesFiles();
+		setDirectories();
+		setTocFileOutputPath();
+
+		// Copy the data in the source directory to the output directory
+		copyContents(sourceDirectory, destinationDirectory);
+		// Resolve entity references and remove DTD
+		// processXML(); - I don't think this is relevant as the toc file is already a valid .xml
+		// Create the toc.xml
+		callXsl(tocConverter, CommonDefinitions.TOC.toString());
+
+		// Create the contexts.xml
+		callXsl(contextConverter, CommonDefinitions.CONTEXTS.toString());
+
+		// Create the helpProperties.xml
+		try
+		{
+			callXsl(helpFilesXrefConverter, CommonDefinitions.HELPFILES_XREF.toString());
+			// Copy helpFilexXref from ServiceComposer project to FunctionWizard/resources project
+			String inputFilePath = new StringBuilder(docOutputProject).append(CommonDefinitions.FILE_SEPARATOR).append(
+							CommonDefinitions.HELPFILES_XREF).toString();
+			String outputFilePath = new StringBuilder(helpFilesXrefProject).append(CommonDefinitions.FILE_SEPARATOR).append(
+							CommonDefinitions.RESOURCES).append(CommonDefinitions.FILE_SEPARATOR).append(
+							CommonDefinitions.HELPFILES_XREF).toString();
+			FileHelper.getInstance().copyFile(inputFilePath, outputFilePath);
+		}
+		catch (IOException e)
+		{
+			LOG.error(e);
+		}
+	}
+
+	private void setTocFileOutputPath()
+	{
+		tocFileOutputPath = new StringBuilder(destinationDirectory.getAbsolutePath()).append(CommonDefinitions.FILE_SEPARATOR)
+						.append(CommonDefinitions.TOC).toString();
+	}
+
+	/**
+	 * This method will set resources file path.
+	 */
+	private void setResourcesFiles()
+	{
+		if (resources != null)
+		{
+
+			tocConverter = new StringBuilder(resources).append(CommonDefinitions.FILE_SEPARATOR).append(TOC_CONVERTER).toString();
+			contextConverter = new StringBuilder(resources).append(CommonDefinitions.FILE_SEPARATOR).append(CONTEXT_CONVERTER)
+							.toString();
+			helpFilesXrefConverter = new StringBuilder(resources).append(CommonDefinitions.FILE_SEPARATOR).append(
+							HELPFILES_XREF_CONVERTER).toString();
+
+		}
+		else
+		{
+			tocConverter = TOC_CONVERTER;
+			contextConverter = CONTEXT_CONVERTER;
+			helpFilesXrefConverter = HELPFILES_XREF_CONVERTER;
+		}
+	}
+
+	/**
+	 * This methods will create all the output directories.
+	 */
+	private File createTargetDirectory()
+	{
+		StringBuilder outputDirectory = new StringBuilder(docOutputProject);
+		outputDirectory.append(CommonDefinitions.FILE_SEPARATOR);
+		outputDirectory.append(CommonDefinitions.OUTPUT_DIRECTORY.toString());
+
+		File targetDirectory = new File(outputDirectory.toString());
+
+		if (targetDirectory.exists())
+		{
+			// The output dirirectory will be deleted to ensure the latest version.
+			fileHelper.deleteDirectoryButLeaveSVNFiles(targetDirectory);
+		}
+
+		fileHelper.cretateDirectoties(targetDirectory);
+
+		return targetDirectory;
+	}
+
+	private void setDirectories()
+	{
+		sourceDirectory = new File(source);
+		destinationDirectory = createTargetDirectory();
+	}
+
+	/**
+	 * Copy the contents of the source documentation directory prior to transformations
+	 */
+	private void copyContents(File sourceDirectory, File destinationDirectory)
+	{
+		String currentDestinationFile;
+		String currentSourceFile;
+
+		if (LOG.isInfoEnabled())
+		{
+			LOG.info(new StringBuilder("copy from: ").append(sourceDirectory).toString());
+			LOG.info(new StringBuilder("copy to: ").append(destinationDirectory).toString());
+		}
+
+		if (sourceDirectory.isDirectory())
+		{
+			for (String sourceDirectoryList : sourceDirectory.list())
+			{
+				currentDestinationFile = new StringBuilder(destinationDirectory.getAbsolutePath()).append(
+								CommonDefinitions.FILE_SEPARATOR).append(sourceDirectoryList).toString();
+				currentSourceFile = new StringBuilder(sourceDirectory.getAbsolutePath()).append(CommonDefinitions.FILE_SEPARATOR)
+								.append(sourceDirectoryList).toString();
+
+				FileInputStream fileInputStream = null;
+				FileOutputStream fileOutputStream = null;
+
+				try
+				{
+					// If a folder, create destination folder an call recursively to copy contents
+					if (new File(currentSourceFile.toString()).isDirectory())
+					{
+						File targetDirectory = new File(currentDestinationFile.toString());
+						fileHelper.cretateDirectoties(targetDirectory);
+						copyContents(new File(currentSourceFile.toString()), targetDirectory);
+					}
+					else
+					{
+
+						fileInputStream = new FileInputStream(currentSourceFile);
+						fileOutputStream = new FileOutputStream(currentDestinationFile);
+
+						// Use a sensible sized buffer for performance
+						byte[] buffer = new byte[8192];
+						int bytesRead;
+						boolean atStart = true;
+						while ((bytesRead = fileInputStream.read(buffer)) >= 0)
+						{
+							int offset = 0;
+							if (atStart && bytesRead > 2)
+							{
+								// Strip off UTF-8 BOM if present, as this causes XML
+								// parsing issues both in toc generation in this program, and
+								// in Eclipse Help System
+								if (buffer[0] == (byte) 0xef && buffer[1] == (byte) 0xbb && buffer[2] == (byte) 0xbf)
+								{
+									// Skip the BOM
+									offset = 3;
+								}
+							}
+							fileOutputStream.write(buffer, offset, bytesRead - offset);
+							atStart = false;
+						}
+					}
+				}
+				catch (IOException e)
+				{
+					LOG.error("There was an error copyContents", e);
+				}
+				finally
+				{
+					close(fileInputStream);
+					close(fileOutputStream);
+				}
+			}
+		}
+		else
+		{
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error(new StringBuilder("copy from: ").append(sourceDirectory).append("is empty").toString());
+			}
+		}
+		if (LOG.isInfoEnabled())
+		{
+			LOG.info("copyContents() - Copy Successful");
+			LOG.info(new StringBuilder("resources: ").append(resources).toString());
+		}
+	}
+
+	/**
+	 * Process the XML
+	 */
+	private void processXML()
+	{
+		// To insert XML character set ISO-8859-1
+		// No charset is specified by XHTML, but the Xerces parser needs it to avoid
+		// unexpected errors.
+		insertDocumentCharacterSet();
+
+		// Drive through Xerces parser and resolve all entity and character
+		// references (needed for XSL)
+		parseEntityReferences();
+
+		// Finally remove DOCTYPE (needed for XSL)
+		removeDocType();
+	}
+
+	/**
+	 * Get the source Table-Of-Contents XHTML document and parse
+	 */
+	private void parseEntityReferences()
+	{
+		FileOutputStream fileOutputStream = null;
+
+		try
+		{
+			InputSource inputSource = new InputSource(tocFileOutputPath);
+
+			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+			documentBuilderFactory.setValidating(true);
+			documentBuilderFactory.setNamespaceAware(true);
+
+			DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+			documentBuilder.setEntityResolver(new DTDEntityResolver(CommonDefinitions.TRANSITIONAL_DTD.toString()));
+
+			Document document = documentBuilder.parse(inputSource);
+
+			fileOutputStream = new FileOutputStream(tocFileOutputPath);
+
+			OutputFormat outputFormat = new OutputFormat();
+			outputFormat.setIndent(1);
+			outputFormat.setIndenting(true);
+			XMLSerializer serializer = new XMLSerializer(fileOutputStream, outputFormat);
+
+			serializer.asDOMSerializer();
+			serializer.serialize(document.getDocumentElement());
+		}
+		catch (Exception exception)
+		{
+			LOG.error(exception);
+		}
+		finally
+		{
+			close(fileOutputStream);
+		}
+	}
+
+	/**
+	 * Insert XML character set line
+	 */
+	private void insertDocumentCharacterSet()
+	{
+		FileReader fileReader = null;
+		BufferedReader bufferedReader = null;
+		BufferedWriter bufferedWriter = null;
+
+		try
+		{
+			if (LOG.isInfoEnabled())
+			{
+
+				LOG.info(new StringBuilder("This is toc file to load: ").append(tocFileOutputPath).toString());
+			}
+
+			fileReader = new FileReader(new File(tocFileOutputPath));
+			bufferedReader = new BufferedReader(fileReader);
+			String str;
+			StringBuilder strBuff = new StringBuilder();
+			strBuff.append(CommonDefinitions.XML_HEAD);
+			while ((str = bufferedReader.readLine()) != null)
+			{
+				strBuff.append(str);
+			}
+
+			bufferedWriter = new BufferedWriter(new FileWriter(tocFileOutputPath));
+			bufferedWriter.write(strBuff.toString());
+		}
+		catch (Exception exception)
+		{
+			LOG.error(exception);
+		}
+		finally
+		{
+			close(bufferedReader);
+			close(bufferedWriter);
+		}
+	}
+
+	/**
+	 * Remove the DTD prior to XSL processing
+	 */
+	private void removeDocType()
+	{
+		BufferedReader bufferedReader = null;
+		BufferedWriter bufferedWriter = null;
+
+		try
+		{
+			String data;
+			FileReader fileReader = new FileReader(new File(tocFileOutputPath));
+			bufferedReader = new BufferedReader(fileReader);
+			StringBuilder stringBuilder = new StringBuilder();
+			data = bufferedReader.readLine();
+			if (data != null)
+			{
+				while ((data = bufferedReader.readLine()) != null)
+				{
+					stringBuilder.append(data);
+				}
+			}
+			bufferedWriter = new BufferedWriter(new FileWriter(tocFileOutputPath));
+			bufferedWriter.write(stringBuilder.toString());
+		}
+		catch (Exception exception)
+		{
+			LOG.error(exception);
+		}
+		finally
+		{
+			close(bufferedReader);
+			close(bufferedWriter);
+		}
+	}
+
+	/**
+	 * Execute the XSL transform based on the newTocConverter XSL file
+	 */
+	private void callXsl(String xslName, String outputFile)
+	{
+		StringBuilder message;
+		File fileOutput = new File(new StringBuilder(docOutputProject).append(CommonDefinitions.FILE_SEPARATOR).append(outputFile)
+						.toString());
+
+		try
+		{
+			TransformerFactory tFactory = (TransformerFactory) Class.forName("net.sf.saxon.TransformerFactoryImpl").newInstance();
+			StreamSource source = new StreamSource(new File(xslName));
+			Transformer transformer = tFactory.newTransformer(source);
+			StreamSource sourceXML = new StreamSource(new File(tocFileOutputPath));
+
+			StreamResult result = new StreamResult(fileOutput);
+
+			transformer.transform(sourceXML, result);
+		}
+		catch (Exception exception)
+		{
+			message = new StringBuilder();
+			message.append("callXsl(");
+			message.append(xslName);
+			message.append(",");
+			message.append(outputFile);
+			message.append(")");
+			LOG.error(message.toString(), exception);
+		}
+
+		if (LOG.isInfoEnabled())
+		{
+			message = new StringBuilder();
+			message.append("callXsl(");
+			message.append(xslName);
+			message.append(",");
+			message.append(outputFile);
+			message.append(")- XSL Applied XML Generated");
+			LOG.info(message.toString());
+		}
+	}
+
+	public void close(Closeable resource)
+	{
+		if (resource == null)
+		{
+			return;
+		}
+		try
+		{
+			resource.close();
+		}
+		catch (Exception exception)
+		{
+			LOG.error(new StringBuilder("There was a problem trying to close: ").append(resources).toString(), exception);
+		}
+	}
+
+	// --------getters and setters-------///
+
+	public String getSource()
+	{
+		return source;
+	}
+
+	public void setSource(String source)
+	{
+		this.source = source;
+	}
+
+	public String getDestination()
+	{
+		return docOutputProject;
+	}
+
+	public void setDestination(String destination)
+	{
+		docOutputProject = destination;
+	}
+	public String getHelpFilesXrefProject()
+	{
+		return helpFilesXrefProject;
+	}
+
+	public void setHelpFilesXrefProject(String project)
+	{
+		helpFilesXrefProject = project;
+	}
+
+	public String getVersion()
+	{
+		return version;
+	}
+
+	public void setVersion(String version)
+	{
+		this.version = version;
+	}
+
+	/**
+	 * This is a EntityResolver class which will load the DTD classes.
+	 * 
+	 * @author deroset
+	 */
+	public class DTDEntityResolver implements EntityResolver
+	{
+		private String substitute = null;
+		private final String path = new StringBuilder("file:").append(resources).append(CommonDefinitions.FILE_SEPARATOR)
+						.toString();
+		private final Hashtable<String, String> map = new Hashtable<String, String>();
+
+		private void initialisation()
+		{
+			// /// xhtml-lat1.ent /////
+			map.put("xhtml-lat1.ent", new StringBuilder(path).append("xhtml-lat1.ent").toString());
+			map.put("file:xhtml-lat1.ent", new StringBuilder(path).append("xhtml-lat1.ent").toString());
+
+			// /// xhtml-symbol.ent /////
+			map.put("xhtml-symbol.ent", new StringBuilder(path).append("xhtml-symbol.ent").toString());
+			map.put("file:xhtml-symbol.ent", new StringBuilder(path).append("xhtml-special.ent").toString());
+
+			// /// xhtml-special.ent /////
+			map.put("xhtml-special.ent", new StringBuilder(path).append("xhtml-special.ent").toString());
+			map.put("file:xhtml-special.ent", new StringBuilder(path).append("xhtml-special.ent").toString());
+
+			// /// xhtml1-transitional.dtd /////
+			map.put("xhtml1-transitional.dtd", new StringBuilder(path).append("xhtml1-transitional.dtd").toString());
+			map.put("http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd", new StringBuilder(path).append(
+							"xhtml1-transitional.dtd").toString());
+		}
+
+		public DTDEntityResolver(String substitute)
+		{
+			this.substitute = substitute;
+			initialisation();
+		}
+
+		/**
+		 * This method will return a <code>InputSource</code> that represents the DTD and its files.
+		 */
+		public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException
+		{
+			InputSource inputSource = null;
+			String path = map.get(systemId);
+
+			try
+			{
+				if (path == null)
+				{
+					path = systemId;
+				}
+				if (LOG.isInfoEnabled())
+				{
+					LOG.info(new StringBuilder("systemId: ").append(systemId).toString());
+					LOG.info(new StringBuilder("substitute: ").append(substitute).toString());
+					LOG.info(new StringBuilder("path: ").append(path).toString());
+				}
+				inputSource = new InputSource(path);
+			}
+			catch (Exception exception)
+			{
+				LOG.error(exception);
+			}
+			return inputSource;
+		}
+	}
+
+	/**
+	 * This method will be used to run the RoboHelpConverter.
+	 * 
+	 * Just update the HELP_FILES_LOCATION_ON_YOUR_PC value below
+	 * 
+	 * @param args
+	 */
+
+	public static void main(String[] args)
+	{
+		RoboHelpToEclipseConverter roboHelpToEclipseConverter = RoboHelpToEclipseConverter.getInstance();
+
+		// This is the only property that needs to change
+		roboHelpToEclipseConverter.setSource(HELP_FILES_LOCATION_ON_YOUR_PC);
+
+		// These will always be the same values
+		roboHelpToEclipseConverter.setDestination("../EquationServiceComposerHelp");
+		roboHelpToEclipseConverter.setResources("resources");
+		roboHelpToEclipseConverter.setHelpFilesXrefProject("../EquationFunctionWizard");
+		roboHelpToEclipseConverter.process();
+	}
+
+	/**
+	 * Update this with where you put the files from the technical authors
+	 */
+	private final static String HELP_FILES_LOCATION_ON_YOUR_PC = "C:\\Help\\060913\\eclipse output";
+
+}

@@ -1,0 +1,226 @@
+// ------------------------------------------------------------------------------
+// Copyright Misys IBS
+//
+// Owner: Des Middlemass
+//
+// Class: EQEnquiry: Base class for controlling an Equation enquiry call
+// ------------------------------------------------------------------------------
+package com.misys.equation.common.internal.eapi.core;
+
+/***********************************************************************************************************************************
+ * Controls an Equation enquiry.
+ * <P>
+ * An EQEnquiry or subclass instance is created through the createEQObject method of the EQSession class.
+ * <P>
+ * Field values can then be set in a number of ways. The concrete subclasses only provide get/set methods named after the fields
+ * (e.g. getZLAB, setZLAB):
+ * <UL>
+ * <LI>setFieldsFromParameters( map ). This is useful for setting the fields delivered through an http request.</LI>
+ * <LI>setFieldValue( fieldName, fieldValue ). This is useful when setting specific fields directly.</LI>
+ * <LI>And lastly by obtaining the EQField object itself through getField( fieldName ) and then using EQField setValue( value ).</LI>
+ * </UL>
+ * Once the key input fields have been set it is possible to read the database object. This is done through the retrieve method.
+ * This will validate the input fields and return the database object if the key is valid. This will be indicated by a return value
+ * of true. If false is returned getStatus should be called to determine the reason for failure. Extended error and warning messages
+ * can be examined using the getMessages method.
+ * <P>
+ * See the EQEnquirySample.
+ * <P>
+ * 
+ * @see com.misys.equation.ebs.samples.EQEnquirySample
+ * @author Misys International Banking Systems Ltd.
+ */
+public class EQEnquiryImpl extends EQFunction implements java.io.Serializable, EQEnquiry
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EQEnquiryImpl.java 9725 2010-11-08 12:34:45Z MACDONP1 $";
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	// This attribute is used to store cvs version information.
+	/*******************************************************************************************************************************
+	 * Copyright <a href="http://www.misys.com"> Misys International Banking Systems Ltd, 2006 </a>
+	 */
+	public static final String copyright = "Copyright Misys International Banking Systems Ltd, 2006";
+	/*******************************************************************************************************************************
+	 * Call Mode Constant - Not yet set - no call has been made.
+	 */
+	protected static final int ACTION_INVALID = -1;
+	/*******************************************************************************************************************************
+	 * Call Mode Constant - The call was to initialise the object.
+	 */
+	protected static final int ACTION_INIT = 0;
+	/*******************************************************************************************************************************
+	 * Call Mode Constant - The call was to prompt on a field.
+	 */
+	protected static final int ACTION_PROMPT = 3;
+	/*******************************************************************************************************************************
+	 * Call Mode Constant - The call was to process a user event.
+	 */
+	protected static final int ACTION_EVENT = 4;
+	/*******************************************************************************************************************************
+	 * Call Mode Constant - The call was to retrieve the data from the database.
+	 */
+	public static final int ACTION_RETRIEVE = 5;
+	// The last action that was used
+	protected int action;
+	/*******************************************************************************************************************************
+	 * Default Constuctor.
+	 */
+	protected EQEnquiryImpl()
+	{
+	}
+	/*******************************************************************************************************************************
+	 * Constructor which uses the previously created EQObjectMetaData contain field definition information.
+	 */
+	@Override
+	protected void initialise(EQObjectMetaData map)
+	{
+		super.initialise(map);
+		bIncrementalMode = false;
+		status = STATUS_UNINITIALISED;
+		action = ACTION_INVALID;
+	}
+	/*******************************************************************************************************************************
+	 * Get the current action(call mode) for the object, one of the ACTION constants.
+	 * <P>
+	 * 
+	 * @return the current action.
+	 */
+	protected int getAction()
+	{
+		return action;
+	}
+	/*******************************************************************************************************************************
+	 * Specifies whether Equation journaling information will be recorded when an enquiry is performed.
+	 * <P>
+	 * Note: This flag only has an effect if the enquiry supports Equation journaling.
+	 * <P>
+	 * 
+	 * @param journalEnquiry
+	 *            Equation journaling information will be generated when an enquiry is performed.
+	 * @throws IllegalArgumentException
+	 *             if not an enquiry
+	 */
+	public void setJournalEnquiryFlag(boolean journalEnquiry)
+	{
+		if (isEnquiryMode())
+		{
+			JOURNALENQUIRY = journalEnquiry ? "Y" : "N";
+		}
+		else
+		{
+			throw new IllegalArgumentException("Setting of journal enquiry flag only valid if enquiry");
+		}
+	}
+	/*******************************************************************************************************************************
+	 * Determine if Equation journaling information will be recorded when an enquiry is performed.
+	 * <P>
+	 * Note: This flag only has an effect if the enquiry supports Equation journaling.
+	 * <P>
+	 * 
+	 * @return true if Equation journaling information will be generated when an enquiry is performed.
+	 */
+	public boolean isJournalEnquiryFlagSet()
+	{
+		if (isEnquiryMode())
+		{
+			return JOURNALENQUIRY.equalsIgnoreCase("Y");
+		}
+		else
+		{
+			return false;
+		}
+	}
+	/*******************************************************************************************************************************
+	 * Get the user identifier of the person who has entered data into the object.
+	 * <P>
+	 * 
+	 * @return the user identifier of the person who has entered data.
+	 */
+	public String getAuditUserID()
+	{
+		return AUDITUSERID;
+	}
+	/*******************************************************************************************************************************
+	 * Specifies the user identifier of the person who has entered data into the object.
+	 * <P>
+	 * 
+	 * @param auditUserID
+	 *            the user identifier of the person who has entered data.
+	 * @throws IllegalArgumentException
+	 *             if the user identifier is longer than ten characters.
+	 */
+	public void setAuditUserID(String auditUserID)
+	{
+		if (auditUserID.length() > 10)
+		{
+			throw new IllegalArgumentException("Audit User ID Length Incorrect :" + auditUserID);
+		}
+		AUDITUSERID = auditUserID;
+	}
+	/*******************************************************************************************************************************
+	 * Reset method for the object.
+	 */
+	@Override
+	public void reset()
+	{
+		super.reset();
+		if (prompt != null)
+		{
+			prompt = null;
+		}
+		action = ACTION_INVALID;
+	}
+	/*******************************************************************************************************************************
+	 * Initialize the API - calls Equation to obtain initial defaults/visibility.
+	 * <P>
+	 * 
+	 * @param session
+	 *            the session connected to the server.
+	 * @return whether the call succeeded. Use getStatus for detailed status information.
+	 * @throws EQException
+	 *             if an error occurs during processing
+	 */
+	protected boolean initialize(EQSession session) throws EQException
+	{
+		resetPrompt();
+		action = ACTION_INIT;
+		APIMODE = EQFunction.API_MODE_INIT;
+		status = callAPILoop(session);
+		return status >= STATUS_SUCCESS;
+	}
+	/*******************************************************************************************************************************
+	 * Calls the retrieve method in an enquiry.
+	 * <P>
+	 * 
+	 * @param session
+	 *            the session connected to the server.
+	 * @return whether the call succeeded. Use getStatus for detailed status information.
+	 * @throws EQException
+	 *             if an error occurs during processing
+	 */
+	public boolean performAction(EQSession session) throws EQException
+	{
+		return retrieve(session);
+	}
+	/*******************************************************************************************************************************
+	 * Call Equation to retrieve data associated with key.
+	 * <P>
+	 * 
+	 * @param session
+	 *            the session connected to the server.
+	 * @return whether the call succeeded. Use getStatus for detailed status information.
+	 * @throws EQException
+	 *             if an error occurs during processing
+	 */
+	public boolean retrieve(EQSession session) throws EQException
+	{
+		resetPrompt();
+		action = ACTION_RETRIEVE;
+		APIMODE = EQFunction.API_MODE_RETRIEVE;
+		callAPILoop(session);
+		return status == STATUS_DATA_RETRIEVED || status == STATUS_COMPLETE;
+	}
+}

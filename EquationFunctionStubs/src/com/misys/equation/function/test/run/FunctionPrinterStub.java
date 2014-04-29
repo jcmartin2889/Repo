@@ -1,0 +1,120 @@
+package com.misys.equation.function.test.run;
+
+import com.misys.equation.common.utilities.Toolbox;
+import com.misys.equation.function.journal.JournalRecord;
+import com.misys.equation.function.runtime.FunctionHandler;
+import com.misys.equation.function.runtime.FunctionPrinter;
+
+/**
+ * FunctionPrinter stub
+ * 
+ * This is how to use the Function Printer given the journal record
+ * 
+ */
+public class FunctionPrinterStub extends FunctionHandlerStubTestCase
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: FunctionPrinterStub.java 6793 2010-03-31 12:10:20Z deroset $";
+
+	public FunctionPrinterStub()
+	{
+		try
+		{
+			setUp();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] inputParameters)
+	{
+		FunctionPrinterStub test = new FunctionPrinterStub();
+		test.test();
+	}
+
+	private boolean test()
+	{
+		// Have a bash...
+		FunctionHandler functionHandler = null;
+		try
+		{
+			// create the function handler
+			functionHandler = FunctionToolboxStub.getFunctionHandler(user, "SESSIONID", "");
+
+			// create the function
+			functionHandler.doNewTransaction("ALZ", "");
+
+			// Setup the journal key (after image)
+			JournalRecord journalRecordAft = new JournalRecord(functionHandler.getFhd().getScreenSetHandler().rtvScrnSetCurrent()
+							.getFunction());
+			journalRecordAft.setWorkstationID("EQ40");
+			journalRecordAft.setJrnDay(12);
+			journalRecordAft.setJrnTime(105746);
+			journalRecordAft.setJrnSequence(1);
+			journalRecordAft.setImage(JournalRecord.IMAGE_AFT);
+
+			// Setup the journal key (before image)
+			JournalRecord journalRecordBef = new JournalRecord(functionHandler.getFhd().getScreenSetHandler().rtvScrnSetCurrent()
+							.getFunction());
+			journalRecordBef.setWorkstationID("ABCD");
+			journalRecordBef.setJrnDay(3);
+			journalRecordBef.setJrnTime(93628);
+			journalRecordBef.setJrnSequence(1);
+			journalRecordBef.setImage(JournalRecord.IMAGE_AFT);
+
+			// Retrieve the journals
+			journalRecordAft.rtvRecord(session);
+			journalRecordBef.rtvRecord(session);
+
+			// Create the function printer
+			FunctionPrinter functionPrinter = new FunctionPrinter(functionHandler.getFhd());
+
+			// Print before and after image
+			System.out.println("Journal print 1");
+			functionPrinter.print(journalRecordAft, journalRecordBef);
+			System.out.println(Toolbox.printList(functionPrinter.getLines()));
+			System.out.println("Journal print 1 finished");
+
+			// Print after image
+			System.out.println("Journal print 2");
+			functionPrinter.setPrintHeader(true);
+			functionPrinter.setPrintBlankLine(true);
+			functionPrinter.print(journalRecordAft);
+			System.out.println(Toolbox.printList(functionPrinter.getLines()));
+			System.out.println("Journal print 2 finished");
+
+			// Print before image
+			System.out.println("Journal print 3");
+			functionPrinter.setPrintHeader(false);
+			functionPrinter.setBeforeImage(true);
+			functionPrinter.print(journalRecordBef);
+			System.out.println(Toolbox.printList(functionPrinter.getLines()));
+			System.out.println("Journal print 3 finished");
+
+			System.out.println("Done");
+
+			return true;
+
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+		finally
+		{
+			cleanUp();
+		}
+	}
+
+	public void testPrinter()
+	{
+		FunctionPrinterStub stub = new FunctionPrinterStub();
+		boolean success = stub.test();
+		assertEquals(true, success);
+	}
+
+}

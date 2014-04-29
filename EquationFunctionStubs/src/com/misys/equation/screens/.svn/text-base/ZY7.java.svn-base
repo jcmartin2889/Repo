@@ -1,0 +1,10 @@
+package com.misys.equation.screens;
+
+import com.misys.equation.function.adaptor.AbstractFunctionAdaptor;
+
+public class ZY7 extends AbstractFunctionAdaptor
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+}

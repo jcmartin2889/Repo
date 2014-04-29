@@ -1,0 +1,66 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseFullyCancel;
+
+/**
+ * Equation test cases for Maintain function
+ */
+public class Del_OKO extends EquationTestCaseFullyCancel
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: Del_OKO.java 8213 2010-07-15 16:56:49Z CHALLIP1 $";
+	String programName = "W29FRR";
+	String optionId = "OKO";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		retrieveBeforeCancel = true;
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZBPN", "05436677"); // Bank Paper Number (12A)
+		transaction.setFieldValue("GZFLDN", "10000009"); // Folder Number (8A)
+		transaction.setFieldValue("GZBRNM", "LOND"); // Branch Mnemonic (4A)
+	}
+
+}

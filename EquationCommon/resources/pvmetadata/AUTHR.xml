@@ -1,0 +1,71 @@
+<EquationPVMetaData PFile="EQSEC" description="AUTHR" id="AUTHR" globalConsolidatedPrompt="true" globalLibraryPrompt="false"  label="AUTHR" packageName="com.misys.pvs">
+  <databaseXref/>
+  <decodeMetaData>
+  	<!-- #TODO: Retrieve Phase and Eod Unit from Unit Status when it becomes available. -->
+    <decodeMetaData decode=" " description="Default Decode" index="0" length="0" pFile="EQSEC"
+		sqlSelect="
+		WITH RS AS (SELECT
+			CHAR('${unit.unitStatus.phase}', 3) AS ZLPHS1C,
+			CHAR('${unit.unitStatus.mode}', 4) AS ZLINPC,
+			CHAR('${unit.unitStatus.kapphs}', 3) AS ZLPHS2C,
+			SUBSTR(DIGITS(INT(${unit.systemOption($PDATE)})),4) AS ZLDTE1C,
+			SUBSTR(DIGITS(INT(${unit.systemOption($TDATE)})),4) AS ZLDTE2C,
+			SUBSTR(DIGITS(INT(${unit.systemOption($YDATE)})),4) AS ZLDTE3C,
+			SECUSER AS ZLUIDC,
+			SECUNIT AS SECUNIT
+		 FROM ${unit.system.baseLibrary}/EQSEC
+		) SELECT ZLPHS1C, ZLINPC, ZLPHS2C, ZLDTE1C, ZLDTE2C, ZLDTE3C, ZLUIDC 
+		    FROM RS
+		   WHERE SECUNIT = '${unitId}' "
+		sqlFrom=" ">
+      <keyFields>
+        <keyField>ZLUIDC</keyField>
+      </keyFields>
+      <pvFields>
+        <pvField>ZLUIDC</pvField>
+      </pvFields>
+    </decodeMetaData>
+  </decodeMetaData>
+  <fieldMetaData>
+    <fieldMetaData alpha="false" composite="false" decimal="0" description="System" header="System" id="SYSTEM" index="0" key="false" length="8" numericField="false" packed="false" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" decimal="0" description="Unit" header="Unit" id="UNIT" index="8" key="false" label="UNIT" length="3" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" decimal="0" description="Unit Description" header="Unit Description" id="UNITDESC" index="11" key="false" label="UNITDESC" length="20" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="ZLPHS1C" decimal="0" description="Phase" header="Phase" id="ZLPHS1C" index="31" key="true" length="3" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="ZLINPC" decimal="0" description="Input Mode" header="Input Mode" id="ZLINPC" index="34" key="true" length="4" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="ZLPHS2C" decimal="0" description="Eod Unit" header="Eod Unit" id="ZLPHS2C" index="38" key="true" length="3" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="ZLDTE1C" decimal="0" description="Date Today" header="Date Today" id="ZLDTE1C" index="41" key="true" length="7" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="ZLDTE2C" decimal="0" description="Date Tomorrow" header="Date Tomorrow" id="ZLDTE2C" index="48" key="true" length="7" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="ZLDTE3C" decimal="0" description="Date Yesterday" header="Date Yesterday" id="ZLDTE3C" index="55" key="true" length="7" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="ZLUIDC" decimal="0" description="User Id" header="User Id" id="ZLUIDC" index="62" key="true" length="10" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+  </fieldMetaData>
+  <hdrNames>
+    <hdrName>SERVER</hdrName>
+    <hdrName>UNIT</hdrName>
+    <hdrName>UNITDESC</hdrName>
+    <hdrName>ZLPHS1C</hdrName>
+    <hdrName>ZLINPC</hdrName>
+    <hdrName>ZLPHS2C</hdrName>
+    <hdrName>ZLDTE1C</hdrName>
+    <hdrName>ZLDTE2C</hdrName>
+    <hdrName>ZLDTE3C</hdrName>
+    <hdrName>ZLUIDC</hdrName>
+  </hdrNames>
+  <hdrPositions>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+  </hdrPositions>
+  <pvDvals>
+    <pvDval>ZLUIDC</pvDval>
+  </pvDvals>
+  <pvOvals>
+    <pvOval>ZLUIDC</pvOval>
+  </pvOvals>
+</EquationPVMetaData>

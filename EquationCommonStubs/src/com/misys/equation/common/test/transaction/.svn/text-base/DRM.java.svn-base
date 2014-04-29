@@ -1,0 +1,78 @@
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseFully;
+
+/**
+ * Equation test cases for Maintain Early Withdrawal Penalties
+ */
+public class DRM extends EquationTestCaseFully
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	String programName = "J32FRR";
+	String optionId = "DRM";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		retrieveBeforeCancel = true;
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZDLP", "RTD"); // Deal type
+		transaction.setFieldValue("GZCCY", "GBP"); // Currency mnemonic
+		transaction.setFieldValue("GZRTP", "0"); // Rate type
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	@Override
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZ1PRD", "1"); // 1st early period code
+		transaction.setFieldValue("GZ2PRD", "0"); // 1st early period code
+		transaction.setFieldValue("GZ3PRD", "0"); // 1st early period code
+		transaction.setFieldValue("GZ4PRD", "0"); // 1st early period code
+		transaction.setFieldValue("GZ5PRD", "0"); // 1st early period code
+	}
+
+	/**
+	 * Setup the mandatory fields (maintain mode)
+	 */
+	@Override
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZ1PRD", "2"); // 1st early period code
+	}
+
+}

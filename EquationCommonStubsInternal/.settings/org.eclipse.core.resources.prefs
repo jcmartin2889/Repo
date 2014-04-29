@@ -1,0 +1,10 @@
+#Mon Jun 20 14:16:12 BST 2011
+eclipse.preferences.version=1
+encoding//src/com/misys/equation/ui/services/test/ServiceDirectory.java=UTF-8
+encoding//src/com/misys/equation/ui/services/test/ServiceDirectoryService.java=UTF-8
+encoding//src/com/misys/equation/ui/services/test/ServiceDirectoryServiceLocator.java=UTF-8
+encoding//src/com/misys/equation/ui/services/test/ServiceDirectorySoapBindingStub.java=UTF-8
+encoding//src/com/misys/equation/utility/test/ConversionRoundTrip.java=UTF-8
+encoding//src/com/misys/equation/utility/test/LanguageTests.java=UTF-8
+encoding//src/com/misys/equation/utility/test/StringTests.java=UTF-8
+encoding//src/com/misys/equation/utility/test/TestCharacterConversion.java=UTF-8

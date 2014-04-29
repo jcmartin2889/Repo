@@ -1,0 +1,96 @@
+package com.misys.equation.function.runtime;
+
+/**
+ * This class holds all the details necessary for creating/checking that a Java User Exit innerclass/method
+ * <p>
+ * This consists of the following attributes. Note that the SuperClass name, and the names of the parameter variables are only
+ * relevant to the caller when actually creating the inner class/method, and are not needed when checking for existence:
+ * <ul>
+ * <li>Name of the Superclass for the inner class</li>
+ * <li>Inner class name</li>
+ * <li>Method name</li>
+ * <li>Method return type</li>
+ * <li>Parameter type names</li>
+ * <li>Parameter variable names</li>
+ */
+public class UserExitDetails
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: UserExitDetails.java 3739 2009-06-01 15:03:34Z MACDONP1 $";
+	private String superClassName;
+	private String innerClassName;
+	private String methodName;
+	private String methodReturnType;
+	private String[] methodParameterTypes;
+	private String[] methodParameterNames;
+
+	/**
+	 * @return a <code>String[]</code> containing the name of the base class that the inner class will extend.
+	 *         <p>
+	 *         This is only used when if creating the inner class.
+	 */
+
+	public String getSuperClassName()
+	{
+		return superClassName;
+	}
+	public void setSuperClassName(String superClassName)
+	{
+		this.superClassName = superClassName;
+	}
+	/**
+	 * @return a <code>String[]</code> containing the name of the inner class
+	 */
+	public String getInnerClassName()
+	{
+		return innerClassName;
+	}
+	public void setInnerClassName(String innerClassName)
+	{
+		this.innerClassName = innerClassName;
+	}
+	/**
+	 * @return a <code>String[]</code> containing the names of the method.
+	 */
+	public void setMethodName(String methodName)
+	{
+		this.methodName = methodName;
+	}
+	public String getMethodName()
+	{
+		return methodName;
+	}
+	/**
+	 * @return a <code>String</code> containing the name of the return type. For example "boolean"
+	 */
+	public String getMethodReturnType()
+	{
+		return methodReturnType;
+	}
+	public void setMethodReturnType(String returnTypeName)
+	{
+		this.methodReturnType = returnTypeName;
+	}
+	/**
+	 * @return a <code>String[]</code> containing the names of the parameter types. For example {"UserData", "String"}
+	 */
+	public String[] getMethodParameterTypes()
+	{
+		return methodParameterTypes;
+	}
+	public void setMethodParameterTypes(String[] parameterTypes)
+	{
+		this.methodParameterTypes = parameterTypes;
+	}
+	/**
+	 * @return a <code>String[]</code> containing the parameter names to be used when creating the method
+	 */
+	public String[] getMethodParameterNames()
+	{
+		return methodParameterNames;
+	}
+	public void setMethodParameterNames(String[] parameterNames)
+	{
+		this.methodParameterNames = parameterNames;
+	}
+}

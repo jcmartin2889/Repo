@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+     This file contains all builder custom tasks.  
+     
+     Given that  the builder itself has to build separately all builder ant 
+     task has to be defined in a separated file.
+     ====================================================================== -->
+<project name="EquationBuilderCommon" basedir=".">
+
+	<!-- ************************** PROPERTIES ***************************** -->
+
+	<!--Sets the properties values using the predefined build.properties. -->
+	<property file="build.properties" />
+	<property name="class.dir" location="${CLASSES}" />
+
+	<!-- ************************** IMPORTS ******************************** -->
+
+	<!--It will import the global ant deffitions. such as classpaths and pathconverts -->
+	<import optional="true" file="${build.project.dir}/equationBuilderGlobalDefinitions.xml" />
+
+	<!-- ************************** TASK DEFINITIONS *********************** -->
+
+	<!-- It defines CvsVersionTag custom ant  task.-->
+	<taskdef name="cvsVersion" classname="com.misys.equation.common.ant.builder.tasks.CvsVersionTag" classpath="${class.dir}" classpathref="classpathAntTaks">
+	</taskdef>
+
+	<!-- It defines HelpConverterTag custom ant  task.-->
+	<taskdef name="helpConverterTag" classname="com.misys.equation.common.ant.builder.tasks.HelpConverterTag" classpath="${class.dir}" classpathref="classpathAntTaks">
+	</taskdef>
+
+	<!-- It defines HelpConverterTag custom ant  task.-->
+	<taskdef name="helpTextTag" classname="com.misys.equation.common.ant.builder.tasks.HelpTextTag" classpath="${class.dir}" classpathref="classpathAntTaks">
+	</taskdef>
+
+	<!-- It defines MinimumFieldsExtractorTag custom ant  task.-->
+	<taskdef name="minimumFieldsExtractorTag" classname="com.misys.equation.common.ant.builder.tasks.MinimumFieldsExtractorTag" classpath="${class.dir}" classpathref="classpathAntTaks">
+	</taskdef>
+
+	<!-- It defines MinimumFieldsExtractorTag custom ant  task.-->
+	<taskdef name="equationVersionNumberTag" classname="com.misys.equation.common.ant.builder.tasks.EquationVersionNumberTag"  classpath="${class.dir}"  classpathref="classpathAntTaks">
+	</taskdef>
+
+	<!-- It defines EclipseConfiguationFileBackupTag custom ant  task.-->
+	<taskdef name="eclipseConfiguationFileBackupTag" classname="com.misys.equation.common.ant.builder.tasks.EclipseConfiguationFileBackupTag"  classpath="${class.dir}"  classpathref="classpathAntTaks">
+	</taskdef>
+	
+	<!-- It defines EclipseConfigurationFilesRestoreTag custom ant  task.-->
+	<taskdef name="eclipseConfigurationFilesRestoreTag" classname="com.misys.equation.common.ant.builder.tasks.EclipseConfigurationFilesRestoreTag"  classpath="${class.dir}"  classpathref="classpathAntTaks">
+	</taskdef>
+	
+
+	<!-- It defines generatePluginUpdateSiteTag custom ant  task.-->
+	<taskdef name="generatePluginUpdateSiteTag" classname="com.misys.equation.common.ant.builder.tasks.GeneratePluginUpdateSiteTag" classpath="${class.dir}" classpathref="classpathAntTaks">
+	</taskdef>
+
+	<!-- *************************** TARGETS ******************************* -->
+
+	<!-- =================================================================== -->
+	<!-- target: cvs_version                                                 -->
+	<!-- =================================================================== -->
+
+	<target name="cvs_version" description="This task will add the cvs-version attribute in all java files.">
+
+		<echo level="info" message="${src.dir}" />
+		<cvsVersion inputDirectory="${src.dir}" />
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: helpConverterTag                                            -->
+	<!-- =================================================================== -->
+
+	<target name="helpConverterTag" description="This task will add the cvs-version attribute in all java files.">
+		<helpConverterTag resources="${resources.dir}" docSource="${doc.source}" docOutputProject="${docOutputProject}" helpFilesXrefProject="${helpFilesXrefProject}" version="${version}" />
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: helpTextTag                                                 -->
+	<!-- =================================================================== -->
+
+	<target name="helpTextTag" description="This task will excecute the helpText task and create the html text files.">
+		<helpTextTag resources="${resources.dir}" inputSource="${helpTextInput.dir}" outputProject="${helpTextOutput.dir}" />
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: minimumFieldsExtractorTag                                   -->
+	<!-- =================================================================== -->
+
+	<target name="minimumFieldsExtractorTag" description="This task will excecute the fields extractor and write the properties file.">
+		<minimumFieldsExtractorTag inputDirectory="${inputDirectory.dir}" targetFileLocation="${targetFileLocation.file}" />
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: equationVersionNumberTag                                   -->
+	<!-- =================================================================== -->
+
+	<target name="equationVersionNumberTag" description="This task will excecute the fields extractor and write the properties file.">
+		<equationVersionNumberTag 
+			
+			inputVersionNumberAttributeFiles="${inputVersionNumberAttributeFiles}" 
+			inputVersionNumberInJarNamesFiles="${inputVersionNumberInJarNamesFiles}"  
+			eclipseClassPathFiles="${eclipseClassPathFiles}"
+			eclipsePluginPathFiles="${eclipsePluginPathFiles}"
+			overwriteVersion="${overwriteVersion}"
+			versionNumberInManifest="${versionNumberInManifest}"
+			versionNumberInJavaFiles="${versionNumberInJavaFiles}"
+			
+		/>
+	</target>
+	<!-- =================================================================== -->
+	<!-- target: eclipseConfiguationFileBackupTag							 -->
+	<!-- =================================================================== -->
+
+	<target name="eclipseConfiguationFileBackupTag" description="This task will excecute eclipseConfiguationFileBackupTag  and create a backup files of the current eclipse configuration.">
+		<eclipseConfiguationFileBackupTag
+		
+			inputVersionNumberAttributeFiles="${inputVersionNumberAttributeFiles}" 
+			inputVersionNumberInJarNamesFiles="${inputVersionNumberInJarNamesFiles}"  
+			eclipseClassPathFiles="${eclipseClassPathFiles}"
+			eclipsePluginPathFiles="${eclipsePluginPathFiles}"
+			backupFilepath="${backupFilepath}"
+		/>
+	</target>
+	
+	<!-- =================================================================== -->
+	<!-- target: eclipseConfigurationFilesRestoreTag	-->
+	<!-- =================================================================== -->
+
+	<target name="eclipseConfigurationFilesRestoreTag" description="This task will excecute the fields extractor and write the properties file.">
+		<eclipseConfigurationFilesRestoreTag
+			backupFilepath="${backupFilepath}"
+		/>
+	</target>
+	
+	<!-- =================================================================== -->
+	<!-- target: generatePluginUpdateSite                                    -->
+	<!-- =================================================================== -->
+
+	<target name="generatePluginUpdateSiteTag" description="This task will generate the plugin update site.">
+		<generatePluginUpdateSiteTag builderProjectPropertyFile="${builderProjectPropertyFile}" pluginProjectManifests="${pluginProjectManifests}" pluginJarFolders="${pluginJarFolders}" />
+	</target>
+
+	
+</project>

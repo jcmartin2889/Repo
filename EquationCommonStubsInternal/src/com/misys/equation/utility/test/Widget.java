@@ -1,0 +1,42 @@
+package com.misys.equation.utility.test;
+
+import java.util.Hashtable;
+
+import com.misys.equation.common.access.EquationWidget;
+import com.misys.equation.common.test.EquationTestCase;
+import com.misys.equation.common.utilities.Toolbox;
+
+public class Widget extends EquationTestCase
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: Widget.java 11310 2011-06-27 12:20:21Z ESTHER.WILLIAMS $";
+	public void test()
+	{
+		Hashtable<String, String> mapping = new Hashtable<String, String>();
+		mapping.put("&WID", "WIDGET");
+		mapping.put("&CURFLD", "CURRENTFIELD");
+
+		// Have a bash...
+		try
+		{
+			EquationWidget widget = session.getUnit().getWidget("CAL");
+			System.out.println(widget.getWidgetName());
+			System.out.println(widget.getWidgetDesc());
+			System.out.println(widget.getWidgetScript());
+			System.out.println(widget.getWidgetScript(mapping));
+			Toolbox.printHashTable(widget.getWidgetAttribs());
+
+			widget = session.getUnit().getWidget("IDB");
+			System.out.println(widget.getWidgetName());
+			System.out.println(widget.getWidgetDesc());
+			System.out.println(widget.getWidgetScript());
+			System.out.println(widget.getWidgetScript(mapping));
+			Toolbox.printHashTable(widget.getWidgetAttribs());
+			System.out.println("Finish");
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+}

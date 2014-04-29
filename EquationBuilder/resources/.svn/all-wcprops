@@ -1,0 +1,77 @@
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/repos/bfeq_src/!svn/ver/17234/branches/BFEQ_Branch_3-1/EquationBuilder/resources
+END
+xhtml-special.ent
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/resources/xhtml-special.ent
+END
+xhtml-lat1.ent
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/resources/xhtml-lat1.ent
+END
+contextConverter.xsl
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/resources/contextConverter.xsl
+END
+tocConverter.xsl
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/resources/tocConverter.xsl
+END
+xhtml-symbol.ent
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/resources/xhtml-symbol.ent
+END
+APIHtmlTemplate_Header.html
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/resources/APIHtmlTemplate_Header.html
+END
+helpText.properties
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/resources/helpText.properties
+END
+APIHtmlTemplate_Footer.html
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/resources/APIHtmlTemplate_Footer.html
+END
+xhtml1-transitional.dtd
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/resources/xhtml1-transitional.dtd
+END
+APIHtmlTemplate.html
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/resources/APIHtmlTemplate.html
+END
+APIHtmlTemplate_Repeat.html
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/resources/APIHtmlTemplate_Repeat.html
+END
+helpFilesXrefConverter.xsl
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/resources/helpFilesXrefConverter.xsl
+END

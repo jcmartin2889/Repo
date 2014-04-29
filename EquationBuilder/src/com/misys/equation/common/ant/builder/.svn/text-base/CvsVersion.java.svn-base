@@ -1,0 +1,208 @@
+package com.misys.equation.common.ant.builder;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.util.ArrayList;
+import java.util.List;
+
+public class CvsVersion
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private final String inputDirectory;
+	// This List contains the files to process.
+	private List<File> filesToProcess;
+	// This List contains a list of processed file.
+	private final List<File> processedFiles;
+	// This is the extension file to be processed.
+	private static final String FILE_EXTENSION = ".java";
+	private FileProcessor fileProcessor;
+
+	// This is the filter
+	private static FileFilter javaFilter = new FileFilter()
+	{
+		public boolean accept(File pathname)
+		{
+			return pathname.getName().endsWith(FILE_EXTENSION);
+		}
+	};
+
+	/**
+	 * This is the default constructor.
+	 * 
+	 * @param inputFileName
+	 *            this is the directory which contains all file to be processed.
+	 */
+	public CvsVersion(String inputFileName)
+	{
+		inputDirectory = inputFileName;
+		processedFiles = new ArrayList<File>();
+	}
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args)
+	{
+		String inputFileName = args[0];
+
+		CvsVersion cvsVersion = new CvsVersion(inputFileName);
+		cvsVersion.processFiles();
+	}
+
+	/**
+	 * This method will process all files.
+	 * <ul>
+	 * <li>1)The <code>filesToProcess</code> attribute will be populated.</li>
+	 * <li>2)The <code>filesToProcess</code> will be iterated and each file will be processed.</li>
+	 * </ul>
+	 */
+	public void processFiles()
+	{
+		File directory = new File(inputDirectory);
+		File[] files = null;
+
+		files = listAllFiles(directory, javaFilter);
+		filesToProcess = getFileList(files);
+
+		for (File currentFile : filesToProcess)
+		{
+			processFile(currentFile);
+		}
+
+		if (!processedFiles.isEmpty())
+		{
+			listFiles(processedFiles);
+		}
+	}
+
+	/**
+	 * This method will process the current file.
+	 * 
+	 * @param currentFile
+	 *            this is the current file to be processed.
+	 */
+	public void processFile(File currentFile)
+	{
+		fileProcessor = new FileProcessor(currentFile.getAbsolutePath());
+		fileProcessor.processFile();
+
+		// if the file was processed its will be stored in processedFiles.
+		if (fileProcessor.isModified())
+		{
+			processedFiles.add(currentFile);
+		}
+	}
+
+	/**
+	 * This is a useful method that will populate the passed data into a <code>List</code>
+	 * 
+	 * @return The List with passed data
+	 */
+	private List<File> getFileList(File[] array)
+	{
+		List<File> arrayList = new ArrayList<File>();
+
+		for (File element : array)
+		{
+			arrayList.add(element);
+		}
+		return arrayList;
+	}
+
+	/**
+	 * Gets an array of <tt>File</tt> objects with a directory and its sub-directories.
+	 * 
+	 * @param file
+	 *            either a single file or the root directory
+	 * @param filter
+	 *            the filename filter - if null <b>all</b> files will be returned
+	 * @return the array of <tt>File</tt>
+	 */
+	private File[] listAllFiles(File file, FileFilter filter)
+	{
+		ArrayList<File> fileList = new ArrayList<File>();
+		File[] files = null;
+		int length = 0;
+
+		if (file == null)
+		{
+			throw new IllegalArgumentException("The root file or directory cannot be null");
+		}
+		findFiles(fileList, file, filter);
+
+		length = fileList.size();
+		files = new File[length];
+
+		for (int index = 0; index < length; index++)
+		{
+			files[index] = fileList.get(index);
+		}
+		return files;
+	}
+
+	/**
+	 * Recursive method for finding files
+	 * 
+	 * @param fileList
+	 *            the list of all files found
+	 * @param file
+	 * @param filter
+	 */
+	private void findFiles(List<File> fileList, File file, FileFilter filter)
+	{
+		File[] dList = null;
+
+		if (file.isDirectory())
+		{
+			// lists all '*.xxx' files
+			File[] fList = file.listFiles(filter);
+
+			for (File element : fList)
+			{
+				fileList.add(element);
+			}
+
+			dList = file.listFiles();
+
+			for (File element : dList)
+			{
+				if (element.isDirectory())
+				{
+					// recursive
+					findFiles(fileList, element, filter);
+				}
+			}
+		}
+		else
+		{
+			if (filter.accept(file))
+			{
+				fileList.add(file);
+			}
+		}
+	}
+
+	/**
+	 * This method prints the files included in the passed <code>List</code> structure
+	 * 
+	 * @param fileNames
+	 *            This the structure that contains the files names
+	 */
+	public void listFiles(List<File> fileNames)
+	{
+		StringBuilder message = null;
+
+		for (File fileName : fileNames)
+		{
+			message = new StringBuilder("This file ");
+			message.append(fileName.getAbsolutePath());
+			message.append("\\");
+			message.append(fileName.getName());
+			message.append(" has been modified.");
+
+			System.out.println(message);
+		}
+		System.out.println("size:" + fileNames.size());
+	}
+}

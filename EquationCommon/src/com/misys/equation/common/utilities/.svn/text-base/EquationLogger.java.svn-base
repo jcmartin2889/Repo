@@ -1,0 +1,498 @@
+package com.misys.equation.common.utilities;
+
+import java.lang.reflect.Field;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationLogin;
+import com.misys.equation.common.access.EquationSessionPool;
+import com.misys.equation.common.access.EquationUser;
+
+/**
+ * This is a utility class of Log4j methods.
+ */
+public class EquationLogger
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private Logger LOG;
+	private final Class<?> currentInstance;
+	private String version;
+	private static String fullyQualifiedClassName = EquationLogger.class.getName();
+	private static final String misysClass = "com.misys.equation";
+	private static final String revisionString = "_revision";
+
+	private static final String noRevisionError = " has no _revision attribute";
+	private static final String noClassError = "EquationLogger constructor was called with a null class parameter";
+	private static final String logExceptionLabel = "Logging exception.";
+
+	private static final String sessionIdentifierLabel = " Session/SingleJob/PooledJob: ";
+	private static final String messageLabel = " Message: ";
+	private static final String versionLabel = " Version: ";
+	private static final String blank = " ";
+	private static final String emptyString = "";
+	private static final String slash = "/";
+	private static final String period = ".";
+	private static final String leftBracket = "(";
+	private static final String rightBracket = ")";
+	private static final String versionStartChars = ",v ";
+
+	private String userToLog;
+	private String userId;
+	private String ipAddressToLog;
+	private String ipAddress;
+	private EquationLogin login;
+	private EquationUser user;
+
+	/**
+	 * @param currentInstance
+	 */
+	public EquationLogger(Class<?> currentInstance)
+	{
+		this.currentInstance = currentInstance;
+		version = blank;
+		initLogger();
+		getVersionFromRevision(currentInstance);
+	}
+
+	/**
+	 * @param currentInstance
+	 */
+	private void getVersionFromRevision(Class<?> currentInstance)
+	{
+		Class<?> clazz = currentInstance;
+
+		try
+		{
+			Field field = clazz.getField(revisionString);
+			if (field != null)
+			{
+				version = getFormattedVersion((String) field.get(clazz));
+			}
+		}
+		catch (NoSuchFieldException exception)
+		{
+			LOG.log(fullyQualifiedClassName, Level.ERROR, new StringBuilder(clazz.getName()).append(noRevisionError).toString(),
+							null);
+		}
+		catch (Exception exception)
+		{
+			error(exception);
+		}
+	}
+
+	/**
+	 * Create a log4j logger for this instance.
+	 */
+	private void initLogger()
+	{
+		if (currentInstance == null)
+		{
+			throw new RuntimeException(noClassError);
+		}
+		LOG = Logger.getLogger(currentInstance);
+		userToLog = EquationLoggingContext.getLoggingContext().getUserToLog();
+		ipAddressToLog = EquationLoggingContext.getLoggingContext().getIpAddressToLog();
+	}
+
+	// ******** debug *******//
+	/**
+	 * Log a debug message
+	 * 
+	 * @param message
+	 * @param exception
+	 * @equation.external
+	 */
+	public void debug(String message, Throwable exception)
+	{
+		if (LOG.isDebugEnabled())
+		{
+			if (executeLogStatement() == true)
+			{
+				LOG.log(fullyQualifiedClassName, Level.DEBUG, getFormattedMessage(message), exception);
+			}
+		}
+	}
+
+	/**
+	 * Log a debug message
+	 * 
+	 * @param exception
+	 * @equation.external
+	 */
+	public void debug(Throwable exception)
+	{
+		if (LOG.isDebugEnabled())
+		{
+			if (executeLogStatement() == true)
+			{
+				LOG.log(fullyQualifiedClassName, Level.DEBUG, getFormattedMessage(logExceptionLabel), exception);
+			}
+		}
+	}
+
+	/**
+	 * Log a debug message
+	 * 
+	 * @param message
+	 * @equation.external
+	 */
+	public void debug(String message)
+	{
+		if (LOG.isDebugEnabled())
+		{
+			if (executeLogStatement() == true)
+			{
+				LOG.log(fullyQualifiedClassName, Level.DEBUG, getFormattedMessage(message), null);
+			}
+		}
+	}
+
+	// ******** info *******//
+	/**
+	 * Log an info message
+	 * 
+	 * @param message
+	 * @param exception
+	 * @equation.external
+	 */
+	public void info(String message, Throwable exception)
+	{
+		if (LOG.isInfoEnabled())
+		{
+			if (executeLogStatement() == true)
+			{
+				LOG.log(fullyQualifiedClassName, Level.INFO, getFormattedMessage(message), exception);
+			}
+		}
+	}
+
+	/**
+	 * Log an info message
+	 * 
+	 * @param exception
+	 * @equation.external
+	 */
+	public void info(Throwable exception)
+	{
+		if (LOG.isInfoEnabled())
+		{
+			if (executeLogStatement() == true)
+			{
+				LOG.log(fullyQualifiedClassName, Level.INFO, getFormattedMessage(logExceptionLabel), exception);
+			}
+		}
+	}
+
+	/**
+	 * Log an info message
+	 * 
+	 * @param message
+	 * @equation.external
+	 */
+	public void info(String message)
+	{
+		if (LOG.isInfoEnabled())
+		{
+			if (executeLogStatement() == true)
+			{
+				LOG.log(fullyQualifiedClassName, Level.INFO, getFormattedMessage(message), null);
+			}
+		}
+	}
+
+	// ******** Warnings *******//
+	/**
+	 * Log a warn message
+	 * 
+	 * @param message
+	 * @param exception
+	 * @equation.external
+	 */
+	public void warn(String message, Throwable exception)
+	{
+		if (executeLogStatement() == true)
+		{
+			LOG.log(fullyQualifiedClassName, Level.WARN, getFormattedMessage(message), exception);
+		}
+	}
+
+	/**
+	 * Log a warn message
+	 * 
+	 * @param exception
+	 * @equation.external
+	 */
+	public void warn(Throwable exception)
+	{
+		if (executeLogStatement() == true)
+		{
+			LOG.log(fullyQualifiedClassName, Level.WARN, getFormattedMessage(logExceptionLabel), exception);
+		}
+	}
+
+	/**
+	 * Log a warn message
+	 * 
+	 * @param message
+	 * @equation.external
+	 */
+	public void warn(String message)
+	{
+		if (executeLogStatement() == true)
+		{
+			LOG.log(fullyQualifiedClassName, Level.WARN, getFormattedMessage(message), null);
+		}
+	}
+
+	// ******** error *******//
+	/**
+	 * Log an error message
+	 * 
+	 * @param message
+	 * @param exception
+	 * @equation.external
+	 */
+	public void error(String message, Throwable exception)
+	{
+		if (executeLogStatement() == true)
+		{
+			LOG.log(fullyQualifiedClassName, Level.ERROR, getFormattedMessage(message), exception);
+		}
+	}
+
+	/**
+	 * Log an error message
+	 * 
+	 * @param exception
+	 * @equation.external
+	 */
+	public void error(Throwable exception)
+	{
+		if (executeLogStatement() == true)
+		{
+			LOG.log(fullyQualifiedClassName, Level.ERROR, getFormattedMessage(logExceptionLabel) + " - "
+							+ Toolbox.getExceptionMessage(exception), exception);
+		}
+	}
+
+	/**
+	 * Log an error message
+	 * 
+	 * @param message
+	 * @equation.external
+	 */
+	public void error(String message)
+	{
+		if (executeLogStatement() == true)
+		{
+			LOG.log(fullyQualifiedClassName, Level.ERROR, getFormattedMessage(message), null);
+		}
+	}
+
+	// ******** fatal *******//
+
+	/**
+	 * Log a fatal message
+	 * 
+	 * @param message
+	 * @param exception
+	 * @equation.external
+	 */
+	public void fatal(String message, Throwable exception)
+	{
+		if (executeLogStatement() == true)
+		{
+			LOG.log(fullyQualifiedClassName, Level.FATAL, getFormattedMessage(message), exception);
+		}
+	}
+
+	/**
+	 * Log a fatal message
+	 * 
+	 * @param exception
+	 * @equation.external
+	 */
+	public void fatal(Throwable exception)
+	{
+		if (executeLogStatement() == true)
+		{
+			LOG.log(fullyQualifiedClassName, Level.FATAL, getFormattedMessage(logExceptionLabel), exception);
+		}
+	}
+
+	/**
+	 * Log a fatal message
+	 * 
+	 * @param message
+	 * @equation.external
+	 */
+	public void fatal(String message)
+	{
+		if (executeLogStatement() == true)
+		{
+			LOG.log(fullyQualifiedClassName, Level.FATAL, getFormattedMessage(message), null);
+		}
+	}
+
+	/**
+	 * @param message
+	 * @return a String of the formatted message for display in the log, including any associated session and corresponding AS/400
+	 *         job information.
+	 */
+	private String getFormattedMessage(String message)
+	{
+		StringBuilder formattedMessage = new StringBuilder(version);
+		formattedMessage.append(sessionIdentifierLabel + ThreadData.get(EquationCommonContext.LOGIN_KEY) + slash
+						+ ThreadData.get(EquationSessionPool.SESSIONPOOL_SINGLEJOB) + slash
+						+ ThreadData.get(EquationSessionPool.SESSIONPOOL_POOLEDJOB));
+		formattedMessage.append(messageLabel);
+		formattedMessage.append(message);
+		return formattedMessage.toString();
+	}
+
+	/**
+	 * Print the <code>com.misys.equation</code> package stack. Only available for debug level logging.
+	 * 
+	 * @equation.external
+	 */
+	public void logFormattedEquationStack()
+	{
+		StringBuilder formattedStack = new StringBuilder(emptyString);
+		StackTraceElement[] ste = Thread.currentThread().getStackTrace();
+		for (StackTraceElement stackTraceElement : ste)
+		{
+			String className = stackTraceElement.getClassName();
+			String methodName = stackTraceElement.getMethodName();
+			int lineNumber = stackTraceElement.getLineNumber();
+			if (className.contains(misysClass))
+			{
+				formattedStack.append(className + period + methodName + leftBracket + lineNumber + rightBracket);
+			}
+		}
+		if (LOG.isDebugEnabled())
+		{
+			debug(formattedStack.toString());
+		}
+	}
+	/**
+	 * @return true if Debug logging is enabled
+	 * @equation.external
+	 */
+	public boolean isDebugEnabled()
+	{
+		return LOG.isDebugEnabled();
+	}
+	/**
+	 * @return true if Info logging is enabled
+	 * @equation.external
+	 */
+	public boolean isInfoEnabled()
+	{
+		return LOG.isInfoEnabled();
+	}
+	/**
+	 * @return true if Warn logging is enabled
+	 * @equation.external
+	 */
+	public boolean isWarnEnabled()
+	{
+		return true;
+	}
+	/**
+	 * @return true if Error logging is enabled
+	 * @equation.external
+	 */
+	public boolean isErrorEnabled()
+	{
+		return true;
+	}
+	/**
+	 * @return true if Fatal logging is enabled
+	 * @equation.external
+	 */
+	public boolean isFatalEnabled()
+	{
+		return true;
+	}
+	/**
+	 * @param version
+	 * @return version portion of the _revision string that is in each class
+	 * @equation.external
+	 */
+	public String getFormattedVersion(String version)
+	{
+		// public static final String _revision = "$Id$";
+		int versionStart = version.indexOf(versionStartChars);
+		int versionEnd = version.indexOf(blank, versionStart + 5);
+
+		if (versionStart != 0 && versionEnd != 0)
+		{
+			String formatted = blank;
+
+			try
+			{
+				formatted = new StringBuilder(versionLabel).append(version.substring(versionStart + 2, versionEnd)).toString();
+			}
+			catch (Exception exception)
+			{
+				if (LOG.isDebugEnabled())
+				{
+					debug(exception);
+				}
+			}
+			return formatted;
+		}
+		else
+		{
+			return blank;
+		}
+	}
+
+	/**
+	 * @return the Log4j Logger object
+	 * @equation.external
+	 */
+	public Logger getLOG()
+	{
+		return LOG;
+	}
+
+	/**
+	 * Print the <code>com.misys.equation</code> package stack. Only available for debug level logging.
+	 */
+	private boolean executeLogStatement()
+	{
+		boolean execute = true;
+
+		login = (EquationLogin) ThreadData.get(EquationCommonContext.LOGIN_KEY);
+		user = (EquationUser) ThreadData.get(EquationCommonContext.USER_KEY);
+		if (login != null)
+		{
+			userId = login.getUserId();
+			ipAddress = login.getIpAddress();
+		}
+		else
+		{
+			userId = null;
+			ipAddress = null;
+		}
+		// EquationLogin user and EquationUser user may not be the same.
+		if (user != null)
+		{
+			userId = user.getUserId();
+		}
+
+		if (userToLog != null && (userId == null || !userId.equalsIgnoreCase(userToLog)))
+		{
+			execute = false;
+		}
+		if (ipAddressToLog != null && (ipAddress == null || !ipAddress.equalsIgnoreCase(ipAddressToLog)))
+		{
+			execute = false;
+		}
+		return execute;
+	}
+}

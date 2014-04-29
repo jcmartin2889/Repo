@@ -1,0 +1,190 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test;
+
+import java.util.Calendar;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.access.IEquationStandardObject;
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * Test cases for Add function <br>
+ * where the function has a generated reference in the key. The Validate_NonExistingRecord() method, which should fail in other add
+ * tests, will not fail as the uniqueness test is only done in the Update Module.
+ * 
+ * Cashier functions have a key made up of Branch, Type and a Reference. The Reference is made up of the date and a sequence
+ * CYYMMDDnnnnnn. The Branch, Type and Reference must be unique. This key is used for the add and related cancel.
+ * 
+ * Cashier Key existence / non-existence methods have been added to this class. Reference Number generation method has been added to
+ * this class. Saving the generated Reference Number in the TestEnvironment singleton for later reuse has been added to this class.
+ */
+abstract public class EquationTestCaseAddCashier extends EquationTestCase
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	public String optionId;
+	public String programName;
+	public String transactionType;
+
+	// ------------------------------------------------------------------------ Abstract methods
+	// abstract public void setupExistKeyFields(EquationStandardTransaction transaction);
+	// abstract public void setupNonExistKeyFields(EquationStandardTransaction transaction);
+	abstract public void setupAddFields(EquationStandardTransaction transaction);
+	// abstract public EquationStandardTransaction getTransaction() throws Exception;
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+	}
+
+	// ------------------------------------------------------------------------ Test cases
+
+	/**
+	 * Test: validate mode: non-existing record<br>
+	 * Expected result: Fail<br>
+	 * 
+	 * @throws Exception
+	 */
+	public void xxxtest00100Add_Validate_NonExistingRecord() throws Exception
+	{
+		EquationStandardTransaction transaction = getTransaction();
+		transaction.setMode(IEquationStandardObject.FCT_ADD);
+		setupNonExistKeyFields(transaction);
+		setupAddFields(transaction);
+		applyValidate(transaction, false);
+	}
+
+	/**
+	 * Test: validate mode: non-existing record<br>
+	 * Expected result: Fail<br>
+	 * 
+	 * @throws Exception
+	 */
+	public void xxxtest00200Add_Retrieve_NonExistingRecord() throws Exception
+	{
+		EquationStandardTransaction transaction = getTransaction();
+		transaction.setMode(IEquationStandardObject.FCT_ADD);
+		setupNonExistKeyFields(transaction);
+		applyRetrieval(transaction, false);
+	}
+
+	/**
+	 * Test: validate mode: existing record<br>
+	 * Expected result: Fail<br>
+	 * 
+	 * @throws Exception
+	 */
+	public void test00300Add_Validate_ExistingRecord() throws Exception
+	{
+		System.out.println("test00300Add_Validate_ExistingRecord()");
+		EquationStandardTransaction transaction = getTransaction();
+		transaction.setMode(IEquationStandardObject.FCT_ADD);
+		setupExistKeyFields(transaction);
+		setupAddFields(transaction);
+		applyValidate(transaction, true);
+	}
+
+	/**
+	 * Test: validate mode: existing record<br>
+	 * Expected result: Fail<br>
+	 * 
+	 * @throws Exception
+	 */
+	public void xxxtest00400Add_Retrieval_ExistingRecord() throws Exception
+	{
+		EquationStandardTransaction transaction = getTransaction();
+		transaction.setMode(IEquationStandardObject.FCT_ADD);
+		setupExistKeyFields(transaction);
+		setupAddFields(transaction);
+		applyRetrieval(transaction, true);
+	}
+
+	/**
+	 * Test: add mode: new record<br>
+	 * Expected result: Success<br>
+	 * 
+	 * @throws Exception
+	 */
+	public void test00500Add_NewRecord() throws Exception
+	{
+		System.out.println("test00500Add_NewRecord()");
+		EquationStandardTransaction transaction = getTransaction();
+		transaction.setMode(IEquationStandardObject.FCT_ADD);
+		setupExistKeyFields(transaction);
+		setupAddFields(transaction);
+		applyTransaction(transaction, true);
+	}
+	public final static String createCashierReference()
+	{
+		// Create String of CYYMMDDHHMMSS
+
+		String timeStamp;
+		Calendar cal = Calendar.getInstance();
+		int YYYY = cal.get(Calendar.YEAR);
+		int MM = cal.get(Calendar.MONTH) + 1;
+		int DD = cal.get(Calendar.DAY_OF_MONTH);
+		int YYYYMMDD = (YYYY * 10000) + (MM * 100) + DD;
+		if (YYYY < 2000)
+		{
+			timeStamp = "0" + (new Integer(YYYYMMDD).toString().substring(2));
+		}
+		else
+		{
+			timeStamp = "1" + (new Integer(YYYYMMDD).toString().substring(2));
+		}
+
+		timeStamp = timeStamp + new Integer(Toolbox.getTimeDBFormat(cal)).toString();
+		return timeStamp;
+	}
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	public final void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZIBRM", "HEAD"); // Cashier branch mnemonic (4A)
+		transaction.setFieldValue("GZIBBN", "1000"); // Cashier branch number (4A)
+		transaction.setFieldValue("GZTTP", transactionType); // Transaction type (3A)
+		transaction.setFieldValue("GZTRF", "1080101999999"); // Transaction reference (13A)
+
+	}
+	/**
+	 * Setup an existing key fields
+	 */
+	public void setupExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZIBRM", "HEAD"); // Cashier branch mnemonic (4A)
+		transaction.setFieldValue("GZIBBN", "1000"); // Cashier branch number (4A)
+		transaction.setFieldValue("GZTTP", transactionType); // Transaction type (3A)
+		String reference = createCashierReference();
+		transaction.setFieldValue("GZTRF", reference); // Transaction reference (13A)
+		TestEnvironment.getTestEnvironment().putParameter(optionId, reference);
+	}
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	public final EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+}

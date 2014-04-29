@@ -1,0 +1,129 @@
+package com.misys.equation.common.dao.beans;
+
+public class WARecordDataModel extends AbsRecord
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private static final long serialVersionUID = 1L;
+	public final static String NO_SUPERVISOR = "L";
+
+	private final static String RECORD_NAME = "WAPF";
+
+	// KSM identifier signifying maker-checker processing
+	public static final String MAKER_CHECKER_KSM = "KSM7613";
+
+	private String id = ""; // WAMSG
+	private String text = ""; // WAMSGT
+	private String sev = ""; // WAAGXL
+
+	/**
+	 * Construct an empty file
+	 * 
+	 */
+	public WARecordDataModel()
+	{
+		super();
+	}
+
+	/**
+	 * Construct a WA record key
+	 * 
+	 * @param optionId
+	 *            - option id
+	 */
+	public WARecordDataModel(String id)
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+
+		setId(id);
+	}
+
+	/**
+	 * Construct a WA record with default values
+	 * 
+	 * @param optionId
+	 *            - option id
+	 * @param programName
+	 *            - program name
+	 * @param programTitle
+	 *            - program title
+	 * @param application
+	 *            - application
+	 */
+	public WARecordDataModel(String id, String text, String sev)
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+
+		setId(id);
+		setText(text);
+		setSev(sev);
+	}
+
+	// ---getters and setters----//
+
+	/**
+	 * Return the message id
+	 * 
+	 * @return the message id
+	 */
+	public String getId()
+	{
+		return id;
+	}
+
+	/**
+	 * Set the message id
+	 * 
+	 * @param id
+	 *            - the message id
+	 */
+	public void setId(String id)
+	{
+		this.id = id;
+	}
+
+	/**
+	 * Return the message text
+	 * 
+	 * @return the message text
+	 */
+	public String getText()
+	{
+		return text;
+	}
+
+	/**
+	 * Set the message text
+	 * 
+	 * @param text
+	 *            - the message text
+	 */
+	public void setText(String text)
+	{
+		this.text = text;
+	}
+
+	/**
+	 * Return the message severity
+	 * 
+	 * @return the message severity
+	 */
+	public String getSev()
+	{
+		return sev;
+	}
+
+	/**
+	 * Set the message severity
+	 * 
+	 * @param sev
+	 *            - the message severity
+	 */
+	public void setSev(String sev)
+	{
+		this.sev = sev;
+	}
+
+}

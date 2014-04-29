@@ -1,0 +1,228 @@
+package com.misys.equation.common.internal.dao;
+
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+
+import com.misys.equation.common.dao.IC8RecordDao;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.dao.beans.C8RecordDataModel;
+import com.misys.equation.common.internal.dao.mappers.C8RecordRowMapper;
+
+/**
+ * This the C8-Record Dao implementation. <br>
+ * This class is going to provide all back-end services for C8-Record.
+ * 
+ * @author deroset
+ */
+public class C8RecordDao extends AbsEquationDao implements IC8RecordDao
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: C8RecordDao.java 13723 2012-07-02 09:55:17Z whittap1 $";
+	public C8RecordDao()
+	{
+
+		super();
+	}
+
+	/**
+	 * This method will check if the current record was already set in the database. <br>
+	 * The SQL <code>SELECT COUNT(*)</code> query will be executed.
+	 * 
+	 * @param sqlWhereStatement
+	 *            - the WHERE clause of the SQL statement
+	 * 
+	 * @return true if the SQL statement returns a count >= 1
+	 */
+	public boolean checkIfThisC8RecordIsInTheDB(String sqlWhereStatement)
+	{
+
+		return checkIfThisRecordIsInTheDB(sqlWhereStatement);
+	}
+
+	/**
+	 * This method will check if the current record was already set in the database. <br>
+	 * The Sql <code>SELECT COUNT(*)</code> query will be executed.
+	 * 
+	 * @return true if the SQL statement returns a count >= 1
+	 */
+	public boolean checkIfThisC8RecordIsInTheDB()
+	{
+
+		return checkIfThisRecordIsInTheDB(getWhereConditionBaseOnIdRecord());
+	}
+
+	/**
+	 * This method will return an instance of the preset data model.
+	 * 
+	 * @return an instance of the preset data model.
+	 */
+	public C8RecordDataModel getMyDataModel()
+	{
+		C8RecordDataModel C8RecordDataModel = null;
+		AbsRecord record = getRecord();
+
+		if (record instanceof C8RecordDataModel)
+		{
+			C8RecordDataModel = (C8RecordDataModel) getRecord();
+
+		}
+		return C8RecordDataModel;
+	}
+
+	/**
+	 * This method will return a <code>String</code> which represents and sql where condition base on the record id.<br>
+	 * For example <code>id = getDataModel.getId()</code>
+	 * 
+	 * @return a <code>String</code> which represents and sql filter.
+	 */
+	@Override
+	protected String getWhereConditionBaseOnIdRecord()
+	{
+		StringBuilder whereCondition = new StringBuilder("C8CCY='");
+		whereCondition.append(getMyDataModel().getCurrencyMnem());
+		whereCondition.append("' ");
+		return whereCondition.toString();
+	}
+
+	/**
+	 * Returns a list of name and ? pairs in the format of:
+	 * <p>
+	 * field1=?, field2=?, field3=?, ...
+	 * 
+	 * @return a list of name and ? pairs
+	 */
+	@Override
+	protected String getParameterizedFields()
+	{
+		String fields = " C8CCY=?, C8CCYN=?, C8SCY=?, C8CED=?, C8CUR=? ";
+		return fields;
+	}
+
+	/**
+	 * Returns a list of the filed's name
+	 * 
+	 * @return a list of the filed's name
+	 */
+	@Override
+	protected String getFields()
+	{
+		String fields = " C8CCY, C8CCYN, C8SCY, C8CED, C8CUR ";
+		return fields;
+	}
+
+	/**
+	 * Returns a list of the filed's parameters
+	 * 
+	 * @return the list of the filed's parameters
+	 */
+	@Override
+	protected String getParameters()
+	{
+		String fields = " ?, ?, ?, ?, ? ";
+		return fields;
+	}
+
+	/**
+	 * This method create an array tC8t contains the fields values and Its types. <br>
+	 * It will be used by jdbc <code>PreparedStatement</code>
+	 * 
+	 * @return An array tC8t contains the fields values and Its types.
+	 */
+	@Override
+	public Object[] getParameterizedFieldsValues()
+	{
+		C8RecordDataModel dataModel = getMyDataModel();
+
+		Object[] object = new Object[] { dataModel.getCurrencyMnem(), dataModel.getCurrencyNum(), dataModel.getSwiftCode(),
+						dataModel.getEditField(), dataModel.getCurrencyName() };
+
+		return object;
+	}
+
+	/**
+	 * This method is going execute a Sql query using the filter criteria.
+	 * 
+	 * @param whereClause
+	 *            this is the <code>String</code> tC8t represent the sql filter.
+	 * @return a <code>List</code> which contains a records
+	 */
+	public List<AbsRecord> getRecordBy(String whereClause)
+	{
+		return getRecordBy(whereClause, new C8RecordRowMapper());
+	}
+
+	/**
+	 * This method is going to get all records.
+	 * 
+	 * @return a <code>List</code> which contains a records
+	 */
+	public List<AbsRecord> getRecords()
+	{
+		return getRecordBy(null, new C8RecordRowMapper());
+	}
+
+	/**
+	 * This method is going to return a <code>C8RecordDataModel</code>
+	 * 
+	 * @return a <code>C8RecordDataModel</code>
+	 */
+	public C8RecordDataModel getC8Record()
+	{
+		C8RecordDataModel C8RecordDataModel = null;
+		List<AbsRecord> results = getRecordBy(getWhereConditionBaseOnIdRecord(), new C8RecordRowMapper());
+
+		if (!results.isEmpty())
+		{
+			C8RecordDataModel = (C8RecordDataModel) results.get(0);
+		}
+
+		return C8RecordDataModel;
+	}
+
+	@Override
+	protected Hashtable<String, AbsRecord> createHashtableRecordModel(List<AbsRecord> records)
+	{
+		Hashtable<String, AbsRecord> results = null;
+
+		C8RecordDataModel C8RecordDataModel;
+
+		if (!records.isEmpty())
+		{
+			results = new Hashtable<String, AbsRecord>();
+		}
+		else
+		{
+			return null;
+		}
+
+		for (AbsRecord absRecord : records)
+		{
+			C8RecordDataModel = (C8RecordDataModel) absRecord;
+			results.put(C8RecordDataModel.getCurrencyMnem(), C8RecordDataModel);
+		}
+
+		return results;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<String> getC8CurrencyMnemonics()
+	{
+		StringBuilder sql = new StringBuilder();
+		List<Map<String, Object>> c8CurrencyMnemonics = null;
+
+		sql.append("SELECT DISTINCT C8CCY FROM C8PF ");
+		c8CurrencyMnemonics = getJdbcTemplate().queryForList(sql.toString());
+
+		List<String> c8CurrencyMnemonicStringListy = new ArrayList<String>();
+
+		for (Map<String, Object> currentNostroAccount : c8CurrencyMnemonics)
+		{
+			c8CurrencyMnemonicStringListy.add(((String) currentNostroAccount.get("C8CCY")).toString());
+		}
+
+		return c8CurrencyMnemonicStringListy;
+	}
+}

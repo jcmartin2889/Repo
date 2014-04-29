@@ -1,0 +1,831 @@
+package com.misys.equation.function.runtime;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.function.beans.FunctionData;
+
+public class ScreenSetHandler
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: ScreenSetHandler.java 13698 2012-06-29 05:57:39Z bterrado $";
+
+	// Log
+	private static final EquationLogger LOG = new EquationLogger(ScreenSetHandler.class);
+
+	private final FunctionHandlerData fhd;
+	private final List<ScreenSet> screenSets;
+	private int curScreenSet;
+	public static final int FUNCTION_DATA_SCREEN = 0;
+	public static final int FUNCTION_CRM_SCREEN = 1;
+	public static final int FUNCTION_EFC_SCREEN_1 = 2;
+	public static final int FUNCTION_EFC_SCREEN_2 = 3;
+	public static final int SCREENSET_DEFAULT = 0;
+	public static final int SCREENSET_SUPERVISOR = 1;
+	private int lastScreenSetViewed; // the last screen set viewed by the user so far
+	private int nextExpectedScreen; // the next screen to be displayed as determined by the user exit
+
+	/**
+	 * Construct a new Screen Set Handler
+	 */
+	public ScreenSetHandler(FunctionHandlerData functionHandlerData)
+	{
+		this.fhd = functionHandlerData;
+		screenSets = new ArrayList<ScreenSet>();
+		curScreenSet = 0;
+		lastScreenSetViewed = 0;
+		nextExpectedScreen = 0;
+	}
+
+	/**
+	 * Remove all screens
+	 */
+	public void clear()
+	{
+		curScreenSet = 0;
+		lastScreenSetViewed = 0;
+		nextExpectedScreen = 0;
+		screenSets.clear();
+	}
+
+	/**
+	 * Return the list of screen sets
+	 * 
+	 * @return the list of screen sets
+	 */
+	protected List<ScreenSet> getScreenSets()
+	{
+		return screenSets;
+	}
+
+	/**
+	 * Return the current screen set id
+	 * 
+	 * @return the current screen set id
+	 */
+	public int getCurScreenSet()
+	{
+		return curScreenSet;
+	}
+
+	/**
+	 * Set the current screen set
+	 * 
+	 * @param curScreenSet
+	 *            - the id of the screen set
+	 * 
+	 * @return the screen set
+	 */
+	public ScreenSet setCurScreenSet(int curScreenSet)
+	{
+		this.curScreenSet = curScreenSet;
+		return screenSets.get(curScreenSet);
+	}
+
+	/**
+	 * Return the last screen set id viewed
+	 * 
+	 * @return the last screen set id viewed
+	 */
+	public int getLastScreenSetViewed()
+	{
+		return lastScreenSetViewed;
+	}
+
+	/**
+	 * Set the last screen set id viewed
+	 * 
+	 * @param lastScreenSetViewed
+	 *            - the last screen set id viewed
+	 */
+	public void setLastScreenSetViewed(int lastScreenSetViewed)
+	{
+		this.lastScreenSetViewed = lastScreenSetViewed;
+	}
+
+	/**
+	 * Return the next expected screen number
+	 * 
+	 * @return the next expected screen number
+	 */
+	public int getNextExpectedScreen()
+	{
+		return nextExpectedScreen;
+	}
+
+	/**
+	 * Set the next expected screen number
+	 * 
+	 * @param nextExpectedScreen
+	 *            - the next expected screen number
+	 */
+	public void setNextExpectedScreen(int nextExpectedScreen)
+	{
+		this.nextExpectedScreen = nextExpectedScreen;
+	}
+
+	/**
+	 * Determine whether this is the first screen set
+	 * 
+	 * @return true if this is the first screen set
+	 */
+	public boolean chkFirstScreenSet()
+	{
+		return (curScreenSet == 0);
+	}
+
+	/**
+	 * Determine whether this is the last screen set
+	 * 
+	 * @return true if this is the last screen set
+	 */
+	public boolean chkLastScreenSet()
+	{
+		return (curScreenSet == (screenSets.size() - 1));
+	}
+
+	/**
+	 * Return the last screen set
+	 * 
+	 * @return the last screen set
+	 */
+	public int rtvLastScreenSetId()
+	{
+		return screenSets.size() - 1;
+	}
+
+	/**
+	 * Return the main screen set
+	 * 
+	 * @return the main screen set
+	 */
+	public ScreenSet rtvScreenSetMain()
+	{
+		if (screenSets.size() > 0)
+		{
+			return screenSets.get(0);
+		}
+		return null;
+	}
+
+	/**
+	 * Return the main screen set
+	 * 
+	 * @return the main screen set
+	 */
+	public ScreenSet rtvScreenSet(int index)
+	{
+		return screenSets.get(index);
+	}
+
+	/**
+	 * Proceed to the next screen set
+	 * 
+	 * @return true if the next screen set will be processed
+	 * 
+	 * @throws EQException
+	 */
+	public boolean nextScreenSet() throws EQException
+	{
+		int sourceScreenSetId = curScreenSet;
+
+		// invoke exit method of the current screen set
+		// .. determine whether to display the next screen set or the previous screen set
+		int newScreenSetId = screenSets.get(curScreenSet).onExitScreenSetToNext(curScreenSet);
+
+		// standard processing, proceed to next screen set
+		if (newScreenSetId == ScreenSet.SCRN_NEXT)
+		{
+			// do nothing
+		}
+
+		// proceed to previous screen set
+		else if (newScreenSetId == ScreenSet.SCRN_PREV)
+		{
+			if (curScreenSet == 0)
+			{
+				return true; // redisplay same screen
+			}
+			else
+			{
+				curScreenSet--;
+			}
+			return internal_PrevScreenSet(sourceScreenSetId);
+		}
+
+		// invalid, then assume go to next (default)
+		else if (newScreenSetId < 0 || newScreenSetId >= screenSets.size())
+		{
+			// do nothing
+		}
+
+		// proceed to a specific screen set (previous)
+		else if (newScreenSetId < curScreenSet)
+		{
+			curScreenSet = newScreenSetId;
+			return internal_PrevScreenSet(sourceScreenSetId);
+		}
+
+		// proceed to a specific screen set (next)
+		else if (newScreenSetId > curScreenSet)
+		{
+			curScreenSet = newScreenSetId;
+			return internal_NextScreenSet(sourceScreenSetId);
+		}
+
+		// proceed to the same screen set
+		else if (newScreenSetId == curScreenSet)
+		{
+			curScreenSet = newScreenSetId;
+			return true;
+		}
+
+		// is this the last screen set?
+		if (chkLastScreenSet())
+		{
+			return false;
+		}
+		else
+		{
+			curScreenSet++;
+			return internal_NextScreenSet(sourceScreenSetId);
+		}
+	}
+
+	private boolean internal_NextScreenSet(int sourceScreenSetId) throws EQException
+	{
+		// proceed to the next and see if the next screen set will be displayed
+		int screenSetId = screenSets.get(curScreenSet).onEntryScreenSetFromPrev(sourceScreenSetId);
+		while (screenSetId == ScreenSet.SCRN_NEXT)
+		{
+			if (chkLastScreenSet())
+			{
+				return false;
+			}
+
+			curScreenSet++;
+			screenSetId = screenSets.get(curScreenSet).onEntryScreenSetFromPrev(sourceScreenSetId);
+		}
+
+		// display previous screen?
+		if (screenSetId == ScreenSet.SCRN_PREV)
+		{
+			curScreenSet--;
+			return internal_PrevScreenSet(sourceScreenSetId);
+		}
+
+		// set the last screen set viewed
+		if (lastScreenSetViewed < curScreenSet)
+		{
+			lastScreenSetViewed = curScreenSet;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Proceed to the previous screen set
+	 * 
+	 * @return true if the previous screen set will be processed
+	 * 
+	 * @throws EQException
+	 */
+	public boolean prevScreenSet() throws EQException
+	{
+		int sourceScreenSetId = curScreenSet;
+
+		// invoke exit method of the current screen set
+		// .. determine whether to display just the previous screen set or the previous previous screen set
+		int newScreenSetId = screenSets.get(curScreenSet).onExitScreenSetToPrev(curScreenSet);
+
+		// standard processing, proceed to previous screen
+		if (newScreenSetId == ScreenSet.SCRN_PREV)
+		{
+			// do nothing
+		}
+
+		// invalid, then assume previous (default)
+		else if (newScreenSetId < 0 || newScreenSetId >= screenSets.size())
+		{
+			// do nothing
+		}
+
+		// proceed to a specific screen set (previous)
+		else if (newScreenSetId < curScreenSet)
+		{
+			curScreenSet = newScreenSetId;
+			return internal_PrevScreenSet(sourceScreenSetId);
+		}
+
+		// proceed to a specific screen set (next)
+		else if (newScreenSetId > curScreenSet)
+		{
+			curScreenSet = newScreenSetId;
+			return internal_NextScreenSet(sourceScreenSetId);
+		}
+
+		// proceed to the same screen set
+		else if (newScreenSetId == curScreenSet)
+		{
+			curScreenSet = newScreenSetId;
+			return true;
+		}
+
+		// is this the first screen set?
+		if (curScreenSet == 0)
+		{
+			return false;
+		}
+		else
+		{
+			curScreenSet--;
+			return internal_PrevScreenSet(sourceScreenSetId);
+		}
+	}
+
+	private boolean internal_PrevScreenSet(int sourceScreenSetId) throws EQException
+	{
+		// proceed to the previous and see if the previous screen set will be displayed
+		int screenSetId = screenSets.get(curScreenSet).onEntryScreenSetFromNext(sourceScreenSetId);
+		while (screenSetId == ScreenSet.SCRN_PREV)
+		{
+			if (curScreenSet <= 0)
+			{
+				return false;
+			}
+			curScreenSet--;
+			screenSetId = screenSets.get(curScreenSet).onEntryScreenSetFromNext(sourceScreenSetId);
+		}
+
+		// display previous screen?
+		if (screenSetId == ScreenSet.SCRN_NEXT)
+		{
+			curScreenSet++;
+			return internal_NextScreenSet(sourceScreenSetId);
+		}
+
+		return true;
+	}
+
+	/**
+	 * Add a new screen set to the list of screen sets
+	 * 
+	 * @param eqUnit
+	 *            - the Equation unit
+	 * @param optionId
+	 *            - the option Id
+	 * 
+	 * @return the screen set id
+	 */
+	public int addScreenSet(ScreenSet fs)
+	{
+		fs.id = screenSets.size();
+		screenSets.add(fs);
+		return fs.id;
+	}
+
+	/**
+	 * Add a new screen set to the list of screen sets for the specified option
+	 * 
+	 * @param session
+	 *            - the Equation standard session
+	 * @param optionId
+	 *            - the option Id
+	 * 
+	 * @return the screen set id
+	 * @throws EQException
+	 */
+	public int addFunctionScreen(String optionId) throws EQException
+	{
+		int id = screenSets.size();
+		screenSets.add(new ScreenSet(id, fhd, optionId));
+		return id;
+	}
+
+	/**
+	 * Add a new CRM screen set to the list of screen sets
+	 * 
+	 * @return the screen set id
+	 * 
+	 * @throws EQException
+	 */
+	public int addFunctionScreenCRM(ScreenSet screenSetToCheck) throws EQException
+	{
+		int id = screenSets.size();
+		screenSets.add(new ScreenSetCRM(id, fhd, screenSetToCheck));
+		return id;
+	}
+
+	/**
+	 * Add a new ACG screen set to the list of screen sets
+	 * 
+	 * @param optionFunction
+	 *            - the option that generates the charges
+	 * 
+	 * @return the screen set id
+	 * 
+	 * @throws EQException
+	 */
+	public int addFunctionScreenAC2(String optionFunction, ScreenSet screenSetToCheck) throws EQException
+	{
+		int id = screenSets.size();
+		screenSets.add(new ScreenSetAC2(id, fhd, optionFunction, screenSetToCheck));
+		return id;
+	}
+
+	/**
+	 * Add a dummy screen set to the list of screen sets
+	 * 
+	 * @return the screen set id
+	 * 
+	 * @throws EQException
+	 */
+	public int addFunctionScreenDummy() throws EQException
+	{
+		int id = screenSets.size();
+		screenSets.add(new ScreenSetDummy(id));
+		return id;
+	}
+
+	/**
+	 * Add a new supervisor screen set to the list of screen sets
+	 * 
+	 * @return the screen set id
+	 * 
+	 * @throws EQException
+	 */
+	public int addFunctionScreenSupervisor(String optionId) throws EQException
+	{
+		int id = screenSets.size();
+		screenSets.add(new ScreenSetSupervisor(id, fhd, optionId));
+		return id;
+	}
+
+	/**
+	 * Position the screen to the specified screen set
+	 * 
+	 * @param screenSetId
+	 *            - the screen set id
+	 * 
+	 * @return the screen set
+	 */
+	public ScreenSet positionToScreenSet(int screenSetId)
+	{
+		// prior screen set
+		for (int i = 0; i < screenSetId; i++)
+		{
+			ScreenSet ss = screenSets.get(i);
+			ss.setScrnNo(ss.maxScrnNo - 1);
+		}
+
+		// next screen sets
+		for (int i = screenSetId + 1; i < screenSets.size(); i++)
+		{
+			ScreenSet ss = screenSets.get(i);
+			ss.setScrnNo(0);
+		}
+
+		return screenSets.get(screenSetId);
+	}
+
+	/**
+	 * Position the screen to the specified screen set
+	 * 
+	 * @param screenSetId
+	 *            - the screen set id
+	 */
+	public void positionToScreenSet(int screenSetId, int scrnNo)
+	{
+		positionToScreenSet(screenSetId);
+		ScreenSet ss = screenSets.get(screenSetId);
+		ss.setScrnNo(scrnNo);
+	}
+
+	/**
+	 * Remove the screen set from this screen set id
+	 * 
+	 * @param fromScreenSetId
+	 *            - the screen set id to drop
+	 */
+	public void dropFunctionScreenSet(int fromScreenSetId)
+	{
+		for (int i = screenSets.size() - 1; i >= fromScreenSetId; i--)
+		{
+			screenSets.remove(i);
+		}
+	}
+
+	/**
+	 * Mark the screen set as already displayed
+	 * 
+	 * @param toScreenSetId
+	 *            - the screen set id to drop
+	 */
+	public void markAsDisplayed(int toScreenSetId)
+	{
+		for (int i = 0; i <= toScreenSetId; i++)
+		{
+			screenSets.get(i).setFirstTime(false);
+		}
+	}
+
+	/**
+	 * Clear the screen set's data's messages
+	 */
+	public void clearFunctionDataMessages()
+	{
+		for (int i = 0; i < screenSets.size(); i++)
+		{
+			FunctionData functionData = screenSets.get(i).getFunctionData();
+			if (functionData != null)
+			{
+				functionData.clearMessages(FunctionData.CLEAR_MSG_ALL, 100);
+			}
+		}
+	}
+
+	/**
+	 * Processing when restoring a session (template)
+	 */
+	public void processingRestoreTemplate()
+	{
+		for (int i = 0; i < screenSets.size(); i++)
+		{
+			screenSets.get(i).restoreTemplate();
+		}
+	}
+
+	/**
+	 * Processing when restoring a session (template)
+	 */
+	public void processingRestoreWorkProgress()
+	{
+		for (int i = 0; i < screenSets.size(); i++)
+		{
+			screenSets.get(i).restoreWorkProgress();
+		}
+	}
+
+	/**
+	 * Processing when restoring a session (template)
+	 */
+	public void processingRestoreBySupervisor()
+	{
+		for (int i = 0; i < screenSets.size(); i++)
+		{
+			screenSets.get(i).restoreSupervisor();
+		}
+	}
+
+	/**
+	 * Set other details in the screen set. This is to initialise details that has not been setup in the Function Handler Data at
+	 * the time the screen set is initialised
+	 */
+	public void setOtherDetails()
+	{
+		for (int i = 0; i < screenSets.size(); i++)
+		{
+			screenSets.get(i).setOtherDetails();
+		}
+	}
+
+	// ----------------------------------- THESE WORKS ON THE CURRENT SCREEN SET: BEGIN
+
+	/**
+	 * Return the the current screen set
+	 * 
+	 * @return the the current screen set
+	 */
+	public ScreenSet rtvScrnSetCurrent()
+	{
+		return screenSets.get(curScreenSet);
+	}
+
+	/**
+	 * Generate the function key of the current screen set
+	 * 
+	 * @return true
+	 * 
+	 */
+	public void generateFkey() throws EQException
+	{
+		// get current screen set
+		ScreenSet screenSet = rtvScrnSetCurrent();
+
+		// retrieve the function key for this screen set
+		screenSet.generateFkeys();
+	}
+
+	/**
+	 * Return the HTML equivalent of the current screen set
+	 * 
+	 * @return the HTML equivalent of the current screen set
+	 * 
+	 * @throws EQException
+	 */
+	public String rtvScrnSetHTML() throws EQException
+	{
+		nextExpectedScreen = 0;
+		ScreenSet screenSet = rtvScrnSetCurrent();
+		String html = screenSet.rtvScreen();
+		return html;
+	}
+
+	/**
+	 * Performs validation on the current screen set
+	 * 
+	 * @param fromScrnNo
+	 *            - from screen number
+	 * @param toScrnNo
+	 *            - to screen number
+	 * 
+	 * @return the message severity
+	 * 
+	 * @throws EQException
+	 */
+	public void validate(int fromScrnNo, int toScrnNo) throws EQException
+	{
+		// get current screen set
+		ScreenSet screenSet = rtvScrnSetCurrent();
+
+		// retrieve the function key for this screen set
+		screenSet.validate(fromScrnNo, toScrnNo);
+	}
+
+	/**
+	 * Reposition to the last screen set on/prior to the current screen set
+	 */
+	public void lastScreenSetBefore()
+	{
+		ScreenSet screenSet = rtvScrnSetCurrent();
+		while (screenSet instanceof ScreenSetDummy)
+		{
+			setCurScreenSet(getCurScreenSet() - 1);
+			screenSet = rtvScrnSetCurrent();
+		}
+
+		// maker-checker?
+		try
+		{
+			if (fhd.getEquationUser().getEquationUnit().hasMakerCheckerEnhancement())
+			{
+				if (screenSet instanceof ScreenSetCRM)
+				{
+					ScreenSetCRM screenSetCRM = (ScreenSetCRM) screenSet;
+					if (chkLastScreenSet() && screenSetCRM.curData() == 0)
+					{
+						setCurScreenSet(getCurScreenSet() - 1);
+						screenSet = rtvScrnSetCurrent();
+					}
+				}
+			}
+		}
+		catch (EQException e)
+		{
+			LOG.error(fhd.getFunctionDebugInfo().toString());
+		}
+	}
+
+	/**
+	 * Reposition to the last screen set
+	 */
+	public void lastScreenSet()
+	{
+		curScreenSet = screenSets.size() - 1;
+		lastScreenSetBefore();
+	}
+
+	/**
+	 * Generate a screen set based on the screen set type
+	 * 
+	 * @param optionId
+	 *            - the option Id
+	 * @param screenSetType
+	 *            - the screen set type
+	 * 
+	 * @return the generated screen set id
+	 */
+	public int generateScreenSet(String optionId, int screenSetType) throws EQException
+	{
+		if (screenSetType == SCREENSET_SUPERVISOR)
+		{
+			return addFunctionScreenSupervisor(optionId);
+		}
+		else
+		{
+			return addFunctionScreen(optionId);
+		}
+	}
+
+	/**
+	 * Remove all ScreenSetDummy at the end
+	 */
+	public void removeLastScreensetDummy()
+	{
+		int index = screenSets.size() - 1;
+		ScreenSet screenSet = screenSets.get(index);
+		while (screenSet instanceof ScreenSetDummy)
+		{
+			screenSets.remove(index);
+
+			// check next one
+			index = screenSets.size() - 1;
+			screenSet = screenSets.get(index);
+		}
+	}
+
+	/**
+	 * Determine if CRM screen set exists
+	 * 
+	 * @return true if CRM screen set exists
+	 */
+	public boolean isScreenSetCRMExist()
+	{
+		if (isScreenSetExist(FUNCTION_CRM_SCREEN))
+		{
+			return screenSets.get(FUNCTION_CRM_SCREEN) instanceof ScreenSetCRM;
+		}
+		return false;
+	}
+
+	/**
+	 * Determine if EFC screen set exists
+	 * 
+	 * @return true if EFC screen set exists
+	 */
+	public boolean isScreenSetEFCExist()
+	{
+		if (isScreenSetExist(FUNCTION_EFC_SCREEN_1))
+		{
+			return screenSets.get(FUNCTION_EFC_SCREEN_1) instanceof ScreenSetAC2;
+		}
+		return false;
+	}
+
+	/**
+	 * Determine if screen set exists
+	 * 
+	 * @return true if screen set exists
+	 */
+	private boolean isScreenSetExist(int index)
+	{
+		if (screenSets.size() - 1 >= index)
+		{
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Replace a particular screenset with a dummy screenset
+	 * 
+	 * @param screenSetNo
+	 *            - the screen set to be replaced
+	 * 
+	 * @return true if it has been replaced
+	 */
+	protected boolean removeScreenSet(int screenSetNo)
+	{
+		if (screenSets.size() - 1 >= screenSetNo)
+		{
+			// already dummy screen?
+			if (screenSets.get(screenSetNo) instanceof ScreenSetDummy)
+			{
+				return false;
+			}
+
+			// replace it
+			screenSets.remove(screenSetNo);
+			screenSets.add(screenSetNo, new ScreenSetDummy(screenSetNo));
+		}
+		return false;
+	}
+
+	/**
+	 * Set the function key pressed to proceed
+	 * 
+	 * @param ckey
+	 *            - function key
+	 */
+	protected void setFKeyToNextFunctions(int ckey)
+	{
+		for (ScreenSet screenSet : screenSets)
+		{
+			screenSet.setFKeyToNextFunction(ckey);
+		}
+	}
+
+	/**
+	 * Clears function messages
+	 */
+	protected void clearMessages()
+	{
+		for (ScreenSet screenSet : screenSets)
+		{
+			screenSet.getFunctionMessages().clearMessages();
+		}
+	}
+
+}

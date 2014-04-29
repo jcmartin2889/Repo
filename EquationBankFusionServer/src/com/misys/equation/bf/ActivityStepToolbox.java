@@ -1,0 +1,191 @@
+package com.misys.equation.bf;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationSystem;
+import com.misys.equation.common.access.EquationUnit;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EqTimingTest;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.function.context.BFEQCredentials;
+import com.misys.equation.function.context.EquationFunctionContext;
+import com.misys.equation.function.language.LanguageResources;
+import com.trapedza.bankfusion.servercommon.commands.BankFusionEnvironment;
+
+/**
+ * This class is for common Activity Step code
+ */
+public class ActivityStepToolbox
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: ActivityStepToolbox.java 17472 2013-10-22 11:15:18Z lima12 $";
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(ActivityStepToolbox.class);
+
+	/**
+	 * Get a new EQSession for a BankFusion session
+	 * 
+	 * @param env
+	 *            BankFusionEnvironnment
+	 * @param systemId
+	 *            iSeries system
+	 * @param unitId
+	 *            Equation unit id
+	 * @param bankFusionUser
+	 *            BankFusion user name
+	 * @param userLocator
+	 *            BankFusion user locator (session id)
+	 * @param equationIseriesProfile
+	 *            - the iSeries/Equation user profile
+	 * 
+	 * @return String containing the session id
+	 * 
+	 * @throws EQException
+	 * @equation.external
+	 */
+	public static String getNewSession(BankFusionEnvironment env, String systemId, String unitId, String bankFusionUser,
+					String userLocator, String equationIseriesProfile) throws EQException
+	{
+		String sessionId = null;
+		EquationSystem equationSystem = EquationCommonContext.getContext().getEquationSystem(systemId);
+		if (equationSystem == null)
+		{
+			throw new EQException("System [" + systemId + "] has not been initialised");
+		}
+		// Ensure that the unit has been initialized
+		EquationUnit unit = equationSystem.getUnit(unitId);
+
+		// Note: The iSeries Profile Token obtained by BankFusion when the BankFusion session is established
+		// may have expired.
+		// To avoid problems with expired tokens, no password is passed to getEqSession, which will
+		// create a completely new Profile Token
+		BFEQCredentials credentials = new BFEQCredentials(bankFusionUser, userLocator, null);
+		// This method is a public interface so if we have NOT arrived here via a Microflow we still need the session's real user to
+		// be setup here as later use of the session will have errors if the real user changes
+		if (equationIseriesProfile == null || equationIseriesProfile.equals(""))
+		{
+			String userId = env.getUserSession().getUserId();
+			LOG.info(LanguageResources.getFormattedString("ActivityStepToolbox.Updated.UserId", userId));
+
+			if (EquationCommonContext.isCASAuthentication())
+			{
+				equationIseriesProfile = EquationFunctionContext.getContext().getiSeriesUserForBFUser(unit, userId);
+				LOG.info(LanguageResources.getFormattedString("ActivityStepToolbox.Updated1.UserId", equationIseriesProfile));
+			}
+			else
+			{
+				equationIseriesProfile = userId.toUpperCase();
+				LOG.info(LanguageResources.getFormattedString("ActivityStepToolbox.Updated2.UserId", equationIseriesProfile));
+			}
+		}
+
+		if (env != null)
+		{
+			LOG.info(LanguageResources.getFormattedString("ActivityStepToolbox.CreateNewSession", new String[] { systemId, unitId,
+							bankFusionUser, userLocator, equationIseriesProfile }));
+			sessionId = EquationFunctionContext.getContext().getEqSession(systemId, unitId, credentials, getIPAddress(env),
+							EquationCommonContext.SESSION_BANKFUSION, equationIseriesProfile);
+		}
+		else
+		{
+			LOG.info(LanguageResources.getFormattedString("ActivityStepToolbox.CreateNewSession", new String[] { systemId, unitId,
+							bankFusionUser, userLocator, equationIseriesProfile }));
+			// TODO confirm what session type should be used here.
+			sessionId = EquationFunctionContext.getContext().getEqSessionNoBankFusion(systemId, unitId, credentials, null,
+							EquationCommonContext.SESSION_API_MODE, equationIseriesProfile);
+		}
+		return sessionId;
+	}
+
+	/**
+	 * Encapsulate the obtaining of a new or existing session for an ActivityStep
+	 * 
+	 * @param systemId
+	 *            iSeries system
+	 * @param unitId
+	 *            Equation unit id
+	 * @param env
+	 *            BankFusionEnvironnment
+	 * @param equationIseriesProfile
+	 *            - the iSeries/Equation user profile
+	 * @param sesssionType
+	 *            - session type ( ' ' - dedicated, '1' - pooled)
+	 * @param dataSourceName
+	 *            - the data source to be used for pooled connections if the default pool is not to be used
+	 * 
+	 * @return String containing the session id
+	 * 
+	 * @throws EQException
+	 */
+	public static String getSession(String systemId, String unitId, BankFusionEnvironment env, String equationIseriesProfile,
+					String sessionType, String dataSourceName) throws EQException
+	{
+		EqTimingTest.printStartTime("ActivityStepToolbox.getSession()", "");
+		String sessionId = null;
+		if (sessionType.equals(""))
+		{
+			String userLocator = env.getUserLocn().getStringRepresentation();
+			String bankFusionUser = env.getUserSession().getUserId();
+
+			sessionId = EquationFunctionContext.getContext().getSessionId(null, userLocator);
+			if (sessionId == null)
+			{
+				LOG.info(LanguageResources.getFormattedString("ActivityStepToolbox.CreateNewSession", new String[] { systemId,
+								unitId, bankFusionUser, userLocator, equationIseriesProfile }));
+				sessionId = getNewSession(env, systemId, unitId, bankFusionUser, userLocator, equationIseriesProfile);
+			}
+			else
+			{
+				LOG.info(LanguageResources.getFormattedString("ActivityStepToolbox.ExistingSession", new String[] { systemId,
+								unitId, bankFusionUser, userLocator, equationIseriesProfile }));
+				// There is an existing session, check it's valid and matches:
+				BFEQCredentials credentials = new BFEQCredentials(bankFusionUser, userLocator, sessionId);
+				if (!EquationFunctionContext.getContext().existingSessionMatches(systemId, unitId, credentials,
+								equationIseriesProfile))
+				{
+					// fatal error:
+					throw new EQException("Matching session not found");
+				}
+			}
+		}
+		else
+		{
+			// Missing parameters
+			boolean xaMode = false;
+			int internalSessionType = EquationCommonContext.SESSION_API_MODE;
+			sessionId = EquationFunctionContext.getContext().getEqSession(dataSourceName, internalSessionType, sessionId, xaMode,
+							equationIseriesProfile);
+		}
+		EqTimingTest.printTime("ActivityStepToolbox.getSession()", "");
+		return sessionId;
+	}
+	/**
+	 * Extracts an IP address from the BankFusion environment (if available)
+	 * 
+	 * When called from the BFTC, the IP address is in the clientURL property in the following format:
+	 * service:jmx:jmxmp://10.113.32.126:8077 For UXP and BF WebServices, the IP address is not available.
+	 * 
+	 * @param env
+	 *            A BankFusionEnvinronment
+	 * @return A String containing the IP4 Address (or blank if the address could not be determined)
+	 */
+	private static String getIPAddress(BankFusionEnvironment env)
+	{
+		String result = "localhost";
+		String clientURL = env.getUserSession().getClientURL();
+		if (clientURL != null) // Will be null for UXP/WebServices
+		{
+			int forwardSlashesPos = clientURL.indexOf("//");
+			if (forwardSlashesPos > -1)
+			{
+				clientURL = clientURL.substring(forwardSlashesPos + 2);
+				int portPos = clientURL.indexOf(':');
+				if (portPos > -1)
+				{
+					clientURL = clientURL.substring(0, portPos);
+				}
+			}
+			result = clientURL;
+		}
+		return result;
+	}
+}

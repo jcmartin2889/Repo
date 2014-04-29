@@ -1,0 +1,166 @@
+package com.misys.equation.common.globalprocessing;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationConfigurationPropertiesBean;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationUser;
+import com.misys.equation.common.access.UnitPropertiesBean;
+import com.misys.equation.common.internal.eapi.core.EQException;
+
+/**
+ * This class provides methods related to the management of sessions for Global Processing <BR>
+ */
+public class GlobalSessionHandler
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private final EquationConfigurationPropertiesBean equationPropertiesBean;
+	private final SystemStatusManager systemStatusManager;
+	private final EquationCommonContext equationCommonContext;
+	private Map<String, EquationUser> equationUsers = new HashMap<String, EquationUser>();
+
+	/**
+	 * Construct a global session handler
+	 */
+	public GlobalSessionHandler()
+	{
+		equationPropertiesBean = EquationConfigurationPropertiesBean.getInstance();
+		systemStatusManager = SystemStatusManager.getInstance();
+		equationCommonContext = EquationCommonContext.getContext();
+	}
+
+	/**
+	 * This method will return an array of <code>EquationStandardSession</code> based for given user derived from the session
+	 * identifier and the values of the <code>globalprocessing.properties</code>.
+	 * 
+	 * @return an array of <code>EquationStandardSession</code>
+	 * @throws EQException
+	 *             if there any problem.
+	 */
+	private List<EquationStandardSession> getGlobalProcessingEquationStandardSessions(String sessionIdentifier)
+	{
+		List<EquationStandardSession> sessions = new ArrayList<EquationStandardSession>();
+
+		// need to see if we have global processing installed...
+		if (equationPropertiesBean != null && equationPropertiesBean.isInitialised()
+						&& equationPropertiesBean.isGlobalProcessingGoodToGo())
+		{
+			// Does the unit support GP?
+			if (!equationCommonContext.checkIfGPIsInstalled(sessionIdentifier))
+			{
+				sessions.add(equationCommonContext.getEquationUser(sessionIdentifier).getSession());
+				return sessions;
+			}
+
+			for (UnitPropertiesBean currentUnit : equationPropertiesBean.getUnitsList())
+			{
+				String systemId = currentUnit.getSystemId();
+				String unitId = currentUnit.getUnitId();
+				EquationUser user = equationCommonContext.getEquationUser(systemId, unitId, sessionIdentifier);
+				if (user != null)
+				{
+					equationUsers.put(systemId + ":" + unitId + ":" + sessionIdentifier, user);
+					EquationStandardSession session = user.getSession();
+					if (session != null)
+					{
+						sessions.add(session);
+					}
+				}
+			}
+		}
+		else
+		{
+			// Without global processing we just use the current session
+			sessions.add(equationCommonContext.getEquationUser(sessionIdentifier).getSession());
+		}
+		return sessions;
+	}
+
+	/**
+	 * this method will return all active sessions for the current system.
+	 * 
+	 * @param sessionIdentifier
+	 *            this is the current session id.
+	 * @return all active sessions for the current system.
+	 */
+	public List<EquationStandardSession> getAllAvailableGlobalProcessingEquationStandardSessions(String sessionIdentifier)
+	{
+		List<EquationStandardSession> availableGlobalProcessingSessions = new ArrayList<EquationStandardSession>();
+
+		EquationStandardSession currentSession = null;
+		String systemName = null;
+		SystemStatus systemStatus = null;
+		String currentUnit = null;
+		UnitStatus unitStatus = null;
+
+		List<EquationStandardSession> equationStandardSession = getGlobalProcessingEquationStandardSessions(sessionIdentifier);
+
+		for (EquationStandardSession element : equationStandardSession)
+		{
+			currentSession = element;
+
+			systemName = currentSession.getSystemId();
+			systemStatus = systemStatusManager.getSystemStatus(systemName);
+			currentUnit = currentSession.getUnit().getUnitId();
+			unitStatus = systemStatus.getUnitStatus(currentUnit);
+
+			if (unitStatus.isAvailable())
+			{
+				availableGlobalProcessingSessions.add(currentSession);
+			}
+			else
+			{
+				// remove equationUsers.
+				String sessionKey = systemName + ":" + currentUnit + ":" + sessionIdentifier;
+				if (equationUsers.get(sessionKey) != null)
+				{
+					equationUsers.remove(sessionKey);
+				}
+			}
+		}
+		return availableGlobalProcessingSessions;
+	}
+
+	/**
+	 * Set the map of Equation Users
+	 * 
+	 * @param equationUsers
+	 */
+	public void setEquationUsers(Map<String, EquationUser> equationUsers)
+	{
+		this.equationUsers = equationUsers;
+	}
+
+	/**
+	 * Returns a list of EquationUsers associated with a given session ID
+	 * 
+	 * @param sessionId
+	 *            - the session ID
+	 * @return <code>List<EquationUser</code>
+	 */
+	public List<EquationUser> getGlobalEquationUsers(String sessionId)
+	{
+		List<EquationUser> usersList = new ArrayList<EquationUser>();
+		EquationCommonContext context = EquationCommonContext.getContext();
+
+		for (UnitPropertiesBean unit : equationPropertiesBean.getUnitsList())
+		{
+			EquationUser user = context.getEquationUser(unit.getSystemId(), unit.getUnitId(), sessionId);
+
+			if (user == null)
+			{
+				user = context.getEquationUser(sessionId);
+			}
+			if (user != null)
+			{
+				usersList.add(user);
+			}
+		}
+		return usersList;
+	}
+}

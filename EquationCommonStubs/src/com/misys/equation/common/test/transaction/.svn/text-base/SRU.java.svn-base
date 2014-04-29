@@ -1,0 +1,102 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseFully;
+
+/**
+ * Equation test cases for Maintain function
+ */
+public class SRU extends EquationTestCaseFully
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	String programName = "G42FRR";
+	String optionId = "SRU";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		retrieveBeforeCancel = false;
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZDLP", "BO1"); // Deal type (3A)
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	@Override
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZSIMP", "N"); // Simple deposit? (1A)
+		transaction.setFieldValue("GZRVR", "Y"); // Allow rollover? (1A)
+		transaction.setFieldValue("GZNDA", "Y"); // Use new deal account? (1A)
+		transaction.setFieldValue("GZDFR", "N"); // Defer tax to maturity? (1A)
+		transaction.setFieldValue("GZRDA", "0"); // Rollover date action (1A)
+		transaction.setFieldValue("GZMDTM", "Y"); // Allow change to maturity? (1A)
+		transaction.setFieldValue("GZPRCM", "Y"); // Allow change to period code? (1A)
+		transaction.setFieldValue("GZIFQF", "Y"); // Default interest frequency relative to start (1A)
+		transaction.setFieldValue("GZIFQM", "Y"); // Allow change to frequency? (1A)
+		transaction.setFieldValue("GZCPI", "N"); // Default capitalisation? (1A)
+		transaction.setFieldValue("GZCPIM", "N"); // Allow change to capitalisation? (1A)
+		transaction.setFieldValue("GZMINA", "0"); // Minimum deposit amount (15P,0)
+		transaction.setFieldValue("GZMINE", "N"); // Issue minimum deposit amount error? (1A)
+		transaction.setFieldValue("GZMAXA", "0"); // Maximum deposit amount (15P,0)
+		transaction.setFieldValue("GZMAXE", "N"); // Issue maximum deposit amount error? (1A)
+		transaction.setFieldValue("GZINCW", "N"); // Principal increase warning? (1A)
+		transaction.setFieldValue("GZDECW", "N"); // Principal decrease warning? (1A)
+		transaction.setFieldValue("GZMDTV", "N"); // Maturity date validation (1A)
+		transaction.setFieldValue("GZDADJ", "0"); // Mat/rvr date adjustment (1A)
+		transaction.setFieldValue("GZRETE", "N"); // Issue minimum retained amount error (1A)
+		transaction.setFieldValue("GZUTRM", "N"); // Unknown term (1A)
+		transaction.setFieldValue("GZCROL", "N"); // Count by rollover? (1A)
+	}
+
+	/**
+	 * Setup the mandatory fields (maintain mode)
+	 */
+	@Override
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZPRC", "P3"); // Default period code (4A)
+	}
+}

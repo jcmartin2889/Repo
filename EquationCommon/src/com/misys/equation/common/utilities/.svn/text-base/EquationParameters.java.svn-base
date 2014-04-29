@@ -1,0 +1,8 @@
+package com.misys.equation.common.utilities;
+
+public class EquationParameters
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	public static String HA_SDJAN = "SDJAN";
+}

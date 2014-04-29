@@ -1,0 +1,128 @@
+package com.misys.equation.function.runtime;
+
+import com.misys.equation.function.beans.RepeatingDataManager;
+
+public class UserRepeatingDataManager
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	protected RepeatingDataManager dataManager;
+
+	/**
+	 * Construct a User data repeating data manager
+	 * 
+	 * @param dataManager
+	 *            - the repeating data manager
+	 */
+	public UserRepeatingDataManager(RepeatingDataManager dataManager)
+	{
+		this.dataManager = dataManager;
+	}
+
+	/**
+	 * Moves to the start of the the repeating data.
+	 * <p>
+	 * After calling this method, the next() method should be called (repeatedly) to scroll through the rows whilst checking for
+	 * data.
+	 * 
+	 * @equation.external
+	 */
+	public void moveFirst()
+	{
+		this.dataManager.moveFirst();
+	}
+
+	/**
+	 * Move to the next record
+	 * 
+	 * @return a boolean indicating whether there is a row of data to process
+	 * @equation.external
+	 */
+	public boolean next()
+	{
+		return this.dataManager.next();
+	}
+
+	/**
+	 * Move to the specified row
+	 * 
+	 * @param row
+	 *            - the row number (1-based row number);
+	 * 
+	 * @return true if able to locate to the row
+	 * @equation.external
+	 */
+	public boolean setRow(int row)
+	{
+		return this.dataManager.setRow(row - 1);
+	}
+
+	/**
+	 * Return the number of rows (1-based row number)
+	 * 
+	 * @return the number of rows
+	 * @equation.external
+	 */
+	public int totalRows()
+	{
+		return this.dataManager.totalRows();
+	}
+
+	/**
+	 * Return the current row number (1-based row number)
+	 * 
+	 * @return the current row number
+	 * @equation.external
+	 */
+	public int currentRowNumber()
+	{
+		return this.dataManager.currentRowNumber() + 1;
+	}
+
+	/**
+	 * Return the input value of a field name
+	 * 
+	 * @param fieldName
+	 *            - field name
+	 * 
+	 * @return the input value
+	 * @equation.external
+	 */
+	public String rtvFieldInputValue(String fieldName)
+	{
+		dataManager.checkFieldExists(fieldName);
+		return dataManager.getInputValue(fieldName);
+	}
+
+	/**
+	 * Return the database value of a field name
+	 * 
+	 * @param fieldName
+	 *            - field name
+	 * 
+	 * @return the database value
+	 * @equation.external
+	 */
+	public String rtvFieldDbValue(String fieldName)
+	{
+		dataManager.checkFieldExists(fieldName);
+		return dataManager.getDbValue(fieldName);
+	}
+
+	/**
+	 * Return the output value of a field name
+	 * 
+	 * @param fieldName
+	 *            - field name
+	 * 
+	 * @return the output value
+	 * @equation.external
+	 */
+	public String rtvFieldOutputValue(String fieldName)
+	{
+		dataManager.checkFieldExists(fieldName);
+		return dataManager.getOutputValue(fieldName);
+	}
+
+}

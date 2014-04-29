@@ -1,0 +1,1155 @@
+package com.misys.equation.function.beans;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.misys.equation.common.access.EquationUser;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.internal.eapi.core.EQRuntimeException;
+import com.misys.equation.common.utilities.EqDataType;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.KeyedArrayList;
+import com.misys.equation.function.beans.valid.IValidation;
+import com.misys.equation.function.beans.valid.MessageContainer;
+import com.misys.equation.function.language.LanguageResources;
+import com.misys.equation.function.tools.TranslationToolbox;
+import com.misys.equation.problems.ProblemLocation;
+
+/**
+ * This class represents a User Interface layout
+ * <p>
+ * A Service will be created as a Function (GAPF record), each layout will be an Option (GBPF) record.
+ * <p>
+ * 
+ * @see DisplayAttributes - for a description of display attributes
+ */
+public class Layout extends Element implements IValidation
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(Layout.class);
+
+	/** Collection of DisplayAttributeSets */
+	private final List<DisplayAttributesSet> displayAttributesSets = new KeyedArrayList<DisplayAttributesSet>();
+
+	/** Maximum length of Equation options */
+	private static final int MAX_OPTION_LENGTH = 3;
+	/** Layout file suffix Note: This value is stored in the function layer because it forms part of the translation text owner id */
+	public static final String LAYOUT_FILE_SUFFIX = ".eql";
+	/** The related service bean */
+	private Function service;
+
+	private String serviceId;
+
+	/** Java package name */
+	private String packageName = "";
+
+	/** Mandatory next request option Id */
+	private String nextRequest = "";
+
+	/** F2 command key option */
+	private String commandKeyOption1 = "";
+	/** F11 command key option */
+	private String commandKeyOption2 = "";
+	/** F14 command key option */
+	private String commandKeyOption3 = "";
+	/** F23 command key option */
+	private String commandKeyOption4 = "";
+
+	/** Version of plug-in used to create the service */
+	private String pluginVersion = "";
+
+	/** Release version of the patch/enhancement of the service */
+	private String releaseVersion = "";
+
+	/** Display work fields **/
+	private boolean displayWorkFields = false;
+
+	/** Flag to indicate if a BankFusion Microflow should be called to perform previous screen processing. */
+	private boolean prevScrnMicroflow = false;
+	/** Flag to indicate if a BankFusion Microflow should be called to perform next screen processing. */
+	private boolean nextScrnMicroflow = false;
+
+	/** Import Allowed **/
+	private boolean importAllowed = true;
+
+	/** Original Layout ID **/
+	private String originalLayoutID = "";
+	/** Original Release Version **/
+	private String originalReleaseVersion = "";
+
+	private String owner = "";
+
+	/** Base Language */
+	private String baseLanguage;
+
+	/**
+	 * Default constructor for bean deserialisation
+	 */
+	public Layout()
+	{
+		super();
+		serviceId = "";
+	}
+
+	/**
+	 * Construct a new layout with the given label, id and description
+	 * 
+	 * @param option
+	 *            - the id of the option
+	 * @param optionTitle
+	 *            - the label of the option
+	 * @param optionDescription
+	 *            - the description of the option
+	 */
+	public Layout(String option, String optionTitle, String optionDescription)
+	{
+		super(option, optionTitle, optionDescription);
+		serviceId = "";
+	}
+
+	/**
+	 * Constructs a new Layout with the given Function.
+	 * <p>
+	 * This will also use the existing InputFieldSet/InputField definitions in the Function bean to create corresponding layout
+	 * DisplayAttributeSets/DisplayAttributes (if the function currently has any).
+	 * 
+	 * @param service
+	 *            a service definition
+	 * 
+	 * @param optionId
+	 *            option Id of layout
+	 * 
+	 * @param translation
+	 *            the translation bean for the service
+	 * 
+	 * @param defaultTextTypeAsReferenceText
+	 *            () true if default text As teference text, false default text as plain text
+	 */
+	public Layout(Function service, String optionId, Translation translation, boolean defaultTextTypeAsReferenceText,
+					boolean isMisysMode)
+	{
+		super(service); // Defaults Id
+		setId(optionId);
+		setServiceId(service.getId());
+		setService(service);
+		if (service.getBaseLanguage() != null && service.getBaseLanguage().length() > 0)
+		{
+			setBaseLanguage(service.getBaseLanguage());
+		}
+		else
+		{
+			setBaseLanguage(EquationUser.DEF_LANG);
+		}
+		synchronizeWithService(service, translation, translation, defaultTextTypeAsReferenceText, isMisysMode);
+	}
+
+	// Constructor added for PV stubs, should not be required in production version
+	public Layout(Function service, DisplayAttributesSet attributes)
+	{
+		super(service);
+		setService(service);
+		this.addDisplayAttributesSet(attributes);
+	}
+
+	/**
+	 * Return the list of display attribute sets of the layout
+	 * 
+	 * @return the list of display attribute sets of the layout
+	 */
+	public List<DisplayAttributesSet> getDisplayAttributesSets()
+	{
+		return displayAttributesSets;
+	}
+
+	/**
+	 * Add a display attribute set into the layout
+	 * <p>
+	 * A runtime exception will be thrown if an input field set with the same ID already exists.
+	 * 
+	 * @param attributesSet
+	 *            - the field set to be added
+	 */
+	public void addDisplayAttributesSet(DisplayAttributesSet attributesSet)
+	{
+		String key = attributesSet.getId();
+		if (displayAttributesSets.contains(key))
+		{
+			throw (new RuntimeException(LanguageResources.getString("Layout.DisplayFieldSetExists"))); //$NON-NLS-1$
+		}
+		else
+		{
+			attributesSet.setLayout(this);
+			((KeyedArrayList<DisplayAttributesSet>) displayAttributesSets).add(attributesSet, attributesSet.getId());
+		}
+	}
+
+	public DisplayAttributesSet getDisplayAttributesSet(String key)
+	{
+		return ((KeyedArrayList<DisplayAttributesSet>) displayAttributesSets).get(key);
+	}
+
+	public boolean validateBean(MessageContainer messageContainer, String subSet, boolean includeChildren)
+	{
+		String option = getId();
+		ProblemLocation problemLocation = new ProblemLocation(Layout.class.getSimpleName(), getId());
+
+		if (serviceId.length() == 0)
+		{
+			messageContainer.addErrorMessageId("Language.ServiceIdMustBeSpecifiedForALayout", problemLocation);
+		}
+		if (option.length() == 0)
+		{
+			messageContainer.addErrorMessageId("Language.OptionMustBeSpecified", problemLocation);
+		}
+		else
+		{
+			String text = ValidationHelper.validateOptionSyntax(option);
+			if (text != null)
+			{
+				messageContainer.addErrorMessage(text);
+			}
+		}
+		// A layout with a blank label may at this point contain '<none>' due to
+		// defaulting when the xml file is processed as a bean
+		if (getLabel().length() == 0 || getLabel().trim().equals(DEFAULT_TEXT_VALUE))
+		{
+			messageContainer.addErrorMessageId("Language.LayoutTitleMustBeEntered", problemLocation); //$NON-NLS-1$
+		}
+		else if (getLabel().length() > 35)
+		{
+			messageContainer.addErrorMessageId("Language.LayoutTitleCannotBeLongerThan35Characters", problemLocation); //$NON-NLS-1$
+		}
+		if (getBaseLanguage().length() == 0)
+		{
+			messageContainer.addErrorMessageId("Language.BaseLanguageMustBeEntered", problemLocation); //$NON-NLS-1$
+		}
+
+		// Rolldown from head to ML 2011.05.19 start
+		// No descriptions will be mandatory
+		// if (getDescription().length() == 0 || getDescription().trim().equals(DEFAULT_TEXT_VALUE))
+		// {
+		//			messageContainer.addErrorMessageId("Language.LayoutDescriptionMustBeEntered", problemLocation); //$NON-NLS-1$
+		//
+		// }
+		// Rolldown from head to ML 2011.05.19 end
+
+		if (nextRequest.length() > 0 && nextRequest.equals(option))
+		{
+			messageContainer.addErrorMessageId("Language.NextRequestSameAsOptionId", problemLocation); //$NON-NLS-1$
+		}
+
+		if (nextRequest.length() > MAX_OPTION_LENGTH)
+		{
+			messageContainer.addErrorMessageId("Language.NextRequestOptionTooLong", nextRequest, problemLocation); //$NON-NLS-1$
+		}
+		if (commandKeyOption1.length() > MAX_OPTION_LENGTH)
+		{
+			messageContainer.addErrorMessageId("Language.F2OptionTooLong", commandKeyOption1, problemLocation); //$NON-NLS-1$
+		}
+		if (commandKeyOption2.length() > MAX_OPTION_LENGTH)
+		{
+			messageContainer.addErrorMessageId("Language.F11OptionTooLong", commandKeyOption2, problemLocation); //$NON-NLS-1$
+		}
+		if (commandKeyOption3.length() > MAX_OPTION_LENGTH)
+		{
+			messageContainer.addErrorMessageId("Language.F14OptionTooLong", commandKeyOption3, problemLocation); //$NON-NLS-1$
+		}
+		if (commandKeyOption4.length() > MAX_OPTION_LENGTH)
+		{
+			messageContainer.addErrorMessageId("Language.F23OptionTooLong", commandKeyOption4, problemLocation); //$NON-NLS-1$
+		}
+
+		if (includeChildren)
+		{
+			for (DisplayAttributesSet attributesSet : displayAttributesSets)
+			{
+				attributesSet.validateBean(messageContainer, subSet, includeChildren);
+
+			}
+		}
+		return false;
+	}
+	/**
+	 * Expose the service bean.
+	 * <p>
+	 * This is deliberately not called getService() to avoid problems with the betwixt serialisation
+	 * 
+	 * @return Function bean
+	 */
+	public Function service()
+	{
+		return service;
+	}
+
+	public void setService(Function service)
+	{
+		this.service = service;
+		this.serviceId = service.getId();
+	}
+
+	public String getServiceId()
+	{
+		return serviceId;
+	}
+
+	public void setServiceId(String serviceId)
+	{
+		this.serviceId = serviceId;
+	}
+
+	/**
+	 * @return the packageName
+	 */
+	public String getPackageName()
+	{
+		return packageName;
+	}
+
+	/**
+	 * @param packageName
+	 *            the packageName to set
+	 */
+	public void setPackageName(String packageName)
+	{
+		this.packageName = packageName;
+	}
+
+	/**
+	 * Retrieve the field's display attributes
+	 * 
+	 * @param fieldName
+	 *            - field name
+	 * 
+	 * @return the field's display attributes
+	 */
+	public DisplayAttributes rtvDisplayAttributes(String fieldName)
+	{
+		for (int i = 0; i < displayAttributesSets.size(); i++)
+		{
+			DisplayAttributesSet attributesSet = displayAttributesSets.get(i);
+			for (IDisplayItem displayItem : attributesSet.getDisplayItems())
+			{
+				if (displayItem instanceof DisplayAttributes)
+				{
+					DisplayAttributes attributes = (DisplayAttributes) displayItem;
+					if (attributes.getId().equals(fieldName))
+					{
+						return attributes;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Apply a change of Id of a DisplayAttributeSet
+	 * <p>
+	 * This will apply the change by both updating the id of the actual DisplayAttributeSet, and updating the key of the item in the
+	 * KeyedArrayList collection.
+	 * 
+	 * @param oldId
+	 *            a String containing the old Id
+	 * @param newId
+	 *            a String containing the new Id
+	 */
+	public void modifyDisplayAttributeSetId(String oldId, String newId)
+	{
+		KeyedArrayList<DisplayAttributesSet> sets = (KeyedArrayList<DisplayAttributesSet>) displayAttributesSets;
+		int index = sets.indexOf(oldId);
+		if (index > -1)
+		{
+			DisplayAttributesSet set = sets.get(index);
+			// Change the Id:
+			set.setId(newId);
+
+			// Remove and re-add to the map at same index
+			sets.remove(oldId);
+			sets.add(set, set.getId());
+		}
+		else
+		{
+			LOG.error("Failed to find existing fieldset with id " + oldId);
+		}
+	}
+
+	/**
+	 * Synchronizes the layout definition to the service definition
+	 * <p>
+	 * Note that this currently works on matching IDs. I.E. The IDs of the display classes are assumed to be that of the business
+	 * layer classes, so DisplayAttributesSet and DisplayAttributes are added/removed to match the service definition.
+	 * <p>
+	 * In addition, this processing ensures that each DisplayAttributesSet has a reserved group with an id of KEYS, and all key
+	 * fields (and only key fields) must be in that group (or subgroups).
+	 * <p>
+	 * A separate step should take into account changing of FieldSet or Field ids. This is in the
+	 * <code>EquationFunctionEditor</code> which stores any such changes to Ids and applies them to all Layouts for this service.
+	 * <p>
+	 * This processing will re-order the DisplayAttributesSets to match the order of the InputFieldSets in the service. However, it
+	 * deliberately does not attempt to re-order the items with a DisplayAttributesSet (fields) to the same order as the service
+	 * definition items, as they may be re-ordered by the user in the Desktop Layout Editor.
+	 * 
+	 * @param service
+	 * 
+	 * @param serviceTranslation
+	 *            - bean which contains the translations for the service
+	 * @param layoutTranslation
+	 *            - bean which contains the translations for the layout. This will be different if the Service and Layout are edited
+	 *            simultaneously.
+	 * 
+	 * @param defaultTextTypeAsReferenceText
+	 *            - boolean indicating if text should be default as reference text
+	 * 
+	 * @return a boolean indicating if any changes took place
+	 */
+	public boolean synchronizeWithService(Function service, Translation serviceTranslation, Translation layoutTranslation,
+					boolean defaultTextTypeAsReferenceText, boolean isMisysMode)
+	{
+		LOG.debug("updateLayout");
+		boolean changed = false;
+		try
+		{
+
+			// First, remove any Layout items which are missing a corresponding
+			// Service item, or are in the wrong place (e.g. based on whether a key field)
+			// ----------------------------------------------------------------------------
+			List<String> attributesSetIdsToRemove = new ArrayList<String>();
+			Map<String, List<IDisplayItem>> allFieldsToRemove = new HashMap<String, List<IDisplayItem>>();
+			Map<String, TextBean> textBeansRemoved = new HashMap<String, TextBean>();
+			List<String> fieldsToRemoveCompletely = new ArrayList<String>();
+			for (DisplayAttributesSet displayAttributesSet : getDisplayAttributesSets())
+			{
+				InputFieldSet inputFieldSet = null;
+				if (service.inputFieldSetKeys().contains(displayAttributesSet.getId()))
+				{
+					inputFieldSet = service.getInputFieldSet(displayAttributesSet.getId());
+				}
+
+				if (inputFieldSet == null)
+				{
+					// If the DisplayAttributesSet doesn't have a corresponding input field set,
+					// then add to the list of DisplayAttributeSets to delete:
+					// Note that this delete list is used to avoid removing items from the collection during the iteration.
+
+					TranslationToolbox.removeText(displayAttributesSet, getBaseLanguage(), rtvTextOwner(), serviceTranslation,
+									layoutTranslation);
+
+					attributesSetIdsToRemove.add(displayAttributesSet.getId());
+					changed = true;
+				}
+				else
+				{
+					// set OK, now check individual display attributes
+					List<IDisplayItem> fieldsToRemove = new ArrayList<IDisplayItem>();
+					allFieldsToRemove.put(inputFieldSet.getId(), fieldsToRemove);
+					processCheckForRemove(inputFieldSet, displayAttributesSet.getDisplayItems(), fieldsToRemove,
+									fieldsToRemoveCompletely, false);
+					// TranslationToolbox.removeText(fieldsToRemove, getBaseLanguage(), rtvTextOwner(), serviceTranslation,
+					// layoutTranslation);
+					for (IDisplayItem item : fieldsToRemove)
+					{
+						Element element = (Element) item;
+						String id = element.getId();
+						LOG.debug("updateLayout - Removing DisplayAttributes for [" + id + "]");
+						// Find the item to delete
+						Element parent = element.rtvParent();
+						DisplayItemList parentList = null;
+						if (parent instanceof DisplayAttributesSet)
+						{
+							parentList = ((DisplayAttributesSet) parent).getDisplayItems();
+						}
+						else
+						{
+							parentList = ((DisplayGroup) parent).getDisplayItems();
+						}
+
+						TranslationToolbox.removeText(element, getBaseLanguage(), rtvTextOwner(), serviceTranslation,
+										layoutTranslation, textBeansRemoved);
+
+						if (!parentList.remove(id))
+						{
+							throw new RuntimeException("Failed to remove DisplayAttributes for id = [" + id + "]");
+						}
+						changed = true;
+					}
+				}
+			}
+			// Now delete any DisplayAttributeSets that need deleting:
+			for (String id : attributesSetIdsToRemove)
+			{
+				LOG.debug("updateLayout - Removing DisplayAttributesSet for [" + id + "]");
+
+				DisplayAttributesSet set = ((KeyedArrayList<DisplayAttributesSet>) getDisplayAttributesSets()).get(id);
+				TranslationToolbox.removeText(set.getDisplayItems(), getBaseLanguage(), rtvTextOwner(), serviceTranslation,
+								layoutTranslation);
+				((KeyedArrayList<DisplayAttributesSet>) getDisplayAttributesSets()).remove(id);
+				changed = true;
+			}
+			// From now on, adding missing definitions:
+			// -----------------------------------------
+			for (int inputSetIndex = 0; inputSetIndex < service.getInputFieldSets().size(); inputSetIndex++)
+			{
+				// Ensure that FieldSets have corresponding DisplayAttributesSets:
+				InputFieldSet inputFieldSet = service.getInputFieldSets().get(inputSetIndex);
+				DisplayAttributesSet displayAttributesSet = getDisplayAttributesSet(inputFieldSet.getId());
+				if (displayAttributesSet == null)
+				{
+					displayAttributesSet = new DisplayAttributesSet(inputFieldSet);
+					TranslationToolbox.updateTextReferences(displayAttributesSet, serviceTranslation, serviceTranslation,
+									getBaseLanguage(), rtvTextOwner(), defaultTextTypeAsReferenceText, isMisysMode);
+					LOG.debug("updateLayout - Adding DisplayAttributesSet for [" + displayAttributesSet.getId() + "]");
+					addDisplayAttributesSet(displayAttributesSet);
+					changed = true;
+				}
+
+				// Must have a displayAttributesSet now:
+				// Ensure there is a KEYS group in the Primary DisplayAttributesSet:
+				DisplayGroup keyGroup = null;
+				if (inputFieldSet.isPrimary())
+				{
+					if (!displayAttributesSet.getDisplayItems().contains(DisplayGroup.FULL_KEY_GROUP_ID))
+					{
+						// Add it now as the first item:
+						displayAttributesSet.addItem(0, new DisplayGroup(DisplayGroup.FULL_KEY_GROUP_ID, "Key Group Label", ""));
+					}
+					keyGroup = (DisplayGroup) displayAttributesSet.getDisplayItems().get(DisplayGroup.FULL_KEY_GROUP_ID);
+				}
+				// Add missing fields (DisplayAttributes)
+				for (int fieldIndex = 0; fieldIndex < inputFieldSet.getInputFields().size(); fieldIndex++)
+				{
+					InputField inputField = inputFieldSet.getInputFields().get(fieldIndex);
+					IDisplayItem displayItem = getItemById(displayAttributesSet.getDisplayItems(), inputField.getId());
+					if (displayItem == null)
+					{
+						// Doesn't exist, so need to add a DisplayAttributes item in the appropriate location
+						// First, see if the DisplayAttributes was previously removed from bean model,
+						// as we should simply re-parent in the correct place to avoid losing any
+						// customizations
+						List<IDisplayItem> fieldsToRemove = allFieldsToRemove.get(inputFieldSet.getId());
+						if (fieldsToRemove != null)
+						{
+							for (IDisplayItem tempItem : fieldsToRemove)
+							{
+								// If major changes have occurred to the field then do not try and preserve display attributes
+								if (((Element) tempItem).getId().equals(inputField.getId())
+												&& !fieldsToRemoveCompletely.contains(inputField.getId()))
+								{
+									displayItem = tempItem;
+									TranslationToolbox.addText(serviceTranslation, getBaseLanguage(), rtvTextOwner(), displayItem,
+													textBeansRemoved, isMisysMode);
+									break;
+								}
+							}
+						}
+						// If still null, then need to create a new instance:
+						if (displayItem == null)
+						{
+							displayItem = new DisplayAttributes(inputField);
+							DisplayAttributes displayField = (DisplayAttributes) displayItem;
+							TranslationToolbox.updateTextReferences(displayField, serviceTranslation, serviceTranslation,
+											getBaseLanguage(), rtvTextOwner(), defaultTextTypeAsReferenceText, isMisysMode);
+						}
+						LOG.debug("updateLayout - Adding DisplayAttributes for [" + inputField.getId() + "]");
+						// Key fields are always added to the special KEYS display group:
+						if (inputField.isKey() && keyGroup != null)
+						{
+							// Should only have key fields in the Primary input fieldset
+							keyGroup.addItem(displayItem);
+						}
+						else if (Field.isRepeating(inputField))
+						{
+							String repeatingGroupId = DisplayGroup.GROUP_ID_PREFIX + inputField.getRepeatingGroup();
+							// if the group already exists get the group, else create it
+							DisplayGroup group = null;
+							if (displayAttributesSet.getDisplayItems().contains(repeatingGroupId))
+							{
+								group = (DisplayGroup) displayAttributesSet.getDisplayItems().get(repeatingGroupId);
+							}
+							else
+							{
+								// Add it now :
+								displayAttributesSet.addItem(new DisplayGroup(repeatingGroupId, "Repeating data", ""));
+								group = (DisplayGroup) displayAttributesSet.getDisplayItems().get(repeatingGroupId);
+								TranslationToolbox.updateTextReferences(group, serviceTranslation, serviceTranslation,
+												getBaseLanguage(), rtvTextOwner(), defaultTextTypeAsReferenceText, isMisysMode);
+								group.setRepeatingGroup(inputField.getRepeatingGroup());
+							}
+							// if group is a repeating group then add field
+							if (DisplayGroup.isRepeating(group))
+							{
+								group.addItem(displayItem);
+							}
+						}
+						else
+						{
+							// Otherwise, add to the DisplayAttributesSet
+							displayAttributesSet.addItem(displayItem);
+						}
+						changed = true;
+					}
+					else
+					{
+						// The (DisplayAttribute) did already exist.
+						// Check for inconsistencies against the InputField
+						if (displayItem instanceof DisplayAttributes)
+						{
+							DisplayAttributes displayAttributes = (DisplayAttributes) displayItem;
+							String prompt = displayAttributes.getPrompt().trim();
+							if (prompt.length() > 0 && !inputField.containsPvFieldSet(prompt))
+							{
+								// If the specified prompt module doesn't exist for the InputField,
+								// blank out the Prompt:
+								displayAttributes.setPrompt("");
+								changed = true;
+							}
+							// If the DisplayAttributes edit code is not valid for the current InputFieldType, then set to blank
+							// (DisplayAttributes.EDIT_CODE_NONE)
+							if (EqDataType.isNumeric(inputField.getDataType())
+											&& (DisplayAttributes.EDIT_CODE_NONE.equals(displayAttributes.getEditCode())
+															|| DisplayAttributes.EDIT_CODE_AMOUNT.equals(displayAttributes
+																			.getEditCode())
+															|| DisplayAttributes.EDIT_CODE_RATE.equals(displayAttributes
+																			.getEditCode()) || DisplayAttributes.EDIT_CODE_AMOUNT_WITH_REPLACE
+															.equals(displayAttributes.getEditCode())))
+							{
+								// This is valid
+							}
+							else if (EqDataType.isDate(inputField.getDataType())
+											&& (DisplayAttributes.EDIT_CODE_NONE.equals(displayAttributes.getEditCode()) || DisplayAttributes.EDIT_CODE_DATE
+															.equals(displayAttributes.getEditCode())))
+							{
+								// This is valid
+							}
+							else if (!(DisplayAttributes.EDIT_CODE_NONE.equals(displayAttributes.getEditCode())))
+
+							{
+								displayAttributes.setEditCode(DisplayAttributes.EDIT_CODE_NONE);
+								changed = true;
+							}
+						}
+					}
+				}
+			}
+			// Now that all removals and additions have taken place, the only mismatch can be with ordering.
+			changed = reorderScreens(service, changed);
+		}
+		catch (EQException e)
+		{
+			LOG.error("updateLayout", e);
+		}
+		return changed;
+	}
+	/**
+	 * Synchronizes the layout title with the service title
+	 * 
+	 * @param service
+	 * @param layoutTranslation
+	 * @param defaultTextTypeAsReferenceText
+	 *            - boolean indicating if text should be default as reference text
+	 * @return a boolean indicating if any changes took place
+	 */
+	public boolean synchronizeTitleWithService(Function service, Translation layoutTranslation,
+					boolean defaultTextTypeAsReferenceText, boolean isMisysMode)
+	{
+		boolean changed = false;
+		// Default Layout Title from Service Title
+		if (getLabel().length() == 0 || getLabel().trim().equals(Layout.DEFAULT_TEXT_VALUE))
+		{
+			// Service title will always be plain text
+			setLabel(service.getLabel());
+			setLabelType(Element.TEXT_VALUE_TEXT);
+			setLabelTextOwner("");
+
+			if (defaultTextTypeAsReferenceText)
+			{
+				String textKey = TranslationToolbox.generateUpdateDeleteReferenceText(layoutTranslation, getBaseLanguage(),
+								rtvTextOwner(), TextBean.TYPE_LABEL, getLabel(), null, false, isMisysMode);
+				// If text bean is found
+				if (textKey != null)
+				{
+					setLabelType(Element.TEXT_VALUE_REFERENCE);
+					setLabel(textKey);
+					setLabelTextOwner(rtvTextOwner());
+				}
+			}
+			changed = true;
+		}
+		return changed;
+	}
+	/**
+	 * Recursively checks whether the items in this list can be removed.
+	 * <p>
+	 * This method is initially called with the set of <code>IDisplayItems<code> for a DisplayAttributeSet,   
+	 * <p>
+	 * After finally returning from this method, the <code>toRemove</code> parameter will contain the list of DisplayAttributes that
+	 * must be removed. Note that they are not removed within this processing to avoid concurrency problems.
+	 * 
+	 * @param inputFieldSet
+	 *            The <code>InputFieldSet</code> corresponding to the DisplayItems currently being processed.
+	 * @param items
+	 *            A <code>DisplayItemList<code> collection for the current level within the DisplayAttributesSet.
+	 * @param toRemove
+	 *            A <code>List</code> of <code>IDisplayItem</code> (always DisplayAttributes) that should be removed but where
+	 *            display attributes will be preserved if possible.
+	 * @param toRemoveCompletely
+	 *            A <code>List</code> of <code>String</code> display attributes id of fields to be removed where no previous
+	 *            properties should be preserved.
+	 * @param inKeyGroup
+	 *            a boolean indicating whether currently processing in (or beneath) the special KEY group (and therefore whether the
+	 *            InputFields corresponding to the DisplayAttributes should be key fields or not).
+	 */
+	private static void processCheckForRemove(InputFieldSet inputFieldSet, DisplayItemList items, List<IDisplayItem> toRemove,
+					List<String> toRemoveCompletely, boolean inKeyGroup)
+	{
+		for (IDisplayItem item : items)
+		{
+			if (item instanceof DisplayAttributes)
+			{
+				DisplayAttributes displayAttributes = (DisplayAttributes) item;
+				Field inputField = null;
+				try
+				{
+					if (inputFieldSet.containsField(displayAttributes.getId()))
+					{
+						inputField = inputFieldSet.getField(displayAttributes.getId());
+					}
+				}
+				catch (EQException e)
+				{
+					// Should never get here, as previously checked for existence
+					throw new EQRuntimeException(e);
+				}
+				boolean displayAttributeRepeatingGroup = displayAttributes.rtvParent() instanceof DisplayGroup
+								&& DisplayGroup.isRepeating(((DisplayGroup) displayAttributes.rtvParent()));
+				// Check field has not changed from repeating status. If so then delete field so it will be added later with new
+				// attributes.
+				if (inputField != null && Field.isRepeating(inputField) != displayAttributeRepeatingGroup)
+				{
+					toRemove.add(displayAttributes);
+					toRemoveCompletely.add(displayAttributes.getId());
+				}
+				else if (!inputFieldSet.fieldKeys().contains(displayAttributes.getId()))
+				{
+					// If the DisplayAttribute doesn't have a corresponding input field,
+					// then always add to the list of DisplayAttributes to delete.
+					toRemove.add(displayAttributes);
+				}
+				else
+				{
+
+					if (inputField.isKey() != inKeyGroup)
+					{
+						LOG.debug("Marking DisplayAttributes [ " + displayAttributes.getId()
+										+ "] for removal due to key attribute mismatch");
+						toRemove.add(displayAttributes);
+					}
+					else
+					{
+						Element parent = displayAttributes.rtvParent();
+						if (parent instanceof DisplayGroup)
+						{
+							String repeatingGroup = ((DisplayGroup) parent).getRepeatingGroup();
+							if (!repeatingGroup.equals("") && !repeatingGroup.equals(inputField.getRepeatingGroup()))
+							{
+								toRemove.add(displayAttributes);
+							}
+						}
+					}
+				}
+
+			}
+			else if (item instanceof DisplayGroup)
+			{
+				// Recursively process the group
+				DisplayGroup displayGroup = (DisplayGroup) item;
+				boolean newInKeyGroup = inKeyGroup;
+				// If not already in (or beneath) key group, then check to see if entering
+				if (!newInKeyGroup)
+				{
+					// Special processing for the KEYS group:
+					String fullKeyId = DisplayGroup.GROUP_ID_PREFIX + DisplayGroup.KEY_GROUP_ID;
+					if (displayGroup.getId().equals(fullKeyId))
+					{
+						newInKeyGroup = true;
+					}
+				}
+				// Actually recurse
+				processCheckForRemove(inputFieldSet, displayGroup.getDisplayItems(), toRemove, toRemoveCompletely, newInKeyGroup);
+				// if a repeating display group is now empty, remove the group
+				if (!displayGroup.getRepeatingGroup().equals(""))
+				{
+					boolean removeGroup = true;
+					for (IDisplayItem groupItem : displayGroup.getDisplayItems())
+					{
+						if (!toRemove.contains(groupItem))
+						{
+							removeGroup = false;
+							break;
+						}
+					}
+					if (removeGroup)
+					{
+						toRemove.add(displayGroup);
+					}
+				}
+			}
+		}
+	}
+	/**
+	 * Recursively searches through the groups to find the required item (by Id)
+	 * 
+	 * @return an IDisplayItem
+	 */
+	private static IDisplayItem getItemById(DisplayItemList items, String id)
+	{
+		IDisplayItem result = null;
+		result = items.get(id);
+		if (result == null)
+		{
+			// If not found in root, try child groups:
+			for (IDisplayItem item : items)
+			{
+				if (item instanceof DisplayGroup)
+				{
+					DisplayGroup displayGroup = (DisplayGroup) item;
+					result = getItemById(displayGroup.getDisplayItems(), id);
+					if (result != null)
+					{
+						break; // Exit loop as soon as item found...
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+
+	public String getNextRequest()
+	{
+		return nextRequest;
+	}
+
+	public void setNextRequest(String nextRequest)
+	{
+		this.nextRequest = nextRequest.trim();
+	}
+
+	public String getCommandKeyOption1()
+	{
+		return commandKeyOption1;
+	}
+
+	public void setCommandKeyOption1(String commandKeyOption1)
+	{
+		this.commandKeyOption1 = commandKeyOption1;
+	}
+
+	public String getCommandKeyOption2()
+	{
+		return commandKeyOption2;
+	}
+
+	public void setCommandKeyOption2(String commandKeyOption2)
+	{
+		this.commandKeyOption2 = commandKeyOption2;
+	}
+
+	public String getCommandKeyOption3()
+	{
+		return commandKeyOption3;
+	}
+
+	public void setCommandKeyOption3(String commandKeyOption3)
+	{
+		this.commandKeyOption3 = commandKeyOption3;
+	}
+
+	public String getCommandKeyOption4()
+	{
+		return commandKeyOption4;
+	}
+
+	public void setCommandKeyOption4(String commandKeyOption4)
+	{
+		this.commandKeyOption4 = commandKeyOption4;
+	}
+
+	/**
+	 * Called from synchronizeWithService to re-order the screens (DisplayAttributeSets) to match the order of InputFieldSets within
+	 * the service definition
+	 * 
+	 * @param service
+	 *            the <code>Function</code> definition to align to
+	 * @param changed
+	 *            Flag indicating whether there have been any changes to the layout so far
+	 * @return <code>boolean</code> true if either the <code>changed</code> parameter was passed as true, or if this method made a
+	 *         change to the layout.
+	 */
+	public boolean reorderScreens(Function service, boolean changed)
+	{
+		for (int index = 0; index < service.getInputFieldSets().size(); index++)
+		{
+			String inputFieldSetId = service.getInputFieldSets().get(index).getId();
+			// Check if the correct DisplayAttributesSets is in this position:
+			if (!getDisplayAttributesSets().get(index).getId().equals(inputFieldSetId))
+			{
+				if (LOG.isInfoEnabled())
+				{
+					LOG.debug("DisplayAttributesSet [" + inputFieldSetId + "] needs to be moved to position [" + index + "]");
+				}
+				// Store a reference to the DisplayAttributesSet that should be in this position
+				DisplayAttributesSet realAttributesSet = getDisplayAttributesSet(inputFieldSetId);
+				// Remove it from its current position:
+				((KeyedArrayList<DisplayAttributesSet>) getDisplayAttributesSets()).remove(inputFieldSetId);
+				// Re-add it in the correct location
+				((KeyedArrayList<DisplayAttributesSet>) getDisplayAttributesSets()).add(index, realAttributesSet, inputFieldSetId);
+				changed = true;
+			}
+		}
+		return changed;
+	}
+
+	/**
+	 * Determine whether the work fields are displayed during runtime
+	 * 
+	 * @return true if the work fields are displayed during runtime
+	 */
+	public boolean isDisplayWorkFields()
+	{
+		return displayWorkFields;
+	}
+
+	/**
+	 * Set whether the work fields are displayed during runtime
+	 * 
+	 * @param displayWorkFields
+	 *            - true if the work fields are displayed during runtime
+	 */
+	public void setDisplayWorkFields(boolean displayWorkFields)
+	{
+		this.displayWorkFields = displayWorkFields;
+	}
+
+	/**
+	 * Determine whether previous screen user exit microflow exists
+	 * 
+	 * @return true if previous screen user exit microflow exists
+	 */
+	public boolean isPrevScrnMicroflow()
+	{
+		return prevScrnMicroflow;
+	}
+
+	/**
+	 * Set whether the previous screen user exit microflow exists
+	 * 
+	 * @param prevScrnMicroflow
+	 *            - true if previous screen user exit microflow exists
+	 */
+	public void setPrevScrnMicroflow(boolean prevScrnMicroflow)
+	{
+		this.prevScrnMicroflow = prevScrnMicroflow;
+	}
+
+	/**
+	 * Determine whether next screen user exit microflow exists
+	 * 
+	 * @return true if next screen user exit microflow exists
+	 */
+	public boolean isNextScrnMicroflow()
+	{
+		return nextScrnMicroflow;
+	}
+
+	/**
+	 * Set whether the next screen user exit microflow exists
+	 * 
+	 * @param nextScrnMicroflow
+	 *            - true if next screen user exit microflow exists
+	 */
+	public void setNextScrnMicroflow(boolean nextScrnMicroflow)
+	{
+		this.nextScrnMicroflow = nextScrnMicroflow;
+	}
+
+	/**
+	 * Gets the plug-in version
+	 * 
+	 * @return The version of plug-in used to create the service
+	 */
+	public String getPluginVersion()
+	{
+		return pluginVersion;
+	}
+
+	/**
+	 * Sets the plug-in version
+	 * 
+	 * @param pluginVersion
+	 *            - the version of plug-in used to create the service
+	 */
+	public void setPluginVersion(String pluginVersion)
+	{
+		this.pluginVersion = pluginVersion;
+	}
+
+	/**
+	 * Gets the release version
+	 * 
+	 * @return The patch/enhancement used to despatch/install the service
+	 */
+	public String getReleaseVersion()
+	{
+		return releaseVersion;
+	}
+
+	/**
+	 * Sets the release version
+	 * 
+	 * @param releaseVersion
+	 *            The patch/enhancement used to despatch/install the service
+	 */
+	public void setReleaseVersion(String releaseVersion)
+	{
+		this.releaseVersion = releaseVersion;
+	}
+
+	/**
+	 * @return the importAllowed
+	 */
+	public boolean isImportAllowed()
+	{
+		return importAllowed;
+	}
+
+	/**
+	 * @param importAllowed
+	 *            the importAllowed to set
+	 */
+	public void setImportAllowed(boolean importAllowed)
+	{
+		this.importAllowed = importAllowed;
+	}
+
+	/**
+	 * @return the originalLayoutID
+	 */
+	public String getOriginalLayoutID()
+	{
+		return originalLayoutID;
+	}
+
+	/**
+	 * @param originalLayoutID
+	 *            the originalLayoutID to set
+	 */
+	public void setOriginalLayoutID(String originalLayoutID)
+	{
+		this.originalLayoutID = originalLayoutID;
+	}
+
+	/**
+	 * @return the originalReleaseVersion
+	 */
+	public String getOriginalReleaseVersion()
+	{
+		return originalReleaseVersion;
+	}
+
+	/**
+	 * @param originalReleaseVersion
+	 *            the originalReleaseVersion to set
+	 */
+	public void setOriginalReleaseVersion(String originalReleaseVersion)
+	{
+		this.originalReleaseVersion = originalReleaseVersion;
+	}
+
+	/**
+	 * @return the owner
+	 */
+	public String getOwner()
+	{
+		return owner;
+	}
+
+	/**
+	 * @param owner
+	 *            the owner to set
+	 */
+	public void setOwner(String owner)
+	{
+		this.owner = owner;
+	}
+
+	public boolean isImportAllowedValid(MessageContainer messageContainer, boolean misysMode)
+	{
+		ProblemLocation problemLocation = new ProblemLocation(Layout.class.getSimpleName(), getId());
+		if (!misysMode && !importAllowed)
+			messageContainer.addErrorMessageId("Language.BankImportAllowedMustBeTrue", problemLocation); //$NON-NLS-1$
+		return false;
+	}
+
+	/**
+	 * This checks if the entered base language is valid
+	 * 
+	 * @param messageContainer
+	 * @param baseLanguageCodes
+	 *            - true if base language is valid
+	 * @return
+	 */
+	public boolean isBaseLanguageValid(MessageContainer messageContainer, KeyedArrayList<String> baseLanguageCodes)
+	{
+		boolean isValid = false;
+		ProblemLocation problemLocation = new ProblemLocation(Layout.class.getSimpleName(), getId());
+		String baseLanguage = getBaseLanguage().trim().toUpperCase();
+
+		if (baseLanguage.length() > 0 && baseLanguageCodes.contains(baseLanguage))
+		{
+			isValid = true;
+		}
+		if (!isValid)
+		{
+			messageContainer.addErrorMessageId("Language.BaseLanguageIsInvalid", problemLocation);
+		}
+		return isValid;
+	}
+
+	/**
+	 * Set the base language of the layout
+	 * 
+	 * @param baseLanguage
+	 */
+	public void setBaseLanguage(String baseLanguage)
+	{
+		this.baseLanguage = baseLanguage;
+	}
+
+	/**
+	 * Returns the base language of the layout
+	 * 
+	 * @return base language
+	 */
+	public String getBaseLanguage()
+	{
+		if (baseLanguage == null)
+		{
+			return "";
+		}
+		return baseLanguage;
+	}
+	/**
+	 * Returns the text owner for text related to layouts. This will be stored in text beans in the translation/language beans.
+	 * 
+	 * @return text owner
+	 */
+	public String rtvTextOwner()
+	{
+		return getId() + LAYOUT_FILE_SUFFIX;
+	}
+
+}

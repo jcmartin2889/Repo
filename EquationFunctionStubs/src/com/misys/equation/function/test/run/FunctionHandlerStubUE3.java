@@ -1,0 +1,189 @@
+package com.misys.equation.function.test.run;
+
+import java.util.List;
+
+import com.misys.equation.common.files.JournalHeader;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.internal.eapi.core.EQMessage;
+import com.misys.equation.common.utilities.Toolbox;
+import com.misys.equation.function.beans.FunctionData;
+import com.misys.equation.function.runtime.FunctionHandler;
+import com.misys.equation.function.runtime.FunctionMessage;
+
+/**
+ * Test Stub for the UE3 service This stub tests assignments (mappings, EL Script and Java code) It is based around the existing ANC
+ * option for Update API, and also uses a database table as a Load API. This fields imported for the ANC option use various
+ * 
+ */
+public class FunctionHandlerStubUE3 extends FunctionHandlerStubTestCase
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: FunctionHandlerStubUE3.java 6793 2010-03-31 12:10:20Z deroset $";
+
+	final String JOURNAL_APPLICATION_CODE = "UE";
+	final String JOURNAL_IDENTITY = "Account  number";
+	final String JOURNAL_SHORT_NAME = "Test short name";
+	final String JOURNAL_REFERENCE = "12345678901234567";
+	final String JOURNAL_INPUT_REFERENCE = "Input  reference";
+
+	FunctionHandler functionHandler = null;
+
+	public FunctionHandlerStubUE3()
+	{
+	}
+
+	@Override
+	public void setUp()
+	{
+
+		try
+		{
+			super.setUp();
+			System.out.println("------------------------------- 1");
+			functionHandler = FunctionToolboxStub.getFunctionHandler(user, "SESSIONID", "");
+
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static void main(String[] inputParameters)
+	{
+
+		FunctionHandlerStubUE3 test = new FunctionHandlerStubUE3();
+		try
+		{
+			test.setUp();
+			test.testStubUE3_001();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+		finally
+		{
+			cleanUp();
+		}
+	}
+
+	/**
+	 * 
+	 */
+	public void testStubUE3_001()
+	{
+		try
+		{
+			String sql = "select MAX(GFCPNC) FROM GFPF WHERE GFCPNC > '450000' AND GFCPNC < '451000'";
+
+			String next = getNext(executeQuery(session, sql));
+
+			// Following assertion will fail if not authorised
+			assertTrue(functionHandler.doNewTransaction("UE3", ""));
+			FunctionData functionData = functionHandler.getFhd().getScreenSetHandler().rtvScrnSetCurrent().getFunctionData();
+
+			functionData.chgFieldInputValue("ANC_CUS", next);
+			List<FunctionMessage> messages = validateFunction(functionHandler);
+			assertEquals(0, messages.size());
+
+			// Test mapping from Work field to DB API, and back to Input field:
+			// However, this assignment of the DB form of the work field is not normally feasible...
+			functionData.chgFieldDbValue("WORK_BBN", "9998"); // Branch number
+			// int loadResult = functionHandler.loadKeyFieldSet("PRIMARY", "");
+			int loadResult = functionHandler.applyRetrieveTransaction();
+			assertEquals(-1, loadResult);
+
+			String shortName = next + " shorty";
+			functionData.chgFieldInputValue("ANC_CPNC", next);
+			functionData.chgFieldInputValue("ANC_CUN", next + " full name");
+			functionData.chgFieldInputValue("ANC_DAS", shortName);
+
+			functionData.chgFieldInputValue("ANC_CTP", "EA");
+			functionData.chgFieldInputValue("ANC_CRB1", "00");
+			functionData.chgFieldInputValue("ANC_CRB2", "00");
+			validateFunction(functionHandler);
+			messages = functionHandler.rtvFunctionMessages().getMessages();
+			FunctionToolboxStub.printMessages(messages);
+			assertEquals(0, messages.size());
+
+			// Note that loading of key only validates key fields....
+			assertEquals("KBSL", functionData.rtvFieldDbValue("ANC_BRNM"));
+
+			functionHandler.applyTransaction();
+			Toolbox.printList(functionHandler.print());
+
+			messages = functionHandler.rtvFunctionMessages().getMessages();
+			FunctionToolboxStub.printMessages(messages);
+			assertEquals(0, messages.size());
+
+			// retrieve journal header
+			JournalHeader journalHeader = functionHandler.getFhd().getJournalHeader();
+			assertNotNull(journalHeader);
+			System.out.println("Journal Header [" + journalHeader + "]");
+
+			assertEquals("EL", journalHeader.getApplication());
+			assertEquals(next, journalHeader.getIdentity());
+			assertEquals(shortName, journalHeader.getIdentityShortName());
+
+			System.out.println("The GYPF record must be checked for the actual values.");
+
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+
+	}
+
+	/**
+	 * This test checks for mandatory validation on the Reference, CCY and AMT and Value from date fields
+	 */
+
+	private List<FunctionMessage> validateFunction(FunctionHandler functionHandler)
+	{
+		// ScreenSet screenSet = functionHandler.getFhd().getScreenSetHandler().rtvScrnSetCurrent();
+		try
+		{
+			functionHandler.validate();
+		}
+		catch (EQException e)
+		{
+			throw new RuntimeException(e);
+		}
+
+		return functionHandler.rtvFunctionMessages().getMessages();
+	}
+
+	private boolean containsMessage(FunctionHandler functionHandler, String dsepmsText, String fieldId)
+	{
+		boolean result = false;
+		List<FunctionMessage> messages = functionHandler.rtvFunctionMessages().getMessages();
+		for (FunctionMessage message : messages)
+		{
+			if (fieldId == null || fieldId.equals(message.getFieldName()))
+			{
+				EQMessage eqMessage = message.getEqMessage();
+
+				if (eqMessage.getDsepms().equals(dsepmsText))
+				{
+					// Found a match...
+
+					result = true;
+				}
+			}
+		}
+		return result;
+	}
+
+	private String getNext(String current)
+	{
+		int value = Integer.parseInt(current);
+		value++;
+		String result = Integer.toString(value);
+		Toolbox.padAtFront(result, "0", 6);
+		return result;
+	}
+
+}

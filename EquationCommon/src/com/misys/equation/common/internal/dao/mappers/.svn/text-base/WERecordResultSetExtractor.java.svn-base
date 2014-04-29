@@ -1,0 +1,88 @@
+package com.misys.equation.common.internal.dao.mappers;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.springframework.jdbc.core.ResultSetExtractor;
+
+import com.misys.equation.common.dao.beans.WERecordDataModel;
+
+/**
+ * This is a helper class used by Sp framework to populate the data model.<br>
+ * This class will extract data from the <code>ResultSet</code> and create a data model.
+ * 
+ * @author deroset
+ * 
+ */
+
+public class WERecordResultSetExtractor implements ResultSetExtractor
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	/**
+	 * This class will extract data from the <code>ResultSet</code> and create a data model.
+	 * 
+	 * @param the
+	 *            passed <code>ResultSet</code> which contains the data.
+	 * @return a <code>WERecordDataModel</code> data model.
+	 */
+	public Object extractData(ResultSet resultSet) throws SQLException
+	{
+
+		WERecordDataModel record = new WERecordDataModel();
+
+		record.setJobDesc(resultSet.getString(1).trim());
+		record.setJobNum(resultSet.getInt(2));
+		record.setAuthorisor(resultSet.getString(3).trim());
+		record.setAuthStat(resultSet.getString(4).trim());
+		record.setAuthLevel(resultSet.getString(5).trim());
+		record.setOptionId(resultSet.getString(6).trim());
+		record.setOptionTitle(resultSet.getString(7).trim());
+		record.setAppCode(resultSet.getString(8).trim());
+		record.setAuthAppCode(resultSet.getString(9).trim());
+		record.setDefEntryData(resultSet.getString(10).trim());
+		record.setScrnNo(resultSet.getInt(11));
+		record.setVeriStat(resultSet.getString(12).trim());
+		record.setOneOrMany(resultSet.getString(13).trim());
+		record.setInputAuth(resultSet.getString(14).trim());
+		record.setMaintAuth(resultSet.getString(15).trim());
+		record.setCancelAuth(resultSet.getString(16).trim());
+		record.setCommandKey(resultSet.getString(17).trim());
+		record.setUserId(resultSet.getString(18).trim());
+		record.setSessionId(resultSet.getString(19).trim());
+		record.setTransactionId(resultSet.getString(20).trim());
+		record.setTranDate(resultSet.getInt(21));
+		record.setTranTime(resultSet.getInt(22));
+		record.setUserAlerted(resultSet.getString(23).trim());
+		record.setScreenSetId(resultSet.getInt(24));
+		record.setLastScrnSetId(resultSet.getInt(25));
+		record.setOfflineRequest(resultSet.getString(26).trim());
+		record.setUserId4(resultSet.getString(27).trim());
+		record.setReasonRejection(resultSet.getString(28).trim());
+		record.setMessage(resultSet.getString(29).trim(), 0);
+		record.setMessage(resultSet.getString(30).trim(), 1);
+		record.setMessage(resultSet.getString(31).trim(), 2);
+		record.setMessage(resultSet.getString(32).trim(), 3);
+		record.setMessage(resultSet.getString(33).trim(), 4);
+		record.setMessage(resultSet.getString(34).trim(), 5);
+		record.setMessage(resultSet.getString(35).trim(), 6);
+		record.setMessage(resultSet.getString(36).trim(), 7);
+		record.setMessage(resultSet.getString(37).trim(), 8);
+		record.setMessage(resultSet.getString(38).trim(), 9);
+		record.setMessage(resultSet.getString(39).trim(), 10);
+		record.setMessage(resultSet.getString(40).trim(), 11);
+		record.setMessage(resultSet.getString(41).trim(), 12);
+		record.setMessage(resultSet.getString(42).trim(), 13);
+		record.setMessage(resultSet.getString(43).trim(), 14);
+		record.setMessage(resultSet.getString(44).trim(), 15);
+		record.setMessage(resultSet.getString(45).trim(), 16);
+		record.setMessage(resultSet.getString(46).trim(), 17);
+		record.setMessage(resultSet.getString(47).trim(), 18);
+		record.setMessage(resultSet.getString(48).trim(), 19);
+		record.setMessageBranches(resultSet.getString(49).trim());
+		record.setMessageAmounts(resultSet.getString(50).trim());
+
+		return record;
+	}
+
+}

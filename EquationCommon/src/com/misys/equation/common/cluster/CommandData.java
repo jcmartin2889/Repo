@@ -1,0 +1,69 @@
+package com.misys.equation.common.cluster;
+
+import java.util.HashMap;
+
+/**
+ * A class to encapsulate comamnds that are replicated to other nodes in a cluster
+ * 
+ * This will be serialized in a Json string and transported to the other nodes
+ * 
+ * Note that the originator property is set when the message is published to allow messages from this node to be ignored
+ */
+public class CommandData
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: CommandData.java 17823 2014-01-30 09:23:00Z perkinj1 $";
+
+	/** Break Message command type */
+	public static final String COMMAND_TYPE_BREAKMSG = "BREAKMSG";
+	/** Remove unit */
+	public static final String COMMAND_TYPE_REMOVE_UNIT = "REMOVEUNIT";
+
+	private String commandId;
+	private HashMap<String, String> data = new HashMap<String, String>();
+	private String originator;
+
+	public void setData(HashMap<String, String> data)
+	{
+		this.data = data;
+	}
+
+	public HashMap<String, String> getData()
+	{
+		return this.data;
+	}
+
+	public String getCommandId()
+	{
+		return commandId;
+	}
+
+	public void setCommandId(String commandId)
+	{
+		this.commandId = commandId;
+	}
+
+	public String getOriginator()
+	{
+		return originator;
+	}
+
+	public void setOriginator(String originator)
+	{
+		this.originator = originator;
+	}
+
+	@Override
+	public String toString()
+	{
+		StringBuffer result = new StringBuffer("Option Id: [");
+		result.append(commandId);
+		result.append("] Originator: [");
+		result.append(originator);
+		result.append("] ContextValues: [");
+		result.append(data.toString());
+		result.append("]");
+		return result.toString();
+	}
+
+}

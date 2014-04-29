@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	
+	<!--Application input section -->
+	<bean id="EquationSessionPool" class="com.misys.equation.common.access.EquationSessionPool" singleton="false" >
+		<!--Data source -->		
+		<property name="prompt" value="false" />
+		<property name="translateBinary" value="false" />
+		<property name="naming" value="system" />
+		<property name="libraries" value="*LIBL"/>
+		<property name="trace" value="false"/>
+		
+		<!--Connection Pool -->
+		<property name="maxConnections" value="-1" />
+		<!-- 
+			Set a maximum lifetime for 24 hours for connections (ms*s*m*h). 1000 * 60 * 60 * 24= 86400000
+		 -->
+		<property name="maxLifetime" value="86400000" />
+		<property name="fill" value="1"/>
+		
+		<!--Connection-->
+		<property name="autoCommit" value="false"/>	
+		
+	</bean>
+	
+	<bean id="NonJndiSessionPool" class="com.misys.equation.common.access.NonJndiSessionPool" singleton="false" >
+        <!--Data source -->     
+        <property name="prompt" value="false" />
+        <property name="translateBinary" value="false" />
+        <property name="naming" value="system" />
+        <property name="libraries" value="*LIBL"/>
+        <property name="trace" value="false"/>
+        
+        <!--Connection Pool -->
+        <property name="maxConnections" value="-1" />
+        <!-- 
+            Set a maximum lifetime for 24 hours for connections (ms*s*m*h). 1000 * 60 * 60 * 24= 86400000
+         -->
+        <property name="maxLifetime" value="86400000" />
+        <property name="fill" value="1"/>
+        
+        <!--Connection-->
+        <property name="autoCommit" value="false"/>         
+    </bean>
+	
+	<!--It Imports other app configuration file. -->	 
+	<import resource="daosContext.xml"/>
+</beans>

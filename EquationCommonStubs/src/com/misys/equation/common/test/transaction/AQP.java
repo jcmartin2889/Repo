@@ -1,0 +1,94 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseFully;
+
+/**
+ * Equation test cases for Assign Queued Trans Priorities
+ */
+public class AQP extends EquationTestCaseFully
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: AQP.java 5721 2009-12-21 13:20:15Z challip1 $";
+	String programName = "Q31FRR";
+	String optionId = "AQP";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		retrieveBeforeCancel = true;
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZEVM", "RLPR"); // Event (6A)
+		transaction.setFieldValue("GZTCD", "610"); // Transaction code (3A)
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	@Override
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZDSC", "Sample"); // Description (20A)
+		transaction.setFieldValue("GZPLC", "N"); // Queue today local ccy (1A)
+		transaction.setFieldValue("GZPFC", "N"); // Queue today foreign ccy (1A)
+		transaction.setFieldValue("GZTLC", "N"); // Queue if future dated - local ccy (1A)
+		transaction.setFieldValue("GZTFR", "N"); // Queue if future dated - foreign ccy (1A)
+		transaction.setFieldValue("GZQSC", "N"); // Queue if SC is on (1A)
+		transaction.setFieldValue("GZPTY", "00015"); // Priority code (5A)
+		transaction.setFieldValue("GZMPY", "000"); // Minor priority (3A)
+		transaction.setFieldValue("GZDRN", "Y"); // Allow overdrawn? (1A)
+		transaction.setFieldValue("GZCVR", "N"); // Allow customer override? (1A)
+		transaction.setFieldValue("GZPAY", "N"); // Allow partial payment? (1A)
+		transaction.setFieldValue("GZRET", "000"); // Days to retain archived (3A)
+	}
+
+	/**
+	 * Setup the mandatory fields (maintain mode)
+	 */
+	@Override
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZPLC", "Y"); // Queue today local ccy (1A)
+	}
+
+}

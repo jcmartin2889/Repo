@@ -1,0 +1,138 @@
+package com.misys.equation.common.consolidation;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.dao.DaoFactory;
+import com.misys.equation.common.dao.IDao;
+import com.misys.equation.common.dao.IGPEServiceRecordDao;
+import com.misys.equation.common.internal.eapi.core.EQException;
+
+/**
+ * Custom consolidator for the global cash positions DAO.
+ * 
+ * @author camillen
+ * 
+ */
+public class GPEServiceDaoConsolidator extends DaoConsolidator
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: GPEServiceDaoConsolidator.java 13723 2012-07-02 09:55:17Z whittap1 $";
+	/**
+	 * Constructor
+	 * 
+	 * @param session
+	 *            EquationStandardSession
+	 * @param daoName
+	 *            String
+	 * @throws EQException
+	 */
+	public GPEServiceDaoConsolidator(EquationStandardSession session, String daoName) throws EQException
+	{
+		super(session, daoName);
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param session
+	 *            EquationStandardSession
+	 * @throws EQException
+	 */
+	public GPEServiceDaoConsolidator(EquationStandardSession session) throws EQException
+	{
+		this(session, DaoFactory.GCE_RECORD_DAO_NAME);
+	}
+
+	/**
+	 * Gets the account balance for the nostros, across units.
+	 * 
+	 * @return long - List of account balances for the nostros
+	 */
+	public List<Map<String, Object>> getBalances()
+	{
+		List<Map<String, Object>> total = new ArrayList<Map<String, Object>>();
+		int i = 0;
+		for (IDao iDao : daos)
+		{
+			String unit = sessions.get(i).getUnitId();
+			String system = sessions.get(i).getSystemId();
+			IGPEServiceRecordDao dao = (IGPEServiceRecordDao) iDao;
+			total.addAll(dao.getBalances(unit, system));
+			i++;
+		}
+		return total;
+	}
+	/**
+	 * Get positions across units for all currencies in the range of ydates and pdates.
+	 * 
+	 * @param yDate
+	 *            String[] - Array of ydates for all units
+	 * @param pDate
+	 *            String[] - Array of pdates for all units
+	 * @return List - positions across units
+	 */
+	public List<Map<String, Object>> getOvernightPositions(final String[] yDate, final String[] pDate)
+	{
+		List<Map<String, Object>> total = new ArrayList<Map<String, Object>>();
+		int i = 0;
+		for (IDao iDao : daos)
+		{
+			String unit = sessions.get(i).getUnitId();
+			String system = sessions.get(i).getSystemId();
+			IGPEServiceRecordDao dao = (IGPEServiceRecordDao) iDao;
+			total.addAll(dao.getOvernightPositions(yDate[i], pDate[i], unit, system));
+			i++;
+		}
+		return total;
+	}
+
+	/**
+	 * Get posting balances across units for all currencies in the range of ydates and pdates.
+	 * 
+	 * @param yDate
+	 *            String[] - Array of ydates for all units
+	 * @param pDate
+	 *            String[] - Array of pdates for all units
+	 * @return List - postings across units
+	 */
+	public List<Map<String, Object>> getOvernightPostings(final String[] yDate, final String[] pDate)
+	{
+		List<Map<String, Object>> total = new ArrayList<Map<String, Object>>();
+		int i = 0;
+		for (IDao iDao : daos)
+		{
+			String unit = sessions.get(i).getUnitId();
+			String system = sessions.get(i).getSystemId();
+			IGPEServiceRecordDao dao = (IGPEServiceRecordDao) iDao;
+			total.addAll(dao.getOvernightPostings(yDate[i], pDate[i], unit, system));
+			i++;
+		}
+		return total;
+	}
+
+	/**
+	 * Get cash positions across units for all currencies
+	 * 
+	 * @param maxDate
+	 *            String - calculated end date of Pdate + system option number of days for query
+	 * @return List - Cash positions across units
+	 */
+	public List<Map<String, Object>> getPositionsByDate(final String maxDate)
+	{
+		List<Map<String, Object>> total = new ArrayList<Map<String, Object>>();
+		int i = 0;
+		for (IDao iDao : daos)
+		{
+			String unit = sessions.get(i).getUnitId();
+			String system = sessions.get(i).getSystemId();
+			IGPEServiceRecordDao dao = (IGPEServiceRecordDao) iDao;
+			total.addAll(dao.getPositionsByDate(maxDate, unit, system));
+			i++;
+
+		}
+		return total;
+	}
+}

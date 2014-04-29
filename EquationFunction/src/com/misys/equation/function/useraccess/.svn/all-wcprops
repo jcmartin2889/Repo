@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/repos/bfeq_src/!svn/ver/17343/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/useraccess
+END
+IUserExitLayout.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/useraccess/IUserExitLayout.java
+END
+UserExitMessages.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/useraccess/UserExitMessages.java
+END
+AbstractUserExitFunction.java
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/useraccess/AbstractUserExitFunction.java
+END
+IUserExitFunction.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/useraccess/IUserExitFunction.java
+END
+UserAccessFields.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/useraccess/UserAccessFields.java
+END
+UserExitESFProcessDetail.java
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/useraccess/UserExitESFProcessDetail.java
+END
+AbstractUserExitLayout.java
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/useraccess/AbstractUserExitLayout.java
+END
+UserExitListColumnData.java
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/useraccess/UserExitListColumnData.java
+END
+UserExitMessage.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/useraccess/UserExitMessage.java
+END
+UserAccessHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/17343/branches/BFEQ_Branch_3-1/EquationFunction/src/com/misys/equation/function/useraccess/UserAccessHandler.java
+END

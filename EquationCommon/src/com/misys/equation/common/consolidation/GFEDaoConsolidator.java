@@ -1,0 +1,115 @@
+package com.misys.equation.common.consolidation;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.dao.DaoFactory;
+import com.misys.equation.common.dao.IDao;
+import com.misys.equation.common.dao.IGFERecordDao;
+import com.misys.equation.common.internal.eapi.core.EQException;
+
+/**
+ * Custom consolidator for the global cash positions DAO.
+ * 
+ * @author hempensp
+ * 
+ */
+public class GFEDaoConsolidator extends DaoConsolidator
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: GFEDaoConsolidator.java 13723 2012-07-02 09:55:17Z whittap1 $";
+	/**
+	 * Constructor
+	 * 
+	 * @param session
+	 *            EquationStandardSession
+	 * @param daoName
+	 *            String
+	 * @throws EQException
+	 */
+	public GFEDaoConsolidator(EquationStandardSession session, String daoName) throws EQException
+	{
+		super(session, daoName);
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param session
+	 *            EquationStandardSession
+	 * @throws EQException
+	 */
+	public GFEDaoConsolidator(EquationStandardSession session) throws EQException
+	{
+		this(session, DaoFactory.GFE_RECORD_DAO_NAME);
+	}
+
+	/**
+	 * Gets the overnight positions, across units.
+	 * 
+	 * @return List of overnight positions
+	 */
+	public List<Map<String, Object>> getFXCurrencyOvernightPositions()
+	{
+		List<Map<String, Object>> total = new ArrayList<Map<String, Object>>();
+		int i = 0;
+		for (IDao iDao : daos)
+		{
+			String unit = sessions.get(i).getUnitId();
+			String system = sessions.get(i).getSystemId();
+			IGFERecordDao dao = (IGFERecordDao) iDao;
+			total.addAll(dao.getFXCurrencyOvernightPositions(unit, system));
+			i++;
+		}
+		return total;
+	}
+
+	/**
+	 * Get FX Currency positions across units for all currencies
+	 * 
+	 * @param startDate
+	 *            String - latest Pdate across units
+	 * @param endDate
+	 *            String - calculated end date of Pdate + system option number of days for query
+	 * @return List - FX Currency positions across units
+	 */
+	public List<Map<String, Object>> getFXCurrencyPositionsByDate(final String startDate, final String endDate)
+	{
+		List<Map<String, Object>> total = new ArrayList<Map<String, Object>>();
+		int i = 0;
+		for (IDao iDao : daos)
+		{
+			String unit = sessions.get(i).getUnitId();
+			String system = sessions.get(i).getSystemId();
+			IGFERecordDao dao = (IGFERecordDao) iDao;
+			total.addAll(dao.getFXCurrencyPositionsByDate(startDate, endDate, unit, system));
+			i++;
+
+		}
+		return total;
+	}
+
+	/**
+	 * Get posting balances across units for a particular currency in the rate of ydates and p dates.
+	 * 
+	 * @param endDate
+	 *            String - latest pdate across units
+	 * @return list - FX Currency positions across units
+	 */
+	public List<Map<String, Object>> getFXCurrencyPositionsForToday(final String endDate)
+	{
+		List<Map<String, Object>> total = new ArrayList<Map<String, Object>>();
+		int i = 0;
+		for (IDao iDao : daos)
+		{
+			String unit = sessions.get(i).getUnitId();
+			String system = sessions.get(i).getSystemId();
+			IGFERecordDao dao = (IGFERecordDao) iDao;
+			total.addAll(dao.getFXCurrencyPositionsForToday(endDate, unit, system));
+			i++;
+		}
+		return total;
+	}
+}

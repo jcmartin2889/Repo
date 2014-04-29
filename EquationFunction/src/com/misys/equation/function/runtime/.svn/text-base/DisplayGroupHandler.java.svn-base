@@ -1,0 +1,472 @@
+package com.misys.equation.function.runtime;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import com.misys.equation.common.utilities.Toolbox;
+import com.misys.equation.function.beans.DisplayAttributes;
+import com.misys.equation.function.beans.DisplayAttributesSet;
+import com.misys.equation.function.beans.DisplayGroup;
+import com.misys.equation.function.beans.IDisplayItem;
+import com.misys.equation.function.beans.Layout;
+import com.misys.equation.function.tools.HTMLToolbox;
+
+/**
+ * 
+ * 
+ * Note that in addition to holding the definitions of the group, this class also holds the runtime status of the group. I.E. Which
+ * of the sets is currently active.
+ * 
+ */
+public class DisplayGroupHandler
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/**
+	 * The current sub-level selected for a group. This collection will be serialized to the HTML page
+	 * <p>
+	 * TODO: Note that this is not keyed by Field set, so there could be duplicate groups
+	 */
+	private final Map<String, Integer> currentDisplay;
+
+	/**
+	 * Contains the definitions:
+	 * <p>
+	 * Innermost collection is a List of SelectionGroup instances. This level is a 'group'.
+	 * <p>
+	 * Next level is a Map of groups (key = group Id, value = group).
+	 * <p>
+	 * Outermost level is a Map of field sets to groups (key = field set Id, value = a groups Map)
+	 */
+	private final Map<String, Map<String, List<SelectionGroup>>> fieldSetGroups = new HashMap<String, Map<String, List<SelectionGroup>>>();
+
+	/**
+	 * A reverse mapping of field names to a GroupInfo. This map is populated from the fieldSetGroups collection after
+	 * initialisation to provide a quick lookup of information for a field (in a field set). of the
+	 */
+	private final Map<String, Map<String, GroupInfo>> fieldSetFields = new HashMap<String, Map<String, GroupInfo>>();
+
+	/**
+	 * This is one of the possible sub-groups to display.
+	 */
+	private class SelectionGroup extends ArrayList<String>
+	{
+		/** Added for serialization */
+		private static final long serialVersionUID = 1L;
+
+		SelectionGroup(DisplayGroup group)
+		{
+			for (IDisplayItem item : group.getDisplayItems())
+			{
+				if (item instanceof DisplayAttributes)
+				{
+					DisplayAttributes attributes = (DisplayAttributes) item;
+					// Add this field:
+					this.add(attributes.getId());
+				}
+			}
+		}
+	}
+
+	private class GroupInfo
+	{
+		private final String groupId;
+		int subGroupLevel;
+
+		public GroupInfo(String groupId, int subGroupLevel)
+		{
+			this.groupId = groupId;
+			this.subGroupLevel = subGroupLevel;
+		}
+
+		public String getGroupId()
+		{
+			return groupId;
+		}
+		public int getSubGroupLevel()
+		{
+			return subGroupLevel;
+		}
+	}
+
+	/**
+	 * Construct the group handler
+	 */
+	public DisplayGroupHandler(Layout layout)
+	{
+		// Setup the initial sub-group to display per group
+		currentDisplay = new Hashtable<String, Integer>();
+
+		// Read all the groups
+		for (DisplayAttributesSet attributesSet : layout.getDisplayAttributesSets())
+		{
+			for (IDisplayItem setItem : attributesSet.getDisplayItems())
+			{
+				if (setItem instanceof DisplayGroup)
+				{
+					DisplayGroup group = (DisplayGroup) setItem;
+					int subGroupN = 0;
+
+					// determine the initial subgroup to display for this group
+					String initialSubGroup = "";
+
+					for (IDisplayItem groupItem : group.getDisplayItems())
+					{
+						if (groupItem instanceof DisplayGroup)
+						{
+							DisplayGroup subGroup = (DisplayGroup) groupItem;
+							subGroupN++;
+
+							// Add the subgroup (even empty one)
+							addSelectionGroup(attributesSet.getId(), group, subGroup);
+
+							// Also to the list of group statuses
+							int initial = 0;
+							if (subGroup.getId().equals(initialSubGroup))
+							{
+								initial = subGroupN;
+							}
+
+							// Get the current display
+							Integer n = currentDisplay.get(group.getId());
+							if (n == null)
+							{
+								currentDisplay.put(group.getId(), Integer.valueOf(initial));
+							}
+							else if (n == 0)
+							{
+								currentDisplay.put(group.getId(), Integer.valueOf(initial));
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// Build map to improve lookup of information for a given field
+		buildFieldLookupMap();
+
+		// Loop through again to default the initial display
+		for (Entry<String, Integer> entry : currentDisplay.entrySet())
+		{
+			int level = getCurrentSubLevel(entry.getKey());
+			if (level == 0)
+			{
+				chgNextSubLevel(entry.getKey());
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * @param fieldSetId
+	 * @param displayGroup
+	 * @param displaySubGroup
+	 */
+	private void addSelectionGroup(String fieldSetId, DisplayGroup displayGroup, DisplayGroup displaySubGroup)
+	{
+		// Get/Create the set of groups within this field set
+		Map<String, List<SelectionGroup>> groups;
+		if (!fieldSetGroups.containsKey(fieldSetId))
+		{
+			groups = new Hashtable<String, List<SelectionGroup>>();
+			fieldSetGroups.put(fieldSetId, groups);
+		}
+		else
+		{
+			groups = fieldSetGroups.get(fieldSetId);
+		}
+
+		// Get/Create the group
+		List<SelectionGroup> group;
+		if (!groups.containsKey(displayGroup.getId()))
+		{
+			group = new ArrayList<SelectionGroup>();
+			groups.put(displayGroup.getId(), group);
+		}
+		else
+		{
+			group = groups.get(displayGroup.getId());
+		}
+
+		// Create the new SelectionGroup
+		SelectionGroup selectionGroup = new SelectionGroup(displaySubGroup);
+		// And add to the group:
+		group.add(selectionGroup);
+	}
+
+	/**
+	 * This method scans the fieldSetGroups collection, and builds a reverse lookup collection that simplifies the determination of
+	 * a field's group id (if any) or group sub level
+	 */
+	private void buildFieldLookupMap()
+	{
+		for (String fieldSetId : fieldSetGroups.keySet())
+		{
+			Map<String, List<SelectionGroup>> groups = fieldSetGroups.get(fieldSetId);
+
+			// As this is an entry for a field set, create a field set level entry for reverse:
+			Map<String, GroupInfo> fieldSetFieldInfo = new Hashtable<String, GroupInfo>();
+			fieldSetFields.put(fieldSetId, fieldSetFieldInfo);
+
+			// Loop through all the groups...
+			for (String groupId : groups.keySet())
+			{
+				List<SelectionGroup> group = groups.get(groupId);
+				// And all the subgroups...
+				for (int index = 0; index < group.size(); index++)
+				{
+					SelectionGroup selectionGroup = group.get(index);
+					// And finally, loop through all the fields:
+					for (String fieldName : selectionGroup)
+					{
+						fieldSetFieldInfo.put(fieldName, new GroupInfo(groupId, index + 1));
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Get the current group display status
+	 * 
+	 * @return the current group display table
+	 */
+	public Map<String, Integer> getCurrentDisplay()
+	{
+		return currentDisplay;
+	}
+
+	/**
+	 * Set the current sub-level of a group
+	 * 
+	 * @param group
+	 *            - the group id
+	 * @param sublevel
+	 *            - the group sub-level
+	 */
+	public void setCurrentSubLevel(String group, int sublevel)
+	{
+		currentDisplay.put(group, sublevel);
+	}
+
+	/**
+	 * Retrieve the current sub-level of a group
+	 * 
+	 * @param group
+	 *            - the group id
+	 * 
+	 * @return the current sub-level
+	 */
+	public int getCurrentSubLevel(String group)
+	{
+		Integer sublevel = currentDisplay.get(group);
+		if (sublevel == null)
+		{
+			return 0;
+		}
+		return sublevel.intValue();
+	}
+
+	/**
+	 * Toggle the group field display to the next level after the specified level
+	 * 
+	 * @param groupId
+	 *            - the group id
+	 * @param sublevel
+	 *            - the "current" level
+	 * 
+	 * @return the next sub-level after the specified level
+	 */
+	public int chgNextSubLevel(String groupId, int sublevel)
+	{
+		int newLevel = 0;
+
+		for (Map<String, List<SelectionGroup>> fieldSets : fieldSetGroups.values())
+		{
+			List<SelectionGroup> group = fieldSets.get(groupId);
+			if (group != null)
+			{
+				newLevel = group.size() < sublevel ? sublevel + 1 : 1;
+				setCurrentSubLevel(groupId, newLevel);
+			}
+		}
+		return newLevel;
+	}
+
+	/**
+	 * Toggle the group field display to the next level
+	 * 
+	 * @param group
+	 *            - the group id
+	 * 
+	 * @return the next sub-level to display for the group
+	 */
+	public int chgNextSubLevel(String group)
+	{
+		Integer value = currentDisplay.get(group);
+		if (value != null)
+		{
+			return chgNextSubLevel(group, value.intValue());
+		}
+		return 0;
+	}
+
+	/**
+	 * Toggles the first group in the specified field set to the next level
+	 * <p>
+	 * This should only be called for field sets where there is only one group in the field set.
+	 * 
+	 * @return the next sub-level to display for the group
+	 */
+	public int chgFieldSetNextSubLevel(String fieldSetId)
+	{
+		Map<String, List<SelectionGroup>> groups = fieldSetGroups.get(fieldSetId);
+		if (groups != null)
+		{
+			for (String groupId : groups.keySet())
+			{
+				// If any groups exist, toggle the first one found
+				return chgNextSubLevel(groupId);
+			}
+		}
+		return 0;
+	}
+
+	/**
+	 * Determine if there are any group fields in the field set
+	 * 
+	 * @return the number of group fields in the field set
+	 */
+	public int isGroupExists(String fieldSetId)
+	{
+		Map<String, List<SelectionGroup>> groups = fieldSetGroups.get(fieldSetId);
+		if (groups != null)
+		{
+			return groups.size();
+		}
+		return 0;
+	}
+
+	/**
+	 * Loads the current display of the group
+	 * 
+	 * @param map
+	 *            - table of field names and field values
+	 * 
+	 */
+	public void loadDisplayGroupFromMap2(Map<String, String[]> map)
+	{
+		String fieldValue;
+		String[] fieldValuex;
+
+		Iterator<String> groupIter = currentDisplay.keySet().iterator();
+
+		while (groupIter.hasNext())
+		{
+			// get the group id
+			String groupId = groupIter.next();
+
+			// get the status of the group
+			fieldValuex = map.get(HTMLToolbox.OBJ_DSPGRPID + groupId);
+			if (fieldValuex != null)
+			{
+				fieldValue = fieldValuex[0];
+				if (fieldValue != null)
+				{
+					setCurrentSubLevel(groupId, Toolbox.parseInt(fieldValue, 0));
+				}
+			}
+		}
+	}
+
+	/**
+	 * Return the group where this field belongs to
+	 * 
+	 * @param fieldSetId
+	 * @param fieldId
+	 * 
+	 * @return A String containing the groupId of the field (or null if the field is not in a selection group)
+	 */
+	public String getGroupIdForField(String fieldSetId, String fieldId)
+	{
+		Map<String, GroupInfo> fieldSetInfo = fieldSetFields.get(fieldSetId);
+		if (fieldSetInfo != null)
+		{
+			GroupInfo groupInfo = fieldSetInfo.get(fieldId);
+			if (groupInfo != null)
+			{
+				return groupInfo.getGroupId();
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Return the sub-level of a subgroup
+	 * 
+	 * @param fieldSetId
+	 * @param fieldId
+	 * 
+	 * @return The level of the group
+	 */
+	public int getGroupSubLevelForField(String fieldSetId, String fieldId)
+	{
+		Map<String, GroupInfo> fieldSetInfo = fieldSetFields.get(fieldSetId);
+		if (fieldSetInfo != null)
+		{
+			GroupInfo groupInfo = fieldSetInfo.get(fieldId);
+			if (groupInfo != null)
+			{
+				return groupInfo.getSubGroupLevel();
+			}
+		}
+		return 0;
+	}
+
+	/**
+	 * Resync the current group display status
+	 * 
+	 * @param initCurrentDisplay
+	 *            - the display group status
+	 */
+	public void reSyncGroupStatus(Map<String, Integer> initCurrentDisplay)
+	{
+		for (Entry<String, Integer> entry : initCurrentDisplay.entrySet())
+		{
+			if (initCurrentDisplay.containsKey(entry.getKey()))
+			{
+				initCurrentDisplay.put(entry.getKey(), entry.getValue());
+			}
+		}
+	}
+
+	/**
+	 * Return the String representation
+	 * 
+	 * @param the
+	 *            String representation
+	 */
+	@Override
+	public String toString()
+	{
+		StringBuffer buffer = new StringBuffer();
+		Iterator<String> groupIter = currentDisplay.keySet().iterator();
+
+		while (groupIter.hasNext())
+		{
+			String groupId = groupIter.next();
+			Integer level = currentDisplay.get(groupId);
+			buffer.append(groupId + " = " + level + "\n");
+		}
+
+		return buffer.toString();
+	}
+
+}

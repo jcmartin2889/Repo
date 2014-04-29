@@ -1,0 +1,243 @@
+package com.misys.equation.common.test.pv;
+
+import com.misys.equation.common.access.EquationDataStructure;
+import com.misys.equation.common.access.EquationFieldDefinition;
+import com.misys.equation.common.access.EquationPVDecodeMetaData;
+import com.misys.equation.common.access.EquationPVFieldMetaData;
+import com.misys.equation.common.access.EquationPVMetaData;
+import com.misys.equation.common.test.EquationTestCasePVMetaData;
+import com.misys.equation.common.utilities.FileErrorLog;
+
+public class ABNR30R extends EquationTestCasePVMetaData
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: ABNR30R.java 10244 2011-01-11 10:48:53Z challip1 $";
+	private FileErrorLog fileErrorLog = FileErrorLog.getInstance();
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		validCCN = "112233   ";
+		invalidCCN = "BOB";
+	}
+
+	/**
+	 * Test: check PV Meta Data is correct<br>
+	 * Expected result: Pass<br>
+	 * 
+	 * @throws Exception
+	 */
+	public void test002A00PV_CheckMetaData() throws Exception
+	{
+		System.out.println("");
+		System.out.println("test002A00PV_CheckMetaData");
+
+		EquationPVMetaData pvmetadata = unit.getPVMetaData(pvName);
+
+		boolean results = true;
+		String message = null;
+
+		if (pvmetadata.getPvDvals().size() > 0)
+		{
+			message = pvName + " DVAL ERROR";
+			System.err.println(message);
+			fileErrorLog.appendMessage(pvName, message);
+			results = false;
+		}
+		if (pvmetadata.getDecodeMetaData(decode).getpFile().equals(""))
+		{
+			message = pvName + " PF ERROR";
+			System.err.println(message);
+			fileErrorLog.appendMessage(pvName, message);
+			results = false;
+		}
+		if (pvmetadata.getDecodeMetaData(decode).getKeyFields().size() == 0)
+		{
+			message = pvName + " KEYS ERROR";
+			System.err.println(message);
+			fileErrorLog.appendMessage(pvName, message);
+			results = false;
+		}
+		if (dsccnSize(pvmetadata) > 127 && dsccnSize(pvmetadata) < 256)
+		{
+			message = pvName + " Greater than 127 - Ensure DSCCN_A is used";
+			System.err.println(message);
+			fileErrorLog.appendMessage(pvName, message);
+			// results = false;
+		}
+		if (dsccnSize(pvmetadata) > 255)
+		{
+			message = pvName + " Greater than 255 - Ensure DSCCN_B is used";
+			System.err.println(message);
+			// results = false;
+		}
+		if (dsccnSize(pvmetadata) > 511)
+		{
+			message = pvName + " Greater than 255 - Ensure DSCCN_B is used";
+			System.err.println(message);
+			results = false;
+		}
+
+		EquationPVFieldMetaData pvField;
+		String dbName = null;
+		EquationFieldDefinition dbField = null;
+		String dbFieldType = null;
+		int dbFieldLength = 0;
+
+		if (pvmetadata.getDecodeMetaData(decode).getpFile().contains("9"))
+
+		{
+			message = "File - " + pvmetadata.getDecodeMetaData(decode).getpFile() + " used";
+			System.err.println(message);
+			fileErrorLog.appendMessage(pvName, message);
+		}
+
+		EquationDataStructure dbFields = rtvFileFieldDescription(pvmetadata.getDecodeMetaData(decode).getpFile());
+		for (int i = 0; i < pvmetadata.rtvNumberOfFields(); i++)
+		{
+			pvField = pvmetadata.rtvFieldMetaData(i);
+			dbName = pvField.getDb();
+			if (dbName != null && !dbName.equals(""))
+			{
+				dbField = dbFields.getFieldDefinition(dbName);
+
+				if (dbField != null && !dbField.equals(""))
+				{
+					dbFieldType = dbField.getFieldDataTypeString();
+					if (dbFieldType.equals("P"))
+					{
+						dbFieldType = "S";
+					}
+					if (!pvField.getType().equals(dbFieldType) && !pvField.getType().equals("V"))
+					{
+						message = pvField.getId() + " - " + pvField.getDescription() + " - type - " + pvField.getType()
+										+ " - does not match DB.  Remove mapping or change PV Meta Data.  KEY fields must match.";
+						System.err.println(message);
+						fileErrorLog.appendMessage(pvName, message);
+						results = false;
+					}
+					dbFieldLength = dbField.getFieldLength();
+					//This section has been removed since the screen length of the
+					//sort code does not equal the length on the database file and
+			        //so will always fail this test.
+					//if (dbFieldLength != pvField.getLength())
+					//{
+					//	message = pvField.getId() + " - " + pvField.getDescription() + " - length - " + pvField.getLength()
+					//					+ " - does not match DB.";
+					//	System.err.println(message);
+					//	fileErrorLog.appendMessage(pvName, message);
+					//	results = false;
+					//}
+				}
+				else
+				{
+					message = pvField.getId() + " - " + pvField.getDescription() + " - db mapping - " + pvField.getDb()
+									+ " - does not exist.  Remove mapping or change PV Meta Data.  KEY fields must match.";
+					System.err.println(message);
+					fileErrorLog.appendMessage(pvName, message);
+					results = false;
+				}
+
+			}
+
+			if (pvField.getUsage().equals("O") && pvField.getType().equals("A")
+							&& !pvField.getDescription().toUpperCase().contains("DESC"))
+			{
+				if (pvField.getDescription().toUpperCase().contains("DATE") && !pvField.getDb().equals("")
+								&& pvField.getLength() > 5)
+				{
+					message = pvField.getId() + " - " + pvField.getDescription() + " - length - " + pvField.getLength()
+									+ " - is a date and should not be mapped to DB field because of format";
+					System.err.println(message);
+					fileErrorLog.appendMessage(pvName, message);
+					results = false;
+				}
+				if (pvField.getDescription().toUpperCase().contains("AMOUNT") && !pvField.getDb().equals("")
+								&& pvField.getLength() > 5)
+				{
+					message = pvField.getId() + " - " + pvField.getDescription() + " - length - " + pvField.getLength()
+									+ " - is an amount and should not be mapped to DB field because of format";
+					System.err.println(message);
+					fileErrorLog.appendMessage(pvName, message);
+					results = false;
+				}
+				if (pvField.getDescription().toUpperCase().contains("RATE") && !pvField.getDb().equals("")
+								&& pvField.getLength() > 5)
+				{
+					message = pvField.getId() + " - " + pvField.getDescription() + " - length - " + pvField.getLength()
+									+ " - is a rate and should not be mapped to DB field because of format";
+					System.err.println(message);
+					fileErrorLog.appendMessage(pvName, message);
+					results = false;
+				}
+				if ((pvField.getDescription().toUpperCase().contains("EDITTED") || pvField.getDescription().toUpperCase().contains(
+								"EDITED"))
+								&& !pvField.getDb().equals(""))
+				{
+					message = pvField.getId() + " - " + pvField.getDescription() + " - length - " + pvField.getLength()
+									+ " - is an editted field and should not be mapped to DB field because of format";
+					System.err.println(message);
+					fileErrorLog.appendMessage(pvName, message);
+					results = false;
+				}
+				
+			}
+		}
+		// Check decodes have matching descriptions and file data
+		String usedDecodes = "";
+		for (int i = 0; i < pvmetadata.rtvNumberOfDecodes(); i++)
+		{
+			EquationPVDecodeMetaData decodeData = pvmetadata.getDecodeMetaData(i);
+			String decode = decodeData.getDecode();
+			if (!decode.equals("") && usedDecodes.contains(decode))
+			{
+				message = decode + " - is duplicated";
+				System.err.println(message);
+				fileErrorLog.appendMessage(pvName, message);
+				results = false;
+			}
+			//This section has been removed since the Decode has no description so
+			//uses the default in the DSABN30 data structure
+			//if (decodeData.getDescription().toUpperCase().contains("TEST"))
+			//{
+			//	message = decode + " " + decodeData.getDescription() + " - description may be invalid";
+			//	System.err.println(message);
+			//	fileErrorLog.appendMessage(pvName, message);
+			//	results = false;
+			//}
+			usedDecodes = usedDecodes + decodeData.getDecode();
+			if (decodeData.getDescription() == null || decodeData.getDescription().equals(""))
+			{
+				message = decodeData.getDecode() + " - decode has no description";
+				System.err.println(message);
+				fileErrorLog.appendMessage(pvName, message);
+				results = false;
+			}
+			if (decodeData.getpFile() == null || decodeData.getpFile().equals(""))
+			{
+				message = decodeData.getDecode() + " - decode has no physical file";
+				System.err.println(message);
+				fileErrorLog.appendMessage(pvName, message);
+				results = false;
+			}
+			if (decodeData.getKeyFields() == null || decodeData.getKeyFields().equals(""))
+			{
+				message = decodeData.getDecode() + " - decode has no key fields";
+				System.err.println(message);
+				fileErrorLog.appendMessage(pvName, message);
+				results = false;
+			}
+			if (decodeData.getZpParam() == null || decodeData.getZpParam().equals(""))
+			{
+				message = decodeData.getDecode() + " - decode has no ZP parameter";
+				System.err.println(message);
+				fileErrorLog.appendMessage(pvName, message);
+				results = false;
+			}
+		}
+
+		assertEquals(results, true);
+
+	}
+
+}

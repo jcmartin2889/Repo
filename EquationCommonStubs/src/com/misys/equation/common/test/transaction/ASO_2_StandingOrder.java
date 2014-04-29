@@ -1,0 +1,91 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseAddOnce;
+
+/**
+ * Equation test cases for Add Standing Order
+ * 
+ * Settlement Instructions API must be used before the Standing Order API Refer to ASO_1_Settlement for an example.
+ * 
+ * Note: The reference numbers cannot be reused even if CSO (Cancel Standing Order) is run. Repeated tests will need code change.
+ */
+public class ASO_2_StandingOrder extends EquationTestCaseAddOnce
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: ASO_2_StandingOrder.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	String programName = "H11ARR";
+	String optionId = "ASO";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZAB", "0132"); // Account branch
+		transaction.setFieldValue("GZAN", "100000"); // Basic part of account number
+		transaction.setFieldValue("GZAS", "003"); // Account suffix
+		transaction.setFieldValue("GZREF", "TEST"); // Standing order reference
+	}
+
+	/**
+	 * Setup the mandatory fields
+	 */
+	@Override
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZBCCY", "USD"); // Beneficiary currency
+		transaction.setFieldValue("GZFRQ", "V31"); // Frequency code
+		transaction.setFieldValue("GZFAD", "1000106"); // First action date
+		transaction.setFieldValue("GZFLD", "9999999"); // Final action date
+		transaction.setFieldValue("GZRPA", "500000"); // Regular payment amount
+		transaction.setFieldValue("GZFPA", "500000"); // First payment amount
+		transaction.setFieldValue("GZLPA", "500000"); // Last payment amount
+		transaction.setFieldValue("GZDSIF", "N"); // Dr S/o if no avail funds?
+		transaction.setFieldValue("GZDCIF", "N"); // Dr chgs if no avail funds?
+		transaction.setFieldValue("GZUSID", "ANTO"); // User ID (4A)
+		transaction.setFieldValue("GZAUTO", "N"); // Auto-authorised (API)? (1A)
+		transaction.setFieldValue("GZAUTH", "N"); // Standing order authorised? (1A)
+		transaction.setFieldValue("GZRSO", "N"); // Authorise standing order flag (1A)
+		transaction.setFieldValue("GZEXF", "");
+	}
+
+}

@@ -1,0 +1,28 @@
+<EquationPVMetaData PFile="CLH10LF" description="GBLCUST" globalConsolidatedPrompt="false" globalLibraryPrompt="true"  id="GBLCUST" label="GBLCUST" packageName="com.misys.pvs">
+  <databaseXref/>
+  <decodeMetaData>
+    <decodeMetaData decode=" " description="Default Decode" index="0" length="0" pFile="CLH10LF" sqlFrom="CLH10LF">
+      <keyFields>
+        <keyField>CLHGCID</keyField>
+      </keyFields>
+      <pvFields>
+        <pvField>CLHGCID</pvField>
+        <pvField>CLHNAM</pvField>
+      </pvFields>
+    </decodeMetaData>
+  </decodeMetaData>
+  <fieldMetaData>
+    <fieldMetaData alpha="true" composite="false" db="CLHGCID" decimal="0" description="Global customer ID" header="Global customer ID" id="CLHGCID" index="0" key="true" label="CLHGCID" length="20" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="CLHNAM" decimal="0" description="Global customer name" header="Global Customer name" id="CLHNAM" index="20" key="false" label="CLHNAM" length="35" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+  </fieldMetaData>
+  <hdrNames>
+    <hdrName>CLHGCID</hdrName>
+    <hdrName>CLHNAM</hdrName>
+  </hdrNames>
+  <hdrPositions>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+  </hdrPositions>
+  <pvDvals/>
+  <pvOvals/>
+</EquationPVMetaData>

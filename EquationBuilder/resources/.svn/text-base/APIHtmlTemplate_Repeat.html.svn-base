@@ -1,0 +1,78 @@
+<TABLE class=" helpBody" cellspacing="0" id="$$$API_TITLE"> 
+<TR>
+	<td class=" helpHeader" id="$$$API_HEADER"><h2 class="heading2">%Journal</h2></td>
+</TR>
+</TABLE>
+ 
+
+<TABLE class=" helpBody" cellspacing="0" id="$$$API_PURPOSE"> 
+	<tr>
+		<td class=" helpColumnHeadings"><p class="tabletext"><strong class="bold">Purpose</strong></p></td>
+	</tr>
+	<tr><td class=" helpColumnDetailsOneCell"><p class="tabletext">%Purpose</p></td></tr>
+</TABLE>
+
+<TABLE class=" helpBody" cellspacing="0" id="$$$API_DETAILS" > 
+	<tr>
+		<td class=" helpColumnHeadings"><p class="tabletext"><strong class="bold">Details</strong></p></td>
+	</tr>
+	<tr><td class=" helpColumnDetailsOneCell"><p class="tabletext">%Details</p></td></tr>
+</TABLE>
+
+<TABLE class=" helpBody" cellspacing="0" id="$$$API_KEYFIELDS">
+	<col width="10%">
+	<col width="65%">
+	<col width="5%">
+	<col width="10%">
+	<col width="5%">
+	<col width="5%">
+	<tr>
+		<td class=" helpHeader" COLSPAN=6><p class="tabletext"><strong class="bold">Key Fields</strong></p></td>
+	</tr>
+	
+	<tr>
+		<td class=" helpHeader" COLSPAN=6><p class="tabletext-nospaceafter">&nbsp;</p></td>
+	</tr>
+	
+	<tr>
+		<td class=" helpColumnHeadings"><p class="tabletext"><strong class="bold">Name</strong></p></td>
+		<td class=" helpColumnHeadings"><p class="tabletext"><strong class="bold">Description</strong></p></td>
+		<td class=" helpColumnHeadings"><p class="tabletext"><strong class="bold">Type</strong></p></td>
+		<td class=" helpColumnHeadings"><p class="tabletext"><strong class="bold">Positions</strong></p></td>
+		<td class=" helpColumnHeadings"><p class="tabletext"><strong class="bold">Size</strong></p></td>
+		<td class=" helpColumnHeadings"><p class="tabletext"><strong class="bold">Decimals</strong></p></td>
+	</tr>
+	<tr><td class=" helpColumnDetails"><p class="tabletext">%KeyFieldName</p></td><td class=" helpColumnDetails"><p class="tabletext">%KeyFieldDescription</p></td><td class=" helpColumnDetails"><p class="tabletext">%KeyFieldType</p></td><td class=" helpColumnDetails"><p class="tabletext">%KeyFieldPositions</p></td><td class=" helpColumnDetails"><p class="tabletext">%KeyFieldSize</p></td><td class=" helpColumnDetails"><p class="tabletext">%KeyFieldDecimals</p></td></tr>
+	<tr><td><p class="tabletext-nospaceafter">&nbsp;</p></td><td class=" helpColumnDetails"><p class="tabletext"><strong class="bold">Number Of Key Fields -</strong></p><p class="tabletext">%NumberOfKeyFields</p></td><td><p class="tabletext-nospaceafter">&nbsp;</p></td><td><p class="tabletext-nospaceafter">&nbsp;</p></td><td><p class="tabletext-nospaceafter">&nbsp;</p></td><td><p class="tabletext-nospaceafter">&nbsp;</p></td></tr>
+</TABLE>
+
+
+<TABLE class=" helpBody" cellspacing="0" id="$$$API_FIELDS">
+	<col width="10%">
+	<col width="65%">
+	<col width="5%">
+	<col width="10%">
+	<col width="5%">
+	<col width="5%">
+	<tr>
+		<td class=" helpHeader" COLSPAN=6><p class="tabletext"><strong class="bold">Fields</strong></p></td>
+	</tr>	
+	<tr>
+		<td class=" helpHeader" COLSPAN=6><p class="tabletext-nospaceafter">&nbsp;</p></td>
+	</tr>
+	<tr>
+		<td class=" helpColumnHeadings"><p class="tabletext"><strong class="bold">Name</strong></p></td>
+		<td class=" helpColumnHeadings"><p class="tabletext"><strong class="bold">Description</strong></p></td>
+		<td class=" helpColumnHeadings"><p class="tabletext"><strong class="bold">Type</strong></p></td>
+		<td class=" helpColumnHeadings"><p class="tabletext"><strong class="bold">Positions</strong></p></td>
+		<td class=" helpColumnHeadings"><p class="tabletext"><strong class="bold">Size</strong></p></td>
+		<td class=" helpColumnHeadings"><p class="tabletext"><strong class="bold">Decimals</strong></p></td>
+	</tr>
+	<tr><td class=" helpColumnDetails"><p class="tabletext">%FieldName</p></td><td class=" helpColumnDetails"><p class="tabletext">%FieldDescription</p></td><td class=" helpColumnDetails"><p class="tabletext">%FieldType</p></td><td class=" helpColumnDetails"><p class="tabletext">%FieldPositions</p></td><td class=" helpColumnDetails"><p class="tabletext">%FieldSize</p></td><td class=" helpColumnDetails"><p class="tabletext">%FieldDecimals</p></td></tr>
+	<tr><td><p class="tabletext-nospaceafter">&nbsp;</p></td><td class=" helpColumnDetails"><p class="tabletext"><strong class="bold">Number Of Fields -</strong></p> <p class="tabletext">%NumberOfFields</p></td><td><p class="tabletext-nospaceafter">&nbsp;</p></td><td><p class="tabletext-nospaceafter">&nbsp;</p></td><td><p class="tabletext-nospaceafter">&nbsp;</p></td><td><p class="tabletext-nospaceafter">&nbsp;</p></td></tr>
+</TABLE>
+ 
+ 
+
+ 
+

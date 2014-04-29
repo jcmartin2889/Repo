@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/EquationBankFusionClient"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/EquationCommon"/>
+	<classpathentry kind="lib" path="/ExternalJars/lib/BankFusionClient.jar"/>
+	<classpathentry kind="lib" path="/ExternalJars/lib/BankFusionCommander.jar"/>
+	<classpathentry kind="lib" path="/ExternalJars/lib/BankFusionCommonSupport.jar"/>
+	<classpathentry kind="lib" path="/ExternalJars/lib/BankFusionEncryption.jar"/>
+	<classpathentry kind="lib" path="/ExternalJars/lib/BankFusionMessaging.jar"/>
+	<classpathentry kind="lib" path="/ExternalJars/lib/BankFusionServer.jar"/>
+	<classpathentry kind="lib" path="/ExternalJars/lib/BF_castor-xml-1.3.2.jar"/>
+	<classpathentry kind="lib" path="/ExternalJars/lib/castor-core-1.3.2.jar"/>
+	<classpathentry kind="lib" path="/ExternalJars/lib/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="/ExternalJars/lib/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="/ExternalJars/lib/BFPCommon.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
+	<classpathentry kind="src" path="resources"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/EquationCommonStubs"/>
+	<classpathentry kind="lib" path="/ExternalJars/lib/axis.jar"/>
+	<classpathentry kind="lib" path="/ExternalJars/lib/BankFusionDeviceService.jar"/>
+	<classpathentry kind="lib" path="lib/camel-core-2.6.0.jar"/>
+	<classpathentry kind="lib" path="lib/camel-jms-2.6.0.jar"/>
+	<classpathentry kind="lib" path="lib/camel-mina-2.6.0.jar"/>
+	<classpathentry kind="lib" path="lib/camel-spring-2.6.0.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/EquationCommonStubsInternal"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

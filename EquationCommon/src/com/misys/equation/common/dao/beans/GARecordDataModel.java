@@ -1,0 +1,246 @@
+package com.misys.equation.common.dao.beans;
+
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * GARecord data-model.
+ * 
+ * @author deroset
+ * 
+ */
+public class GARecordDataModel extends AbsRecord
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: GARecordDataModel.java 12017 2011-10-06 02:51:11Z fraramos $";
+	private static final long serialVersionUID = 1L;
+	private final static String RECORD_NAME = "GAPF";
+	private String optionId = ""; // GAFID
+	private String programName = ""; // GAFPR
+	private String programTitle = ""; // GAFNM
+	private String userDefinedKeysAllowed = ""; // GAEFF
+	private String userDefinedAndPromptable = ""; // GAUDEF
+	private String pcProgramName = ""; // GAPCI
+	private String extendedInput = ""; // GAEIA
+	private String application = ""; // GAAPP
+
+	/**
+	 * Construct an empty file
+	 * 
+	 */
+	public GARecordDataModel()
+	{
+		setEqFileName(RECORD_NAME);
+	}
+
+	/**
+	 * Construct a GA record key
+	 * 
+	 * @param optionId
+	 *            - option id
+	 */
+	public GARecordDataModel(String optionId)
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+		setOptionId(optionId);
+	}
+
+	/**
+	 * Construct a GA record with default values
+	 * 
+	 * @param optionId
+	 *            - option id
+	 * @param programName
+	 *            - program name
+	 * @param programTitle
+	 *            - program title
+	 * @param application
+	 *            - application
+	 */
+	public GARecordDataModel(String optionId, String programName, String programTitle, String application)
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+
+		setOptionId(optionId);
+		setProgramName(programName);
+		setProgramTitle(programTitle);
+		setApplication(application);
+		this.pcProgramName = "";
+		this.extendedInput = "N";
+		this.userDefinedAndPromptable = "Y";
+		this.userDefinedKeysAllowed = "Y";
+	}
+
+	// ---getters and setters----//
+
+	/**
+	 * Return the option id
+	 * 
+	 * @return the option id
+	 */
+	public String getOptionId()
+	{
+		return optionId;
+	}
+
+	/**
+	 * Set the option id
+	 * 
+	 * @param optionId
+	 *            - the option id
+	 */
+	public void setOptionId(String optionId)
+	{
+		this.optionId = Toolbox.trim(optionId, 3);
+	}
+
+	/**
+	 * Return the program name
+	 * 
+	 * @return the program name
+	 */
+	public String getProgramName()
+	{
+		return programName;
+	}
+
+	/**
+	 * Set the program name
+	 * 
+	 * @param programName
+	 *            - the program name
+	 */
+	public void setProgramName(String programName)
+	{
+		this.programName = Toolbox.trim(programName, 6);
+	}
+
+	/**
+	 * Return the program title
+	 * 
+	 * @return the program title
+	 */
+	public String getProgramTitle()
+	{
+		return programTitle;
+	}
+
+	/**
+	 * Set the program title
+	 * 
+	 * @param programTitle
+	 *            - the program title
+	 */
+	public void setProgramTitle(String programTitle)
+	{
+		this.programTitle = Toolbox.trim(programTitle, 35);
+	}
+
+	/**
+	 * Return the PC program name
+	 * 
+	 * @return the PC program name
+	 */
+	public String getPcProgramName()
+	{
+		return pcProgramName;
+	}
+
+	/**
+	 * Set the PC program name
+	 * 
+	 * @param pcProgramName
+	 *            - the PC program name
+	 */
+	public void setPcProgramName(String pcProgramName)
+	{
+		this.pcProgramName = Toolbox.trim(pcProgramName, 6);
+	}
+
+	/**
+	 * Return the application where this function belongs
+	 * 
+	 * @return the application where this function belongs
+	 */
+	public String getApplication()
+	{
+		return application;
+	}
+
+	/**
+	 * Set the application where this function belongs
+	 * 
+	 * @param application
+	 *            - the application where this function belongs
+	 */
+	public void setApplication(String application)
+	{
+		this.application = Toolbox.trim(application, 4);
+	}
+
+	/**
+	 * Return the extended input flag
+	 * 
+	 * @return the extended input flag
+	 */
+	public String getExtendedInput()
+	{
+		return extendedInput;
+	}
+
+	/**
+	 * Set the extended input flag
+	 * 
+	 * @param extendedInput
+	 *            - the extended input flag
+	 */
+	public void setExtendedInput(String extendedInput)
+	{
+		this.extendedInput = Toolbox.trim(extendedInput, 1);
+	}
+
+	/**
+	 * Return the user defined keys allowed flag
+	 * 
+	 * @return the user defined keys allowed flag
+	 */
+	public String getUserDefinedKeysAllowed()
+	{
+		return userDefinedKeysAllowed;
+	}
+
+	/**
+	 * Set the user defined keys allowed flag
+	 * 
+	 * @param userDefinedKeysAllowed
+	 *            = the user defined keys allowed flag
+	 */
+	public void setUserDefinedKeysAllowed(String userDefinedKeysAllowed)
+	{
+		this.userDefinedKeysAllowed = Toolbox.trim(userDefinedKeysAllowed, 1);
+	}
+
+	/**
+	 * Return the user defined keys and promptable flag
+	 * 
+	 * @return the user defined keys and promptable flag
+	 */
+	public String getUserDefinedAndPromptable()
+	{
+		return userDefinedAndPromptable;
+	}
+
+	/**
+	 * Set the user defined keys and promptable flag
+	 * 
+	 * @param userDefinedAndPromptable
+	 *            - the user defined keys and promptable flag
+	 */
+	public void setUserDefinedAndPromptable(String userDefinedAndPromptable)
+	{
+		this.userDefinedAndPromptable = Toolbox.trim(userDefinedAndPromptable, 1);
+	}
+
+}

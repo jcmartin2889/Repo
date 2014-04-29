@@ -1,0 +1,227 @@
+package com.misys.equation.common.globaldealsummary;
+
+import com.misys.equation.common.globalcustomers.GlobalBean;
+
+public class GlobalDealSummary extends GlobalBean
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: GlobalDealSummary.java 10493 2011-02-18 14:43:35Z MACDONP1 $";
+	private String customerNumber = "";
+	private String globalCustomerID = "";
+	private String customerMnemonic = "";
+	private String customerLocation = "";
+	private String system = "";
+	private String unit = "";
+	private String application = "";
+	private String branch = "";
+	private String reference = "";
+	private String amount = "";
+	private String currency = "";
+	private String secondCurrency = "";
+	private String startDate = "";
+	private String endDate = "";
+	private String rate = "";
+	private String days = "";
+	private String provisions = "";
+	private String loanStatusCode = "";
+	private String nonAccrualStatus = "";
+	private String dealType = "";
+	private String dealReference = "";
+	private String basicDealType = "";
+	private String splitValueDate = "";
+	private String equivAmount = "";
+
+	public String getCustomerNumber()
+	{
+		return customerNumber;
+	}
+	public void setCustomerNumber(String customerNumber)
+	{
+		this.customerNumber = customerNumber;
+	}
+	public String getUnit()
+	{
+		return unit;
+	}
+	public void setUnit(String unit)
+	{
+		this.unit = unit;
+	}
+	public String getApplication()
+	{
+		return application;
+	}
+	public void setApplication(String application)
+	{
+		this.application = application;
+	}
+	public String getBranch()
+	{
+		return branch;
+	}
+	public void setBranch(String branch)
+	{
+		this.branch = branch;
+	}
+	public String getReference()
+	{
+		return reference;
+	}
+	public void setReference(String reference)
+	{
+		this.reference = reference;
+	}
+	public String getAmount()
+	{
+		return amount;
+	}
+	public void setAmount(String amount)
+	{
+		this.amount = amount;
+	}
+	public String getCurrency()
+	{
+		return currency;
+	}
+	public void setCurrency(String currency)
+	{
+		this.currency = currency;
+	}
+	public String getSecondCurrency()
+	{
+		return secondCurrency;
+	}
+	public void setSecondCurrency(String secondCurrency)
+	{
+		this.secondCurrency = secondCurrency;
+	}
+	public String getStartDate()
+	{
+		return startDate;
+	}
+	public void setStartDate(String startDate)
+	{
+		this.startDate = startDate;
+	}
+	public String getEndDate()
+	{
+		return endDate;
+	}
+	public void setEndDate(String endDate)
+	{
+		this.endDate = endDate;
+	}
+	public String getRate()
+	{
+		return rate;
+	}
+	public void setRate(String rate)
+	{
+		this.rate = rate;
+	}
+	public String getDays()
+	{
+		return days;
+	}
+	public void setDays(String days)
+	{
+		this.days = days;
+	}
+	public String getProvisions()
+	{
+		return provisions;
+	}
+	public void setProvisions(String provisions)
+	{
+		this.provisions = provisions;
+	}
+	public String getLoanStatusCode()
+	{
+		return loanStatusCode;
+	}
+	public void setLoanStatusCode(String loanStatusCode)
+	{
+		this.loanStatusCode = loanStatusCode;
+	}
+	public String getNonAccrualStatus()
+	{
+		return nonAccrualStatus;
+	}
+	public void setNonAccrualStatus(String nonAccrualStatus)
+	{
+		this.nonAccrualStatus = nonAccrualStatus;
+	}
+
+	public String getGlobalCustomerID()
+	{
+		return globalCustomerID;
+	}
+	public void setGlobalCustomerID(String globalCustomerID)
+	{
+		this.globalCustomerID = globalCustomerID;
+	}
+	public String getCustomerMnemonic()
+	{
+		return customerMnemonic;
+	}
+	public void setCustomerMnemonic(String customerMnemonic)
+	{
+		this.customerMnemonic = customerMnemonic;
+	}
+	public String getCustomerLocation()
+	{
+		return customerLocation;
+	}
+	public void setCustomerLocation(String customerLocation)
+	{
+		this.customerLocation = customerLocation;
+	}
+	public String getDealType()
+	{
+		return dealType;
+	}
+	public void setDealType(String dealType)
+	{
+		this.dealType = dealType;
+	}
+	public String getDealReference()
+	{
+		return dealReference;
+	}
+	public void setDealReference(String dealReference)
+	{
+		this.dealReference = dealReference;
+	}
+	public String getSystem()
+	{
+		return system;
+	}
+	public void setSystem(String system)
+	{
+		this.system = system.trim();
+	}
+	public String getBasicDealType()
+	{
+		return basicDealType;
+	}
+	public void setBasicDealType(String basicDealType)
+	{
+		this.basicDealType = basicDealType;
+	}
+	public String getSplitValueDate()
+	{
+		return splitValueDate;
+	}
+	public void setSplitValueDate(String splitValueDate)
+	{
+		this.splitValueDate = splitValueDate;
+	}
+	public String getEquivAmount()
+	{
+		return equivAmount;
+	}
+	public void setEquivAmount(String equivAmount)
+	{
+		this.equivAmount = equivAmount;
+	}
+}

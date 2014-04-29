@@ -1,0 +1,114 @@
+package com.misys.equation.common.test;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Hashtable;
+import java.util.Map;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
+/**
+ * TestSuite that orders tests in alphabetical order
+ * <p>
+ * The standard TestSuite implementation deliberately does not specify the order in which Test methods are run. This class will
+ * order the test methods alphabetically before adding to the base class.
+ * <p>
+ * Note that while it would be possible to simply create a new TestSuite class and add each Test to it, extending the TestSuite
+ * class provides the calls to setUp and tearDown.
+ */
+public class OrderedTestSuite extends TestSuite
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: OrderedTestSuite.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	private Map<String, Test> tests;
+	private int methodCount;
+
+	/**
+	 * Constructor that initialises from the given class.
+	 * <p>
+	 * The base class method will call addTest for each of the test methods, We override addTest to control the order in which the
+	 * tests are added
+	 */
+	public OrderedTestSuite(final Class theClass)
+	{
+		super(theClass);
+		System.out.println("OrderedTestSuite - " + theClass.getName());
+	}
+
+	/**
+	 * Adds a test to the suite.
+	 * <p>
+	 * This will be called for each test method in the class, and we accumulate the method details in the tests variable. When we
+	 * have all the tests, they will be added to the base class in sorted order.
+	 * <p>
+	 * Note that the adding of the tests to the base class must be done in here (during the lifetime of the base class constructor
+	 * call). Otherwise a warning will be generated that the class does not contain any test methods.
+	 */
+	@Override
+	public void addTest(Test test)
+	{
+		if (tests == null)
+		{
+			tests = new Hashtable<String, Test>();
+			methodCount = getTestMethodCount(test.getClass());
+		}
+		tests.put(test.toString(), test);
+		System.out.println(" Adding " + test.toString());
+
+		// If we've got all the tests, we're ready to sort and add to
+		// base class
+		if (tests.size() == methodCount)
+		{
+			addSortedTests();
+		}
+	}
+
+	/**
+	 * Sorts the tests
+	 */
+	public void addSortedTests()
+	{
+		String className = this.toString();
+		// Put the names into an array and sort
+		ArrayList<String> keys = new ArrayList<String>();
+		for (String key : tests.keySet())
+		{
+			keys.add(key);
+		}
+		Collections.sort(keys);
+
+		// Add the tests in the required order...
+		for (String key : keys)
+		{
+			super.addTest(tests.get(key));
+			System.out.println(className + " - " + key);
+		}
+	}
+
+	/**
+	 * Determines how many test methods are in the class
+	 * 
+	 * @param clazz
+	 * @return an int containing the number of methods
+	 */
+	private static int getTestMethodCount(Class clazz)
+	{
+		// Use reflection to list the test methods:
+		Method[] methods = clazz.getMethods();
+		ArrayList<String> methodNames = new ArrayList<String>();
+		for (Method method : methods)
+		{
+			String methodName = method.getName();
+			// We want methods with names beginning with "test", with no input
+			// parameters, and void return type
+			if (methodName.startsWith("test") && method.getParameterTypes().length == 0 && method.getReturnType() == void.class)
+			{
+				methodNames.add(methodName);
+			}
+		}
+		return methodNames.size();
+	}
+}

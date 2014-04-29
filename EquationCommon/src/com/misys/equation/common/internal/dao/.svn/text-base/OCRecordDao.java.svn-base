@@ -1,0 +1,189 @@
+package com.misys.equation.common.internal.dao;
+
+import java.util.Hashtable;
+import java.util.List;
+
+import com.misys.equation.common.dao.IOCRecordDao;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.dao.beans.OCRecordDataModel;
+import com.misys.equation.common.internal.dao.mappers.OCRecordRowMapper;
+
+/**
+ * This the GA-Record Dao implementation. <br>
+ * This class is going to provide all back-end services for OC-Record.
+ * 
+ * @author deroset
+ */
+public class OCRecordDao extends AbsEquationDao implements IOCRecordDao
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	public OCRecordDao()
+	{
+		super();
+	}
+
+	/**
+	 * This method will check if the current record was already set in the database. <br>
+	 * The Sql <code>SELECT COUNT(*)</code> query will be executed.
+	 * 
+	 * @param sqlWhereStatement
+	 *            - the WHERE clause of the SQL statement
+	 * 
+	 * @return true if the SQL statement returns a count >= 1
+	 */
+	public boolean checkIfThisOCRecordIsInTheDB(String sqlWhereStatement)
+	{
+		return checkIfThisRecordIsInTheDB(sqlWhereStatement);
+	}
+
+	/**
+	 * This method will check if the current record was already set in the database. <br>
+	 * The Sql <code>SELECT COUNT(*)</code> query will be executed.
+	 * 
+	 * @return true if the SQL statement returns a count >= 1
+	 */
+	public boolean checkIfThisOCRecordIsInTheDB()
+	{
+		return checkIfThisRecordIsInTheDB(getWhereConditionBaseOnIdRecord());
+	}
+
+	/**
+	 * This method will return an instance of the preset data model.
+	 * 
+	 * @return an instance of the preset data model.
+	 */
+	public OCRecordDataModel getMyDataModel()
+	{
+		OCRecordDataModel OCRecordDataModel = null;
+		AbsRecord record = getRecord();
+
+		if (record instanceof OCRecordDataModel)
+		{
+			OCRecordDataModel = (OCRecordDataModel) getRecord();
+
+		}
+		return OCRecordDataModel;
+	}
+
+	/**
+	 * This method will return a <code>String</code> which represents and sql where condition base on the record id.<br>
+	 * For example <code>id = getDataModel.getId()</code>
+	 * 
+	 * @return a <code>String</code> which represents and sql filter.
+	 */
+	@Override
+	protected String getWhereConditionBaseOnIdRecord()
+	{
+		StringBuilder whereCondition = new StringBuilder("OCUSID='");
+		whereCondition.append(getMyDataModel().getUserId());
+		whereCondition.append("' ");
+		return whereCondition.toString();
+	}
+
+	/**
+	 * Returns a list of name and ? pairs in the format of:
+	 * <p>
+	 * field1=?, field2=?, field3=?, ...
+	 * 
+	 * @return a list of name and ? pairs
+	 */
+	@Override
+	protected String getParameterizedFields()
+	{
+		String fields = "OCUSID= ?, OCOID= ?, OCBRNM= ?, OCLNM= ?, OCLVA= ?, OCUNAM= ?, OCBBN= ?, OCPHN= ?, OCEXTN= ?, OCAVC= ?, OCCOA= ?, OCAAB= ?, OCAUT= ?, OCLVL= ?, OCSHLT= ?, OCBFUS= ?, OCOSID= ?";
+		return fields;
+	}
+
+	/**
+	 * Returns a list of the filed's name
+	 * 
+	 * @return a list of the filed's name
+	 */
+	@Override
+	protected String getFields()
+	{
+		String fields = " OCUSID, OCOID, OCBRNM, OCLNM, OCLVA, OCUNAM, OCBBN, OCPHN, OCEXTN, OCAVC, OCCOA, OCAAB, OCAUT, OCLVL, OCSHLT, OCBFUS, OCOSID ";
+		return fields;
+	}
+
+	/**
+	 * Returns a list of the file's parameters
+	 * 
+	 * @return the list of the file's parameters
+	 */
+	@Override
+	protected String getParameters()
+	{
+		String fields = "? , ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?";
+		return fields;
+	}
+
+	/**
+	 * This method create an array that contains the fields values and Its types. <br>
+	 * It will be used by jdbc <code>PreparedStatement</code>
+	 * 
+	 * @return An array that contains the fields values and Its types.
+	 */
+	@Override
+	public Object[] getParameterizedFieldsValues()
+	{
+		OCRecordDataModel oCRecordDataModel = getMyDataModel();
+
+		Object[] object = new Object[] {
+
+		oCRecordDataModel.getUserId(), oCRecordDataModel.getOptionId(), oCRecordDataModel.getBranch(),
+						oCRecordDataModel.getLanguage(), oCRecordDataModel.getLimitAuth(), oCRecordDataModel.getUserName(),
+						oCRecordDataModel.getBranchNo(), oCRecordDataModel.getPhoneNo(), oCRecordDataModel.getExtNo(),
+						oCRecordDataModel.getAvailCode(), oCRecordDataModel.getUserClass(), oCRecordDataModel.getAuthAnyBranch(),
+						oCRecordDataModel.getAuthClass(), oCRecordDataModel.getAuthLevel(), oCRecordDataModel.getShowLocalTime(),
+						oCRecordDataModel.getBankFusionUserId(), oCRecordDataModel.getOsUserId() };
+
+		return object;
+	}
+
+	/**
+	 * This method is going execute a Sql query using the filter criteria.
+	 * 
+	 * @param whereClause
+	 *            this is the <code>String</code> that represent the sql filter.
+	 * @return a <code>List</code> which contains a records
+	 */
+	public List<AbsRecord> getRecordBy(String whereClause)
+	{
+		return getRecordBy(whereClause, new OCRecordRowMapper());
+	}
+
+	/**
+	 * This method is going to get all records.
+	 * 
+	 * @return a <code>List</code> which contains a records
+	 */
+	public List<AbsRecord> getRecords()
+	{
+		return getRecordBy(null, new OCRecordRowMapper());
+	}
+
+	/**
+	 * This method is going to return a <code>OCRecordDataModel</code> base on OCFID
+	 * 
+	 * @return a <code>OCRecordDataModel</code> base on OCFID
+	 */
+	public OCRecordDataModel getOCRecord()
+	{
+		OCRecordDataModel OCRecordDataModel = null;
+		List<AbsRecord> results = getRecordBy(getWhereConditionBaseOnIdRecord(), new OCRecordRowMapper());
+
+		if (!results.isEmpty())
+		{
+			OCRecordDataModel = (OCRecordDataModel) results.get(0);
+		}
+		return OCRecordDataModel;
+	}
+
+	@Override
+	protected Hashtable<String, AbsRecord> createHashtableRecordModel(List<AbsRecord> records)
+	{
+		return null;
+	}
+}

@@ -1,0 +1,143 @@
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/calculators
+END
+GlobalMMCurrencyPayReceiveEnquiry.java
+K 25
+svn:wc:ra_dav:version-url
+V 190
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/calculators/GlobalMMCurrencyPayReceiveEnquiry.java
+END
+GlobalFXCurrencyLadderEnquiry.java
+K 25
+svn:wc:ra_dav:version-url
+V 186
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/calculators/GlobalFXCurrencyLadderEnquiry.java
+END
+GlobalFXCurrencyPayReceiveEnquiry.java
+K 25
+svn:wc:ra_dav:version-url
+V 190
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/calculators/GlobalFXCurrencyPayReceiveEnquiry.java
+END
+GlobalEnquiryFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 177
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/calculators/GlobalEnquiryFactory.java
+END
+AbstractGPEnquiryResult.java
+K 25
+svn:wc:ra_dav:version-url
+V 180
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/calculators/AbstractGPEnquiryResult.java
+END
+DateAndBalance.java
+K 25
+svn:wc:ra_dav:version-url
+V 171
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/calculators/DateAndBalance.java
+END
+GlobalCashPositionsResult.java
+K 25
+svn:wc:ra_dav:version-url
+V 182
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/calculators/GlobalCashPositionsResult.java
+END
+GlobalMMGapPositionsEnquiry.java
+K 25
+svn:wc:ra_dav:version-url
+V 184
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/calculators/GlobalMMGapPositionsEnquiry.java
+END
+GlobalFXLadderResult.java
+K 25
+svn:wc:ra_dav:version-url
+V 177
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/calculators/GlobalFXLadderResult.java
+END
+NostroPosition.java
+K 25
+svn:wc:ra_dav:version-url
+V 171
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/calculators/NostroPosition.java
+END
+NostroPositionsEnquiry.java
+K 25
+svn:wc:ra_dav:version-url
+V 179
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/calculators/NostroPositionsEnquiry.java
+END
+GlobalFXGapPositionsEnquiry.java
+K 25
+svn:wc:ra_dav:version-url
+V 184
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/calculators/GlobalFXGapPositionsEnquiry.java
+END
+GlobalFXCurrencyPositionsResult.java
+K 25
+svn:wc:ra_dav:version-url
+V 188
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/calculators/GlobalFXCurrencyPositionsResult.java
+END
+GlobalMMCurrencyLadderResult.java
+K 25
+svn:wc:ra_dav:version-url
+V 185
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/calculators/GlobalMMCurrencyLadderResult.java
+END
+GlobalMMCurrencyPayReceiveResult.java
+K 25
+svn:wc:ra_dav:version-url
+V 189
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/calculators/GlobalMMCurrencyPayReceiveResult.java
+END
+GlobalCashPositionsEnquiry.java
+K 25
+svn:wc:ra_dav:version-url
+V 183
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/calculators/GlobalCashPositionsEnquiry.java
+END
+GlobalMMGapPositionsResult.java
+K 25
+svn:wc:ra_dav:version-url
+V 183
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/calculators/GlobalMMGapPositionsResult.java
+END
+NostroPositionsResult.java
+K 25
+svn:wc:ra_dav:version-url
+V 178
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/calculators/NostroPositionsResult.java
+END
+GlobalFXGapPositionsResult.java
+K 25
+svn:wc:ra_dav:version-url
+V 183
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/calculators/GlobalFXGapPositionsResult.java
+END
+GlobalFXResult.java
+K 25
+svn:wc:ra_dav:version-url
+V 171
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/calculators/GlobalFXResult.java
+END
+GlobalMMCurrencyLadderEnquiry.java
+K 25
+svn:wc:ra_dav:version-url
+V 186
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/calculators/GlobalMMCurrencyLadderEnquiry.java
+END
+GlobalFXCurrencyPositionsEnquiry.java
+K 25
+svn:wc:ra_dav:version-url
+V 189
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/calculators/GlobalFXCurrencyPositionsEnquiry.java
+END
+AbstractGlobalProcessingEnquiry.java
+K 25
+svn:wc:ra_dav:version-url
+V 188
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/calculators/AbstractGlobalProcessingEnquiry.java
+END

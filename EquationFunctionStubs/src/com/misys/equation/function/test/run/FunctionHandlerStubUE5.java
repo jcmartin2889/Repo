@@ -1,0 +1,187 @@
+package com.misys.equation.function.test.run;
+
+import java.util.List;
+
+import com.misys.equation.common.files.JournalHeader;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.internal.eapi.core.EQMessage;
+import com.misys.equation.function.beans.FunctionData;
+import com.misys.equation.function.runtime.FunctionHandler;
+import com.misys.equation.function.runtime.FunctionMessage;
+import com.misys.equation.function.runtime.FunctionMessages;
+
+/**
+ * Test Stub for the UE5 service
+ * <p>
+ * This stub tests Enquiry processing. It is based around the existing ABE Enquiry and uses WorkFields to populate the G5PF journal
+ * fields
+ */
+public class FunctionHandlerStubUE5 extends FunctionHandlerStubTestCase
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: FunctionHandlerStubUE5.java 6793 2010-03-31 12:10:20Z deroset $";
+
+	final String JOURNAL_APPLICATION_CODE = "UE";
+	final String JOURNAL_IDENTITY = "Account  number";
+	final String JOURNAL_SHORT_NAME = "Test short name";
+	final String JOURNAL_REFERENCE = "12345678901234567";
+	final String JOURNAL_INPUT_REFERENCE = "Input  reference";
+
+	FunctionHandler functionHandler = null;
+
+	public FunctionHandlerStubUE5()
+	{
+	}
+
+	@Override
+	public void setUp()
+	{
+
+		try
+		{
+			super.setUp();
+			System.out.println("------------------------------- 1");
+			functionHandler = FunctionToolboxStub.getFunctionHandler(user, "SESSIONID", "");
+
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Tests successful retrieval of data from the ABE enquiry<br/>
+	 * This also sets up G5PF journal details, which need to be manually checked
+	 */
+	public void testStubUE5_001()
+	{
+		try
+		{
+			// Following assertion will fail if not authorised
+			assertTrue(functionHandler.doNewTransaction("UE5", ""));
+			FunctionData functionData = functionHandler.getFhd().getScreenSetHandler().rtvScrnSetCurrent().getFunctionData();
+
+			functionData.chgFieldDbValue("WORK_APP", JOURNAL_APPLICATION_CODE); // Application code
+			functionData.chgFieldDbValue("WORK_WHO", JOURNAL_IDENTITY); // Who (account/customer/nostro)
+			functionData.chgFieldDbValue("WORK_SHN", JOURNAL_SHORT_NAME); // Short name
+			functionData.chgFieldDbValue("WORK_JREF", JOURNAL_REFERENCE); // Journal reference
+
+			functionData.chgFieldDbValue("WORK_N01", "G5N01 field");
+			functionData.chgFieldDbValue("WORK_N02", "G5N02 field");
+			functionData.chgFieldDbValue("WORK_N03", "G5N03 field");
+			functionData.chgFieldDbValue("WORK_N04", "G5N04 field");
+			functionData.chgFieldDbValue("WORK_N05", "G5N05 field");
+			functionData.chgFieldDbValue("WORK_N06", "G5N06 field");
+			functionData.chgFieldDbValue("WORK_N07", "G5N07 field");
+			functionData.chgFieldDbValue("WORK_N08", "G5N08 field");
+			functionData.chgFieldDbValue("WORK_N09", "G5N09 field");
+			functionData.chgFieldDbValue("WORK_N10", "G5N010 field");
+
+			functionData.chgFieldInputValue("ABE_HZAB", "0543");
+			functionData.chgFieldInputValue("ABE_HZAN", "123467");
+			functionData.chgFieldInputValue("ABE_HZAS", "001");
+
+			List<FunctionMessage> messages = validateFunction(functionHandler);
+			assertEquals(0, messages.size());
+
+			// int loadResult = functionHandler.loadKeyFieldSet("PRIMARY", "");
+			int loadResult = functionHandler.applyRetrieveTransaction();
+			assertEquals(-1, loadResult);
+
+			// Account Officer should be 'TF' - Trade Finance
+			assertEquals("TF", functionData.rtvFieldDbValue("ABE_HZACO"));
+
+			// Account Type description should be 'SUPER NOW ACCOUNT' (for code 'CD'
+			assertEquals("SUPER NOW ACCOUNT", functionData.rtvFieldOutputValue("ABE_HZACT"));
+
+			// retrieve journal header.
+			JournalHeader journalHeader = functionHandler.getFhd().getJournalHeader();
+			assertNotNull(journalHeader);
+			System.out.println("Journal Header [" + journalHeader + "]");
+
+			// TODO: Validate the details have been correctly updated
+			// but currently the (G5) details are not available
+			// assertEquals(JOURNAL_APPLICATION_CODE, journalHeader.getApplication());
+			// assertEquals(JOURNAL_IDENTITY, journalHeader.getIdentity());
+			// assertEquals(JOURNAL_SHORT_NAME, journalHeader.getIdentityShortName());
+			// assertEquals(JOURNAL_REFERENCE, journalHeader.getJournalRef());
+
+			System.out.println("The G5PF record must be checked for the actual values.");
+
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Test for invalid key field details<br/>
+	 * An error returned from the Enquiry API will be turned into a KSM4014 message <br/>
+	 */
+	public void testStubUE5_002()
+	{
+		try
+		{
+			// Following assertion will fail if not authorised
+			assertTrue(functionHandler.doNewTransaction("UE5", ""));
+			FunctionData functionData = functionHandler.getFhd().getScreenSetHandler().rtvScrnSetCurrent().getFunctionData();
+
+			// This account should not exist:
+			functionData.chgFieldInputValue("ABE_HZAB", "9999");
+			functionData.chgFieldInputValue("ABE_HZAN", "999999");
+			functionData.chgFieldInputValue("ABE_HZAS", "999");
+
+			// int loadResult = functionHandler.loadKeyFieldSet("PRIMARY", "");
+			int loadResult = functionHandler.applyRetrieveTransaction();
+			assertEquals(FunctionMessages.MSG_ERROR, loadResult);
+			List<FunctionMessage> messages = functionHandler.rtvFunctionMessages().getMessages();
+			assertEquals(1, messages.size());
+			assertTrue(containsMessage(functionHandler, "KSM401401        SC10LF", ""));
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Wraps the call to validate to avoid calling code having to catch EQException
+	 */
+	private List<FunctionMessage> validateFunction(FunctionHandler functionHandler)
+	{
+		try
+		{
+			functionHandler.validate();
+		}
+		catch (EQException e)
+		{
+			throw new RuntimeException(e);
+		}
+
+		return functionHandler.rtvFunctionMessages().getMessages();
+	}
+
+	private boolean containsMessage(FunctionHandler functionHandler, String dsepmsText, String fieldId)
+	{
+		boolean result = false;
+		List<FunctionMessage> messages = functionHandler.rtvFunctionMessages().getMessages();
+		for (FunctionMessage message : messages)
+		{
+			if (fieldId == null || fieldId.equals(message.getFieldName()))
+			{
+				EQMessage eqMessage = message.getEqMessage();
+
+				if (eqMessage.getDsepms().equals(dsepmsText))
+				{
+					// Found a match...
+
+					result = true;
+				}
+			}
+		}
+		return result;
+	}
+
+}

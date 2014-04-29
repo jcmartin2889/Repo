@@ -1,0 +1,518 @@
+package com.misys.equation.bf;
+
+import org.exolab.castor.types.AnyNode;
+
+import bf.com.misys.eqf.types.header.ExtensionDataRq;
+import bf.com.misys.eqf.types.header.ExtensionDataRs;
+import bf.com.misys.eqf.types.header.RsHeader;
+import bf.com.misys.eqf.types.header.ServiceRqHeader;
+import bf.com.misys.eqf.types.header.ServiceRsHeader;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.function.beans.Function;
+import com.misys.equation.function.beans.FunctionData;
+import com.misys.equation.function.beans.XSDStructure;
+import com.misys.equation.function.runtime.ConversionRules;
+import com.misys.equation.function.runtime.FunctionBankFusion;
+import com.misys.equation.function.runtime.FunctionMessages;
+import com.misys.equation.function.runtime.ScreenSet;
+import com.misys.equation.function.runtime.ScreenSetHandler;
+import com.misys.equation.function.tools.FunctionRuntimeToolbox;
+
+public class Toolbox
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: Toolbox.java 17761 2014-01-10 16:06:28Z lima12 $";
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(Toolbox.class);
+
+	private static final String LINKAGE_ID_FIELDNAME = "equationLinkageId";
+	private static final String LINKAGE_ID_METHDOD = "getEquationLinkageId";
+
+	/**
+	 * Load user extension for a link service
+	 * 
+	 * @param function
+	 *            - the Function associated with the user extension data
+	 * @param functionData
+	 *            - the function data
+	 * @param userExtensionDataRq
+	 *            - the user extension data
+	 * @param misysExtensionDataRq
+	 *            - the Misys extension data
+	 * @param conversionRules
+	 *            - the conversion rule to convert between user format and Equation format
+	 * 
+	 * @throws EQException
+	 */
+	public static void loadExtensionData(ScreenSet screenSet, ExtensionDataRq userExtensionDataRq,
+					ExtensionDataRq misysExtensionDataRq, ConversionRules conversionRules) throws EQException
+	{
+		FunctionData functionData = screenSet.getFunctionData();
+
+		// user data
+		if (userExtensionDataRq == null || isEmpty(userExtensionDataRq.getUserExtension()))
+		{
+			functionData.getInputExtensionData().setUserExtensionData(null);
+		}
+		else
+		{
+			functionData.getInputExtensionData().setUserExtensionData(userExtensionDataRq.getUserExtension());
+		}
+
+		// Misys data
+		if (misysExtensionDataRq == null || isEmpty(misysExtensionDataRq.getUserExtension()))
+		{
+			functionData.getInputExtensionData().setMisysExtensionData(null);
+		}
+		else
+		{
+			functionData.getInputExtensionData().setMisysExtensionData(misysExtensionDataRq.getUserExtension());
+		}
+
+		// link service?
+		if (screenSet.isLinkService())
+		{
+			Function secondaryFunction = screenSet.getServiceLinkage().getSecondaryFunctions()[0];
+
+			ConversionRules secondaryRules = FunctionRuntimeToolbox.getConversionRulesForLinkService(conversionRules,
+							secondaryFunction, screenSet.getFunctionAdaptor().getSecondaryFunctionAdaptors().get(0));
+
+			// set the Misys secondary service data
+			if (misysExtensionDataRq != null && misysExtensionDataRq.getSecondaryServiceExtension() != null)
+			{
+				try
+				{
+					loadServiceData(secondaryFunction, functionData, misysExtensionDataRq.getSecondaryServiceExtension(),
+									secondaryRules);
+				}
+				catch (EQException e)
+				{
+					secondaryRules.addMessage(e.getMessage(), "");
+				}
+			}
+
+			// set the user secondary service data
+			if (userExtensionDataRq != null && userExtensionDataRq.getSecondaryServiceExtension() != null)
+			{
+				try
+				{
+					loadServiceData(secondaryFunction, functionData, userExtensionDataRq.getSecondaryServiceExtension(),
+									secondaryRules);
+				}
+				catch (EQException e)
+				{
+					secondaryRules.addMessage(e.getMessage(), "");
+				}
+			}
+
+			// copy all error messages back to the conversion rule
+			conversionRules.copyMessages(secondaryRules);
+		}
+	}
+
+	/**
+	 * Determine if the extension data object is empty
+	 * 
+	 * @param object
+	 *            - the extension data
+	 * 
+	 * @return true if it is empty
+	 */
+	public static boolean isEmpty(Object object)
+	{
+		// anynode without any child
+		if (object instanceof AnyNode)
+		{
+			AnyNode anyNode = (AnyNode) object;
+			if (anyNode.getFirstChild() == null)
+			{
+				return true;
+			}
+		}
+
+		// empty string
+		if (object instanceof String)
+		{
+			String text = (String) object;
+			if (text.trim().length() == 0)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Load service data to the function data
+	 * 
+	 * @param function
+	 *            - the function
+	 * @param functionData
+	 *            - the function data
+	 * @param serviceData
+	 *            - the service data in BF type
+	 * @param conversionRules
+	 *            - the conversion rule to convert between user format and Equation format
+	 * 
+	 * @throws EQException
+	 */
+	public static void loadServiceData(Function function, FunctionData functionData, Object serviceData,
+					ConversionRules conversionRules) throws EQException
+	{
+		// Retrieve the class name
+		String className = serviceData.getClass().getSimpleName();
+
+		// Retrieve the XSD name of the function
+		String xsdName = "";
+		if (conversionRules.isGenerics())
+		{
+			if (conversionRules.isRequest())
+			{
+				xsdName = conversionRules.getXSD(XSDStructure.ID_REQUEST).rtvRuntimeWebServiceName();
+			}
+			else
+			{
+				xsdName = conversionRules.getXSD(XSDStructure.ID_RESPONSE).rtvRuntimeWebServiceName();
+			}
+		}
+		else
+		{
+			xsdName = FunctionBankFusion.getServiceMicroflowName(function);
+		}
+
+		// This does not corresponds with the function, then bypass processing
+		if (!className.endsWith(xsdName))
+		{
+			throw new EQException("Secondary service extension data does not match the secondary service");
+		}
+
+		// Function bankfusion instance
+		FunctionBankFusion fb = new FunctionBankFusion();
+
+		// Load to function data
+		fb.loadToFunctionData(function, functionData, serviceData, false, conversionRules);
+	}
+
+	/**
+	 * Update the user extension (if needed)
+	 * 
+	 * @param screenSet
+	 *            - the screen set
+	 * @param serviceRqHeader
+	 *            - the request header
+	 * @param serviceRsHeader
+	 *            - the response header
+	 * @param conversionRules
+	 *            - the conversion rule to convert between user format and Equation format
+	 */
+	public static void outputExtensionData(ScreenSet screenSet, ServiceRqHeader serviceRqHeader, ServiceRsHeader serviceRsHeader,
+					ConversionRules conversionRules)
+	{
+		boolean userExtensionDataExist = false;
+		boolean misysExtensionDataExist = false;
+		ExtensionDataRs userExtensionDataRs = new ExtensionDataRs();
+		ExtensionDataRs misysExtensionDataRs = new ExtensionDataRs();
+
+		// set the any type data
+		FunctionData functionData = screenSet.getFunctionData();
+		userExtensionDataRs.setUserExtension(functionData.getOutputExtensionData().getUserExtensionData());
+		misysExtensionDataRs.setUserExtension(functionData.getOutputExtensionData().getMisysExtensionData());
+		userExtensionDataExist = userExtensionDataRs.getUserExtension() != null;
+		misysExtensionDataExist = misysExtensionDataRs.getUserExtension() != null;
+
+		// are there any link services?
+		if (screenSet.isLinkService())
+		{
+			Function secondaryFunction = screenSet.getServiceLinkage().getSecondaryFunctions()[0];
+			EquationStandardSession session = screenSet.getFhd().getEquationUser().getSession();
+
+			ConversionRules conversionRulesForLinkedService = FunctionRuntimeToolbox.getConversionRulesForLinkService(
+							conversionRules, secondaryFunction, null);
+			conversionRulesForLinkedService.cvtToResponse();
+			conversionRulesForLinkedService.cvtToUserFormat();
+
+			Object secondaryServiceData = generateBFDataFromFunctionData(session, secondaryFunction, functionData,
+							conversionRulesForLinkedService);
+
+			userExtensionDataRs.setSecondaryServiceExtension(secondaryServiceData);
+			misysExtensionDataRs.setSecondaryServiceExtension(secondaryServiceData);
+
+			userExtensionDataExist = true;
+			misysExtensionDataExist = true;
+
+			// copy all error messages back to the conversion rule
+			conversionRules.copyMessages(conversionRulesForLinkedService);
+
+			// xsd version
+			userExtensionDataRs.setVersion(secondaryFunction.getXsdVersion());
+			misysExtensionDataRs.setVersion(secondaryFunction.getXsdVersion());
+		}
+
+		// set the header
+		if (userExtensionDataExist)
+		{
+			serviceRsHeader.setUserExtensionData(userExtensionDataRs);
+		}
+		if (misysExtensionDataExist)
+		{
+			serviceRsHeader.setMisysExtensionData(misysExtensionDataRs);
+		}
+	}
+	/**
+	 * Update the user extension (if needed)
+	 * 
+	 * @param screenSet
+	 *            - the screen set
+	 * @param serviceRqHeader
+	 *            - the request header
+	 * @param serviceRsHeader
+	 *            - the response header
+	 * @param secondaryClass
+	 *            - preloaded linked service class
+	 * @param conversionRulesForLinkedService
+	 *            - the conversion rule to convert between user format and Equation format
+	 */
+	public static void outputExtensionData(ScreenSet screenSet, ServiceRqHeader serviceRqHeader, ServiceRsHeader serviceRsHeader,
+					Object secondaryClass, ConversionRules conversionRulesForLinkedService)
+	{
+		boolean userExtensionDataExist = false;
+		boolean misysExtensionDataExist = false;
+		ExtensionDataRs userExtensionDataRs = new ExtensionDataRs();
+		ExtensionDataRs misysExtensionDataRs = new ExtensionDataRs();
+
+		// set the any type data
+		FunctionData functionData = screenSet.getFunctionData();
+		userExtensionDataRs.setUserExtension(functionData.getOutputExtensionData().getUserExtensionData());
+		misysExtensionDataRs.setUserExtension(functionData.getOutputExtensionData().getMisysExtensionData());
+		userExtensionDataExist = userExtensionDataRs.getUserExtension() != null;
+		misysExtensionDataExist = misysExtensionDataRs.getUserExtension() != null;
+
+		// are there any link services?
+		if (screenSet.isLinkService())
+		{
+			Function secondaryFunction = screenSet.getServiceLinkage().getSecondaryFunctions()[0];
+			EquationStandardSession session = screenSet.getFhd().getEquationUser().getSession();
+			Object secondaryServiceData = null;
+
+			if (secondaryClass != null)
+			{
+				secondaryServiceData = generateBFDataFromFunctionData(session, secondaryFunction, functionData, secondaryClass,
+								conversionRulesForLinkedService);
+			}
+			else
+			{
+				secondaryServiceData = generateBFDataFromFunctionData(session, secondaryFunction, functionData,
+								conversionRulesForLinkedService);
+			}
+			userExtensionDataRs.setSecondaryServiceExtension(secondaryServiceData);
+			misysExtensionDataRs.setSecondaryServiceExtension(secondaryServiceData);
+
+			userExtensionDataExist = true;
+			misysExtensionDataExist = true;
+
+			// xsd version
+			userExtensionDataRs.setVersion(secondaryFunction.getXsdVersion());
+			misysExtensionDataRs.setVersion(secondaryFunction.getXsdVersion());
+		}
+
+		// set the header
+		if (userExtensionDataExist)
+		{
+			serviceRsHeader.setUserExtensionData(userExtensionDataRs);
+		}
+		if (misysExtensionDataExist)
+		{
+			serviceRsHeader.setMisysExtensionData(misysExtensionDataRs);
+		}
+	}
+
+	/**
+	 * Update the user extension for a link service
+	 * 
+	 * @param session
+	 *            - the Equation standard session
+	 * @param function
+	 *            - the Function associated with the user extension data
+	 * @param functionData
+	 *            - the function data
+	 * @param conversionRules
+	 *            - the conversion rule to convert between user format and Equation format
+	 */
+	public static Object generateBFDataFromFunctionData(EquationStandardSession session, Function function,
+					FunctionData functionData, ConversionRules conversionRules)
+	{
+		try
+		{
+			// Create the BF complex type
+			FunctionBankFusion fb = new FunctionBankFusion();
+			Object bf_FunctionData = fb.getBankFusionDataType(session, function, conversionRules);
+			fb.getBankFusionDataType(function, functionData, bf_FunctionData, false, conversionRules);
+			return bf_FunctionData;
+		}
+		catch (EQException e)
+		{
+			LOG.warn(e);
+			return null;
+		}
+	}
+	/**
+	 * Update the user extension for a link service
+	 * 
+	 * @param session
+	 *            - the Equation standard session
+	 * @param function
+	 *            - the Function associated with the user extension data
+	 * @param functionData
+	 *            - the function data
+	 * @param secondaryClass
+	 *            - preloaded complex type for the linked service
+	 * @param conversionRules
+	 *            - the conversion rule to convert between user format and Equation format
+	 */
+	public static Object generateBFDataFromFunctionData(EquationStandardSession session, Function function,
+					FunctionData functionData, Object secondaryClass, ConversionRules conversionRules)
+	{
+		// Create the BF complex type
+		FunctionBankFusion fb = new FunctionBankFusion();
+		Object bf_FunctionData = secondaryClass;
+		fb.getBankFusionDataType(function, functionData, bf_FunctionData, false, conversionRules);
+		return bf_FunctionData;
+	}
+
+	/**
+	 * Retrieve the linkage id
+	 * 
+	 * @param originalOptionId
+	 *            - the original id specified
+	 * @param userExtensionDataRq
+	 *            - the user extension data
+	 * @param misysExtensionDataRq
+	 *            - the Misys extension data
+	 * 
+	 * @return the linkage option id if specified in the user extension data, otherwise the original option id
+	 */
+	public static String getOptionIdFromExtensionData(String originalOptionId, ExtensionDataRq userExtensionDataRq,
+					ExtensionDataRq misysExtensionDataRq)
+	{
+		String linkageId = null;
+
+		// user extension data
+		if (linkageId == null && userExtensionDataRq != null)
+		{
+			linkageId = getOptionIdFromExtensionData(userExtensionDataRq);
+		}
+
+		// Misys extension data
+		if (linkageId == null && misysExtensionDataRq != null)
+		{
+			linkageId = getOptionIdFromExtensionData(misysExtensionDataRq);
+		}
+
+		if (linkageId == null)
+		{
+			return originalOptionId;
+		}
+		else
+		{
+			return linkageId.trim();
+		}
+	}
+
+	/**
+	 * Retrieve the linkage id from the extension data
+	 * 
+	 * @param extensionDataRq
+	 *            - the extension data
+	 * 
+	 * @return the linkaged option id
+	 */
+	public static String getOptionIdFromExtensionData(ExtensionDataRq extensionDataRq)
+	{
+		// is it in the extension data header?
+		String linkageId = extensionDataRq.getServiceLinkageId();
+
+		// is it in the extension data?
+		if (linkageId == null || linkageId.trim().length() == 0)
+		{
+			linkageId = null;
+			Object extensionData = extensionDataRq.getUserExtension();
+
+			// No extension data
+			if (extensionData == null || extensionData instanceof String)
+			{
+				// do nothing
+			}
+
+			// Any node type?
+			else if (extensionData instanceof AnyNode)
+			{
+				AnyNode node = (AnyNode) extensionData;
+				node = node.getFirstChild();
+				while (node != null)
+				{
+					if (node.getLocalName().equals(LINKAGE_ID_FIELDNAME))
+					{
+						linkageId = node.getStringValue();
+						break;
+					}
+					node = node.getNextSibling();
+				}
+			}
+
+			// Assume actual class
+			else
+			{
+				FunctionBankFusion fb = new FunctionBankFusion();
+				linkageId = fb.getFieldValue(extensionData, LINKAGE_ID_METHDOD);
+			}
+
+			// no linkage id?
+			if (linkageId == null || linkageId.trim().length() == 0)
+			{
+				linkageId = null;
+			}
+		}
+
+		// return the linkage id
+		return linkageId;
+	}
+
+	/**
+	 * Setup return parameter with messages
+	 * 
+	 * @param functionMessages
+	 *            - the messages
+	 * @param screenSetHandler
+	 *            - the screen set handler
+	 * 
+	 * @return the output parameter
+	 */
+	public static ServiceRsHeader setupReturnMessaage(FunctionMessages functionMessages, ScreenSetHandler screenSetHandler)
+	{
+		FunctionBankFusion functionBankFusion = new FunctionBankFusion();
+
+		ServiceRsHeader outHeader = new ServiceRsHeader();
+		functionBankFusion.initialiseServiceRsHeader(outHeader);
+		RsHeader rsHeader = outHeader.getRsHeader();
+
+		rsHeader.getStatus().setEqMessages(
+						functionBankFusion.rtvMessagesAsMessageArray(functionMessages.getMessages(), screenSetHandler));
+		/**
+		 * This specifies the status of the transaction: 'S'-Success 'E'-Error 'I'-Success with Info Messages 'W'-Warning
+		 * (non-overridden warnings exist) 'F'-Failure
+		 */
+		rsHeader.getStatus().setOverallStatus(FunctionRuntimeToolbox.cvtOverallStatus(functionMessages.getMsgSev()));
+
+		// Print list of messages
+		LOG.error("Messages returned:");
+		LOG.error(functionMessages.toString());
+
+		return outHeader;
+	}
+
+}

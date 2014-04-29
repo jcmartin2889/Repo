@@ -1,0 +1,239 @@
+/**
+ * 
+ */
+package com.misys.equation.function.beans;
+
+import com.misys.equation.common.dao.beans.HBXRecordDataModel;
+import com.misys.equation.function.tools.TranslationToolbox;
+
+/**
+ * This class is used for multi-language support and contains text for a language. Only use this class's getter methods as other
+ * functionality is supplied by the TranslationToolbox class.
+ * <p>
+ * Text is segregated into different types: descriptions, labels, masks, regular expressions, and valid values. TextBeans are stored
+ * in Languages and Languages are stored in Translations. Translations can have text related to multiple text owners as service and
+ * layout text is stored in the same translation.
+ * <p>
+ * 
+ * @see Language - for a description of Language attributes
+ * @see Translation - for a description of Translation attributes
+ * @see TranslationToolbox - for multi-language processes
+ */
+public class TextBean
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: TextBean.java 13258 2012-04-20 09:15:02Z alex.lim $";
+
+	public static final String TYPE_LABEL = HBXRecordDataModel.HBX_LABEL_PREFIX;
+	public static final String TYPE_DESCRIPTION = HBXRecordDataModel.HBX_DESCRIPTION_PREFIX;
+	public static final String TYPE_MASK = HBXRecordDataModel.HBX_MASK_PREFIX;
+	public static final String TYPE_REGULAR_EXPRESSION = HBXRecordDataModel.HBX_REGEXP_PREFIX;
+	public static final String TYPE_VALID_VALUE = HBXRecordDataModel.HBX_VALIDVALUES_PREFIX;
+
+	public static final String OWNER_MISYS = "misysText.eqt";
+	public static final String OWNER_BANK = "bankText.eqt";
+
+	private String owner;
+	private String language;
+	private String type;
+	private String key;
+	private String text;
+	private boolean translationRequired;
+	private boolean logicallyDeleted;
+	/**
+	 * This method is required for serialisation. Don't call it, use TranslationToolbox.createReferenceText(Translation translation,
+	 * String baseLanguage, String owner, String type, String textString) instead.
+	 */
+	public TextBean()
+	{
+		owner = "";
+		language = "";
+		type = "";
+		key = "";
+		text = "";
+		translationRequired = false;
+		logicallyDeleted = false;
+	}
+	/**
+	 * This method is required for serialisation. Don't call it, use TranslationToolbox.createReferenceText(Translation translation,
+	 * String baseLanguage, String owner, String type, String textString) instead.
+	 * 
+	 * @param language
+	 * @param owner
+	 * @param type
+	 * @param key
+	 * @param text
+	 */
+	public TextBean(String language, String owner, String type, String key, String text)
+	{
+
+		this.language = language;
+		this.owner = owner;
+		this.type = type;
+		this.key = key;
+		this.text = text;
+		translationRequired = false;
+		logicallyDeleted = false;
+	}
+	/**
+	 * This method is required for serialisation. Don't call it, use TranslationToolbox.createReferenceText(Translation translation,
+	 * String baseLanguage, String owner, String type, String textString) instead.
+	 * 
+	 * @param language
+	 * @param owner
+	 * @param type
+	 * @param key
+	 * @param text
+	 * @param logicallyDeleted
+	 */
+	public TextBean(String language, String owner, String type, String key, String text, boolean logicallyDeleted)
+	{
+
+		this.language = language;
+		this.owner = owner;
+		this.type = type;
+		this.key = key;
+		this.text = text;
+		translationRequired = false;
+		this.logicallyDeleted = logicallyDeleted;
+	}
+	/**
+	 * This method is required for serialisation. Don't call it, use TranslationToolbox.createReferenceText(Translation translation,
+	 * String baseLanguage, String owner, String type, String textString) instead.
+	 * 
+	 * @param textBean
+	 */
+	public TextBean(TextBean textBean)
+	{
+		this.language = textBean.getLanguage();
+		this.owner = textBean.getOwner();
+		this.type = textBean.getType();
+		this.key = textBean.getKey();
+		this.text = textBean.getText();
+		this.translationRequired = textBean.isTranslationRequired();
+		this.logicallyDeleted = textBean.isLogicallyDeleted();
+	}
+	/**
+	 * @param owner
+	 *            the owner to set
+	 */
+	public void setOwner(String owner)
+	{
+		this.owner = owner;
+	}
+	/**
+	 * @return the owner
+	 */
+	public String getOwner()
+	{
+		return owner;
+	}
+	/**
+	 * @param language
+	 *            the language to set
+	 */
+	public void setLanguage(String language)
+	{
+		this.language = language;
+	}
+	/**
+	 * @return the language
+	 */
+	public String getLanguage()
+	{
+		return language;
+	}
+	/**
+	 * @param type
+	 *            the type to set
+	 */
+	public void setType(String type)
+	{
+		this.type = type;
+	}
+	/**
+	 * @return the type
+	 */
+	public String getType()
+	{
+		return type;
+	}
+	/**
+	 * @param key
+	 *            the key to set
+	 */
+	public void setKey(String key)
+	{
+		this.key = key;
+	}
+	/**
+	 * @return the key
+	 */
+	public String getKey()
+	{
+		return key;
+	}
+	/**
+	 * @param text
+	 *            the text to set
+	 */
+	public void setText(String text)
+	{
+		this.text = text;
+	}
+	/**
+	 * @return the text
+	 */
+	public String getText()
+	{
+		return text;
+	}
+	/**
+	 * @param translationRequired
+	 *            the translationRequired to set
+	 */
+	public void setTranslationRequired(boolean translationRequired)
+	{
+		this.translationRequired = translationRequired;
+	}
+	/**
+	 * @return the translationRequired
+	 */
+	public boolean isTranslationRequired()
+	{
+		return translationRequired;
+	}
+	/**
+	 * @param logicallyDeleted
+	 *            the logicallyDeleted to set
+	 */
+	public void setLogicallyDeleted(boolean logicallyDeleted)
+	{
+		this.logicallyDeleted = logicallyDeleted;
+	}
+	/**
+	 * @return the logicallyDeleted
+	 */
+	public boolean isLogicallyDeleted()
+	{
+		return logicallyDeleted;
+	}
+	/**
+	 * @return the complete key for text instance
+	 */
+	public String rtvCompleteKey()
+	{
+		return getLanguage() + ":" + getType() + ":" + getKey();
+	}
+	/**
+	 * Compare a given TextBean with this object. If mapping rtvCompleteKey() of this object is greater than the received object,
+	 * then this object is greater than the other.
+	 * 
+	 * @return The result is a negative integer if this String object precedes the argument string. The result is a positive integer
+	 *         if this String object follows the argument string. The result is zero if the strings are equal;
+	 */
+	public int compareTo(TextBean o)
+	{
+		return this.rtvCompleteKey().compareTo(o.rtvCompleteKey());
+	}
+}

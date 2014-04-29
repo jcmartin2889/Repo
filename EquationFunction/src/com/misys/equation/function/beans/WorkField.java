@@ -1,0 +1,412 @@
+package com.misys.equation.function.beans;
+
+import com.misys.equation.function.beans.valid.FunctionProblemLocation;
+import com.misys.equation.function.beans.valid.IValidation;
+import com.misys.equation.function.beans.valid.MessageContainer;
+import com.misys.equation.problems.ProblemLocation;
+
+/**
+ * Extends the <code>Field</code> class to provide attributes relevant to work fields in a service.
+ * <p>
+ * Note that this class is extended by the <code>InputField</code> class to provide further attributes required for input fields.
+ * <p>
+ * If a field is a Work Field as opposed to an InputField, then the differences include:
+ * <ul>
+ * <li>A description is not required</li>
+ * <li>Only show some base and initialisation attributes on the Settings page</li>
+ * <li>Never has subfields in mapping trees</li>
+ * <li>Won't be included when generating the journal file</li>
+ * </ul>
+ * 
+ * @see Field InputField
+ */
+public class WorkField extends Field implements IValidation, Comparable<WorkField>
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: WorkField.java 12396 2011-12-12 01:55:51Z williae1 $";
+
+	// List of initial value types
+	/** Constant value */
+	public static final int INIT_VALUE_CONSTANT = 0;
+	/** Major processing characteristic */
+	public static final int INIT_VALUE_MAJOR_PROC = 1;
+	/** System variable */
+	public static final int INIT_VALUE_SYS_VAR = 2;
+	/** Control System Tailoring value */
+	public static final int INIT_VALUE_CST = 3;
+	/** DAJOBCTLE data area value */
+	public static final int INIT_VALUE_DAJOB = 4;
+	/** DAWSID/DAWSID2 data area value */
+	public static final int INIT_VALUE_CONTEXT = 5;
+	/** Resource text reference (HBPF code) */
+	public static final int INIT_VALUE_REFERENCE = 6;
+	/** Enhancement... */
+	public static final int INIT_VALUE_ENH = 7;
+	/** DASYSCTL data area value... */
+	public static final int INIT_VALUE_DASYS = 8;
+
+	public static final String VALUE_CONSTANT_TEXT = "4";
+	public static final String VALUE_CONSTANT_SCRIPT = "2";
+	public static final String VALUE_CONSTANT_CODE = "3";
+
+	/**
+	 * Initial value type - This identifies whether the initial value is:<br>
+	 * <ul>
+	 * <li>0 = Constant</li>
+	 * <li>1 = System option</li>
+	 * <li>2 = System variable</li>
+	 * <li>3 = Control System Tailoring value</li>
+	 * <li>4 = DAJOBCTLE data area value</li>
+	 * <li>5 = DAWSID/DAWSID2 data area value</li>
+	 * <li>6 = Resource text reference</li>
+	 * <li>7 = Enhancement installed check</li>
+	 * </ul>
+	 */
+	private int initialValueType;
+
+	/** Initial value */
+	private String initialValue;
+
+	/** Default value - if the field is blank during validation, then it will default to this */
+	private String defaultValue;
+
+	protected String initialValueConstantType;
+	protected String defaultValueType;
+	private String initialValueAs;
+	private String defaultValueAs;
+
+	public static final String VALUE_INPUT = "INP";
+	public static final String VALUE_DATABASE = "DB";
+
+	/**
+	 * Initialisation script for fields in non-Primary field sets. This script will be executed when the InputFieldSet is processing
+	 * and allows a field to be initialised based on a field in the Primary InputFieldSet.
+	 */
+	private String fieldInitialisationScript;
+
+	/**
+	 * WorkField default constructor
+	 */
+	public WorkField()
+	{
+		super();
+		initialValueType = INIT_VALUE_CONSTANT;
+		initialValue = "";
+		defaultValue = "";
+		fieldInitialisationScript = "";
+		initialValueConstantType = VALUE_CONSTANT_TEXT;
+		defaultValueType = VALUE_CONSTANT_TEXT;
+		initialValueAs = VALUE_INPUT;
+		defaultValueAs = VALUE_DATABASE;
+	}
+
+	/**
+	 * WorkField constructor
+	 * 
+	 * @param id
+	 *            Bean Id
+	 * @param label
+	 *            Label text
+	 * @param description
+	 *            Description text
+	 */
+	public WorkField(String id, String label, String description)
+	{
+		super(id, label, description);
+		initialValueType = INIT_VALUE_CONSTANT;
+		initialValue = "";
+		defaultValue = "";
+		fieldInitialisationScript = "";
+		initialValueConstantType = VALUE_CONSTANT_TEXT;
+		defaultValueType = VALUE_CONSTANT_TEXT;
+		initialValueAs = VALUE_INPUT;
+		defaultValueAs = VALUE_DATABASE;
+	}
+
+	/**
+	 * WorkField copy constructor
+	 * 
+	 * @param field
+	 *            the WorkField to copy from
+	 */
+	public WorkField(WorkField field)
+	{
+		super(field);
+		initialValueType = field.getInitialValueType();
+		initialValue = field.getInitialValue();
+		defaultValue = field.getDefaultValue();
+		fieldInitialisationScript = field.getFieldInitialisationScript();
+		initialValueConstantType = field.getInitialValueConstantType();
+		defaultValueType = field.getDefaultValueType();
+		initialValueAs = VALUE_INPUT;
+		defaultValueAs = VALUE_DATABASE;
+	}
+
+	/**
+	 * Return the initial value of the field
+	 * 
+	 * @return the initial value of the field
+	 */
+	public String getInitialValue()
+	{
+		return initialValue;
+	}
+
+	/**
+	 * Set the initial value of the field
+	 * 
+	 * @param initialValue
+	 *            - initial value of the field
+	 */
+	public void setInitialValue(String initialValue)
+	{
+		this.initialValue = initialValue;
+	}
+
+	/**
+	 * Return the initial value type
+	 * 
+	 * @return the initial value type
+	 */
+	public int getInitialValueType()
+	{
+		return initialValueType;
+	}
+
+	/**
+	 * Set the initial value type
+	 * 
+	 * @param initialValueType
+	 *            - the initial value type
+	 */
+	public void setInitialValueType(int initialValueType)
+	{
+		this.initialValueType = initialValueType;
+	}
+
+	/**
+	 * Return the default value of the field
+	 * 
+	 * @return the default value of the field
+	 */
+	public String getDefaultValue()
+	{
+		return defaultValue;
+	}
+
+	/**
+	 * Set the default value of the field
+	 * 
+	 * @param defaultValue
+	 *            - the default value of the field
+	 */
+	public void setDefaultValue(String defaultValue)
+	{
+		this.defaultValue = defaultValue;
+	}
+
+	/**
+	 * Sets the Field initialisation script
+	 * 
+	 * @param fieldInitialisationScript
+	 *            the fieldSetInitialisationScript to set
+	 */
+	public void setFieldInitialisationScript(String fieldInitialisationScript)
+	{
+		this.fieldInitialisationScript = fieldInitialisationScript;
+	}
+
+	/**
+	 * @return the Field Initialisation Script
+	 */
+	public String getFieldInitialisationScript()
+	{
+		return fieldInitialisationScript;
+	}
+
+	/**
+	 * Return the initial value constant type
+	 * 
+	 * @return the initial value constant type
+	 */
+	public String getInitialValueConstantType()
+	{
+		return initialValueConstantType;
+	}
+
+	/**
+	 * Set the initial value constant type
+	 * 
+	 * @param initialValueConstantType
+	 *            - the initial value constant type
+	 */
+	public void setInitialValueConstantType(String initialValueConstantType)
+	{
+		this.initialValueConstantType = initialValueConstantType;
+	}
+
+	/**
+	 * Return the default value type
+	 * 
+	 * @return the default value type
+	 */
+	public String getDefaultValueType()
+	{
+		return defaultValueType;
+	}
+
+	/**
+	 * Set the default value type
+	 * 
+	 * @param defaultValueType
+	 *            - the default value type
+	 */
+	public void setDefaultValueType(String defaultValueType)
+	{
+		this.defaultValueType = defaultValueType;
+	}
+
+	/**
+	 * Determine if the initial value is a database value
+	 * 
+	 * @return true if initial value is a database value
+	 */
+	public String getInitialValueAs()
+	{
+		return initialValueAs;
+	}
+
+	/**
+	 * Set if the initial value is a database value
+	 * 
+	 * @param initialValueAs
+	 *            - true if the initial value is a database value
+	 */
+	public void setInitialValueAs(String initialValueAs)
+	{
+		this.initialValueAs = initialValueAs;
+	}
+
+	/**
+	 * Determine if the default value is a database value
+	 * 
+	 * @return true if default value is a database value
+	 */
+	public String getDefaultValueAs()
+	{
+		return defaultValueAs;
+	}
+
+	/**
+	 * Set if the default value is a database value
+	 * 
+	 * @param defaultValueAs
+	 *            - true if the default value is a database value
+	 */
+	public void setDefaultValueAs(String defaultValueAs)
+	{
+		this.defaultValueAs = defaultValueAs;
+	}
+
+	/**
+	 * Validate the contents of the bean.
+	 * 
+	 * @param messageContainer
+	 *            a <code>MessageContainer</code> to add the messages to
+	 * @param subSet
+	 *            a String specifying a validation subset (none applicable to this class), or null for full validation
+	 * @param includeChildren
+	 *            Whether to validate child objects as well
+	 * 
+	 * @return boolean (not currently used)
+	 */
+	@Override
+	public boolean validateBean(MessageContainer messageContainer, String subSet, boolean includeChildren)
+	{
+		// Call the Field base class to perform some validation
+		super.validateBean(messageContainer, subSet, includeChildren);
+
+		ProblemLocation problemLocation = new FunctionProblemLocation(this);
+
+		// Check Id is valid:
+		if (this instanceof InputField)
+		{
+			ValidationHelper.validateInputFieldIdSyntax(getId(), messageContainer, problemLocation);
+		}
+		else
+		{
+			ValidationHelper.validateWorkFieldIdSyntax(getId(), messageContainer, problemLocation);
+		}
+
+		// Remove workfield label validation. Workfield is now same as inputField.
+		// // Check label is non-blank
+		// if (getLabel().trim().length() == 0 || getLabel().trim().equals(DEFAULT_TEXT_VALUE))
+		// {
+		// messageContainer.addErrorMessageId("Language.FieldLabelMustBeEntered", getId(), problemLocation);
+		// }
+
+		if (fieldInitialisationScript.trim().length() > 0)
+		{
+			if (isFieldInitialisationELExpressionAllowed())
+			{
+				ValidationHelper.validateFieldsetInitialisationELExpression(fieldInitialisationScript, this, messageContainer,
+								problemLocation);
+			}
+			else
+			{
+				messageContainer.addErrorMessageId("Language.ELFieldInitialisationScriptForNonPrimaryInputField", getId(),
+								problemLocation);
+			}
+		}
+
+		// Validate enabled Initialisation and Default expression:
+		if (WorkField.VALUE_CONSTANT_SCRIPT.equals(initialValueConstantType))
+		{
+			ValidationHelper.validateFieldsetInitialisationELExpression(getInitialValue(), this, messageContainer, problemLocation);
+		}
+
+		if (WorkField.VALUE_CONSTANT_SCRIPT.equals(defaultValueType))
+		{
+			ValidationHelper.validateFieldsetInitialisationELExpression(getDefaultValue(), this, messageContainer, problemLocation);
+		}
+
+		if (includeChildren)
+		{
+			// Currently no children
+		}
+
+		return !messageContainer.hasErrorMessages();
+	}
+
+	/**
+	 * Determine whether a Field Initialisation Expression is allowed for this field
+	 * <p>
+	 * Such an expression is allowed only for an InputField (not a WorkField) that is NOT in the Primary InputFieldSet
+	 * 
+	 * @return whether a Field Initialisation Expression is allowed for this field
+	 */
+	private boolean isFieldInitialisationELExpressionAllowed()
+	{
+		boolean result = false;
+		if (this instanceof InputField)
+		{
+			InputFieldSet inputFieldSet = (InputFieldSet) this.rtvParentFieldSet();
+			if (!inputFieldSet.isPrimary())
+			{
+				result = true;
+			}
+		}
+		return result;
+	}
+	/**
+	 * Compare a given WorkField with this object. If mapping toString() of this object is greater than the received object, then
+	 * this object is greater than the other.
+	 * 
+	 * @return The result is a negative integer if this String object precedes the argument string. The result is a positive integer
+	 *         if this String object follows the argument string. The result is zero if the strings are equal;
+	 */
+	public int compareTo(WorkField o)
+	{
+		return this.toString().compareTo(o.toString());
+	}
+}

@@ -1,0 +1,1167 @@
+package com.misys.equation.function.beans;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.misys.equation.common.access.EquationUser;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EqDataType;
+import com.misys.equation.function.beans.valid.FunctionProblemLocation;
+import com.misys.equation.function.beans.valid.IValidation;
+import com.misys.equation.function.beans.valid.MessageContainer;
+import com.misys.equation.function.language.LanguageResources;
+import com.misys.equation.function.runtime.FunctionBankFusion;
+import com.misys.equation.function.runtime.FunctionMessages;
+import com.misys.equation.function.tools.FunctionRuntimeToolbox;
+import com.misys.equation.function.tools.XSDToolbox;
+import com.misys.equation.problems.ProblemLocation;
+
+public class InputField extends WorkField implements IValidation
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: InputField.java 17517 2013-11-07 14:04:43Z williae1 $";
+	/** Number of characters allowed in the maximum length/value field for alpha data types */
+	private static int MAXIMUM_LENGTH_LIMIT = 5;
+
+	/** Number of characters allowed in the minimum length/value field for alpha data types */
+	private static int MINIMUM_LENGTH_LIMIT = 5;
+
+	/**
+	 * Number of characters allowed in the label.
+	 * <p>
+	 * More than 50 characters will result in a failure to deploy the journal file as the label is used for field text
+	 */
+	private static int MAXIMUM_LABEL_LENGTH = 50;
+
+	/** Indicates the field is mandatory */
+	public static final String MANDATORY_YES = "0";
+	/** Indicates the field is not mandatory (default) */
+	public static final String MANDATORY_NO = "1";
+	/** Indicates that there is an EL Script to determine mandatory status */
+	public static final String MANDATORY_SCRIPT = "2";
+	/** Indicates that there is Java exit code to determine mandatory status */
+	public static final String MANDATORY_CODE = "3";
+
+	private String locked;
+	private boolean upperCase;
+	private boolean includeInChecksum;
+
+	/**
+	 * Indicates how the mandatory value is determined:
+	 * <ul>
+	 * <li>null/"0" = Not mandatory</li>
+	 * <li>"1" = Mandatory</li>
+	 * <li>"2" = EL Script determines Mandatory status</li>
+	 * <li>"3" = Java User exit code determines Mandatory status</li>
+	 */
+	private String mandatory;
+	private String mandatoryExpression;
+	private String maxLength;
+	private String minLength;
+	private List<ValidationExpression> validationExpressions = new ArrayList<ValidationExpression>();
+
+	/** Colon delimited list of valid values for the field */
+	private String validValues;
+
+	/** Indicates whether the regExp contains literal text, or is a code used to retrieve the regular expression */
+	private String regExpType;
+	/** A regular expression that will be used to validate the field value */
+	private String regExp;
+
+	private String validValuesTextOwner;
+
+	private String regExpTextOwner;
+
+	/**
+	 * Indicate the message and the message severity when the field value does not match the regular expression.<br>
+	 * 
+	 * If regExpMsg is blank, then a default error message will be issued.<br>
+	 * If regExpSev is -1, then regExpMsg must be valid message id in KSMMSGF.<br>
+	 * If regExpSev is not -1, then this is the message severity of the message (regExpMsg)<br>
+	 **/
+	private String regExpMsg;
+	private int regExpSev;
+
+	/** List of PV modules attached to the field */
+	private final List<PVFieldSet> pvFieldSets = new ArrayList<PVFieldSet>();
+	private final List<String> pvFieldSetKeys = new ArrayList<String>();
+
+	// Field context type - this determine the content of the field
+	public static final int FLDCTXTYP_ANY = 0; // any
+	public static final int FLDCTXTYP_BRNM = 1; // branch mnemonic
+	public static final int FLDCTXTYP_BBN = 2; // branch number
+	public static final int FLDCTXTYP_ACN = 3; // account branch number
+	private int fieldContextType;
+
+	/** Indicates whether the validVvalues contains literal text, or is a code used to retrieve the validValues */
+	private String validValuesType;
+
+	/** Whether this field should be excluded from the BankFusion Complex Type */
+	private boolean excludeFromType;
+
+	/** Use the bare id for the BankFusion Complex Type, instead of the combined id and label */
+	private boolean shortTypeName;
+
+	/** Extended attribute */
+	private int extendedAttribute;
+
+	/** Extended attribute - for dates, input in 8 digit format */
+	public static final int EXT_ATTRIB_DATE_INPUT8D = 1;
+
+	/**
+	 * Currency linked field. If this is non-blank, then this field is assumed to be an amount field and the created XSD will have
+	 * Decimal(18,3)
+	 */
+	private String ccyLinkedField;
+
+	/**
+	 * Construct a default unnamed input field
+	 */
+	public InputField()
+	{
+		super();
+		commonInitialization();
+	}
+
+	/**
+	 * Construct a default unnamed input field
+	 */
+	public InputField(String owner)
+	{
+		super();
+
+		commonInitialization();
+	}
+
+	/**
+	 * Construct a default named input field
+	 * 
+	 * @param id
+	 *            - the field id
+	 * @param label
+	 *            - the field label
+	 * @param description
+	 *            - the fiel description
+	 */
+	public InputField(String id, String label, String description)
+	{
+		super(id, label, description);
+		commonInitialization();
+	}
+
+	/**
+	 * Common field initialization called by non-copy Constructors.
+	 * <p>
+	 * When new member variables are added, initialisation code must be added to both this method and the copy constructor.
+	 */
+	private void commonInitialization()
+	{
+		mandatory = MANDATORY_NO;
+		mandatoryExpression = "";
+		maxLength = "";
+		minLength = "";
+		validValuesType = TEXT_VALUE_TEXT;
+		validValues = "";
+		regExpType = TEXT_VALUE_TEXT;
+		regExp = "";
+		locked = "";
+		upperCase = false;
+		includeInChecksum = true;
+		fieldContextType = FLDCTXTYP_ANY;
+		regExpMsg = "";
+		regExpSev = FunctionMessages.MSG_NONE;
+		shortTypeName = false;
+		excludeFromType = false;
+		extendedAttribute = 0;
+		validValuesTextOwner = "";
+		regExpTextOwner = "";
+		ccyLinkedField = "";
+	}
+
+	/**
+	 * Construct an unnamed field based on the property of an existing field
+	 * 
+	 * @param field
+	 *            - the input field to copy from
+	 */
+	public InputField(InputField field)
+	{
+		super(field);
+		mandatory = field.getMandatory();
+		mandatoryExpression = field.getMandatoryExpression();
+		maxLength = field.getMaxLength();
+		minLength = field.getMinLength();
+		validValuesType = field.getValidValuesType();
+		validValues = field.getValidValues();
+		validationExpressions.addAll(field.validationExpressions);
+		regExpType = field.getRegExpType();
+		regExp = field.getRegExp();
+		locked = field.getLocked();
+		upperCase = field.isUpperCase();
+		includeInChecksum = field.isIncludeInChecksum();
+		fieldContextType = field.getFieldContextType();
+		regExpMsg = field.getRegExpMsg();
+		regExpSev = field.getRegExpSev();
+		shortTypeName = field.isShortTypeName();
+		excludeFromType = field.isExcludeFromType();
+		pvFieldSets.addAll(field.pvFieldSets);
+		pvFieldSetKeys.addAll(field.pvFieldSetKeys);
+		extendedAttribute = field.extendedAttribute;
+		validValuesTextOwner = field.getValidValuesTextOwner();
+		regExpTextOwner = field.getRegExpTextOwner();
+		ccyLinkedField = field.getCcyLinkedField();
+	}
+
+	/**
+	 * Determine if the field is in upper case
+	 * 
+	 * @return true if the field is in upper case
+	 */
+	public boolean isUpperCase()
+	{
+		return upperCase;
+	}
+	/**
+	 * Determine if the field is a password
+	 * 
+	 * @return true if the field is a password
+	 */
+	public boolean isPassword()
+	{
+		if (this.rtvParentFieldSet() == null)
+		{
+			return false;
+		}
+		Function function = this.rtvParentFieldSet().getFunction();
+		if (function.getId().equals("CHU")
+						&& (getId().equals("OLDPSSWRD") || getId().equals("NEWPSSWRD") || getId().equals("NEWPSSWRD2")))
+		{
+			return true;
+		}
+		return false;
+	}
+	/**
+	 * Set if the field must be in upper case
+	 * 
+	 * @param upperCase
+	 *            - true if the field must be in upper case
+	 */
+	public void setUpperCase(boolean upperCase)
+	{
+		this.upperCase = upperCase;
+	}
+	/**
+	 * Determine if the field is to be included in checksum calculation
+	 * 
+	 * @return true if the field is to be included in checksum calculation
+	 */
+	public boolean isIncludeInChecksum()
+	{
+		return includeInChecksum;
+	}
+
+	/**
+	 * Set if the field is to be included in checksum calculation
+	 * 
+	 * @param upperCase
+	 *            - true if the field is to be included in checksum calculation
+	 */
+	public void setIncludeInChecksum(boolean includeInChecksum)
+	{
+		this.includeInChecksum = includeInChecksum;
+	}
+
+	/**
+	 * Gets the field mandatory status
+	 * <p>
+	 * 
+	 * @return an <code>String</code> indicating how the mandatory status of the field will be determined at runtime. This will be
+	 *         one of the following constants: MANDATORY_YES, MANDATORY_NO, MANDATORY_SCRIPT or MANDATORY_CODE.
+	 */
+	public String getMandatory()
+	{
+		return mandatory;
+	}
+
+	/**
+	 * Set field mandatory status
+	 * <p>
+	 * 
+	 * @param mandatory
+	 *            an <code>String</code> indicating how the mandatory status is determined. Must be one of the following constants:
+	 *            MANDATORY_YES, MANDATORY_NO, MANDATORY_SCRIPT or MANDATORY_CODE.
+	 */
+	public void setMandatory(String mandatory)
+	{
+		this.mandatory = mandatory;
+	}
+
+	/**
+	 * Return the maximum length of the field
+	 * 
+	 * @return the maximum length of the field
+	 */
+	public String getMaxLength()
+	{
+		return maxLength;
+	}
+
+	/**
+	 * Set the maximum length of the field
+	 * 
+	 * @param maxLength
+	 *            - the maximum length of the field
+	 */
+	public void setMaxLength(String maxLength)
+	{
+		this.maxLength = maxLength;
+	}
+
+	/**
+	 * Get the minimum length of the field
+	 * 
+	 * @return the minimum length of the field
+	 */
+	public String getMinLength()
+	{
+		return minLength;
+	}
+
+	/**
+	 * Set the minimum length of the field
+	 * 
+	 * @param minLength
+	 *            - the minimum length of the field
+	 */
+	public void setMinLength(String minLength)
+	{
+		this.minLength = minLength;
+	}
+
+	/**
+	 * Return the valid values of the field
+	 * 
+	 * @return the valid values of the field
+	 */
+	public String getValidValues()
+	{
+		return validValues;
+	}
+
+	/**
+	 * Set the valid values of the field
+	 * 
+	 * @param validValues
+	 *            - the valid values of the field
+	 */
+	public void setValidValues(String validValues)
+	{
+		this.validValues = validValues;
+	}
+
+	/**
+	 * Return the regular expression of the field
+	 * 
+	 * @return the regular expression of the field
+	 */
+	public String getRegExp()
+	{
+		return regExp;
+	}
+
+	/**
+	 * Set the regular expression of the field
+	 * 
+	 * @param regExp
+	 *            - the regular expression
+	 */
+	public void setRegExp(String regExp)
+	{
+		this.regExp = regExp;
+	}
+
+	public List<PVFieldSet> getPvFieldSets()
+	{
+		return pvFieldSets;
+	}
+	/**
+	 * Determine if this input field has the specified PV.
+	 * 
+	 * @param pvId
+	 * @return
+	 * @throws EQException
+	 */
+	public boolean hasPvFieldSet(String pvId) throws EQException
+	{
+		if (!pvFieldSetKeys.contains(pvId))
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+	public PVFieldSet getPvFieldSet(String key) throws EQException
+	{
+		if (!pvFieldSetKeys.contains(key))
+		{
+			throw (new EQException(LanguageResources.getFormattedString("InputField.PVDoesNotExist", new String[] { key, getId() })));
+		}
+		else
+		{
+			int keyIndex = pvFieldSetKeys.indexOf(key);
+			return pvFieldSets.get(keyIndex);
+		}
+	}
+	public boolean containsPvFieldSet(String key)
+	{
+		return pvFieldSetKeys.contains(key);
+	}
+
+	public void addPvFieldSet(PVFieldSet pVFieldSet) throws EQException
+	{
+		String key = pVFieldSet.getId();
+		if (pvFieldSetKeys.contains(key))
+		{
+			throw (new EQException(LanguageResources.getFormattedString("InputField.PVExists", new String[] { key, getId() })));
+		}
+		else
+		{
+			pvFieldSets.add(pVFieldSet);
+			pvFieldSetKeys.add(key);
+			pVFieldSet.setParentField(this);
+		}
+	}
+
+	public void removePvFieldSet(String key) throws EQException
+	{
+		if (!pvFieldSetKeys.contains(key))
+		{
+			throw (new EQException(LanguageResources.getString("InputField.PVDoesNotExist"))); //$NON-NLS-1$
+		}
+		else
+		{
+			PVFieldSet pvFieldSet = this.getPvFieldSet(key);
+			List<PVField> pvFields = pvFieldSet.getPVFields();
+			Function function = this.rtvParentFieldSet().getFunction();
+
+			// Remove any mappings
+			for (PVField pvField : pvFields)
+			{
+				function.removeUpdateMappings(pvField);
+				function.removeValidateMappings(pvField);
+				function.removeLoadMappings(pvField);
+			}
+			// And remove the module
+			int keyIndex = pvFieldSetKeys.indexOf(key);
+			pvFieldSets.remove(keyIndex);
+			pvFieldSetKeys.remove(keyIndex);
+		}
+	}
+
+	public boolean hasPvFieldSets()
+	{
+		return pvFieldSets.size() > 0;
+	}
+
+	/**
+	 * Modifies the Id of an existing PVFieldSet
+	 * 
+	 * @param oldKey
+	 *            - the old PVFieldSet key
+	 * @param newKey
+	 *            - the new value for the key
+	 * 
+	 * @throws EQException
+	 *             - if the PV does not exist
+	 */
+	public void modifyPvFieldSetId(String oldKey, String newKey) throws EQException
+	{
+		if (!pvFieldSetKeys.contains(oldKey))
+		{
+			throw (new EQException(LanguageResources.getString("InputField.PVDoesNotExist"))); //$NON-NLS-1$
+		}
+		else
+		{
+			int keyIndex = pvFieldSetKeys.indexOf(oldKey);
+			pvFieldSetKeys.set(keyIndex, newKey);
+			pvFieldSets.get(keyIndex).setId(newKey);
+		}
+	}
+	/**
+	 * Move the validation module one position up
+	 * 
+	 * @param pVFieldSet
+	 *            - the validation module to be moved
+	 * 
+	 * @throws EQException
+	 *             - if the validation module does not exist
+	 */
+	public void movePvFieldSetUp(PVFieldSet pVFieldSet) throws EQException
+	{
+		String key = pVFieldSet.getId();
+		if (!pvFieldSetKeys.contains(key))
+		{
+			throw (new EQException(LanguageResources.getString("InputField.PVDoesNotExist"))); //$NON-NLS-1$
+		}
+		else
+		{
+			int position = pvFieldSetKeys.indexOf(key);
+			if (position > 0)
+			{
+				pvFieldSetKeys.remove(position);
+				pvFieldSetKeys.add(position - 1, key);
+				pvFieldSets.remove(position);
+				pvFieldSets.add(position - 1, pVFieldSet);
+			}
+		}
+	}
+
+	/**
+	 * Move the validation module one position down
+	 * 
+	 * @param pVFieldSet
+	 *            - the validation module to be moved
+	 * 
+	 * @throws EQException
+	 *             - if the validation module does not exist
+	 */
+	public void movePvFieldSetDown(PVFieldSet pVFieldSet) throws EQException
+	{
+		String key = pVFieldSet.getId();
+		if (!pvFieldSetKeys.contains(key))
+		{
+			throw (new EQException(LanguageResources.getString("InputField.PVDoesNotExist"))); //$NON-NLS-1$
+		}
+		else
+		{
+			int position = pvFieldSetKeys.indexOf(key);
+			if (position < pvFieldSetKeys.size() - 1)
+			{
+				pvFieldSetKeys.remove(position);
+				pvFieldSetKeys.add(position + 1, key);
+				pvFieldSets.remove(position);
+				pvFieldSets.add(position + 1, pVFieldSet);
+			}
+		}
+	}
+	/**
+	 * @return the locked status
+	 */
+	public String getLocked()
+	{
+		return locked;
+	}
+
+	/**
+	 * @param locked
+	 *            the locked status to set
+	 */
+	public void setLocked(String locked)
+	{
+		this.locked = locked;
+	}
+
+	/**
+	 * @return the pvFieldSetKeys
+	 */
+	public List<String> pvFieldSetKeys()
+	{
+		return pvFieldSetKeys;
+	}
+
+	public String[] rtvPvFieldSetDescriptions()
+	{
+		String[] prompts = new String[pvFieldSets.size()];
+
+		for (int x = 0; x < pvFieldSets.size(); x++)
+		{
+			PVFieldSet p = pvFieldSets.get(x);
+			prompts[x] = p.getId();
+		}
+		return prompts;
+	}
+
+	/**
+	 * Validate the contents of the bean.
+	 * 
+	 * @param messageContainer
+	 *            a <code>MessageContainer</code> to add the messages to
+	 * @param subSet
+	 *            a String specifying a validation subset (none applicable to this class), or null for full validation
+	 * @param includeChildren
+	 *            Whether to validate child objects as well
+	 * 
+	 * @return boolean (not currently used)
+	 */
+	@Override
+	public boolean validateBean(MessageContainer messageContainer, String subSet, boolean includeChildren)
+	{
+		// Call the WorkField class to perform some validation
+		super.validateBean(messageContainer, subSet, includeChildren);
+
+		Function function = this.rtvParentFieldSet().getFunction();
+		ProblemLocation problemLocation = new FunctionProblemLocation(this);
+
+		// Validate enabled EL expression:
+		if (WorkField.VALUE_CONSTANT_SCRIPT.equals(initialValueConstantType))
+		{
+			ValidationHelper.validateFieldsetInitialisationELExpression(getInitialValue(), this, messageContainer, problemLocation);
+		}
+
+		if (WorkField.VALUE_CONSTANT_SCRIPT.equals(defaultValueType))
+		{
+			ValidationHelper.validateFieldsetInitialisationELExpression(getDefaultValue(), this, messageContainer, problemLocation);
+		}
+
+		if (getLabel().trim().length() > MAXIMUM_LABEL_LENGTH)
+		{
+			messageContainer.addErrorMessageId("Language.FieldLabelTooLong", getId(), problemLocation);
+		}
+
+		// if enhanced XSD, then perform additional validation on the title
+		if (function.chkXSDGeneric())
+		{
+			if (!XSDToolbox.isValidForXSDMustNotBeBlank(getLabel()))
+			{
+				messageContainer.addErrorMessageId("Language.LabelMustNotBeBlank", new String[] { getLabel(), getId() },
+								problemLocation);
+			}
+			if (!XSDToolbox.isValidForXSDMustStartWithAToZ(getLabel()))
+			{
+				messageContainer.addErrorMessageId("Language.LabelMustStartWithAtoZ", new String[] { getLabel(), getId() },
+								problemLocation);
+			}
+		}
+
+		int fieldLength = -1;
+		int maxLengthInteger = -1;
+		int minLengthInteger = -1;
+
+		if (ValidationHelper.validateNumericInteger(getSize()))
+		{
+			fieldLength = ValidationHelper.getSafeIntegerValue(getSize());
+		}
+
+		// Validate the min/max fields
+		if (EqDataType.TYPE_CHAR.equals(getDataType()))
+		{
+			// For character fields, the min/max values are the field lengths:
+			if (maxLength.length() > MAXIMUM_LENGTH_LIMIT)
+			{
+				messageContainer.addErrorMessageId("Language.MaximumFieldLengthGreaterThan5Characters", problemLocation);
+			}
+			else
+			{
+				if (!ValidationHelper.validateNumericInteger(maxLength))
+				{
+					messageContainer.addErrorMessageId("Language.MaximumFieldLengthMustBeNumeric", problemLocation);
+				}
+				else
+				{
+					maxLengthInteger = ValidationHelper.getSafeIntegerValue(maxLength);
+					if (fieldLength > -1 && maxLengthInteger > fieldLength)
+					{
+						messageContainer.addErrorMessageId("Language.MaximumFieldLengthLongerThanFieldLength", problemLocation);
+					}
+				}
+			}
+
+			if (minLength.length() > MINIMUM_LENGTH_LIMIT)
+			{
+				messageContainer.addErrorMessageId("Language.MinimumFieldLengthGreaterThan5Characters", problemLocation);
+			}
+			else
+			{
+				if (!ValidationHelper.validateNumericInteger(minLength))
+				{
+					messageContainer.addErrorMessageId("Language.MinimumFieldLengthMustBeNumeric", problemLocation);
+				}
+				else
+				{
+					minLengthInteger = ValidationHelper.getSafeIntegerValue(minLength);
+					if (fieldLength > -1 && minLengthInteger > fieldLength)
+					{
+						messageContainer.addErrorMessageId("Language.MinimumFieldLengthLongerThanFieldLength", problemLocation);
+					}
+				}
+			}
+
+			// Cross validation between the minimum and maximum values
+			if (maxLengthInteger > -1 && maxLengthInteger < minLengthInteger)
+			{
+				messageContainer.addErrorMessageId("Language.MinimumFieldLengthLongerThanMaximumFieldLength", problemLocation);
+			}
+		}
+
+		if (EqDataType.TYPE_BOOLEAN.equals(getDataType()) || EqDataType.TYPE_DATE.equals(getDataType()))
+		{
+			if (maxLength.length() > 0)
+			{
+				messageContainer.addErrorMessageId("Language.MaximumFieldLengthNotValidForDataType", problemLocation);
+			}
+			if (minLength.length() > 0)
+			{
+				messageContainer.addErrorMessageId("Language.MinimumFieldLengthNotValidForDataType", problemLocation);
+			}
+		}
+
+		// For the numeric field types, these are the min/max values
+		if (EqDataType.TYPE_ZONED.equals(getDataType()) || EqDataType.TYPE_PACKED.equals(getDataType()))
+		{
+			// Blank is valid... (==0) but non-numerics are not:
+			// TODO: Validate using BigDecimal
+			// Max length of input is 17 characters
+		}
+
+		// Validate the list of Valid Values (colon delimited)
+		// Only validate literal text (not codes)
+		if (validValues.length() > 0 && validValuesType.equals(Element.TEXT_VALUE_TEXT))
+		{
+			if (EqDataType.TYPE_BOOLEAN.equals(getDataType()))
+			{
+				messageContainer.addErrorMessageId("Language.FieldValidValuesNotApplicableToBooleanFields", problemLocation);
+			}
+			else if (EqDataType.TYPE_DATE.equals(getDataType()))
+			{
+				// TODO: Maybe need to support valid values for dates, but not yet specified
+				messageContainer.addErrorMessageId("Language.FieldValidValuesNotApplicableToDateFields", problemLocation);
+			}
+			else
+			{
+				String[] validValuesArray = validValues.split(EqDataType.VALUESSEP);
+				for (String validValue : validValuesArray)
+				{
+					// Length validation (if the length is valid...
+					// Character fields must have length validation
+					if (EqDataType.TYPE_CHAR.equals(getDataType()))
+
+					{
+						if (fieldLength > -1 && validValue.length() > fieldLength)
+						{
+							messageContainer.addErrorMessageId("Language.FieldValidValueLongerThanFieldLength", problemLocation);
+							break;
+						}
+						// The maximum and minimum lengths will be converted to 0 if blank.
+						// Assume that 0 effectively means no limit, so only check if greater than 0
+						if (maxLengthInteger > 0 && validValue.length() > maxLengthInteger)
+						{
+							messageContainer.addErrorMessageId("Language.FieldValidValueLongerThanFieldMaximumLength",
+											problemLocation);
+							break;
+						}
+						if (minLengthInteger > 0 && validValue.length() < minLengthInteger)
+						{
+							messageContainer.addErrorMessageId("Language.FieldValidValueShorterThanFieldMinimumLength",
+											problemLocation);
+							break;
+						}
+						// TODO: Numeric values must match format specified
+					}
+				}
+			}
+		}
+
+		// Regular expression - is only really relevant to Character data type
+		if (regExp.length() > 0 && !EqDataType.TYPE_CHAR.equals(getDataType()))
+		{
+			messageContainer.addErrorMessageId("Language.RegularExpressionOnlyApplicableForAlphaDataType", problemLocation);
+		}
+
+		// Validate the upper case flag:
+		if (upperCase && EqDataType.TYPE_BOOLEAN.equals(getDataType()))
+		{
+			messageContainer.addErrorMessageId("Language.UpperCaseInputNotRelevantToBoolean", problemLocation);
+		}
+
+		// TODO: UpdateMappingScript, isKey, type
+
+		if (MANDATORY_SCRIPT.equals(mandatory))
+		{
+			// Validate the Mandatory Script:
+			ValidationHelper.validateBooleanELExpression(mandatoryExpression, this, messageContainer,
+							ValidationHelper.BooleanELType.MANDATORY_EXPRESSION, problemLocation);
+		}
+
+		// Validate the linked currency field:
+		if (getCcyLinkedField() != null && getCcyLinkedField().trim().length() > 0)
+		{
+			if (function.rtvInputField(getCcyLinkedField()) == null)
+			{
+				messageContainer.addErrorMessageId("Language.InvalidLinkedCurrencyField", new String[] { getCcyLinkedField() },
+								problemLocation);
+			}
+		}
+		// Check if there are duplicates in the Request or in the Respond
+		if (function.chkXSDGeneric())
+		{
+			String webServiceName = rtvWebServiceName(function.getXsdGeneration());
+
+			XSDStructure xsd = function.getXsdStructureRequest().findField(getId(), true, true);
+			if (xsd != null)
+			{
+				// A field must be unique within its parent group
+				XSDStructure duplicateXsd = xsd.chkUniqueWebServiceNameInParent(function, webServiceName, xsd.rtvPath(), true);
+				if (duplicateXsd != null)
+				{
+
+					messageContainer.addErrorMessageId("Language.WebServiceTypeNameNotUnique", webServiceName, problemLocation);
+
+				}
+			}
+
+			xsd = function.getXsdStructureResponse().findField(getId(), true, true);
+			if (xsd != null)
+			{
+				// A field must be unique within its parent group
+				XSDStructure duplicateXsd = xsd.chkUniqueWebServiceNameInParent(function, webServiceName, xsd.rtvPath(), false);
+				if (duplicateXsd != null)
+				{
+
+					messageContainer.addErrorMessageId("Language.WebServiceTypeNameNotUnique", webServiceName, problemLocation);
+
+				}
+			}
+		}
+
+		if (includeChildren)
+		{
+			// TODO: complete for all children
+			for (ValidationExpression validationExpression : validationExpressions)
+			{
+				validationExpression.validateBean(messageContainer, subSet, true);
+			}
+			for (PVFieldSet pvFieldSet : pvFieldSets)
+			{
+				pvFieldSet.validateBean(messageContainer, subSet, includeChildren);
+			}
+		}
+		return !messageContainer.hasErrorMessages();
+	}
+	public List<ValidationExpression> getValidationExpressions()
+	{
+		return validationExpressions;
+	}
+
+	public void addValidationExpression(ValidationExpression validationExpression)
+	{
+		validationExpression.setParent(this);
+		validationExpressions.add(validationExpression);
+	}
+	public void removeAllValidationExpressions()
+	{
+		validationExpressions.clear();
+	}
+	public void removeValidationExpression(int index)
+	{
+		validationExpressions.remove(index);
+	}
+
+	public void moveExpressionUp(int index)
+	{
+		if (index > 0)
+		{
+			ValidationExpression above = validationExpressions.get(index - 1);
+			validationExpressions.remove(index - 1);
+			validationExpressions.add(index, above);
+		}
+	}
+
+	public void moveExpressionDown(int index)
+	{
+		if (index < validationExpressions.size())
+		{
+			ValidationExpression below = validationExpressions.get(index + 1);
+			validationExpressions.remove(index + 1);
+			validationExpressions.add(index, below);
+		}
+	}
+
+	public String getMandatoryExpression()
+	{
+		return mandatoryExpression;
+	}
+
+	public void setMandatoryExpression(String mandatoryExpression)
+	{
+		this.mandatoryExpression = mandatoryExpression;
+	}
+
+	/**
+	 * Return the field context type
+	 * 
+	 * @return the field context type
+	 */
+	public int getFieldContextType()
+	{
+		return fieldContextType;
+	}
+
+	/**
+	 * Set the field context type
+	 * 
+	 * @param fieldContextType
+	 *            - the field context type
+	 */
+	public void setFieldContextType(int fieldContextType)
+	{
+		this.fieldContextType = fieldContextType;
+	}
+
+	/**
+	 * Indicates whether the RegExp value is literal text or a code
+	 * <p>
+	 * 
+	 * @return either <code>Element.TEXT_VALUE_TEXT</code> to indicate that the RegExp is fixed text, or the
+	 *         <code>Element.TEXT_VALUE_CODE</code> constant to indicate that the RegExp value is a code.
+	 */
+	public String getRegExpType()
+	{
+		return regExpType;
+	}
+
+	/**
+	 * Sets whether the RegExp value is literal text or a code
+	 * 
+	 * @param maskType
+	 *            a <code>String</code>, which should be either <code>Element.TEXT_VALUE_TEXT</code> to indicate that the RegExp
+	 *            value is fixed text, or the <code>Element.TEXT_VALUE_CODE</code> constant to indicate that the RegExp value is a
+	 *            code .
+	 */
+	public void setRegExpType(String regExpType)
+	{
+		this.regExpType = regExpType;
+	}
+
+	/**
+	 * Indicates whether the ValidValues value is literal text or a code
+	 * <p>
+	 * 
+	 * @return either <code>Element.TEXT_VALUE_TEXT</code> to indicate that the ValidValues value is literal text, or the
+	 *         <code>Element.TEXT_VALUE_CODE</code> constant to indicate that the ValidValues value is a code.
+	 */
+	public String getValidValuesType()
+	{
+		return validValuesType;
+	}
+	/**
+	 * Sets whether the ValidValues value is a literal text or a code
+	 * 
+	 * @param maskType
+	 *            a <code>String</code>, which should be either <code>Element.TEXT_VALUE_TEXT</code> to indicate that the
+	 *            ValidValues value is fixed text, or the <code>Element.TEXT_VALUE_CODE</code> constant to indicate that the
+	 *            ValidValues value is a code .
+	 */
+	public void setValidValuesType(String validValuesType)
+	{
+		this.validValuesType = validValuesType;
+	}
+
+	/**
+	 * Return the valid values in user's language
+	 * 
+	 * @param eqUser
+	 *            - the Equation user
+	 * 
+	 * @return the mask in user's language
+	 */
+	public String rtvValidValues(EquationUser eqUser)
+	{
+		return FunctionRuntimeToolbox.getHBXText(eqUser, getValidValuesTextOwner(), TextBean.TYPE_VALID_VALUE, getValidValues(),
+						getValidValuesType(), FunctionRuntimeToolbox.getServiceBaseLanguage(this, getValidValuesType()));
+	}
+
+	/**
+	 * Return the regular expression in user's language
+	 * 
+	 * @param eqUser
+	 *            - the Equation user
+	 * 
+	 * @return the regular expression in user's language
+	 */
+	public String rtvRegExp(EquationUser eqUser)
+	{
+		return FunctionRuntimeToolbox.getHBXText(eqUser, getRegExpTextOwner(), TextBean.TYPE_REGULAR_EXPRESSION, getRegExp(),
+						getRegExpType(), FunctionRuntimeToolbox.getServiceBaseLanguage(this, getRegExpType()));
+	}
+
+	/**
+	 * Return the regular expression mismatch message
+	 * 
+	 * @return the regular expression mismatch message
+	 */
+	public String getRegExpMsg()
+	{
+		return regExpMsg;
+	}
+
+	/**
+	 * Set the regular expression mismatch message
+	 * 
+	 * @param regExpMsg
+	 *            - the regular expression mismatch message
+	 */
+	public void setRegExpMsg(String regExpMsg)
+	{
+		this.regExpMsg = regExpMsg;
+	}
+
+	/**
+	 * Return the regular expression mismatch message severity
+	 * 
+	 * @return the regular expression mismatch message severity
+	 */
+	public int getRegExpSev()
+	{
+		return regExpSev;
+	}
+
+	/**
+	 * Set the regular expression mismatch message severity
+	 * 
+	 * @param regExpSev
+	 *            - the regular expression mismatch message severity
+	 */
+	public void setRegExpSev(int regExpSev)
+	{
+		this.regExpSev = regExpSev;
+	}
+
+	/**
+	 * @return the excludeFromType
+	 */
+	public boolean isExcludeFromType()
+	{
+		return excludeFromType;
+	}
+
+	/**
+	 * @param excludeFromType
+	 *            the excludeFromType to set
+	 */
+	public void setExcludeFromType(boolean excludeFromType)
+	{
+		this.excludeFromType = excludeFromType;
+	}
+
+	/**
+	 * @return the shortTypeName
+	 */
+	public boolean isShortTypeName()
+	{
+		return shortTypeName;
+	}
+
+	/**
+	 * @param shortTypeName
+	 *            the shortTypeName to set
+	 */
+	public void setShortTypeName(boolean shortTypeName)
+	{
+		this.shortTypeName = shortTypeName;
+	}
+
+	/**
+	 * Return the extended attribute
+	 * 
+	 * @return the extended attribute
+	 */
+	public int getExtendedAttribute()
+	{
+		return extendedAttribute;
+	}
+
+	/**
+	 * Set the extended attribute
+	 * 
+	 * @param extendedAttribute
+	 *            - the extended attribute
+	 */
+	public void setExtendedAttribute(int extendedAttribute)
+	{
+		this.extendedAttribute = extendedAttribute;
+	}
+
+	/**
+	 * Get the text owner for valid values
+	 * 
+	 * @return valid values text owner
+	 */
+	public String getValidValuesTextOwner()
+	{
+		return validValuesTextOwner;
+	}
+
+	/**
+	 * Set the text owner for valid values
+	 * 
+	 * @param validValuesTextOwner
+	 */
+	public void setValidValuesTextOwner(String validValuesTextOwner)
+	{
+		this.validValuesTextOwner = validValuesTextOwner;
+	}
+
+	/**
+	 * Get the text owner for regular expression
+	 * 
+	 * @return regular expression text owner
+	 */
+	public String getRegExpTextOwner()
+	{
+		return regExpTextOwner;
+	}
+
+	/**
+	 * Set the text owner for regular expression
+	 * 
+	 * @param regExpTextOwner
+	 */
+	public void setRegExpTextOwner(String regExpTextOwner)
+	{
+		this.regExpTextOwner = regExpTextOwner;
+	}
+
+	/**
+	 * Return the currency linked field
+	 * 
+	 * @return the currency linked field
+	 */
+	public String getCcyLinkedField()
+	{
+		return ccyLinkedField;
+	}
+
+	/**
+	 * Set the currency linked field
+	 * 
+	 * @param ccyLinkedField
+	 *            - the currency linked field
+	 */
+	public void setCcyLinkedField(String ccyLinkedField)
+	{
+		this.ccyLinkedField = ccyLinkedField;
+	}
+
+	/**
+	 * Return the web service name
+	 * 
+	 * @param xsdType
+	 *            - the XSD generation type
+	 * 
+	 * @return the web service name
+	 */
+	public String rtvWebServiceName(int xsdType)
+	{
+		if (xsdType == Function.XSD_DEFAULT)
+		{
+			return FunctionBankFusion.getFieldName(this);
+		}
+		else
+		{
+			return FunctionBankFusion.getEnhancedFieldName(rtvLabel());
+		}
+	}
+
+}

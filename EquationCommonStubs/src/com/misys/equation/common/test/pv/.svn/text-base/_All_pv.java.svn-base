@@ -1,0 +1,369 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.pv;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
+public class _All_pv
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	public static Test suite()
+	{
+		// Create test suite
+		TestSuite suite = new TestSuite("Test for com.misys.equation.common.test.standard.enquiry");
+
+		// Note: Commented-out enquiries (*NO DATA*) work but they currently
+		// do not have data set up from them in the test unit.
+		// TODO: need to set up test data for these enquiries
+
+		// Standard PV's
+		// suite.addTestSuite(A2R10R.class); // Generic Clearing Maintenance *NO DATA*
+		suite.addTestSuite(AA5R10R.class); // Increment Table
+		suite.addTestSuite(AAAR10R.class); // Stock item type
+		suite.addTestSuite(AAIR10R.class); // Event Mnemnonic
+		suite.addTestSuite(AAJR10R.class); // Charge Component
+		// suite.addTestSuite(AAKR10R.class); // Charge Structure and Variation *NO DATA*
+		// suite.addTestSuite(AAKR15R.class); // Charge Structure and Variation *NO DATA*
+		// suite.addTestSuite(AAKR16R.class); // Charge Structure and Variation *NO DATA*
+		// suite.addTestSuite(AAKR17R.class); // Charge Structure and Variation *NO DATA*
+		// suite.addTestSuite(AAKR18R.class); // Charge Structure and Variation *NO DATA*
+		// suite.addTestSuite(AAKR19R.class); // Charge Structure and Variation *NO DATA*
+		suite.addTestSuite(AALR10R.class); // Channel Code
+		// suite.addTestSuite(AANR10R.class); // Grouping Code *NO DATA*
+		// suite.addTestSuite(AAPR10R.class); // e-Banking Transaction Types *NO DATA*
+		// suite.addTestSuite(AAQR10R.class); // Yield Curve Mnemonic *NO DATA*
+		suite.addTestSuite(AASR10R.class); // Amortised Cost Status
+		// suite.addTestSuite(AAWR10R.class); // Customer identity document *NO DATA*
+		// suite.addTestSuite(AAXR10R.class); // NV Type *NO DATA*
+		// suite.addTestSuite(AAYR10R.class); // Organ-schlüssel code *NO DATA*
+		suite.addTestSuite(ABNR30R.class); // Bank Sort Codes *ERROR IN META DATA*
+		suite.addTestSuite(ABTR10R.class); // Calculated on Amount Code
+		// suite.addTestSuite(ABXR10R.class); // Tax reference *NO DATA*
+		suite.addTestSuite(AC1R10R.class); // Interest Settlement Instruction
+		// suite.addTestSuite(ACDR10R.class); // Document Parameter *NO DATA*
+		// suite.addTestSuite(ACER10R.class); // WebFacing Widgets *NO DATA*
+		// suite.addTestSuite(ACFR10R.class); // WebFacing Display Files *NO DATA*
+		// suite.addTestSuite(ACGR10R.class); // Display File Field *NO DATA*
+		suite.addTestSuite(ACMR10R.class); // Field Types
+		// suite.addTestSuite(AD1R10R.class); // Inward Local Clearing *NO DATA*
+		// suite.addTestSuite(AER10R.class); // Access Security Option *NO DATA*
+		suite.addTestSuite(ALAR10R.class); // Field Mapping
+		// suite.addTestSuite(AMBR10R.class); // Method of ID Code *NO DATA*
+		suite.addTestSuite(AMCR10R.class); // UII by UII number
+		// suite.addTestSuite(AMCR20R.class); // UII Deal Reference *NO DATA*
+		// suite.addTestSuite(AMCR30R.class); // UII Account *NO DATA*
+		// suite.addTestSuite(AMCR40R.class); // UII Issuing branch *NO DATA*
+		// suite.addTestSuite(AMIR20R.class); // Passbook Account *NO DATA*
+		// suite.addTestSuite(AMMR10R.class); // UII Document type *NO DATA*
+
+		suite.addTestSuite(BBAR10R.class); // Document Type
+		suite.addTestSuite(BDR01R.class); // Additional Information Item
+		suite.addTestSuite(BER01R.class); // Additional Information Group
+		suite.addTestSuite(BHR01R.class); // Additional Information Code
+		suite.addTestSuite(BQR01R.class); // Branch/Issuing Bank
+		suite.addTestSuite(BRR01R.class); // Reason Codes
+
+		suite.addTestSuite(C1R75R.class); // Language Code
+		suite.addTestSuite(C2R24R.class); // Responsibility Code
+		suite.addTestSuite(C3R12R.class); // Sundry Analysis
+		suite.addTestSuite(C4R54R.class); // Customer Type
+		suite.addTestSuite(C5R55R.class); // Account Type
+		suite.addTestSuite(C6R53R.class); // Analysis Code
+		suite.addTestSuite(C7R05R.class); // Country
+		suite.addTestSuite(C7R05R_A.class); // Country
+		suite.addTestSuite(C8R01R.class); // Currency Mnemonic
+		suite.addTestSuite(C8R01R_A.class); // Currency Mnemonic
+		// suite.addTestSuite(CANR20R.class); // Manual Cashflows *NO DATA*
+		suite.addTestSuite(CAR10R.class); // Branch
+		suite.addTestSuite(CAR73R.class); // Branch
+		// suite.addTestSuite(CAXR10R.class); // Gillardon Test Deal *NO DATA*
+		suite.addTestSuite(CBR21R.class); // Broker
+		suite.addTestSuite(CCAR01R.class); // Card Number
+		suite.addTestSuite(CCBR01R.class); // Card Type
+		suite.addTestSuite(CCCR01R.class); // Card Limit Code
+		suite.addTestSuite(CKR22R.class); // Charge Code
+		suite.addTestSuite(CTR56R.class); // Transaction Code
+
+		suite.addTestSuite(D1R02R.class); // Transfer Method
+		suite.addTestSuite(D3R27R.class); // Message Code
+		suite.addTestSuite(D4R47R.class); // Base Rate Reference
+		suite.addTestSuite(D5R48R.class); // Differential Codes
+		suite.addTestSuite(D6R18R.class); // Base Rate Reference Code
+		suite.addTestSuite(D7R01R.class); // Special Conditions
+		suite.addTestSuite(D8R01R.class); // Numeric Analysis
+		suite.addTestSuite(D9R01R.class); // Tier Reference Code
+		suite.addTestSuite(DFR01R.class); // Default Charge
+		suite.addTestSuite(DHR01R.class); // Account mnemonic
+		suite.addTestSuite(DRR01R.class); // Check Digit Codes
+		suite.addTestSuite(DSR01R.class); // Cheque Book Type
+		suite.addTestSuite(DTR01R.class); // Outstanding Cheque Books
+		suite.addTestSuite(DUR01R_B.class); // Outstanding Cheques
+		suite.addTestSuite(DUR01R_E.class); // Outstanding Cheques
+		// suite.addTestSuite(DUR01R_R.class); // Outstanding Cheques *NO DATA*
+		suite.addTestSuite(DVR01R.class); // Outstanding Book Requests
+
+		// suite.addTestSuite(EXER10R.class); // External Event *NO DATA*
+		// suite.addTestSuite(EXER20R.class); // External Event *NO DATA*
+		// suite.addTestSuite(EXER30R.class); // External Event *NO DATA*
+		suite.addTestSuite(EXER40R.class); // External Event
+
+		suite.addTestSuite(FSR01R.class); // Instruction Group
+		suite.addTestSuite(FWR22R.class); // Manual Charges - Accounts
+		suite.addTestSuite(FWR23R.class); // Manual Charges - Deals
+		suite.addTestSuite(FWR24R.class); // Manual Charges - Commitments
+
+		suite.addTestSuite(GAER10R.class); // Enhanced API
+		suite.addTestSuite(GAER20R.class); // Prompt and Validate Modules
+		suite.addTestSuite(GAR49R.class); // Program
+		suite.addTestSuite(GBR35R.class); // Option
+		suite.addTestSuite(GBR39R.class); // Option
+		suite.addTestSuite(GBR39R_V.class); // Option
+		suite.addTestSuite(GCR36R.class); // Menu
+		suite.addTestSuite(GFR70R.class); // Customer
+		suite.addTestSuite(GIR33R.class); // Account
+		suite.addTestSuite(GIR33R_A.class); // Account
+		suite.addTestSuite(GIR33R_amp.class); // Account
+		suite.addTestSuite(GIR33R_B.class); // Account
+		suite.addTestSuite(GIR33R_gt.class); // Account
+		suite.addTestSuite(GJR74R.class); // Nostro
+		suite.addTestSuite(GKR40R.class); // C1 User Code
+		suite.addTestSuite(GLR41R.class); // C2 User Code
+		suite.addTestSuite(GMR42R.class); // C3 User Code
+		suite.addTestSuite(GNR43R.class); // C4 User Code
+		suite.addTestSuite(GOR44R.class); // C5 User Code
+		suite.addTestSuite(GPR06R.class); // P1 User Code
+		suite.addTestSuite(GQR07R.class); // P2 User Code
+		suite.addTestSuite(GRR08R.class); // P3 User Code
+		suite.addTestSuite(GTR09R.class); // P4 User Code
+		suite.addTestSuite(GUR10R.class); // P5 User Code
+		suite.addTestSuite(GVR10R.class); // Settlement Instructions
+		// suite.addTestSuite(GWR07R.class); // Daily Statement Date *NO DATA*
+		suite.addTestSuite(GWR76R.class); // Accounts
+		suite.addTestSuite(GWR79R.class); // Authorised User
+
+		suite.addTestSuite(H0R10R.class); // Loan Repayment History
+		suite.addTestSuite(H7R10R.class); // Collateral Reservation
+		suite.addTestSuite(HAR10R.class); // Title Code
+		suite.addTestSuite(HBR10R.class); // Multi Language Codes
+		suite.addTestSuite(HBR30R.class); // Multi Language Codes
+		suite.addTestSuite(HCR10R.class); // Report Heading Code
+		suite.addTestSuite(HGR10R.class); // Limit Structure
+		suite.addTestSuite(HSR10R.class); // Guarantee Type
+		suite.addTestSuite(HVR30R.class); // Branch Address
+		suite.addTestSuite(HWR20R.class); // Collateral Type
+		suite.addTestSuite(HYR40R.class); // Collateral Item
+		suite.addTestSuite(HYR50R.class); // Collateral Item
+		// suite.addTestSuite(HYR51R.class); // Collateral Item *NO DATA*
+		suite.addTestSuite(HYR60R.class); // Collateral Item
+		// suite.addTestSuite(HZR10R.class); // Collateral Location *NO DATA*
+
+		suite.addTestSuite(I0R01R.class); // Incoming Message Network
+		suite.addTestSuite(I1R01R.class); // Message Type
+		suite.addTestSuite(I2R01R.class); // Message Field Code
+		suite.addTestSuite(I4R01R.class); // Access Point
+		suite.addTestSuite(I5R01R.class); // Application Program
+		suite.addTestSuite(I6R01R.class); // Application Program Field
+		suite.addTestSuite(IIR10R_C.class); // Cheque
+		// suite.addTestSuite(IPAR01R.class); // IPD Pool *NO DATA* (K539)
+		// suite.addTestSuite(IPBR01R.class); // IPD Deduction Category *NO DATA* (K539)
+		// suite.addTestSuite(IPCR01R.class); // IPD Income/Expense Category *NO DATA* (K539)
+		// suite.addTestSuite(IPDR01R.class); // IPD Product *NO DATA* (K539)
+		// suite.addTestSuite(IPHR01R.class); // IPD Pool Profit Period *NO DATA* (K539)
+		suite.addTestSuite(ISR01R.class); // Cheque Deposit Parameter
+		suite.addTestSuite(IXR01R.class); // Currency Description (Printed)
+		// suite.addTestSuite(IYR01R.class); // Draft Number *Number is Generated each time!*
+
+		suite.addTestSuite(J1R01R.class); // Region to Region Clearing Zone
+		suite.addTestSuite(J2R10R.class); // Issuing bank/branch sort code
+		suite.addTestSuite(J6R10R.class); // Pool Interest Rate
+		suite.addTestSuite(J7R10R.class); // Pool Exchange Rate
+		// suite.addTestSuite(JAR31R.class); // Rate Table **BROKEN**
+		suite.addTestSuite(JJV10R.class); // BRT Tax Self Certification
+		suite.addTestSuite(JKV10R.class); // BRT Interest/Tax Statistics
+		suite.addTestSuite(JOR01R.class); // Multiple Maintenance Codes
+		suite.addTestSuite(JQR01R.class); // Report Definition
+		suite.addTestSuite(JQR02R.class); // Report Definition
+		suite.addTestSuite(JRR01R.class); // Period code
+		suite.addTestSuite(JSR10R.class); // Deal Charge Component
+		suite.addTestSuite(JTR01R.class); // Report Request
+		suite.addTestSuite(JTR02R.class); // Report Request
+		suite.addTestSuite(JUR01R.class); // Account Holds
+		suite.addTestSuite(JVR01R.class); // Hold Code
+		suite.addTestSuite(JWR01R.class); // Clearing Zone Detail
+		suite.addTestSuite(JWR02R.class); // Clearing Zone
+		suite.addTestSuite(JXR01R.class); // Deposit Reference/Account
+		suite.addTestSuite(JXR02R.class); // Deposit Reference/Account
+		suite.addTestSuite(JYR01R.class); // Un-cleared Cheque Account
+		suite.addTestSuite(JYR03R.class); // Cheque Item
+		// suite.addTestSuite(JYR04R_SeeComment.class); // Validation only!
+		suite.addTestSuite(JYR50R.class); // Cheque Item
+		suite.addTestSuite(JYR90R.class); // Cheque Item
+
+		suite.addTestSuite(KAR02R.class); // Selection
+		// suite.addTestSuite(KAR03R.class) *NO DATA*
+
+		suite.addTestSuite(L5R10R.class); // Direct Debit Mandate
+		suite.addTestSuite(L6R10R.class); // Direct Debit Payment Request
+		suite.addTestSuite(LCR01R.class); // Commitment Reference
+		suite.addTestSuite(LFR10R.class); // Mandate Type
+		suite.addTestSuite(LTR01R.class); // Repayment Transaction
+		suite.addTestSuite(LTR30R.class); // Repayment Transaction
+		suite.addTestSuite(LTR95R.class); // Repayment Transaction
+		suite.addTestSuite(LUR01R.class); // Cashier Branch
+
+		// suite.addTestSuite(MDR01R.class); // Deal Reference *NO DATA*
+		// suite.addTestSuite(MJR10R.class); // Account Service Charges *NO DATA*
+
+		suite.addTestSuite(N1R01R.class); // Payment Purpose
+		suite.addTestSuite(N2R01R.class); // Retail Rate Type
+		suite.addTestSuite(N3R01R.class); // Retail Rate
+		suite.addTestSuite(N4R01R.class); // Payment Type
+		suite.addTestSuite(N5R01R.class); // Authorisation Tiers
+		suite.addTestSuite(N7R01R.class); // Authorisation Limits
+		suite.addTestSuite(N9R01R.class); // Currency Cutoff Times
+		// suite.addTestSuite(NER40R.class); // Account *NO DATA*
+		// suite.addTestSuite(NRR01R.class); // Portfolio Rules *NO DATA*
+		// suite.addTestSuite(NSR01R.class); // Security Mnemonic *NO DATA*
+
+		suite.addTestSuite(O1R01R.class); // Posting Set
+		suite.addTestSuite(O3R01R.class); // Charge Set
+		suite.addTestSuite(O5R01R.class); // Hold Set
+		suite.addTestSuite(O7R01R.class); // Report Set
+		suite.addTestSuite(O9R01R.class); // Accounting Set
+		suite.addTestSuite(OBR37R.class); // Deal Type
+		suite.addTestSuite(OCR15R.class); // User Id
+		suite.addTestSuite(OMR01R.class); // Principal Increase/Decrease
+		suite.addTestSuite(OMR02R.class); // Scheduled Repayment
+		suite.addTestSuite(OMR03R.class); // Local Clearing Movements
+		suite.addTestSuite(OSR33R.class); // Deal Reference
+		suite.addTestSuite(OSR34R.class); // Deal Reference
+		suite.addTestSuite(OSR37R.class); // Deal Reference
+		suite.addTestSuite(OSR38R.class); // Deal Reference
+		suite.addTestSuite(OSR38R_B.class); // Deal Reference
+		// suite.addTestSuite(OSR39R.class); // Originating System Reference *NO DATA*
+		suite.addTestSuite(OSR40R.class); // Primary Generic Deal
+		// suite.addTestSuite(OSR41R.class); // Secondary Generic Deal *NO DATA*
+		suite.addTestSuite(OSR42R.class); // Primary/Secondary Generic Deal
+
+		suite.addTestSuite(P3R01R.class); // Clean Payments
+		suite.addTestSuite(P3R02R.class); // Clean Payments
+		suite.addTestSuite(P3R03R.class); // Bank Cheque/Draft
+		suite.addTestSuite(P3R04R.class); // Local Clearing Clean Payments
+		// suite.addTestSuite(P3R05R.class); // Local Clearing Clean Payments *NO DATA*
+		suite.addTestSuite(P6R01R.class); // Clean Payment Template
+		suite.addTestSuite(PMR10R.class); // FRA/IRS Base Rates
+		// suite.addTestSuite(PRCR10R.class); // Postal Region Code *NO DATA*
+		// suite.addTestSuite(PRR10R.class); // Failed/Held Clean Payments *NO DATA*
+
+		suite.addTestSuite(Q1R01R.class); // Account Settlement Details
+		// suite.addTestSuite(Q2R01R.class); // Certificate Number *NO DATA*
+		// suite.addTestSuite(Q4R01R.class); // Certificate Register *NO DATA*
+		suite.addTestSuite(Q6R10R.class); // Standing Payment Instructions
+		suite.addTestSuite(Q7R10R.class); // Direct Debit Origination
+		suite.addTestSuite(Q8R10R.class); // Direct Debit Claims
+		suite.addTestSuite(QDR10R.class); // System Option Group
+		suite.addTestSuite(QMR10R.class); // Notice Account Rule
+		suite.addTestSuite(QQAR10R.class); // Queue Priority Code
+		// suite.addTestSuite(QQBR10R.class); // Queue Event Priority *NO DATA*
+		// suite.addTestSuite(QQBR20R.class); // Queue Charge Event Priority *NO DATA*
+		// suite.addTestSuite(QQCR10R.class); // Loan Repayment Priorities *NO DATA*
+		suite.addTestSuite(QQER10R.class); // Queue Sort Fields
+		suite.addTestSuite(QQR10R.class); // Notice Withdrawal
+		suite.addTestSuite(QRR10R.class); // Prompt/Validate Module Titles
+		suite.addTestSuite(QZR20R.class); // System Option
+
+		suite.addTestSuite(R1R01R.class); // Incoming Message Format
+		suite.addTestSuite(R4R01R.class); // Stop Orders
+		suite.addTestSuite(R5R01R.class); // Standing Order
+		suite.addTestSuite(R6R01R.class); // Diary Note
+		suite.addTestSuite(R7R01R.class); // Balance Order
+		suite.addTestSuite(RCR10R.class); // Region Code
+		suite.addTestSuite(RIR10R.class); // Relationship Codes
+		suite.addTestSuite(RJR10R.class); // Customer Relationships
+		suite.addTestSuite(RJR20R.class); // Customer Relationships
+		suite.addTestSuite(RKR10R.class); // Joint Account Relationships
+
+		// suite.addTestSuite(S9R01R.class); // SWIFT address *NO DATA*
+		suite.addTestSuite(SAR10R.class); // Sundry items
+		suite.addTestSuite(SAR50R.class); // Sundry items
+		suite.addTestSuite(SCR10R.class); // Account
+		// suite.addTestSuite(SNR10R.class); // Account Non-accrual History *NO DATA*
+		suite.addTestSuite(STR10R.class); // Account Status Code
+		suite.addTestSuite(SXR01R.class); // Customer Address
+		suite.addTestSuite(SYR01R.class); // Account Address
+
+		suite.addTestSuite(T0R10R.class); // Loan Penalty Base Rates
+		suite.addTestSuite(T8R10R.class); // Loan Penalty Diff Rates
+		suite.addTestSuite(T9R10R.class); // Loan Status Code
+		suite.addTestSuite(TAR52R.class); // Group
+		suite.addTestSuite(TG1R10R.class); // Interface Group
+		suite.addTestSuite(TG2R10R.class); // Interface Code
+		// suite.addTestSuite(TIDR10R.class); // TI Deal Type Mapping *NO DATA*
+		// suite.addTestSuite(TNR10R.class); // MQM Queue *NO DATA*
+		suite.addTestSuite(TPR10R.class); // Current Limit Adjustment
+		// suite.addTestSuite(TTR10R.class); // Interface Mnemonic *NO DATA*
+		suite.addTestSuite(TVR10R.class); // Profit Structure
+		suite.addTestSuite(TYR10R.class); // Customer Profit Analysis
+
+		suite.addTestSuite(U6R01R.class); // Generic Deal Type
+		// suite.addTestSuite(U7R01R.class); // Generic Deal Type *NO DATA*
+		suite.addTestSuite(U8R01R.class); // Cashflow Types
+		suite.addTestSuite(UTU37R.class); // Action
+
+		// suite.addTestSuite(V10R10R.class); // S24c Transmission File *NO DATA*
+		// suite.addTestSuite(V13R10R.class); // S24c Authority Holder *NO DATA*
+		suite.addTestSuite(V2R10R.class); // Rate Change Details
+		suite.addTestSuite(V5R10R.class); // Deal Reference
+		suite.addTestSuite(V5R20R.class); // Loan Reference
+		suite.addTestSuite(V5R30R.class); // Account
+
+		suite.addTestSuite(WCR01R.class); // User Group
+		suite.addTestSuite(WDR01R.class); // User Branch Authority
+		// suite.addTestSuite(WER01R.class); // Authorise User Input *NOT A REAL PV*
+		suite.addTestSuite(WFR01R.class); // Class of User
+		suite.addTestSuite(WGR01R.class); // Availability Code
+		suite.addTestSuite(WIR01R.class); // OPICS Accounting Type
+		suite.addTestSuite(WJR10R.class); // Customer Payment Type
+		suite.addTestSuite(WKR10R.class); // Template ID
+		// suite.addTestSuite(WLR10R.class); // EPD Customer Instruction *NO DATA*
+		suite.addTestSuite(WMR10R.class); // Reporting Group
+		// suite.addTestSuite(WVR01R.class); // Customer classification *NO DATA*
+		suite.addTestSuite(WZR10R.class); // Customer Payment Order
+
+		suite.addTestSuite(X0R01R.class); // Inter Account Transfer
+		suite.addTestSuite(XDR10R.class); // File Code
+		suite.addTestSuite(XZR01R.class); // Customer Number Ranges
+
+		suite.addTestSuite(Z1R01R.class); // Commercial Paper Group
+		suite.addTestSuite(Z2R01R.class); // Commercial Paper Status
+		suite.addTestSuite(Z3R01R.class); // Charge Rule Reference
+		suite.addTestSuite(Z4R01R.class); // Method of Settlement
+		suite.addTestSuite(Z5R01R.class); // Paper Type
+		suite.addTestSuite(Z6R01R.class); // Purpose of Presentation
+		suite.addTestSuite(Z8R01R.class); // Debtor
+		suite.addTestSuite(ZAAR01R.class); // Rule Sequence Number
+		// suite.addTestSuite(ZJR01R.class); // Generic Validation Rules *NO DATA*
+		suite.addTestSuite(ZMMR01R.class); // Customers for Charges
+		// suite.addTestSuite(ZPPR01R.class); // Salary History *NO DATA*
+		// suite.addTestSuite(ZQQR01R.class); // Generic Charges *NO DATA*
+		suite.addTestSuite(ZXXR01R.class); // User Group
+		suite.addTestSuite(ZZR01R.class); // Commercial Paper Item
+		suite.addTestSuite(ZZR02R.class); // Account
+		suite.addTestSuite(ZZR03R.class); // Customer
+		suite.addTestSuite(ZZR05R.class); // Account
+
+		return suite;
+	}
+
+}

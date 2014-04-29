@@ -1,0 +1,118 @@
+package com.misys.equation.function.test.run;
+
+import com.misys.equation.common.dao.beans.WERecordDataModel;
+import com.misys.equation.common.files.JournalHeader;
+import com.misys.equation.function.beans.FunctionData;
+import com.misys.equation.function.runtime.FunctionHandler;
+import com.misys.equation.function.runtime.FunctionSession;
+import com.misys.equation.function.runtime.ScreenSetHandler;
+import com.misys.equation.function.tools.SupervisorToolbox;
+
+/**
+ * FunctionHandler Stub 1
+ * 
+ * This is how to use the Function Handler with validate and update processing done separately
+ * 
+ */
+public class FunctionHandlerStub08ALY4SAdd extends FunctionHandlerStubTestCase
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: FunctionHandlerStub08ALY4SAdd.java 6793 2010-03-31 12:10:20Z deroset $";
+
+	public FunctionHandlerStub08ALY4SAdd()
+	{
+		try
+		{
+			setUp();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] inputParameters)
+	{
+		FunctionHandlerStub08ALY4SAdd test = new FunctionHandlerStub08ALY4SAdd();
+		test.test();
+	}
+
+	public boolean test()
+	{
+		// Have a bash...
+		FunctionHandler functionHandler = null;
+		try
+		{
+			// Add XX4
+			System.out.println("------------------------------- 1");
+			functionHandler = FunctionToolboxStub.getFunctionHandler(user, "SESSIONID", "");
+			functionHandler.doNewTransaction("ALY", "");
+			FunctionData functionData = functionHandler.getFhd().getScreenSetHandler().rtvScrnSetCurrent().getFunctionData();
+			functionData.chgFieldInputValue("AB", "0132");
+			functionData.chgFieldInputValue("AN", "891250");
+			functionData.chgFieldInputValue("AS", "380");
+			functionData.chgFieldInputValue("HLD", "XX4");
+			functionData.chgFieldInputValue("BRNM", "BRNM");
+			functionData.chgFieldInputValue("DLP", "DLP");
+			functionData.chgFieldInputValue("DLR", "DLR");
+			functionData.chgFieldDbValue("HLD2", "SS4");
+			functionHandler.applyRetrieveTransaction();
+
+			// save it
+			functionHandler.save(WERecordDataModel.STAT_WIP, "STUB08ALY4SAdd");
+
+			// NOW RESTORE IT
+			FunctionHandler fh = FunctionToolboxStub.getFunctionHandler(user, "SESSIONID", "");
+			FunctionSession fs = functionHandler.getFhd().getFunctionSession();
+			fh.restore(fs.getOptionId(), fs.getSessionId(), fs.getUserId(), fs.getTransactionId(), null,
+							ScreenSetHandler.SCREENSET_DEFAULT);
+			functionData = fh.getFhd().getScreenSetHandler().rtvScrnSetCurrent().getFunctionData();
+			functionData.chgFieldInputValue("CUS", "CUSSS");
+			functionData.chgFieldInputValue("CLC", "CLC");
+			functionData.chgFieldInputValue("DOS", "DOS-ORG-SYS");
+			functionData.chgFieldInputValue("DSC", "XX4 Description");
+			functionData.chgFieldInputValue("HLD2", "SS4");
+			functionData.chgFieldInputValue("DSC2", "SS4 Description");
+			fh.applyTransaction();
+			FunctionToolboxStub.printMessages(fh.rtvFunctionMessages().getMessages());
+
+			// retrieve journal header
+			JournalHeader journalHeader = fh.getFhd().getJournalHeader();
+			if (journalHeader != null)
+			{
+				System.out.println("Journal 1=" + journalHeader);
+			}
+			else
+			{
+				System.out.println("Journal 1=" + "ERROR");
+			}
+
+			return (journalHeader != null);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+		finally
+		{
+			if (functionHandler != null)
+			{
+				if (functionHandler.getFhd().getFunctionSession() != null)
+				{
+					SupervisorToolbox.removeSession(functionHandler.getFhd().getFunctionSession(), functionHandler.getFhd()
+									.getEquationUser().getEquationUnit());
+				}
+			}
+			cleanUp();
+		}
+	}
+	public void testStub08ALY1Add_001()
+	{
+		FunctionHandlerStub08ALY4SAdd stub = new FunctionHandlerStub08ALY4SAdd();
+		boolean success = stub.test();
+		assertEquals(true, success);
+	}
+
+}

@@ -1,0 +1,3509 @@
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs
+END
+org.eclipse.datatools.enablement.sqlite.ui_1.0.0.v200906020900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 156
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.enablement.sqlite.ui_1.0.0.v200906020900.jar
+END
+org.eclipse.persistence.moxy_1.1.3.v20091002-r5404.jar
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.persistence.moxy_1.1.3.v20091002-r5404.jar
+END
+org.eclipse.datatools.enablement.hsqldb.dbdefinition_1.0.0.v200906161800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 166
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.enablement.hsqldb.dbdefinition_1.0.0.v200906161800.jar
+END
+org.eclipse.datatools.connectivity.db.generic_1.0.1.v200908130547.jar
+K 25
+svn:wc:ra_dav:version-url
+V 159
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.connectivity.db.generic_1.0.1.v200908130547.jar
+END
+org.eclipse.datatools.sqltools.parsers.sql.query_1.0.1.v200906022302.jar
+K 25
+svn:wc:ra_dav:version-url
+V 162
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.parsers.sql.query_1.0.1.v200906022302.jar
+END
+org.apache.lucene_1.9.1.v20080530-1600.jar
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.apache.lucene_1.9.1.v20080530-1600.jar
+END
+org.eclipse.jst.server.generic.ui_1.0.405.v200905022002.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.server.generic.ui_1.0.405.v200905022002.jar
+END
+org.eclipse.mylyn.commons.ui_3.2.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.commons.ui_3.2.3.v20100217-0100-e3x.jar
+END
+org.eclipse.core.net_1.2.0.I20090522-1010.jar
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.core.net_1.2.0.I20090522-1010.jar
+END
+org.eclipse.equinox.p2.artifact.repository_1.0.100.v20090527-1812.jar
+K 25
+svn:wc:ra_dav:version-url
+V 159
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.p2.artifact.repository_1.0.100.v20090527-1812.jar
+END
+org.eclipse.pde.ui_3.5.1.v201001121200.jar
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.pde.ui_3.5.1.v201001121200.jar
+END
+org.eclipse.jst.pagedesigner.jsf.ui_1.1.4.v20100203.jar
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.pagedesigner.jsf.ui_1.1.4.v20100203.jar
+END
+org.eclipse.jface_3.5.0.I20090525-2000.jar
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jface_3.5.0.I20090525-2000.jar
+END
+org.eclipse.jst.ws.axis.consumption.core_1.0.306.v200810082309.jar
+K 25
+svn:wc:ra_dav:version-url
+V 156
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.ws.axis.consumption.core_1.0.306.v200810082309.jar
+END
+org.eclipse.equinox.http.jetty_2.0.0.v20090520-1800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.http.jetty_2.0.0.v20090520-1800.jar
+END
+org.eclipse.emf.ecore.change.edit_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.emf.ecore.change.edit_2.5.0.v200906151043.jar
+END
+org.eclipse.wst.ws.service.policy_1.0.103.v200905151848.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.ws.service.policy_1.0.103.v200905151848.jar
+END
+org.eclipse.wst.wsdl.ui_1.2.202.v200904271449.jar
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.wsdl.ui_1.2.202.v200904271449.jar
+END
+org.eclipse.ajdt.core_2.1.1.e35x-release-20101021-0900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ajdt.core_2.1.1.e35x-release-20101021-0900.jar
+END
+org.eclipse.jst.j2ee.ejb.annotation.model_1.1.102.v200805140020.jar
+K 25
+svn:wc:ra_dav:version-url
+V 157
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.j2ee.ejb.annotation.model_1.1.102.v200805140020.jar
+END
+org.eclipse.osgi_3.5.0.v20090520.jar
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.osgi_3.5.0.v20090520.jar
+END
+org.eclipse.equinox.weaving.aspectj_1.0.0.v20100108.jar
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.weaving.aspectj_1.0.0.v20100108.jar
+END
+org.eclipse.wst.webtools.doc.user_1.0.400.v200805150134.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.webtools.doc.user_1.0.400.v200805150134.jar
+END
+org.apache.commons.codec_1.3.0.v20080530-1600.jar
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.apache.commons.codec_1.3.0.v20080530-1600.jar
+END
+org.eclipse.wst.css.ui_1.0.401.v200907171457.jar
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.css.ui_1.0.401.v200907171457.jar
+END
+org.eclipse.datatools.connectivity.apache.derby.dbdefinition_1.0.2.v200906161815.jar
+K 25
+svn:wc:ra_dav:version-url
+V 174
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.connectivity.apache.derby.dbdefinition_1.0.2.v200906161815.jar
+END
+org.eclipse.xsd.source_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.xsd.source_2.5.0.v200906151043.jar
+END
+org.eclipse.wst.dtd.ui.infopop_1.0.300.v200805140200.jar
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.dtd.ui.infopop_1.0.300.v200805140200.jar
+END
+org.eclipse.wst.xsl.ui_1.0.100.v200907172129.jar
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.xsl.ui_1.0.100.v200907172129.jar
+END
+org.eclipse.help.appserver_3.1.400.v20090429_1800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.help.appserver_3.1.400.v20090429_1800.jar
+END
+org.eclipse.jst.j2ee.xdoclet.runtime_1.1.102.v200805140135.jar
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.j2ee.xdoclet.runtime_1.1.102.v200805140135.jar
+END
+org.eclipse.wst.ws.explorer_1.0.408.v200911241806.jar
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.ws.explorer_1.0.408.v200911241806.jar
+END
+org.eclipse.wst.internet.monitor.core_1.0.404.v20090609.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.internet.monitor.core_1.0.404.v20090609.jar
+END
+org.eclipse.jst.ejb.doc.user_1.1.100.v200810092245.jar
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.ejb.doc.user_1.1.100.v200810092245.jar
+END
+org.eclipse.epp.usagedata.ui_1.1.1.R201001291118.jar
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.epp.usagedata.ui_1.1.1.R201001291118.jar
+END
+org.eclipse.tm.terminal.telnet_2.0.101.v200909160005.jar
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.tm.terminal.telnet_2.0.101.v200909160005.jar
+END
+org.eclipse.rcp_3.5.0.v200906111540.jar
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.rcp_3.5.0.v200906111540.jar
+END
+org.eclipse.wst.xsl.doc_1.0.0.v200905071815.jar
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.xsl.doc_1.0.0.v200905071815.jar
+END
+org.eclipse.jdt_3.5.1.v200909170800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jdt_3.5.1.v200909170800.jar
+END
+org.eclipse.wst.css.core_1.1.301.v200910161432.jar
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.css.core_1.1.301.v200910161432.jar
+END
+org.eclipse.wst.wsi.ui.doc.user_1.0.401.v200809171927.jar
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.wsi.ui.doc.user_1.0.401.v200809171927.jar
+END
+org.eclipse.jst.j2ee.infopop_1.0.300.v200805140415.jar
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.j2ee.infopop_1.0.300.v200805140415.jar
+END
+org.eclipse.jdt.doc.user_3.5.1.r351_v20090821-0800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jdt.doc.user_3.5.1.r351_v20090821-0800.jar
+END
+org.eclipse.datatools.sqltools.schemaobjecteditor.ui_1.1.0.200810071.jar
+K 25
+svn:wc:ra_dav:version-url
+V 162
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.schemaobjecteditor.ui_1.1.0.200810071.jar
+END
+org.apache.oro_2.0.8.v200803061811.jar
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.apache.oro_2.0.8.v200803061811.jar
+END
+org.eclipse.equinox.p2.engine_1.0.100.v20090525.jar
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.p2.engine_1.0.100.v20090525.jar
+END
+org.eclipse.swtbot.ant.optional.junit4_2.0.1.20101106_1831-73ca7af-dev-e35.jar
+K 25
+svn:wc:ra_dav:version-url
+V 168
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.swtbot.ant.optional.junit4_2.0.1.20101106_1831-73ca7af-dev-e35.jar
+END
+org.eclipse.jdt.junit.runtime_3.4.100.v20090513-2000.jar
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jdt.junit.runtime_3.4.100.v20090513-2000.jar
+END
+org.eclipse.datatools.sqltools.data.ui_1.1.2.v200912080845.jar
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.data.ui_1.1.2.v200912080845.jar
+END
+org.eclipse.contribution.weaving.jdt.source_2.1.1.e35x-release-20101021-0900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 170
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.contribution.weaving.jdt.source_2.1.1.e35x-release-20101021-0900.jar
+END
+org.eclipse.equinox.simpleconfigurator.manipulator_1.0.100.v20090520-1905.jar
+K 25
+svn:wc:ra_dav:version-url
+V 167
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.simpleconfigurator.manipulator_1.0.100.v20090520-1905.jar
+END
+org.eclipse.jst.j2ee_1.1.301.v201001272230.jar
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.j2ee_1.1.301.v201001272230.jar
+END
+org.eclipse.pde.junit.runtime_3.4.0.v20090527.jar
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.pde.junit.runtime_3.4.0.v20090527.jar
+END
+org.eclipse.persistence.jpa.equinox.weaving_1.1.3.v20091002-r5404.jar
+K 25
+svn:wc:ra_dav:version-url
+V 159
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.persistence.jpa.equinox.weaving_1.1.3.v20091002-r5404.jar
+END
+org.eclipse.datatools.sqltools.doc.user_1.7.0.20090521092446.jar
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.doc.user_1.7.0.20090521092446.jar
+END
+org.eclipse.mylyn.ide.ant_3.2.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.ide.ant_3.2.3.v20100217-0100-e3x.jar
+END
+org.eclipse.wst.command.env.infopop_1.0.100.v200805301544.jar
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.command.env.infopop_1.0.100.v200805301544.jar
+END
+org.eclipse.text_3.5.0.v20090513-2000.jar
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.text_3.5.0.v20090513-2000.jar
+END
+org.eclipse.jst.jsf.ui_1.2.3.v201001271707.jar
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.jsf.ui_1.2.3.v201001271707.jar
+END
+org.eclipse.datatools.enablement.ibm.db2.luw.ui_1.0.1.v200906020900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 161
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.enablement.ibm.db2.luw.ui_1.0.1.v200906020900.jar
+END
+org.eclipse.jst.common.project.facet.ui_1.4.1.v200912011928.jar
+K 25
+svn:wc:ra_dav:version-url
+V 153
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.common.project.facet.ui_1.4.1.v200912011928.jar
+END
+org.eclipse.wst.xsd.core_1.1.401.v200903020335.jar
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.xsd.core_1.1.401.v200903020335.jar
+END
+org.eclipse.datatools.enablement.ibm.db2.zseries.dbdefinition_1.0.3.v200906161800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 175
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.enablement.ibm.db2.zseries.dbdefinition_1.0.3.v200906161800.jar
+END
+org.eclipse.wtp.javascript.capabilities_1.0.0.v200906072300.jar
+K 25
+svn:wc:ra_dav:version-url
+V 153
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wtp.javascript.capabilities_1.0.0.v200906072300.jar
+END
+org.eclipse.emf.ecore.xmi_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.emf.ecore.xmi_2.5.0.v200906151043.jar
+END
+org.eclipse.wst.xsl.core_1.0.1.v200908101420.jar
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.xsl.core_1.0.1.v200908101420.jar
+END
+org.eclipse.core.resources.win32.x86_3.5.0.v20081020.jar
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.core.resources.win32.x86_3.5.0.v20081020.jar
+END
+org.eclipse.ocl.ecore_1.3.0.v200905271400.jar
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ocl.ecore_1.3.0.v200905271400.jar
+END
+org.eclipse.mylyn.wikitext.tasks.ui_1.1.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.wikitext.tasks.ui_1.1.3.v20100217-0100-e3x.jar
+END
+org.eclipse.equinox.ds_1.1.0.v20090601.jar
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.ds_1.1.0.v20090601.jar
+END
+org.eclipse.epp.usagedata.gathering_1.1.1.R201001291118.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.epp.usagedata.gathering_1.1.1.R201001291118.jar
+END
+org.eclipse.datatools.intro_1.7.0.v200906031101.jar
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.intro_1.7.0.v200906031101.jar
+END
+org.eclipse.ui.workbench.texteditor_3.5.0.v20090603.jar
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ui.workbench.texteditor_3.5.0.v20090603.jar
+END
+org.eclipse.mylyn.ide.ui_3.2.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.ide.ui_3.2.3.v20100217-0100-e3x.jar
+END
+org.eclipse.jst.standard.schemas_1.0.200.v200810071953.jar
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.standard.schemas_1.0.200.v200810071953.jar
+END
+org.eclipse.wst.command.env.ui_1.1.2.v200811200248.jar
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.command.env.ui_1.1.2.v200811200248.jar
+END
+org.eclipse.jst.common.frameworks_1.1.301.v201001252130.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.common.frameworks_1.1.301.v201001252130.jar
+END
+org.eclipse.emf.ecore.editor_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.emf.ecore.editor_2.5.0.v200906151043.jar
+END
+org.eclipse.equinox.weaving.hook.source_1.0.0.v20100108.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.weaving.hook.source_1.0.0.v20100108.jar
+END
+org.eclipse.jst.ws.uddiregistry_1.0.400.v200901261650.jar
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.ws.uddiregistry_1.0.400.v200901261650.jar
+END
+org.eclipse.datatools.sqltools.routineeditor.ui_1.0.0.v200906022302.jar
+K 25
+svn:wc:ra_dav:version-url
+V 161
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.routineeditor.ui_1.0.0.v200906022302.jar
+END
+org.eclipse.datatools.enablement.hsqldb_1.0.0.v200906020900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 153
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.enablement.hsqldb_1.0.0.v200906020900.jar
+END
+org.eclipse.datatools.sqltools.ddlgen.ui_1.0.0.v200906022302.jar
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.ddlgen.ui_1.0.0.v200906022302.jar
+END
+org.eclipse.jst.jsf.common.ui_1.1.1.v20081209.jar
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.jsf.common.ui_1.1.1.v20081209.jar
+END
+org.eclipse.core.databinding.beans_1.2.0.I20090525-2000.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.core.databinding.beans_1.2.0.I20090525-2000.jar
+END
+org.eclipse.ajdt.doc.user_2.1.1.e35x-release-20101021-0900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ajdt.doc.user_2.1.1.e35x-release-20101021-0900.jar
+END
+org.eclipse.jst.jsf.common.runtime_1.0.201.v20090205.jar
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.jsf.common.runtime_1.0.201.v20090205.jar
+END
+org.eclipse.jst.j2ee.navigator.ui_1.1.301.v201001252130.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.j2ee.navigator.ui_1.1.301.v201001252130.jar
+END
+org.eclipse.mylyn.bugzilla.ide_3.2.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.bugzilla.ide_3.2.3.v20100217-0100-e3x.jar
+END
+org.eclipse.datatools.sqltools.db.generic.ui_1.0.0.v200906020900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 158
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.db.generic.ui_1.0.0.v200906020900.jar
+END
+org.eclipse.ui.views.log_1.0.100.v20090731.jar
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ui.views.log_1.0.100.v20090731.jar
+END
+org.eclipse.ecf.provider.filetransfer.ssl_1.0.0.v20090604-1131.jar
+K 25
+svn:wc:ra_dav:version-url
+V 156
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ecf.provider.filetransfer.ssl_1.0.0.v20090604-1131.jar
+END
+org.eclipse.equinox.p2.garbagecollector_1.0.100.v20090520-1905.jar
+K 25
+svn:wc:ra_dav:version-url
+V 156
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.p2.garbagecollector_1.0.100.v20090520-1905.jar
+END
+org.eclipse.jst.j2ee.ejb.annotations.ui_1.1.102.v200805140020.jar
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.j2ee.ejb.annotations.ui_1.1.102.v200805140020.jar
+END
+org.eclipse.tm.terminal.ssh_2.0.100.v200905272300.jar
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.tm.terminal.ssh_2.0.100.v200905272300.jar
+END
+org.eclipse.xsd.edit_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.xsd.edit_2.5.0.v200906151043.jar
+END
+org.eclipse.equinox.http.registry_1.0.200.v20090520-1800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.http.registry_1.0.200.v20090520-1800.jar
+END
+org.eclipse.swtbot.swt.finder_2.0.0.595-dev-e35.jar
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.swtbot.swt.finder_2.0.0.595-dev-e35.jar
+END
+org.eclipse.equinox.p2.extensionlocation_1.0.100.v20090520-1905.jar
+K 25
+svn:wc:ra_dav:version-url
+V 157
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.p2.extensionlocation_1.0.100.v20090520-1905.jar
+END
+org.eclipse.mylyn.bugzilla.ui_3.2.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.bugzilla.ui_3.2.3.v20100217-0100-e3x.jar
+END
+org.eclipse.emf.ecore.change_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.emf.ecore.change_2.5.0.v200906151043.jar
+END
+org.eclipse.emf.common_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.emf.common_2.5.0.v200906151043.jar
+END
+org.eclipse.emf.ecore.xmi.source_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.emf.ecore.xmi.source_2.5.0.v200906151043.jar
+END
+org.eclipse.datatools.sqltools.db.generic_1.0.0.v200906020900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.db.generic_1.0.0.v200906020900.jar
+END
+org.eclipse.core.databinding.property_1.2.0.I20090526-2000.jar
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.core.databinding.property_1.2.0.I20090526-2000.jar
+END
+org.eclipse.team.cvs.ssh_3.2.100.I20090508-2000.jar
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.team.cvs.ssh_3.2.100.I20090508-2000.jar
+END
+org.eclipse.ui.cheatsheets_3.3.200.v20090526.jar
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ui.cheatsheets_3.3.200.v20090526.jar
+END
+org.eclipse.datatools.enablement.msft.sqlserver.ui_1.0.1.v200908130512.jar
+K 25
+svn:wc:ra_dav:version-url
+V 164
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.enablement.msft.sqlserver.ui_1.0.1.v200908130512.jar
+END
+org.eclipse.jst.jsp.core_1.2.204.v201001270045.jar
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.jsp.core_1.2.204.v201001270045.jar
+END
+org.eclipse.jst.ws.consumption_1.0.408.v200911241817.jar
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.ws.consumption_1.0.408.v200911241817.jar
+END
+org.eclipse.jst.ws.axis.creation.ui_1.0.406.v200903031852.jar
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.ws.axis.creation.ui_1.0.406.v200903031852.jar
+END
+org.eclipse.wst.wsdl.validation_1.1.402.v200911251542.jar
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.wsdl.validation_1.1.402.v200911251542.jar
+END
+org.eclipse.datatools.sqltools.result.ui_1.0.2.v201002011830.jar
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.result.ui_1.0.2.v201002011830.jar
+END
+org.eclipse.jst.ws.consumption.ui_1.1.106.v200911241851.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.ws.consumption.ui_1.1.106.v200911241851.jar
+END
+org.eclipse.xsd_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.xsd_2.5.0.v200906151043.jar
+END
+org.eclipse.swt_3.5.0.v3550b.jar
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.swt_3.5.0.v3550b.jar
+END
+org.eclipse.xsd.ecore.exporter_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.xsd.ecore.exporter_2.5.0.v200906151043.jar
+END
+org.eclipse.core.databinding.observable_1.2.0.I20090604-2000.jar
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.core.databinding.observable_1.2.0.I20090604-2000.jar
+END
+org.eclipse.jdt.junit_3.5.1.r351_v20090708-0800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jdt.junit_3.5.1.r351_v20090708-0800.jar
+END
+org.eclipse.team.cvs.ui_3.3.202.r35x_20090930-0800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.team.cvs.ui_3.3.202.r35x_20090930-0800.jar
+END
+org.mortbay.jetty_5.1.14.v200806031611.jar
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.mortbay.jetty_5.1.14.v200806031611.jar
+END
+org.eclipse.compare.win32_1.0.0.I20090430-0408.jar
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.compare.win32_1.0.0.I20090430-0408.jar
+END
+org.eclipse.wst.validation.ui_1.2.104.v200904232035.jar
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.validation.ui_1.2.104.v200904232035.jar
+END
+org.eclipse.osgi.util_3.2.0.v20090520-1800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.osgi.util_3.2.0.v20090520-1800.jar
+END
+org.eclipse.jst.ws.axis.consumption.ui_1.0.405.v200901261650.jar
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.ws.axis.consumption.ui_1.0.405.v200901261650.jar
+END
+javax.xml_1.3.4.v200806030440.jar
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/javax.xml_1.3.4.v200806030440.jar
+END
+org.eclipse.xsd.cheatsheets_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.xsd.cheatsheets_2.5.0.v200906151043.jar
+END
+org.eclipse.jem.beaninfo.vm.common_2.0.201.v200908101600.jar
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jem.beaninfo.vm.common_2.0.201.v200908101600.jar
+END
+org.eclipse.ui.win32_3.2.100.v20090429-1800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ui.win32_3.2.100.v20090429-1800.jar
+END
+org.eclipse.wst.ws.ui_1.1.100.v200903112221.jar
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.ws.ui_1.1.100.v200903112221.jar
+END
+org.eclipse.equinox.launcher_1.0.200.v20090520.jar
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.launcher_1.0.200.v20090520.jar
+END
+org.eclipse.wst.web.ui.infopop_1.0.300.v200805140415.jar
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.web.ui.infopop_1.0.300.v200805140415.jar
+END
+org.eclipse.dstore.extra_2.1.101.v200907301400.jar
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.dstore.extra_2.1.101.v200907301400.jar
+END
+org.eclipse.swtbot.eclipse.core_2.0.0.595-dev-e35.jar
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.swtbot.eclipse.core_2.0.0.595-dev-e35.jar
+END
+org.eclipse.jdt.compiler.apt_1.0.201.R35x_v20090825-1530.jar
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jdt.compiler.apt_1.0.201.R35x_v20090825-1530.jar
+END
+org.eclipse.datatools.enablement.ibm.db2.iseries.dbdefinition_1.0.3.v200906161800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 175
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.enablement.ibm.db2.iseries.dbdefinition_1.0.3.v200906161800.jar
+END
+org.eclipse.search_3.5.0.v20090526-2000.jar
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.search_3.5.0.v20090526-2000.jar
+END
+org.eclipse.jst.j2ee.ui_1.1.301.v201001252130.jar
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.j2ee.ui_1.1.301.v201001252130.jar
+END
+org.eclipse.jst.jee_1.0.201.v201002021055.jar
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.jee_1.0.201.v201002021055.jar
+END
+org.eclipse.wst.common.project.facet.core_1.4.1.v200911141735.jar
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.common.project.facet.core_1.4.1.v200911141735.jar
+END
+org.eclipse.equinox.p2.touchpoint.natives_1.0.100.v20090520-1905.jar
+K 25
+svn:wc:ra_dav:version-url
+V 158
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.p2.touchpoint.natives_1.0.100.v20090520-1905.jar
+END
+org.eclipse.mylyn.resources.ui_3.2.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.resources.ui_3.2.3.v20100217-0100-e3x.jar
+END
+org.eclipse.wtp.xml.capabilities_1.0.0.v200906072300.jar
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wtp.xml.capabilities_1.0.0.v200906072300.jar
+END
+org.eclipse.team.cvs.ssh2_3.2.200.I20090508-2000.jar
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.team.cvs.ssh2_3.2.200.I20090508-2000.jar
+END
+org.eclipse.jst.common.annotations.core_1.1.200.v201001272230.jar
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.common.annotations.core_1.1.200.v201001272230.jar
+END
+org.eclipse.jem_2.0.301.v201001252130.jar
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jem_2.0.301.v201001252130.jar
+END
+org.eclipse.mylyn.wikitext.core_1.1.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.wikitext.core_1.1.3.v20100217-0100-e3x.jar
+END
+org.eclipse.equinox.frameworkadmin.equinox_1.0.100.v20090520-1905.jar
+K 25
+svn:wc:ra_dav:version-url
+V 159
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.frameworkadmin.equinox_1.0.100.v20090520-1905.jar
+END
+org.eclipse.jst.j2ee.jca_1.1.301.v201001252130.jar
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.j2ee.jca_1.1.301.v201001252130.jar
+END
+org.eclipse.equinox.p2.ui_1.0.100.v20090527-1812.jar
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.p2.ui_1.0.100.v20090527-1812.jar
+END
+org.eclipse.mylyn.team.ui_3.2.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.team.ui_3.2.3.v20100217-0100-e3x.jar
+END
+org.eclipse.jst.servlet.ui.infopop_1.0.300.v200805140415.jar
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.servlet.ui.infopop_1.0.300.v200805140415.jar
+END
+org.eclipse.wst.xml.ui_1.1.2.v201001222130.jar
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.xml.ui_1.1.2.v201001222130.jar
+END
+org.eclipse.datatools.connectivity.dbdefinition.genericJDBC_1.0.1.v200906161815.jar
+K 25
+svn:wc:ra_dav:version-url
+V 173
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.connectivity.dbdefinition.genericJDBC_1.0.1.v200906161815.jar
+END
+org.eclipse.datatools.enablement.ibm.db2.zseries.ui_1.0.0.v200906020900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 165
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.enablement.ibm.db2.zseries.ui_1.0.0.v200906020900.jar
+END
+org.eclipse.datatools.enablement.finfo_1.5.1.v200906161800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.enablement.finfo_1.5.1.v200906161800.jar
+END
+org.eclipse.mylyn.wikitext.tracwiki.core_1.1.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 159
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.wikitext.tracwiki.core_1.1.3.v20100217-0100-e3x.jar
+END
+org.eclipse.datatools.connectivity.sqm.core_1.1.1.v201001180200.jar
+K 25
+svn:wc:ra_dav:version-url
+V 157
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.connectivity.sqm.core_1.1.1.v201001180200.jar
+END
+org.eclipse.wst.jsdt.ui_1.0.201.v2010012803.jar
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.jsdt.ui_1.0.201.v2010012803.jar
+END
+org.eclipse.equinox.p2.directorywatcher_1.0.100.v20090525.jar
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.p2.directorywatcher_1.0.100.v20090525.jar
+END
+org.eclipse.persistence.jpa.equinox_1.1.3.v20091002-r5404.jar
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.persistence.jpa.equinox_1.1.3.v20091002-r5404.jar
+END
+org.eclipse.wst.validation.infopop_1.0.300.v200806041506.jar
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.validation.infopop_1.0.300.v200806041506.jar
+END
+org.eclipse.pde.ds.core_1.0.1.v20100118.jar
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.pde.ds.core_1.0.1.v20100118.jar
+END
+org.eclipse.help_3.4.0.v20090526.jar
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.help_3.4.0.v20090526.jar
+END
+org.eclipse.jem.workbench_2.0.201.v200911302230.jar
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jem.workbench_2.0.201.v200911302230.jar
+END
+org.eclipse.mylyn.ide.capabilities_3.2.0.v20090429-0837.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.ide.capabilities_3.2.0.v20090429-0837.jar
+END
+org.eclipse.wst.sse.ui.infopop_1.0.200.v200805301545.jar
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.sse.ui.infopop_1.0.200.v200805301545.jar
+END
+org.eclipse.equinox.weaving.caching_1.0.0.v20100108.jar
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.weaving.caching_1.0.0.v20100108.jar
+END
+org.eclipse.ui.console_3.4.0.v20090513.jar
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ui.console_3.4.0.v20090513.jar
+END
+org.eclipse.equinox.p2.core_1.0.100.v20090520-1905.jar
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.p2.core_1.0.100.v20090520-1905.jar
+END
+org.eclipse.datatools.sqltools.result_1.0.0.v200906022302.jar
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.result_1.0.0.v200906022302.jar
+END
+org.eclipse.jst.jsf.standard.tagsupport_1.1.205.v201002101327.jar
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.jsf.standard.tagsupport_1.1.205.v201002101327.jar
+END
+org.eclipse.wst.wsi_1.0.305.v200902181431.jar
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.wsi_1.0.305.v200902181431.jar
+END
+org.eclipse.datatools.enablement.ibm.db2.luw.dbdefinition_1.0.3.v200906161800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 171
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.enablement.ibm.db2.luw.dbdefinition_1.0.3.v200906161800.jar
+END
+org.eclipse.wst.common.modulecore_1.1.301.v201001252130.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.common.modulecore_1.1.301.v201001252130.jar
+END
+org.eclipse.core.contenttype_3.4.0.v20090429-1800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.core.contenttype_3.4.0.v20090429-1800.jar
+END
+org.eclipse.wst.web.ui_1.1.301.v201001252130.jar
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.web.ui_1.1.301.v201001252130.jar
+END
+org.eclipse.equinox.p2.updatechecker_1.1.0.v20090520-1905.jar
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.p2.updatechecker_1.1.0.v20090520-1905.jar
+END
+org.eclipse.datatools.enablement.msft.sqlserver.dbdefinition_1.0.0.v200906161800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 174
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.enablement.msft.sqlserver.dbdefinition_1.0.0.v200906161800.jar
+END
+org.eclipse.wst.doc.user_1.2.0.v200806052254.jar
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.doc.user_1.2.0.v200806052254.jar
+END
+net.sourceforge.lpg.lpgjavaruntime_1.1.0.v200803061910.jar
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/net.sourceforge.lpg.lpgjavaruntime_1.1.0.v200803061910.jar
+END
+org.apache.lucene.analysis_1.9.1.v20080530-1600.jar
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.apache.lucene.analysis_1.9.1.v20080530-1600.jar
+END
+org.eclipse.equinox.p2.exemplarysetup_1.0.100.v20090520-1905.jar
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.p2.exemplarysetup_1.0.100.v20090520-1905.jar
+END
+org.eclipse.core.net.win32.x86_1.0.0.I20080909.jar
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.core.net.win32.x86_1.0.0.I20080909.jar
+END
+org.eclipse.mylyn.tasks.core_3.2.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.tasks.core_3.2.3.v20100217-0100-e3x.jar
+END
+org.eclipse.jst.ejb.ui_1.1.301.v200908131325.jar
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.ejb.ui_1.1.301.v200908131325.jar
+END
+com.ibm.icu_3.8.1.v20080530.jar
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/com.ibm.icu_3.8.1.v20080530.jar
+END
+org.eclipse.xsd.editor_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.xsd.editor_2.5.0.v200906151043.jar
+END
+org.eclipse.swt.win32.win32.x86_3.5.0.v3550b.jar
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.swt.win32.win32.x86_3.5.0.v3550b.jar
+END
+org.eclipse.wst.jsdt.core_1.0.201.v2010012803.jar
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.jsdt.core_1.0.201.v2010012803.jar
+END
+org.eclipse.debug.core_3.5.0.v20090526-1600.jar
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.debug.core_3.5.0.v20090526-1600.jar
+END
+org.eclipse.persistence.antlr_1.1.3.v20091002-r5404.jar
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.persistence.antlr_1.1.3.v20091002-r5404.jar
+END
+org.eclipse.equinox.p2.jarprocessor_1.0.100.v20090520-1905.jar
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.p2.jarprocessor_1.0.100.v20090520-1905.jar
+END
+org.eclipse.jst.jsf.doc.user_1.1.200.v200906152024.jar
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.jsf.doc.user_1.1.200.v200906152024.jar
+END
+org.eclipse.core.resources.compatibility_3.4.0.v20090505.jar
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.core.resources.compatibility_3.4.0.v20090505.jar
+END
+org.eclipse.xsd.ecore.converter_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.xsd.ecore.converter_2.5.0.v200906151043.jar
+END
+org.eclipse.contribution.xref.ui.source_2.1.1.e35x-release-20101021-0900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 166
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.contribution.xref.ui.source_2.1.1.e35x-release-20101021-0900.jar
+END
+org.eclipse.ui.externaltools_3.2.0.v20090504.jar
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ui.externaltools_3.2.0.v20090504.jar
+END
+org.eclipse.wst.dtd.ui_1.0.400.v200904300717.jar
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.dtd.ui_1.0.400.v200904300717.jar
+END
+org.eclipse.ajdt.ui_2.1.1.e35x-release-20101021-0900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ajdt.ui_2.1.1.e35x-release-20101021-0900.jar
+END
+org.eclipse.ui.ide.application_1.0.100.I20090525-2000.jar
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ui.ide.application_1.0.100.I20090525-2000.jar
+END
+org.eclipse.wst.ws.infopop_1.0.300.v200805140230.jar
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.ws.infopop_1.0.300.v200805140230.jar
+END
+org.eclipse.jst.jsf.core_1.2.5.v201001271707.jar
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.jsf.core_1.2.5.v201001271707.jar
+END
+org.eclipse.datatools.sqltools.sqleditor_1.0.1.v200912241345.jar
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.sqleditor_1.0.1.v200912241345.jar
+END
+org.eclipse.jst.server.tomcat.core_1.1.106.v20090814.jar
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.server.tomcat.core_1.1.106.v20090814.jar
+END
+org.eclipse.xsd.edit.source_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.xsd.edit.source_2.5.0.v200906151043.jar
+END
+org.eclipse.wst.xml.ui.infopop_1.0.300.v200805140200.jar
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.xml.ui.infopop_1.0.300.v200805140200.jar
+END
+org.apache.log4j_1.2.13.v200806030600.jar
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.apache.log4j_1.2.13.v200806030600.jar
+END
+org.eclipse.datatools.sqltools.plan_1.0.0.v200906022302.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.plan_1.0.0.v200906022302.jar
+END
+org.eclipse.platform.doc.user_3.5.0.v20090611.jar
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.platform.doc.user_3.5.0.v20090611.jar
+END
+org.eclipse.jst.pagedesigner.jsp.core_1.1.3.v201002111131.jar
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.pagedesigner.jsp.core_1.1.3.v201002111131.jar
+END
+org.eclipse.equinox.p2.touchpoint.eclipse_1.0.100.v20090611-1224.jar
+K 25
+svn:wc:ra_dav:version-url
+V 158
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.p2.touchpoint.eclipse_1.0.100.v20090611-1224.jar
+END
+org.eclipse.core.filebuffers_3.5.0.v20090526-2000.jar
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.core.filebuffers_3.5.0.v20090526-2000.jar
+END
+org.eclipse.jst.server.ui.doc.user_1.0.400.v200805150133.jar
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.server.ui.doc.user_1.0.400.v200805150133.jar
+END
+org.eclipse.jst.jee.ui_1.0.201.v201002021208.jar
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.jee.ui_1.0.201.v201002021208.jar
+END
+org.eclipse.jst.server.ui_1.1.0.v20090421.jar
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.server.ui_1.1.0.v20090421.jar
+END
+org.eclipse.equinox.p2.updatesite_1.0.100.v20090525.jar
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.p2.updatesite_1.0.100.v20090525.jar
+END
+org.eclipse.team.ui_3.5.0.I20090430-0408.jar
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.team.ui_3.5.0.I20090430-0408.jar
+END
+org.eclipse.jst.j2ee.webservice_1.1.300.v200901220600.jar
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.j2ee.webservice_1.1.300.v200901220600.jar
+END
+org.eclipse.mylyn.commons.net_3.2.0.v20090617-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.commons.net_3.2.0.v20090617-0100-e3x.jar
+END
+org.eclipse.equinox.jsp.jasper_1.0.200.v20090520-1800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.jsp.jasper_1.0.200.v20090520-1800.jar
+END
+org.eclipse.equinox.app_1.2.0.v20090520-1800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.app_1.2.0.v20090520-1800.jar
+END
+org.eclipse.cvs_1.0.400.v201002111343.jar
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.cvs_1.0.400.v201002111343.jar
+END
+org.eclipse.jface.text_3.5.0.v20090602.jar
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jface.text_3.5.0.v20090602.jar
+END
+org.eclipse.wst.xsl.jaxp.debug.ui_1.0.0.v200904240436.jar
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.xsl.jaxp.debug.ui_1.0.0.v200904240436.jar
+END
+org.eclipse.wst.common.emf_1.1.301.v200908181930.jar
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.common.emf_1.1.301.v200908181930.jar
+END
+org.eclipse.datatools.connectivity.doc.user.contexts_1.7.0.20090521092446.jar
+K 25
+svn:wc:ra_dav:version-url
+V 167
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.connectivity.doc.user.contexts_1.7.0.20090521092446.jar
+END
+org.eclipse.datatools.enablement.ibm.db2.zseries_1.0.1.v200906020900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 162
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.enablement.ibm.db2.zseries_1.0.1.v200906020900.jar
+END
+org.eclipse.jst.ws_1.0.407.v200905191120.jar
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.ws_1.0.407.v200905191120.jar
+END
+org.eclipse.aspectj_2.1.1.e35x-release-20101021-0900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.aspectj_2.1.1.e35x-release-20101021-0900.jar
+END
+org.eclipse.datatools.enablement.postgresql.dbdefinition_1.0.1.v200906161800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 170
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.enablement.postgresql.dbdefinition_1.0.1.v200906161800.jar
+END
+org.eclipse.wst.command.env.core_1.0.204.v200805140020.jar
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.command.env.core_1.0.204.v200805140020.jar
+END
+org.eclipse.datatools.enablement.ibm.informix.dbdefinition_1.0.3.v200906161800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 172
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.enablement.ibm.informix.dbdefinition_1.0.3.v200906161800.jar
+END
+org.eclipse.ui.navigator_3.4.0.I20090525-2000.jar
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ui.navigator_3.4.0.I20090525-2000.jar
+END
+org.eclipse.ui.views_3.4.0.I20090525-2000.jar
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ui.views_3.4.0.I20090525-2000.jar
+END
+org.eclipse.uml2.common_1.5.0.v200905041045.jar
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.uml2.common_1.5.0.v200905041045.jar
+END
+org.eclipse.wst.xsl.jaxp.debug_1.0.0.v200904240436.jar
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.xsl.jaxp.debug_1.0.0.v200904240436.jar
+END
+org.eclipse.core.jobs_3.4.100.v20090429-1800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.core.jobs_3.4.100.v20090429-1800.jar
+END
+org.eclipse.ui.presentations.r21_3.2.100.I20081007-0800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ui.presentations.r21_3.2.100.I20081007-0800.jar
+END
+org.eclipse.datatools.connectivity.sqm.core.ui_1.1.100.v200910270525.jar
+K 25
+svn:wc:ra_dav:version-url
+V 162
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.connectivity.sqm.core.ui_1.1.100.v200910270525.jar
+END
+org.eclipse.jst.common.project.facet.core_1.4.1.v200911141836.jar
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.common.project.facet.core_1.4.1.v200911141836.jar
+END
+org.eclipse.equinox.p2.director.app_1.0.100.v20090521-1912.jar
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.p2.director.app_1.0.100.v20090521-1912.jar
+END
+org.eclipse.equinox.weaving.caching.j9_1.0.0.v20100108.jar
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.weaving.caching.j9_1.0.0.v20100108.jar
+END
+org.eclipse.datatools.sqltools.parsers.sql_1.0.1.v200906022302.jar
+K 25
+svn:wc:ra_dav:version-url
+V 156
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.parsers.sql_1.0.1.v200906022302.jar
+END
+org.eclipse.contribution.xref.core.source_2.1.1.e35x-release-20101021-0900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 168
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.contribution.xref.core.source_2.1.1.e35x-release-20101021-0900.jar
+END
+org.sat4j.pb_2.0.3.v20081021.jar
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.sat4j.pb_2.0.3.v20081021.jar
+END
+org.eclipse.mylyn.team.cvs_3.2.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.team.cvs_3.2.3.v20100217-0100-e3x.jar
+END
+org.apache.commons.lang_2.3.0.v200803061910.jar
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.apache.commons.lang_2.3.0.v200803061910.jar
+END
+org.eclipse.jst.ejb.ui.infopop_1.0.200.v200905141725.jar
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.ejb.ui.infopop_1.0.200.v200905141725.jar
+END
+org.eclipse.wst.dtd.core_1.1.300.v200904181727.jar
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.dtd.core_1.1.300.v200904181727.jar
+END
+org.eclipse.jst.ws.creation.ui_1.0.409.v200911241856.jar
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.ws.creation.ui_1.0.409.v200911241856.jar
+END
+org.eclipse.wst.xsl.jaxp.launching_1.0.0.v200904240436.jar
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.xsl.jaxp.launching_1.0.0.v200904240436.jar
+END
+org.eclipse.wst.jsdt.support.firefox_1.0.200.v200904290357.jar
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.jsdt.support.firefox_1.0.200.v200904290357.jar
+END
+org.eclipse.datatools.enablement.ibm.db2.iseries_1.0.1.v200906020900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 162
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.enablement.ibm.db2.iseries_1.0.1.v200906020900.jar
+END
+org.eclipse.xsd.mapping.editor_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.xsd.mapping.editor_2.5.0.v200906151043.jar
+END
+org.eclipse.wst.command.env_1.0.408.v200903110045.jar
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.command.env_1.0.408.v200903110045.jar
+END
+org.eclipse.jst.jee.ejb_1.0.201.v201002021057.jar
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.jee.ejb_1.0.201.v201002021057.jar
+END
+org.eclipse.emf.ecore.change.source_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.emf.ecore.change.source_2.5.0.v200906151043.jar
+END
+org.eclipse.xsd.example.source_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.xsd.example.source_2.5.0.v200906151043.jar
+END
+org.eclipse.pde.doc.user_3.5.0.v20090818.jar
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.pde.doc.user_3.5.0.v20090818.jar
+END
+javax.activation_1.1.0.v200806101325.jar
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/javax.activation_1.1.0.v200806101325.jar
+END
+org.eclipse.jst.common.annotations.controller_1.1.100.v200805140020.jar
+K 25
+svn:wc:ra_dav:version-url
+V 161
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.common.annotations.controller_1.1.100.v200805140020.jar
+END
+org.eclipse.wst.common.frameworks.ui_1.1.301.v200908101600.jar
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.common.frameworks.ui_1.1.301.v200908101600.jar
+END
+org.eclipse.jst.ws.axis2.consumption.ui_1.0.102.v200807232000.jar
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.ws.axis2.consumption.ui_1.0.102.v200807232000.jar
+END
+org.eclipse.wst.server.preview.adapter_1.1.0.v20090311b.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.server.preview.adapter_1.1.0.v20090311b.jar
+END
+org.eclipse.ltk.ui.refactoring_3.4.100.v20090604.jar
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ltk.ui.refactoring_3.4.100.v20090604.jar
+END
+org.eclipse.mylyn.context.ui_3.2.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.context.ui_3.2.3.v20100217-0100-e3x.jar
+END
+org.eclipse.equinox.p2.repository.tools_1.0.0.v20090527-1812.jar
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.p2.repository.tools_1.0.0.v20090527-1812.jar
+END
+org.eclipse.core.filesystem.win32.x86_1.1.0.v20080604-1400.jar
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.core.filesystem.win32.x86_1.1.0.v20080604-1400.jar
+END
+org.eclipse.wst.html.ui_1.0.401.v200908111935.jar
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.html.ui_1.0.401.v200908111935.jar
+END
+org.eclipse.mylyn.help.ui_3.2.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.help.ui_3.2.3.v20100217-0100-e3x.jar
+END
+org.eclipse.core.runtime.compatibility.auth_3.2.100.v20090413.jar
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.core.runtime.compatibility.auth_3.2.100.v20090413.jar
+END
+org.apache.commons.httpclient_3.1.0.v20080605-1935.jar
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.apache.commons.httpclient_3.1.0.v20080605-1935.jar
+END
+org.eclipse.equinox.weaving.caching.j9.source_1.0.0.v20100108.jar
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.weaving.caching.j9.source_1.0.0.v20100108.jar
+END
+javax.servlet.jsp_2.0.0.v200806031607.jar
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/javax.servlet.jsp_2.0.0.v200806031607.jar
+END
+org.apache.commons.logging_1.0.4.v20080605-1930.jar
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.apache.commons.logging_1.0.4.v20080605-1930.jar
+END
+org.eclipse.datatools.connectivity.doc.user_1.7.0.20090521092446.jar
+K 25
+svn:wc:ra_dav:version-url
+V 158
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.connectivity.doc.user_1.7.0.20090521092446.jar
+END
+org.eclipse.pde.ds.ui_1.0.0.v20100209-maintenance.jar
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.pde.ds.ui_1.0.0.v20100209-maintenance.jar
+END
+org.eclipse.jst.server.ui.infopop_1.0.400.v200805140145.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.server.ui.infopop_1.0.400.v200805140145.jar
+END
+org.eclipse.jst.ws.infopop_1.0.300.v200805140230.jar
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.ws.infopop_1.0.300.v200805140230.jar
+END
+org.eclipse.debug.ui_3.5.0.v20090603.jar
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.debug.ui_3.5.0.v20090603.jar
+END
+org.eclipse.wst.ws.parser_1.0.402.v200901220107.jar
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.ws.parser_1.0.402.v200901220107.jar
+END
+org.eclipse.datatools.sqltools.schemaobjecteditor.ui.pages_1.1.0.200810071.jar
+K 25
+svn:wc:ra_dav:version-url
+V 168
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.schemaobjecteditor.ui.pages_1.1.0.200810071.jar
+END
+org.eclipse.wst.validation_1.2.104.v200911120201.jar
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.validation_1.2.104.v200911120201.jar
+END
+org.eclipse.equinox.p2.repository_1.0.0.v20090601-1921.jar
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.p2.repository_1.0.0.v20090601-1921.jar
+END
+org.eclipse.ant.ui_3.4.1.v20090901_r351.jar
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ant.ui_3.4.1.v20090901_r351.jar
+END
+org.eclipse.help.ui_3.4.0.v20090528.jar
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.help.ui_3.4.0.v20090528.jar
+END
+org.eclipse.wst.ws_1.1.103.v200903111822.jar
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.ws_1.1.103.v200903111822.jar
+END
+org.eclipse.update.configurator_3.3.0.v20090312.jar
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.update.configurator_3.3.0.v20090312.jar
+END
+org.eclipse.core.runtime.compatibility_3.2.0.v20090413.jar
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.core.runtime.compatibility_3.2.0.v20090413.jar
+END
+javax.wsdl_1.4.0.v200806030407.jar
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/javax.wsdl_1.4.0.v200806030407.jar
+END
+org.eclipse.equinox.registry_3.4.100.v20090520-1800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.registry_3.4.100.v20090520-1800.jar
+END
+org.eclipse.mylyn.wikitext.textile.core_1.1.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 158
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.wikitext.textile.core_1.1.3.v20100217-0100-e3x.jar
+END
+org.eclipse.mylyn.wikitext.confluence.core_1.1.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 161
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.wikitext.confluence.core_1.1.3.v20100217-0100-e3x.jar
+END
+org.eclipse.wst.xsl.debug.ui_1.0.0.v200904240436.jar
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.xsl.debug.ui_1.0.0.v200904240436.jar
+END
+org.eclipse.wst.web_1.1.301.v200911302230.jar
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.web_1.1.301.v200911302230.jar
+END
+org.eclipse.wst.xsl_1.0.0.v200905250058.jar
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.xsl_1.0.0.v200905250058.jar
+END
+org.eclipse.wst.xsl.xalan_1.0.0.v200904240436.jar
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.xsl.xalan_1.0.0.v200904240436.jar
+END
+org.eclipse.mylyn.wikitext.ui_1.1.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.wikitext.ui_1.1.3.v20100217-0100-e3x.jar
+END
+org.eclipse.equinox.p2.console_1.0.100.v20090520-1905.jar
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.p2.console_1.0.100.v20090520-1905.jar
+END
+org.eclipse.mylyn.tasks.bugs_3.2.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.tasks.bugs_3.2.3.v20100217-0100-e3x.jar
+END
+org.eclipse.equinox.p2.metadata.generator_1.0.100.v20090520-1905.jar
+K 25
+svn:wc:ra_dav:version-url
+V 158
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.p2.metadata.generator_1.0.100.v20090520-1905.jar
+END
+org.eclipse.datatools.sqltools.routineeditor_1.0.0.v200906022302.jar
+K 25
+svn:wc:ra_dav:version-url
+V 158
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.routineeditor_1.0.0.v200906022302.jar
+END
+org.eclipse.wst.server.discovery_1.0.1.v20100210.jar
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.server.discovery_1.0.1.v20100210.jar
+END
+org.eclipse.jst.ws.axis2.creation.ui_1.0.103.v200807162242.jar
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.ws.axis2.creation.ui_1.0.103.v200807162242.jar
+END
+org.eclipse.swtbot.eclipse.ui_2.0.0.595-dev-e35.jar
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.swtbot.eclipse.ui_2.0.0.595-dev-e35.jar
+END
+org.eclipse.datatools.sqltools.parsers.sql.lexer_1.0.1.v200906030654.jar
+K 25
+svn:wc:ra_dav:version-url
+V 162
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.parsers.sql.lexer_1.0.1.v200906030654.jar
+END
+org.eclipse.jst.j2ee.doc.user_1.1.100.v200810071436.jar
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.j2ee.doc.user_1.1.100.v200810071436.jar
+END
+org.eclipse.wst.html.core_1.1.300.v200903120608.jar
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.html.core_1.1.300.v200903120608.jar
+END
+org.eclipse.jst.server.core_1.2.1.v20100127.jar
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.server.core_1.2.1.v20100127.jar
+END
+org.eclipse.mylyn.wikitext.twiki.ui_1.1.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.wikitext.twiki.ui_1.1.3.v20100217-0100-e3x.jar
+END
+org.eclipse.contribution.visualiser.source_2.2.0.e35x-release-20101021-0900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 169
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.contribution.visualiser.source_2.2.0.e35x-release-20101021-0900.jar
+END
+org.eclipse.ui.navigator.resources_3.4.0.I20090525-2000.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ui.navigator.resources_3.4.0.I20090525-2000.jar
+END
+org.eclipse.wst.server.ui.doc.user_1.1.150.v200901232034.jar
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.server.ui.doc.user_1.1.150.v200901232034.jar
+END
+org.eclipse.pde.ui.templates_3.4.100.v20090527.jar
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.pde.ui.templates_3.4.100.v20090527.jar
+END
+org.eclipse.core.boot_3.1.100.v20080218.jar
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.core.boot_3.1.100.v20080218.jar
+END
+org.eclipse.persistence.oracle_1.1.3.v20091002-r5404.jar
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.persistence.oracle_1.1.3.v20091002-r5404.jar
+END
+org.eclipse.update.scheduler_3.2.200.v20081127.jar
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.update.scheduler_3.2.200.v20081127.jar
+END
+org.eclipse.jdt.ui_3.5.1.r351_v20090821-0800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jdt.ui_3.5.1.r351_v20090821-0800.jar
+END
+org.eclipse.persistence.jpa_1.1.3.v20091002-r5404.jar
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.persistence.jpa_1.1.3.v20091002-r5404.jar
+END
+org.eclipse.datatools.sqltools.doc.user.contexts_1.7.0.20090521092446.jar
+K 25
+svn:wc:ra_dav:version-url
+V 163
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.doc.user.contexts_1.7.0.20090521092446.jar
+END
+org.eclipse.jst.jsf.apache.trinidad.tagsupport_1.1.0.v20090525.jar
+K 25
+svn:wc:ra_dav:version-url
+V 156
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.jsf.apache.trinidad.tagsupport_1.1.0.v20090525.jar
+END
+org.eclipse.equinox.p2.ui.sdk.scheduler_1.0.0.v20090520-1905.jar
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.p2.ui.sdk.scheduler_1.0.0.v20090520-1905.jar
+END
+org.eclipse.swtbot.eclipse.finder_2.0.0.595-dev-e35.jar
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.swtbot.eclipse.finder_2.0.0.595-dev-e35.jar
+END
+org.eclipse.tm.terminal.view_2.0.101.v200907301400.jar
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.tm.terminal.view_2.0.101.v200907301400.jar
+END
+org.eclipse.jst.jee.web_1.0.201.v201002031231.jar
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.jee.web_1.0.201.v201002031231.jar
+END
+org.eclipse.pde_3.4.100.v201002111343.jar
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.pde_3.4.100.v201002111343.jar
+END
+org.eclipse.wtp.jee.capabilities_1.0.0.v200906072300.jar
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wtp.jee.capabilities_1.0.0.v200906072300.jar
+END
+org.eclipse.mylyn.discovery.core_3.2.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.discovery.core_3.2.3.v20100217-0100-e3x.jar
+END
+org.eclipse.wst.xsd.ui_1.2.204.v200909021537.jar
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.xsd.ui_1.2.204.v200909021537.jar
+END
+org.eclipse.xsd.doc_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.xsd.doc_2.5.0.v200906151043.jar
+END
+org.eclipse.persistence.core_1.1.3.v20091002-r5404.jar
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.persistence.core_1.1.3.v20091002-r5404.jar
+END
+org.eclipse.swtbot.go_2.0.0.595-dev-e35.jar
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.swtbot.go_2.0.0.595-dev-e35.jar
+END
+org.eclipse.mylyn.wikitext.help.ui_1.1.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 153
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.wikitext.help.ui_1.1.3.v20100217-0100-e3x.jar
+END
+org.eclipse.wst.sse.doc.user_1.1.0.v200805211530.jar
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.sse.doc.user_1.1.0.v200805211530.jar
+END
+org.eclipse.wst.server.preview_1.1.0.v20090113.jar
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.server.preview_1.1.0.v20090113.jar
+END
+org.eclipse.contribution.xref.core_2.1.1.e35x-release-20101021-0900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 161
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.contribution.xref.core_2.1.1.e35x-release-20101021-0900.jar
+END
+javax.mail_1.4.0.v200804091730.jar
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/javax.mail_1.4.0.v200804091730.jar
+END
+org.eclipse.wst.sse.core_1.1.402.v201001251516.jar
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.sse.core_1.1.402.v201001251516.jar
+END
+org.eclipse.ltk.core.refactoring_3.5.0.v20090513-2000.jar
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ltk.core.refactoring_3.5.0.v20090513-2000.jar
+END
+org.eclipse.jst.ws.axis.infopop_1.0.300.v200805140230.jar
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.ws.axis.infopop_1.0.300.v200805140230.jar
+END
+org.eclipse.ecf.provider.filetransfer.httpclient_3.0.0.v20090604-1131.jar
+K 25
+svn:wc:ra_dav:version-url
+V 163
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ecf.provider.filetransfer.httpclient_3.0.0.v20090604-1131.jar
+END
+org.apache.wsil4j_1.0.0.v200806040330.jar
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.apache.wsil4j_1.0.0.v200806040330.jar
+END
+org.eclipse.equinox.http.servlet_1.0.200.v20090520-1800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.http.servlet_1.0.200.v20090520-1800.jar
+END
+org.eclipse.wst.html.ui.infopop_1.0.100.v200805301545.jar
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.html.ui.infopop_1.0.100.v200805301545.jar
+END
+org.eclipse.update.core_3.2.300.v20090525.jar
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.update.core_3.2.300.v20090525.jar
+END
+org.eclipse.equinox.security_1.0.100.v20090520-1800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.security_1.0.100.v20090520-1800.jar
+END
+org.eclipse.datatools.enablement.jdt.classpath_1.0.1.v200909240342.jar
+K 25
+svn:wc:ra_dav:version-url
+V 160
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.enablement.jdt.classpath_1.0.1.v200909240342.jar
+END
+org.eclipse.jst.j2ee.ejb_1.1.301.v201001252130.jar
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.j2ee.ejb_1.1.301.v201001252130.jar
+END
+org.eclipse.jsch.core_1.1.100.I20090430-0408.jar
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jsch.core_1.1.100.I20090430-0408.jar
+END
+org.eclipse.ajdt.mylyn.ui.source_2.1.1.e35x-release-20101021-0900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 159
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ajdt.mylyn.ui.source_2.1.1.e35x-release-20101021-0900.jar
+END
+org.eclipse.datatools.enablement.sqlite_1.0.0.v201002041110.jar
+K 25
+svn:wc:ra_dav:version-url
+V 153
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.enablement.sqlite_1.0.0.v201002041110.jar
+END
+org.eclipse.datatools.enablement.msft.sqlserver_1.0.1.v201001180222.jar
+K 25
+svn:wc:ra_dav:version-url
+V 161
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.enablement.msft.sqlserver_1.0.1.v201001180222.jar
+END
+org.eclipse.update.ui_3.2.200.v20090213.jar
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.update.ui_3.2.200.v20090213.jar
+END
+org.eclipse.wst.internet.monitor.ui_1.0.305.v20100123.jar
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.internet.monitor.ui_1.0.305.v20100123.jar
+END
+org.eclipse.core.commands_3.5.0.I20090525-2000.jar
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.core.commands_3.5.0.I20090525-2000.jar
+END
+org.eclipse.jem.proxy_2.0.201.v200908101600.jar
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jem.proxy_2.0.201.v200908101600.jar
+END
+org.eclipse.jst.j2ee.webservice.ui_1.1.300.v200902052230.jar
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.j2ee.webservice.ui_1.1.300.v200902052230.jar
+END
+org.eclipse.emf.ecore.edit_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.emf.ecore.edit_2.5.0.v200906151043.jar
+END
+org.eclipse.equinox.security.win32.x86_1.0.100.v20090520-1800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.security.win32.x86_1.0.100.v20090520-1800.jar
+END
+org.eclipse.xsd.mapping_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.xsd.mapping_2.5.0.v200906151043.jar
+END
+org.eclipse.equinox.weaving.caching.source_1.0.0.v20100108.jar
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.weaving.caching.source_1.0.0.v20100108.jar
+END
+org.eclipse.jst.j2ee.jca.ui_1.1.300.v200809052300.jar
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.j2ee.jca.ui_1.1.300.v200809052300.jar
+END
+org.eclipse.ecf.provider.filetransfer.httpclient.ssl_1.0.0.v20090604-1131.jar
+K 25
+svn:wc:ra_dav:version-url
+V 167
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ecf.provider.filetransfer.httpclient.ssl_1.0.0.v20090604-1131.jar
+END
+org.eclipse.jem.beaninfo_2.0.300.v200905030615.jar
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jem.beaninfo_2.0.300.v200905030615.jar
+END
+org.eclipse.datatools.common.doc.user_1.7.0.20090521092446.jar
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.common.doc.user_1.7.0.20090521092446.jar
+END
+org.eclipse.wst.common.snippets_1.1.301.v201001280015.jar
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.common.snippets_1.1.301.v201001280015.jar
+END
+org.eclipse.update.core.win32_3.2.100.v20080107.jar
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.update.core.win32_3.2.100.v20080107.jar
+END
+org.eclipse.datatools.enablement.postgresql_1.0.1.v200906020900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 157
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.enablement.postgresql_1.0.1.v200906020900.jar
+END
+org.eclipse.core.filesystem_1.2.0.v20090507.jar
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.core.filesystem_1.2.0.v20090507.jar
+END
+org.eclipse.help.base_3.4.0.v200906111540.jar
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.help.base_3.4.0.v200906111540.jar
+END
+org.eclipse.contribution.weaving.jdt_2.1.1.e35x-release-20101021-0900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 163
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.contribution.weaving.jdt_2.1.1.e35x-release-20101021-0900.jar
+END
+org.eclipse.ocl_1.3.0.v200905271400.jar
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ocl_1.3.0.v200905271400.jar
+END
+org.eclipse.ajdt.mylyn.ui_2.1.1.e35x-release-20101021-0900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ajdt.mylyn.ui_2.1.1.e35x-release-20101021-0900.jar
+END
+org.eclipse.mylyn.monitor.core_3.2.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.monitor.core_3.2.3.v20100217-0100-e3x.jar
+END
+org.eclipse.jdt.launching_3.5.0.v20090527.jar
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jdt.launching_3.5.0.v20090527.jar
+END
+org.eclipse.mylyn.wikitext.twiki.core_1.1.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 156
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.wikitext.twiki.core_1.1.3.v20100217-0100-e3x.jar
+END
+org.apache.xerces_2.9.0.v200805270400.jar
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.apache.xerces_2.9.0.v200805270400.jar
+END
+org.eclipse.emf.ecore.editor.source_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.emf.ecore.editor.source_2.5.0.v200906151043.jar
+END
+org.eclipse.equinox.common_3.5.0.v20090520-1800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.common_3.5.0.v20090520-1800.jar
+END
+org.eclipse.ecf.ssl_1.0.0.v20090604-1131.jar
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ecf.ssl_1.0.0.v20090604-1131.jar
+END
+org.eclipse.jst.ws.axis2.creation.core_1.0.105.v200901220134.jar
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.ws.axis2.creation.core_1.0.105.v200901220134.jar
+END
+org.eclipse.mylyn_3.2.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn_3.2.3.v20100217-0100-e3x.jar
+END
+org.eclipse.datatools.doc.user_1.7.0.20090521092446.jar
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.doc.user_1.7.0.20090521092446.jar
+END
+org.eclipse.jdt.apt.ui_3.3.200.v20090528-1135.jar
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jdt.apt.ui_3.3.200.v20090528-1135.jar
+END
+org.eclipse.swtbot.junit4_x_2.0.0.595-dev-e35.jar
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.swtbot.junit4_x_2.0.0.595-dev-e35.jar
+END
+org.eclipse.jst.server.generic.core_1.0.506.v20090817.jar
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.server.generic.core_1.0.506.v20090817.jar
+END
+org.eclipse.equinox.util_1.0.100.v20090520-1800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.util_1.0.100.v20090520-1800.jar
+END
+org.eclipse.uml2.uml_3.0.1.v200908281330.jar
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.uml2.uml_3.0.1.v200908281330.jar
+END
+org.eclipse.wst.wsdl_1.2.2.v200911111930.jar
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.wsdl_1.2.2.v200911111930.jar
+END
+org.eclipse.datatools.connectivity.sqm.server.ui_1.1.100.v200910270503.jar
+K 25
+svn:wc:ra_dav:version-url
+V 164
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.connectivity.sqm.server.ui_1.1.100.v200910270503.jar
+END
+org.eclipse.wst.jsdt.manipulation_1.0.100.v200809240707.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.jsdt.manipulation_1.0.100.v200809240707.jar
+END
+org.eclipse.datatools.connectivity.apache.derby_1.0.100.v200906020900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 163
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.connectivity.apache.derby_1.0.100.v200906020900.jar
+END
+org.apache.xml.resolver_1.2.0.v200806030312.jar
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.apache.xml.resolver_1.2.0.v200806030312.jar
+END
+org.eclipse.jst.j2ee.web_1.1.301.v200911302230.jar
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.j2ee.web_1.1.301.v200911302230.jar
+END
+org.eclipse.ecf.identity_3.0.0.v20090604-1131.jar
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ecf.identity_3.0.0.v20090604-1131.jar
+END
+org.eclipse.swtbot.eclipse.gef.finder_2.0.0.595-dev-e35.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.swtbot.eclipse.gef.finder_2.0.0.595-dev-e35.jar
+END
+org.eclipse.wst.jsdt.web.support.jsp_1.0.200.v200904140255.jar
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.jsdt.web.support.jsp_1.0.200.v200904140255.jar
+END
+org.eclipse.datatools.sqltools.sqlscrapbook_1.0.0.v200906022302.jar
+K 25
+svn:wc:ra_dav:version-url
+V 157
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.sqlscrapbook_1.0.0.v200906022302.jar
+END
+org.eclipse.xsd.ecore.exporter.source_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.xsd.ecore.exporter.source_2.5.0.v200906151043.jar
+END
+org.eclipse.persistence.sdo_1.1.3.v20091002-r5404.jar
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.persistence.sdo_1.1.3.v20091002-r5404.jar
+END
+org.apache.commons.net_1.4.1.v200803071935.jar
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.apache.commons.net_1.4.1.v200803071935.jar
+END
+org.eclipse.jst.j2ee.ejb.annotations.xdoclet_1.2.0.v200805140020.jar
+K 25
+svn:wc:ra_dav:version-url
+V 158
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.j2ee.ejb.annotations.xdoclet_1.2.0.v200805140020.jar
+END
+org.eclipse.ui.ide_3.5.0.I20090525-2000.jar
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ui.ide_3.5.0.I20090525-2000.jar
+END
+org.eclipse.emf.ecore.change.edit.source_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.emf.ecore.change.edit.source_2.5.0.v200906151043.jar
+END
+org.eclipse.pde.api.tools.ui_1.0.101.v20090820.jar
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.pde.api.tools.ui_1.0.101.v20090820.jar
+END
+org.eclipse.pde.ua.core_1.0.0.v20090429-1800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.pde.ua.core_1.0.0.v20090429-1800.jar
+END
+org.eclipse.wst.wsdl.ui.doc.user_1.0.550.v200901232040.jar
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.wsdl.ui.doc.user_1.0.550.v200901232040.jar
+END
+org.eclipse.core.databinding_1.2.0.I20090604-2000.jar
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.core.databinding_1.2.0.I20090604-2000.jar
+END
+org.eclipse.wst.jsdt.doc_1.0.200.v200903120608.jar
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.jsdt.doc_1.0.200.v200903120608.jar
+END
+org.eclipse.jst.j2ee.ejb.annotations.emitter_1.1.102.v200805140135.jar
+K 25
+svn:wc:ra_dav:version-url
+V 160
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.j2ee.ejb.annotations.emitter_1.1.102.v200805140135.jar
+END
+org.eclipse.datatools.enablement.ibm.db2.iseries.ui_1.0.0.v200906020900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 165
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.enablement.ibm.db2.iseries.ui_1.0.0.v200906020900.jar
+END
+org.eclipse.equinox.weaving.aspectj.source_1.0.0.v20100108.jar
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.weaving.aspectj.source_1.0.0.v20100108.jar
+END
+org.eclipse.xsd.ecore.importer.source_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.xsd.ecore.importer.source_2.5.0.v200906151043.jar
+END
+org.eclipse.ui.views.properties.tabbed_3.5.0.I20090429-1800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 153
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ui.views.properties.tabbed_3.5.0.I20090429-1800.jar
+END
+org.eclipse.wst.standard.schemas_1.0.200.v200902270215.jar
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.standard.schemas_1.0.200.v200902270215.jar
+END
+org.eclipse.jst.servlet.ui_1.1.301.v200908101600.jar
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.servlet.ui_1.1.301.v200908101600.jar
+END
+org.eclipse.core.expressions_3.4.100.v20090429-1800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.core.expressions_3.4.100.v20090429-1800.jar
+END
+org.eclipse.mylyn.java.ui_3.2.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.java.ui_3.2.3.v20100217-0100-e3x.jar
+END
+org.eclipse.swtbot.eclipse.spy_2.0.0.595-dev-e35.jar
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.swtbot.eclipse.spy_2.0.0.595-dev-e35.jar
+END
+org.eclipse.jsch.ui_1.1.200.I20090430-0408.jar
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jsch.ui_1.1.200.I20090430-0408.jar
+END
+org.eclipse.datatools.connectivity.apache.derby.ui_1.0.1.v200906020900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 164
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.connectivity.apache.derby.ui_1.0.1.v200906020900.jar
+END
+org.eclipse.equinox.preferences_3.2.300.v20090520-1800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.preferences_3.2.300.v20090520-1800.jar
+END
+org.eclipse.ocl.uml_2.0.0.v200905271400.jar
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ocl.uml_2.0.0.v200905271400.jar
+END
+org.eclipse.jst.ws.axis2.ui_1.0.302.v200905260749.jar
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.ws.axis2.ui_1.0.302.v200905260749.jar
+END
+org.eclipse.datatools.sqltools.editor.core_1.0.0.v201001150815.jar
+K 25
+svn:wc:ra_dav:version-url
+V 156
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.editor.core_1.0.0.v201001150815.jar
+END
+org.eclipse.equinox.p2.metadata_1.0.100.v20090525.jar
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.p2.metadata_1.0.100.v20090525.jar
+END
+org.eclipse.wst.command.env.doc.user_1.5.200.v200806092138.jar
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.command.env.doc.user_1.5.200.v200806092138.jar
+END
+org.eclipse.pde.core_3.5.101.v20100104.jar
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.pde.core_3.5.101.v20100104.jar
+END
+org.eclipse.ecf.provider.filetransfer_3.0.0.v20090604-1131.jar
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ecf.provider.filetransfer_3.0.0.v20090604-1131.jar
+END
+org.eclipse.jdt.junit4.runtime_1.1.0.v20090513-2000.jar
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jdt.junit4.runtime_1.1.0.v20090513-2000.jar
+END
+org.eclipse.jst.jsp.ui_1.1.401.v200908111935.jar
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.jsp.ui_1.1.401.v200908111935.jar
+END
+org.apache.jasper_5.5.17.v200806031609.jar
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.apache.jasper_5.5.17.v200806031609.jar
+END
+org.eclipse.equinox.jsp.jasper.registry_1.0.100.v20090520-1800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 156
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.jsp.jasper.registry_1.0.100.v20090520-1800.jar
+END
+org.eclipse.jst.common.annotations.ui_1.1.102.v200806010600.jar
+K 25
+svn:wc:ra_dav:version-url
+V 153
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.common.annotations.ui_1.1.102.v200806010600.jar
+END
+org.eclipse.datatools.enablement.ibm.informix_1.0.0.v200906020900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 159
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.enablement.ibm.informix_1.0.0.v200906020900.jar
+END
+org.eclipse.xsd.ecore.importer_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.xsd.ecore.importer_2.5.0.v200906151043.jar
+END
+org.eclipse.ui.forms_3.4.0.v20090526.jar
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ui.forms_3.4.0.v20090526.jar
+END
+org.eclipse.ecf_3.0.0.v20090604-1131.jar
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ecf_3.0.0.v20090604-1131.jar
+END
+org.eclipse.jst.ws.ui_1.0.402.v200903111822.jar
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.ws.ui_1.0.402.v200903111822.jar
+END
+org.eclipse.jst.pagedesigner_1.2.3.v20100211.jar
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.pagedesigner_1.2.3.v20100211.jar
+END
+org.eclipse.mylyn.java.tasks_3.2.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.java.tasks_3.2.3.v20100217-0100-e3x.jar
+END
+org.eclipse.datatools.enablement.postgresql.ui_1.0.0.v200906020900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 160
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.enablement.postgresql.ui_1.0.0.v200906020900.jar
+END
+org.eclipse.jem.beaninfo.vm_2.0.200.v200811260651.jar
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jem.beaninfo.vm_2.0.200.v200811260651.jar
+END
+org.eclipse.wst.common.project.facet.ui_1.4.1.v200908111817.jar
+K 25
+svn:wc:ra_dav:version-url
+V 153
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.common.project.facet.ui_1.4.1.v200908111817.jar
+END
+org.eclipse.jst.ws.axis2.consumption.core_1.0.104.v200810151442.jar
+K 25
+svn:wc:ra_dav:version-url
+V 157
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.ws.axis2.consumption.core_1.0.104.v200810151442.jar
+END
+org.eclipse.compare.core_3.5.0.I20090430-0408.jar
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.compare.core_3.5.0.I20090430-0408.jar
+END
+org.eclipse.equinox.security.ui_1.0.100.v20090520-1800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.security.ui_1.0.100.v20090520-1800.jar
+END
+org.eclipse.wst.common.ui_1.1.402.v200901262305.jar
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.common.ui_1.1.402.v200901262305.jar
+END
+org.eclipse.wst.common.uriresolver_1.1.301.v200805140415.jar
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.common.uriresolver_1.1.301.v200805140415.jar
+END
+org.eclipse.xsd.editor.source_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.xsd.editor.source_2.5.0.v200906151043.jar
+END
+org.eclipse.jst.server.preview.adapter_1.1.0.v20090311b.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.server.preview.adapter_1.1.0.v20090311b.jar
+END
+org.eclipse.datatools.enablement.hsqldb.ui_1.0.0.v200906020900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 156
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.enablement.hsqldb.ui_1.0.0.v200906020900.jar
+END
+org.eclipse.core.variables_3.2.200.v20090521.jar
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.core.variables_3.2.200.v20090521.jar
+END
+org.eclipse.jdt.debug.ui_3.4.1.v20090811_r351.jar
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jdt.debug.ui_3.4.1.v20090811_r351.jar
+END
+org.eclipse.dstore.core_3.1.1.v200909160005.jar
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.dstore.core_3.1.1.v200909160005.jar
+END
+org.eclipse.osgi.services_3.2.0.v20090520-1800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.osgi.services_3.2.0.v20090520-1800.jar
+END
+org.eclipse.wst.wsi.ui_1.0.500.v200901141851.jar
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.wsi.ui_1.0.500.v200901141851.jar
+END
+org.eclipse.jst.ws.axis.ui.doc.user_1.1.0.v200806092139.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.ws.axis.ui.doc.user_1.1.0.v200806092139.jar
+END
+org.eclipse.mylyn.wikitext.tracwiki.ui_1.1.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 157
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.wikitext.tracwiki.ui_1.1.3.v20100217-0100-e3x.jar
+END
+org.eclipse.mylyn.wikitext.mediawiki.core_1.1.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 160
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.wikitext.mediawiki.core_1.1.3.v20100217-0100-e3x.jar
+END
+org.eclipse.wst.common.environment_1.0.301.v200908101600.jar
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.common.environment_1.0.301.v200908101600.jar
+END
+org.eclipse.mylyn.tasks.ui_3.2.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.tasks.ui_3.2.3.v20100217-0100-e3x.jar
+END
+org.eclipse.ajdt.ui.source_2.1.1.e35x-release-20101021-0900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 153
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ajdt.ui.source_2.1.1.e35x-release-20101021-0900.jar
+END
+org.eclipse.mylyn.wikitext.confluence.ui_1.1.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 159
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.wikitext.confluence.ui_1.1.3.v20100217-0100-e3x.jar
+END
+org.eclipse.jst.j2ee.core_1.1.301.v200911302230.jar
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.j2ee.core_1.1.301.v200911302230.jar
+END
+org.eclipse.jst.ws.consumption.infopop_1.0.300.v200805140230.jar
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.ws.consumption.infopop_1.0.300.v200805140230.jar
+END
+org.eclipse.datatools.sqltools.debugger.core_1.0.0.v200906022302.jar
+K 25
+svn:wc:ra_dav:version-url
+V 158
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.debugger.core_1.0.0.v200906022302.jar
+END
+org.eclipse.contribution.visualiser_2.2.0.e35x-release-20101021-0900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 162
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.contribution.visualiser_2.2.0.e35x-release-20101021-0900.jar
+END
+org.eclipse.jst.ws.axis2.ui.doc.user_1.0.1.v200807302329.jar
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.ws.axis2.ui.doc.user_1.0.1.v200807302329.jar
+END
+org.eclipse.mylyn.compatibility_3.2.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.compatibility_3.2.3.v20100217-0100-e3x.jar
+END
+org.eclipse.jst.jsf.facesconfig_1.1.3.v20090902.jar
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.jsf.facesconfig_1.1.3.v20090902.jar
+END
+org.eclipse.datatools.connectivity.ui_1.1.5.v201001190218.jar
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.connectivity.ui_1.1.5.v201001190218.jar
+END
+org.eclipse.wst.server.http.core_1.0.200.v20090429.jar
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.server.http.core_1.0.200.v20090429.jar
+END
+org.eclipse.datatools.connectivity.ui.dse_1.1.3.v201001270323.jar
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.connectivity.ui.dse_1.1.3.v201001270323.jar
+END
+org.eclipse.pde.runtime_3.4.100.v20090731.jar
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.pde.runtime_3.4.100.v20090731.jar
+END
+org.eclipse.wst.xml.core_1.1.402.v201001222130.jar
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.xml.core_1.1.402.v201001222130.jar
+END
+org.eclipse.datatools.sqltools.debugger.core.ui_1.0.0.v200906022302.jar
+K 25
+svn:wc:ra_dav:version-url
+V 161
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.debugger.core.ui_1.0.0.v200906022302.jar
+END
+org.eclipse.core.resources_3.5.0.v20090512.jar
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.core.resources_3.5.0.v20090512.jar
+END
+org.eclipse.equinox.p2.metadata.repository_1.0.100.v20090525.jar
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.p2.metadata.repository_1.0.100.v20090525.jar
+END
+org.uddi4j_2.0.5.v200805270300.jar
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.uddi4j_2.0.5.v200805270300.jar
+END
+org.eclipse.jst.ws.axis2.core_1.0.104.v200810151442.jar
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.ws.axis2.core_1.0.104.v200810151442.jar
+END
+org.eclipse.emf.ecore.source_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.emf.ecore.source_2.5.0.v200906151043.jar
+END
+org.eclipse.equinox.concurrent_1.0.1.R35x_v20100209.jar
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.concurrent_1.0.1.R35x_v20100209.jar
+END
+org.eclipse.wst.jsdt.web.core_1.0.201.v201001221931.jar
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.jsdt.web.core_1.0.201.v201001221931.jar
+END
+org.eclipse.wst.server.ui_1.1.103.v20100123.jar
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.server.ui_1.1.103.v20100123.jar
+END
+org.eclipse.equinox.frameworkadmin_1.0.100.v20090520-1905.jar
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.frameworkadmin_1.0.100.v20090520-1905.jar
+END
+org.eclipse.datatools.enablement.ibm.informix.ui_1.0.1.v200906020900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 162
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.enablement.ibm.informix.ui_1.0.1.v200906020900.jar
+END
+org.eclipse.team.cvs.core_3.3.200.I20090430-0408.jar
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.team.cvs.core_3.3.200.I20090430-0408.jar
+END
+org.eclipse.datatools.enablement.sqlite.dbdefinition_1.0.1.v201002041110.jar
+K 25
+svn:wc:ra_dav:version-url
+V 166
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.enablement.sqlite.dbdefinition_1.0.1.v201002041110.jar
+END
+javax.wsdl_1.5.1.v200806030408.jar
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/javax.wsdl_1.5.1.v200806030408.jar
+END
+org.eclipse.datatools.sqltools.sql.ui_1.0.0.v200906022302.jar
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.sql.ui_1.0.0.v200906022302.jar
+END
+org.eclipse.jst.jsf.common_1.1.9.v201001271707.jar
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.jsf.common_1.1.9.v201001271707.jar
+END
+org.eclipse.wst.sse.ui_1.1.102.v200910200227.jar
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.sse.ui_1.1.102.v200910200227.jar
+END
+org.eclipse.equinox.simpleconfigurator_1.0.100.v20090520-1905.jar
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.simpleconfigurator_1.0.100.v20090520-1905.jar
+END
+org.eclipse.jst.jsf.facesconfig.ui_1.1.6.v20100203.jar
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.jsf.facesconfig.ui_1.1.6.v20100203.jar
+END
+org.eclipse.xsd.example.installer_1.0.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.xsd.example.installer_1.0.0.v200906151043.jar
+END
+org.eclipse.wst.common.core_1.1.201.v200806010600.jar
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.common.core_1.1.201.v200806010600.jar
+END
+javax.servlet_2.4.0.v200806031604.jar
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/javax.servlet_2.4.0.v200806031604.jar
+END
+org.eclipse.wst.common.frameworks_1.1.300.v200904160730.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.common.frameworks_1.1.300.v200904160730.jar
+END
+org.eclipse.datatools.sqltools.sqlbuilder_1.0.0.v201001200600.jar
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.sqlbuilder_1.0.0.v201001200600.jar
+END
+org.eclipse.ui.workbench_3.5.0.I20090603-2000.jar
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ui.workbench_3.5.0.I20090603-2000.jar
+END
+com.jcraft.jsch_0.1.37.v200803061811.jar
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/com.jcraft.jsch_0.1.37.v200803061811.jar
+END
+org.eclipse.jdt.core.manipulation_1.3.0.v20090603.jar
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jdt.core.manipulation_1.3.0.v20090603.jar
+END
+org.eclipse.wst.xmleditor.doc.user_1.0.600.v200901231300.jar
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.xmleditor.doc.user_1.0.600.v200901231300.jar
+END
+org.objectweb.asm_3.1.0.v200803061910.jar
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.objectweb.asm_3.1.0.v200803061910.jar
+END
+org.eclipse.jdt.apt.pluggable.core_1.0.201.R35x_v20090818-0225.jar
+K 25
+svn:wc:ra_dav:version-url
+V 156
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jdt.apt.pluggable.core_1.0.201.R35x_v20090818-0225.jar
+END
+org.apache.xml.serializer_2.7.1.v200806030322.jar
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.apache.xml.serializer_2.7.1.v200806030322.jar
+END
+org.eclipse.core.runtime_3.5.0.v20090525.jar
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.core.runtime_3.5.0.v20090525.jar
+END
+org.eclipse.wst.xsl.saxon_1.0.0.v200904240436.jar
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.xsl.saxon_1.0.0.v200904240436.jar
+END
+org.eclipse.wst.common.infopop_1.0.100.v200805301550.jar
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.common.infopop_1.0.100.v200805301550.jar
+END
+org.eclipse.datatools.connectivity.db.generic.ui_1.0.1.v200906020900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 162
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.connectivity.db.generic.ui_1.0.1.v200906020900.jar
+END
+org.eclipse.draw2d_3.5.2.v20091126-1908.jar
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.draw2d_3.5.2.v20091126-1908.jar
+END
+org.eclipse.ajdt.core.source_2.1.1.e35x-release-20101021-0900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ajdt.core.source_2.1.1.e35x-release-20101021-0900.jar
+END
+org.eclipse.wst.ws.service.policy.ui_1.0.102.v200903070248.jar
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.ws.service.policy.ui_1.0.102.v200903070248.jar
+END
+org.eclipse.team.core_3.5.0.I20090527-0620.jar
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.team.core_3.5.0.I20090527-0620.jar
+END
+org.eclipse.equinox.p2.publisher_1.0.0.v20090527-1812.jar
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.p2.publisher_1.0.0.v20090527-1812.jar
+END
+org.eclipse.jdt.compiler.tool_1.0.100.v_972_R35x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jdt.compiler.tool_1.0.100.v_972_R35x.jar
+END
+org.eclipse.wst.xml.xpath2.processor_1.0.0.v200905300355.jar
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.xml.xpath2.processor_1.0.0.v200905300355.jar
+END
+org.eclipse.datatools.sqltools.schemaobjecteditor_1.1.0.v200906022302.jar
+K 25
+svn:wc:ra_dav:version-url
+V 163
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.schemaobjecteditor_1.1.0.v200906022302.jar
+END
+org.eclipse.jst.ws.consumption.ui.doc.user_1.0.550.v200901232040.jar
+K 25
+svn:wc:ra_dav:version-url
+V 158
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.ws.consumption.ui.doc.user_1.0.550.v200901232040.jar
+END
+org.eclipse.wst.jsdt.support.ie_1.0.200.v200904290539.jar
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.jsdt.support.ie_1.0.200.v200904290539.jar
+END
+org.eclipse.emf.ecore_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.emf.ecore_2.5.0.v200906151043.jar
+END
+org.eclipse.datatools.sqltools.data.core_1.1.0.v200910161545.jar
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.data.core_1.1.0.v200910161545.jar
+END
+org.eclipse.jem.util_2.0.201.v201001252130.jar
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jem.util_2.0.201.v201001252130.jar
+END
+org.eclipse.help.webapp_3.4.0.v20090429_1800.jar
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.help.webapp_3.4.0.v20090429_1800.jar
+END
+org.eclipse.datatools.enablement.ibm.ui_1.0.0.v200906020900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 153
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.enablement.ibm.ui_1.0.0.v200906020900.jar
+END
+org.eclipse.datatools.enablement.ibm.db2.luw_1.0.1.v200906020900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 158
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.enablement.ibm.db2.luw_1.0.1.v200906020900.jar
+END
+org.eclipse.jst.ws.doc.user_1.0.500.v200809092107.jar
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.ws.doc.user_1.0.500.v200809092107.jar
+END
+org.eclipse.wst.server.core_1.1.102.v20100123.jar
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.server.core_1.1.102.v20100123.jar
+END
+org.eclipse.mylyn.discovery.ui_3.2.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.discovery.ui_3.2.3.v20100217-0100-e3x.jar
+END
+org.eclipse.wst.jsdt.web.ui_1.0.201.v2010012803.jar
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.jsdt.web.ui_1.0.201.v2010012803.jar
+END
+org.eclipse.datatools.connectivity_1.1.3.v201001230803.jar
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.connectivity_1.1.3.v201001230803.jar
+END
+org.eclipse.equinox.weaving.hook_1.0.0.v20100108.jar
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.weaving.hook_1.0.0.v20100108.jar
+END
+org.eclipse.compare_3.5.0.I20090514-0808.jar
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.compare_3.5.0.I20090514-0808.jar
+END
+org.eclipse.ui.editors_3.5.0.v20090527-2000.jar
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ui.editors_3.5.0.v20090527-2000.jar
+END
+org.eclipse.wst.server.ui.infopop_1.1.0.v200805140145.jar
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.server.ui.infopop_1.1.0.v200805140145.jar
+END
+org.eclipse.datatools.connectivity.console.profile_1.0.0.v200906020553.jar
+K 25
+svn:wc:ra_dav:version-url
+V 164
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.connectivity.console.profile_1.0.0.v200906020553.jar
+END
+org.eclipse.contribution.xref.ui_2.1.1.e35x-release-20101021-0900.jar
+K 25
+svn:wc:ra_dav:version-url
+V 159
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.contribution.xref.ui_2.1.1.e35x-release-20101021-0900.jar
+END
+org.eclipse.mylyn.commons.core_3.2.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.commons.core_3.2.3.v20100217-0100-e3x.jar
+END
+org.apache.commons.el_1.0.0.v200806031608.jar
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.apache.commons.el_1.0.0.v200806031608.jar
+END
+org.eclipse.ui_3.5.0.I20090604-2000.jar
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ui_3.5.0.I20090604-2000.jar
+END
+org.sat4j.core_2.0.3.v20081021.jar
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.sat4j.core_2.0.3.v20081021.jar
+END
+org.eclipse.wst.xml.xpath.ui_1.0.0.v200904240436.jar
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.xml.xpath.ui_1.0.0.v200904240436.jar
+END
+org.eclipse.jst.jsp.ui.infopop_1.0.100.v200805301545.jar
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.jsp.ui.infopop_1.0.100.v200805301545.jar
+END
+org.eclipse.equinox.p2.ui.sdk_1.0.100.v20090520-1905.jar
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.p2.ui.sdk_1.0.100.v20090520-1905.jar
+END
+org.eclipse.datatools.help_1.5.0.v200906020553.jar
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.help_1.5.0.v200906020553.jar
+END
+org.eclipse.wst.xml.xpath.core_1.0.0.v200904240436.jar
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.xml.xpath.core_1.0.0.v200904240436.jar
+END
+org.eclipse.mylyn.wikitext.mediawiki.ui_1.1.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 158
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.wikitext.mediawiki.ui_1.1.3.v20100217-0100-e3x.jar
+END
+org.eclipse.datatools.sqltools.editor.core.ui_1.0.0.v201001150815.jar
+K 25
+svn:wc:ra_dav:version-url
+V 159
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.editor.core.ui_1.0.0.v201001150815.jar
+END
+org.eclipse.datatools.sqltools.tabledataeditor_1.0.0.v200906022302.jar
+K 25
+svn:wc:ra_dav:version-url
+V 160
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.tabledataeditor_1.0.0.v200906022302.jar
+END
+org.eclipse.tm.terminal_3.0.2.R31x_v201002160030.jar
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.tm.terminal_3.0.2.R31x_v201002160030.jar
+END
+org.eclipse.wst.dtdeditor.doc.user_1.0.500.v200904292308.jar
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.dtdeditor.doc.user_1.0.500.v200904292308.jar
+END
+org.eclipse.emf.ecore.edit.source_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.emf.ecore.edit.source_2.5.0.v200906151043.jar
+END
+org.eclipse.xsd.example_2.5.0.v200906151043.jar
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.xsd.example_2.5.0.v200906151043.jar
+END
+org.eclipse.wst.server.http.ui_1.0.200.v20090113.jar
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.server.http.ui_1.0.200.v20090113.jar
+END
+org.eclipse.ui.browser_3.2.300.v20090526.jar
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ui.browser_3.2.300.v20090526.jar
+END
+org.eclipse.wst.common.emfworkbench.integration_1.1.301.v200908101600.jar
+K 25
+svn:wc:ra_dav:version-url
+V 163
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.common.emfworkbench.integration_1.1.301.v200908101600.jar
+END
+org.eclipse.wst.internet.cache_1.0.301.v200805140020.jar
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.internet.cache_1.0.301.v200805140020.jar
+END
+org.eclipse.jst.server.tomcat.ui_1.1.102.v20090424.jar
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.server.tomcat.ui_1.1.102.v20090424.jar
+END
+org.eclipse.jst.ws.creation.ejb.ui_1.0.200.v200805140230.jar
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jst.ws.creation.ejb.ui_1.0.200.v200805140230.jar
+END
+org.eclipse.datatools.sqltools.sql_1.0.0.v200906022302.jar
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.sql_1.0.0.v200906022302.jar
+END
+org.eclipse.ui.net_1.2.0.I20090430-0408.jar
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ui.net_1.2.0.I20090430-0408.jar
+END
+org.eclipse.ui.intro_3.3.0.v20090526.jar
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ui.intro_3.3.0.v20090526.jar
+END
+org.eclipse.datatools.sqltools.common.ui_1.0.0.v200906022302.jar
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.common.ui_1.0.0.v200906022302.jar
+END
+org.eclipse.mylyn.bugzilla.core_3.2.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.bugzilla.core_3.2.3.v20100217-0100-e3x.jar
+END
+org.eclipse.jdt.apt.core_3.3.201.R35x_v20090818-0235.jar
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jdt.apt.core_3.3.201.R35x_v20090818-0235.jar
+END
+org.eclipse.wtp.web.capabilities_1.0.0.v200906072300.jar
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wtp.web.capabilities_1.0.0.v200906072300.jar
+END
+org.eclipse.mylyn.context.core_3.2.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.context.core_3.2.3.v20100217-0100-e3x.jar
+END
+org.eclipse.datatools.sqltools.parsers.sql.xml.query_1.0.0.v200906022302.jar
+K 25
+svn:wc:ra_dav:version-url
+V 166
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.datatools.sqltools.parsers.sql.xml.query_1.0.0.v200906022302.jar
+END
+org.eclipse.epp.usagedata.recording_1.1.1.R201001291118.jar
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.epp.usagedata.recording_1.1.1.R201001291118.jar
+END
+org.eclipse.equinox.p2.reconciler.dropins_1.0.100.v20090520-1905.jar
+K 25
+svn:wc:ra_dav:version-url
+V 158
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.p2.reconciler.dropins_1.0.100.v20090520-1905.jar
+END
+org.eclipse.ecf.filetransfer_3.0.0.v20090604-1131.jar
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ecf.filetransfer_3.0.0.v20090604-1131.jar
+END
+org.eclipse.wst.xsl.launching_1.0.0.v200904241348.jar
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.xsl.launching_1.0.0.v200904241348.jar
+END
+org.eclipse.ant.core_3.2.100.v20090520.jar
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.ant.core_3.2.100.v20090520.jar
+END
+org.eclipse.persistence.asm_1.1.3.v20091002-r5404.jar
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.persistence.asm_1.1.3.v20091002-r5404.jar
+END
+org.eclipse.equinox.p2.director_1.0.100.v20090520-1905.jar
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.equinox.p2.director_1.0.100.v20090520-1905.jar
+END
+org.eclipse.jdt.core_3.5.1.v_972_R35x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jdt.core_3.5.1.v_972_R35x.jar
+END
+org.eclipse.mylyn.wikitext.textile.ui_1.1.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 156
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.wikitext.textile.ui_1.1.3.v20100217-0100-e3x.jar
+END
+org.eclipse.jface.databinding_1.3.0.I20090525-2000.jar
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.jface.databinding_1.3.0.I20090525-2000.jar
+END
+org.eclipse.pde.api.tools_1.0.101.v20090714.jar
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.pde.api.tools_1.0.101.v20090714.jar
+END
+org.eclipse.mylyn.monitor.ui_3.2.3.v20100217-0100-e3x.jar
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.mylyn.monitor.ui_3.2.3.v20100217-0100-e3x.jar
+END
+org.eclipse.pde.ua.ui_1.0.0.v20090511.jar
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.pde.ua.ui_1.0.0.v20090511.jar
+END
+org.eclipse.wst.xsdeditor.doc.user_1.0.700.v200905182240.jar
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/ExternalJars/lib/eclipse_libs/org.eclipse.wst.xsdeditor.doc.user_1.0.700.v200905182240.jar
+END

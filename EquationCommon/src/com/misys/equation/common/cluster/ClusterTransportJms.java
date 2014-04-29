@@ -1,0 +1,351 @@
+package com.misys.equation.common.cluster;
+
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageProducer;
+import javax.jms.Session;
+import javax.jms.TextMessage;
+import javax.jms.Topic;
+import javax.naming.InitialContext;
+
+import com.google.gson.Gson;
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * A Class to handle both receiving and publishing of intra-node comamnds via JMS.
+ * 
+ * This starts a daemon thread that creates Publish and Subscribe sessions to the configured topic.
+ * 
+ */
+public class ClusterTransportJms implements Runnable
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: ClusterTransportJms.java 17823 2014-01-30 09:23:00Z perkinj1 $";
+
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(ClusterTransportJms.class);
+
+	/** Topic String */
+	private static String topicName = "UNDEFINED.TOPIC.NAME";
+
+	/** Instance of the cluster service */
+	private IClusterService clusterService = null;
+
+	private Thread receiverThread;
+	private Connection listeningConnection;
+	private Session listeningSession;
+	private MessageConsumer msgConsumer;
+
+	private static Session publishSession;
+	private static MessageProducer msgProducer;
+
+	/**
+	 * Constructor accepting an instance of the Cluster Service to call back to
+	 * 
+	 * @param clusterService
+	 */
+	public ClusterTransportJms(IClusterService clusterService)
+	{
+		this.clusterService = clusterService;
+		String topicName = EquationCommonContext.getConfigProperty("eq.cluster.jms.topic");
+		if (Toolbox.stringNotBlank(topicName))
+		{
+			ClusterTransportJms.topicName = topicName;
+		}
+	}
+
+	/**
+	 * Start cluster service processing
+	 */
+	public void start()
+	{
+		// Start a daemon thread to perform JMS processing receives:
+		receiverThread = new Thread(new ClusterTransportJms(clusterService), "EQ JMS Cluster thread");
+		receiverThread.setDaemon(true);
+		receiverThread.start();
+	}
+
+	/**
+	 * Daemon thread entry point
+	 */
+	@Override
+	public void run()
+	{
+		try
+		{
+			// Connect to JMS
+			LOG.info("Starting cluster service JMS transport");
+			initialize();
+
+			while (true)
+			{
+				Thread.sleep(1000);
+				receive();
+
+				if (Thread.interrupted())
+				{
+					break;
+				}
+			}
+		}
+		catch (InterruptedException ie)
+		{
+			LOG.info("Shutting down cluster service JMS transport");
+		}
+		catch (Throwable t)
+		{
+			if (t instanceof JMSException)
+			{
+				Exception linkedException = ((JMSException) t).getLinkedException();
+				if (linkedException != null)
+				{
+					LOG.error("Linked exception", linkedException);
+				}
+			}
+
+			LOG.error(t);
+		}
+
+		// Close all JMS objects
+		cleanup();
+	}
+
+	/**
+	 * Initializes all JMS connections
+	 */
+	public void initialize() throws Exception
+	{
+		ConnectionFactory cf = getConnectionFactory();
+		listeningConnection = cf.createConnection();
+
+		listeningSession = listeningConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+		publishSession = listeningConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+
+		Topic topic = listeningSession.createTopic(topicName);
+		LOG.info("Created topic [" + topic.getTopicName() + "]");
+
+		// Create a message consumer.
+		msgConsumer = listeningSession.createConsumer(topic);
+		// Need to start, even though using sync receive...
+		listeningConnection.start();
+
+		msgProducer = publishSession.createProducer(topic);
+	}
+
+	/**
+	 * Polled to receive messages
+	 * 
+	 * The Messages should be JSON strings of CommandData classes. This method will de-serialize back to a CommandData object and
+	 * call the appropriate Command class to perform the action
+	 * 
+	 * @throws JMSException
+	 */
+	private void receive() throws JMSException
+	{
+
+		Message message = msgConsumer.receiveNoWait();
+		if (message != null)
+		{
+			try
+			{
+				if (message instanceof TextMessage)
+				{
+					TextMessage result = (TextMessage) message;
+					CommandData commandData = new Gson().fromJson(result.getText(), CommandData.class);
+					// TODO: Handle parse exception, blank message etc
+					System.out.println(result.getText());
+					if (clusterService.getNodeId().equals(commandData.getOriginator()))
+					{
+						LOG.debug("This command originated from this server - ignoring");
+					}
+					else
+					{
+						// Commands from other node must be applied on this node
+						AbstractServerCommand cmd = null;
+						if (CommandData.COMMAND_TYPE_BREAKMSG.equals(commandData.getCommandId()))
+						{
+							cmd = new BreakMessageCommand();
+						}
+						else if (CommandData.COMMAND_TYPE_REMOVE_UNIT.equals(commandData.getCommandId()))
+						{
+							cmd = new RemoveUnitCommand();
+						}
+						if (cmd != null)
+						{
+							cmd.perform(commandData);
+						}
+						else
+						{
+							LOG.error("Unrecognized server command id [" + commandData.getCommandId() + "]");
+						}
+					}
+				}
+			}
+			catch (Throwable t)
+			{
+				// Need to catch all exceptions to prevent JMS from retrying
+				LOG.error(t);
+			}
+		}
+	}
+
+	/**
+	 * Shuts down the JMS processing
+	 * 
+	 * This should be called when the application is stopped in order to close JMS resources cleanly
+	 */
+	public void stop()
+	{
+		receiverThread.interrupt();
+	}
+
+	/**
+	 * Cleans up JMS connections, sessions etc
+	 */
+	private void cleanup()
+	{
+		close(msgConsumer);
+		close(msgProducer);
+		close(listeningSession);
+		close(publishSession);
+		close(listeningConnection);
+
+		listeningConnection = null;
+		msgConsumer = null;
+		msgProducer = null;
+		listeningSession = null;
+		publishSession = null;
+	}
+
+	/**
+	 * Publish a command
+	 * 
+	 * Called to publish commands that need to be replicated to other nodes in the cluster. If not in a cluster, this method should
+	 * not be called
+	 * 
+	 * @param message
+	 *            A Json representation of a CommandData object
+	 */
+	public synchronized void publish(String message)
+	{
+		try
+		{
+			TextMessage msg = publishSession.createTextMessage(message);
+			msgProducer.send(msg);
+		}
+		catch (Exception e)
+		{
+			LOG.error(e);
+		}
+	}
+
+	/**
+	 * Safely close a Connection
+	 * 
+	 * Checked exceptions are caught and logged
+	 * 
+	 * @param connection
+	 */
+	private void close(Connection connection)
+	{
+		if (connection != null)
+		{
+			try
+			{
+				connection.close();
+			}
+			catch (JMSException e)
+			{
+				LOG.error(e);
+			}
+		}
+	}
+
+	/**
+	 * Safely close a MessageConsumer.
+	 * 
+	 * Checked exceptions are caught and logged
+	 * 
+	 * @param messageConsumer
+	 */
+	private void close(MessageConsumer messageConsumer)
+	{
+		if (messageConsumer != null)
+		{
+			try
+			{
+				messageConsumer.close();
+			}
+			catch (JMSException e)
+			{
+				LOG.error(e);
+			}
+		}
+	}
+	/**
+	 * Safely close a MessageProducer.
+	 * 
+	 * Checked exceptions are caught and logged
+	 * 
+	 * @param messageProducer
+	 */
+	private void close(MessageProducer messageProducer)
+	{
+		if (messageProducer != null)
+		{
+			try
+			{
+				messageProducer.close();
+			}
+			catch (JMSException e)
+			{
+				LOG.error(e);
+			}
+		}
+	}
+
+	/**
+	 * Safely close a Session.
+	 * 
+	 * Checked exceptions are caught and logged
+	 * 
+	 * @param session
+	 */
+	private void close(Session session)
+	{
+		if (session != null)
+		{
+			try
+			{
+				session.close();
+			}
+			catch (JMSException e)
+			{
+				LOG.error(e);
+			}
+		}
+	}
+
+	/**
+	 * Lookup the JMS Topic connection factory from JNDI
+	 * 
+	 * @return a ConnectionFactory
+	 * @throws Exception
+	 */
+	private ConnectionFactory getConnectionFactory() throws Exception
+	{
+		ConnectionFactory cf = null;
+		String jndiName = EquationCommonContext.getConfigProperty("eq.cluster.jms.factory.jndiname");
+		LOG.info("Attempting to lookup a JMS factory using JNDI name [" + jndiName + "]");
+		InitialContext initCtx = new InitialContext();
+		// Note that for WebSphere, the JNDI name will be in a format such as jms/EQ-ClusterCF.
+		// For Tomcat, it will need to be java:comp/env/jms/EQ-ClusterCF.
+		cf = (ConnectionFactory) initCtx.lookup(jndiName);
+		return cf;
+	}
+}

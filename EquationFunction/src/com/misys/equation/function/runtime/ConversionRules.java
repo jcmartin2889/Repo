@@ -1,0 +1,714 @@
+package com.misys.equation.function.runtime;
+
+import java.util.ArrayList;
+import java.util.Set;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationUnit;
+import com.misys.equation.common.dao.beans.C8RecordDataModel;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.internal.eapi.core.EQMessage;
+import com.misys.equation.common.utilities.EqDataType;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.Toolbox;
+import com.misys.equation.function.adaptor.FunctionAdaptor;
+import com.misys.equation.function.beans.InputField;
+import com.misys.equation.function.beans.XSDStructure;
+import com.misys.equation.function.language.LanguageResources;
+import com.misys.equation.function.tools.FieldFilterLocator;
+import com.misys.equation.function.tools.XSDStructureLink;
+
+public class ConversionRules
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: ConversionRules.java 17270 2013-09-11 16:55:29Z Lima12 $";
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(ConversionRules.class);
+
+	/** YYYYMMDD format */
+	public static final String DATE_YYYYMMDD = "1";
+
+	/** YYYY-MM-DD format */
+	public static final String DATE_YYYY_MM_DD = "2";
+
+	/** Equation database format */
+	public static final String DATE_CYYMMDD = "3";
+
+	/** Amount in Major currency */
+	public static final String AMOUNT_MAJOR_CURRENCY = "1";
+
+	/** Amount in Minor currency */
+	public static final String AMOUNT_MINOR_CURRENCY = "2";
+
+	/** Linked ccy parameter index */
+	public static final int PARAMETER_LINKED_CCY = 0;
+
+	/** Equation unit */
+	private EquationUnit equationUnit;
+
+	/**
+	 * Determine the conversion
+	 * 
+	 * True - Convert to Equation database format<br>
+	 * False - Convert from Equation database format<br>
+	 */
+	private boolean databaseFormat = true;
+
+	/**
+	 * Date format
+	 * 
+	 * Refer to EQ_MSG_MessageHeader.xsd
+	 */
+	protected String dateFormat = DATE_CYYMMDD;
+
+	/**
+	 * Amount format
+	 * 
+	 * Refer to EQ_MSG_MessageHeader.xsd
+	 */
+	protected String amountFormat = AMOUNT_MINOR_CURRENCY;
+
+	/** For enhanced XSD, this will contain the XSD structure for the request and response */
+	private XSDStructureLink xSDStructureLink = null;
+
+	/**
+	 * For enhanced XSD<br>
+	 * 
+	 * If this is specified, then it will use this to load the class from the database (e.g. EquationServiceHandler)<br>
+	 * 
+	 * If this is not specified, then it will use BF class loader (if BF is running) to load the class from BF database (e.g.
+	 * EQ_CMN_ServiceHandler)<br>
+	 * */
+	private FunctionAdaptor functionAdaptor = null;
+
+	/** For enhanced XSD, the session to load class from database */
+	private EquationStandardSession session = null;
+
+	/**
+	 * Determine which XSD needs to be processed
+	 * 
+	 * True - processing the Request XSD<Br>
+	 * False - Processing the Response XSD <br>
+	 * */
+	private boolean request = true;
+
+	/** List of messages */
+	private FunctionMessages functionMessages = new FunctionMessages();
+
+	// dummy field
+	private String convertTempId = "";
+
+	private FieldFilterLocator fieldFilterLocator = new FieldFilterLocator();
+
+	/**
+	 * Constructor
+	 * 
+	 * @param equationUnit
+	 *            - the Equation unit
+	 */
+	public ConversionRules(ConversionRules conversionRules)
+	{
+		this.equationUnit = conversionRules.equationUnit;
+		this.databaseFormat = conversionRules.databaseFormat;
+		this.dateFormat = conversionRules.dateFormat;
+		this.amountFormat = conversionRules.amountFormat;
+		this.functionAdaptor = conversionRules.functionAdaptor;
+		this.session = conversionRules.session;
+		this.request = conversionRules.request;
+		this.xSDStructureLink = conversionRules.xSDStructureLink;
+
+		// function message is not copied
+		// field filter is not copied
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param equationUnit
+	 *            - the Equation unit
+	 */
+	public ConversionRules(EquationUnit equationUnit)
+	{
+		this.equationUnit = equationUnit;
+	}
+
+	/**
+	 * Return the Equation unit
+	 * 
+	 * @return the Equation unit
+	 */
+	public EquationUnit getEquationUnit()
+	{
+		return equationUnit;
+	}
+
+	/**
+	 * Return the date format
+	 * 
+	 * @return the date format
+	 */
+	public String getDateFormat()
+	{
+		return dateFormat;
+	}
+
+	/**
+	 * Set the date format
+	 * 
+	 * @param dataFormat
+	 *            - the date format
+	 */
+	public void setDateFormat(String dataFormat)
+	{
+		this.dateFormat = dataFormat;
+	}
+
+	/**
+	 * Return the amount format
+	 * 
+	 * @return the amount format
+	 */
+	public String getAmountFormat()
+	{
+		return amountFormat;
+	}
+
+	/**
+	 * Set the amount format
+	 * 
+	 * @param amountFormat
+	 *            - the amount format
+	 */
+	public void setAmountFormat(String amountFormat)
+	{
+		this.amountFormat = amountFormat;
+	}
+
+	/**
+	 * Return the XSD structure link
+	 * 
+	 * @return the XSD structure link
+	 */
+	public XSDStructureLink getxSDStructureLink()
+	{
+		return xSDStructureLink;
+	}
+
+	/**
+	 * Return if processing the Request XSD or Response XSD
+	 * 
+	 * @return true if processing the Request XSD
+	 */
+	public boolean isRequest()
+	{
+		return request;
+	}
+
+	/**
+	 * Return the Function Adaptor
+	 * 
+	 * @return the Function Adaptor
+	 */
+	public FunctionAdaptor getFunctionAdaptor()
+	{
+		return functionAdaptor;
+	}
+
+	/**
+	 * Return the session
+	 * 
+	 * @return the session
+	 */
+	public EquationStandardSession getSession()
+	{
+		return session;
+	}
+
+	/**
+	 * Set the session
+	 * 
+	 * @param session
+	 *            -the session
+	 */
+	public void setSession(EquationStandardSession session)
+	{
+		this.session = session;
+	}
+
+	/**
+	 * Set processing to Response XSD
+	 */
+	public void cvtToResponse()
+	{
+		this.request = false;
+	}
+
+	/**
+	 * Clear the messages
+	 */
+	public void clearMessage()
+	{
+		functionMessages.clearMessages();
+	}
+
+	/**
+	 * Add a message
+	 * 
+	 * @param errorMessage
+	 *            - the error message
+	 * @param id
+	 *            - the input field id
+	 */
+	public void addMessage(String errorMessage, String id)
+	{
+		String messsage = "KSM7340" + errorMessage;
+		EQMessage eqMessage = new EQMessage("KSM7340", "20", "KSM7340  &1&2&3", messsage + EQMessage.PARAM_DELIMETER);
+		functionMessages.insertMessage(0, 0, id, 0, eqMessage, "", "");
+	}
+
+	/**
+	 * Copy list of messages
+	 * 
+	 * @param conversionRules
+	 *            - the conversion rule to copy messages from
+	 */
+	public void copyMessages(ConversionRules conversionRules)
+	{
+		functionMessages.insertMessages(conversionRules.getFunctionMessages());
+	}
+
+	/**
+	 * Set processing to Request XSD
+	 */
+	public void cvtToRequest()
+	{
+		this.request = true;
+	}
+
+	/**
+	 * Determine if using enhanced XSD
+	 * 
+	 * @return true if using enhanced XSD
+	 */
+	public boolean isGenerics()
+	{
+		return xSDStructureLink != null;
+	}
+
+	/**
+	 * Return the messages
+	 * 
+	 * @return the messages
+	 */
+	public FunctionMessages getFunctionMessages()
+	{
+		return functionMessages;
+	}
+
+	/**
+	 * Set parameter for enhanced XSD
+	 * 
+	 * @param xSDStructureLink
+	 *            - the XSD structure
+	 * @param session
+	 *            - the session
+	 * @param functionAdaptor
+	 *            - the Function adaptor
+	 */
+	public void setEnhancedXSD(XSDStructureLink xSDStructureLink, EquationStandardSession session, FunctionAdaptor functionAdaptor)
+	{
+		this.xSDStructureLink = xSDStructureLink;
+		this.session = session;
+		this.functionAdaptor = functionAdaptor;
+	}
+
+	/**
+	 * Return the XSD hierarchy for this field
+	 * 
+	 * @param fieldId
+	 *            - the field id
+	 * @param request
+	 *            - true if hierarchy of the Request XSD
+	 * 
+	 * @return the XSD hierarhcy for this field
+	 */
+	public ArrayList<XSDStructure> getPath(String fieldId)
+	{
+		if (request)
+		{
+			return xSDStructureLink.getRequestPath(fieldId);
+		}
+		else
+		{
+			return xSDStructureLink.getResponsePath(fieldId);
+		}
+	}
+
+	/**
+	 * Return the XSD hierarchy for this field
+	 * 
+	 * @param fieldId
+	 *            - the field id
+	 * @param request
+	 *            - true if hierarchy of the Request XSD
+	 * 
+	 * @return the XSD hierarhcy for this field
+	 */
+	public XSDStructure getXSD(String fieldId)
+	{
+		if (request)
+		{
+			return xSDStructureLink.getRequestXsd(fieldId);
+		}
+		else
+		{
+			return xSDStructureLink.getResponseXsd(fieldId);
+		}
+	}
+
+	/**
+	 * Perform conversion from user format to Equation format
+	 */
+	public void cvtToEquationFormat()
+	{
+		databaseFormat = true;
+	}
+
+	/**
+	 * Perform conversion from Equation format to user format
+	 */
+	public void cvtToUserFormat()
+	{
+		databaseFormat = false;
+	}
+
+	/**
+	 * Date conversion
+	 * 
+	 * @param date
+	 *            - the date
+	 * 
+	 * @return the converted date
+	 */
+	public String cvtDate(String date)
+	{
+		String result;
+
+		// no date conversion
+		if (dateFormat.equals(DATE_CYYMMDD))
+		{
+			return date;
+		}
+
+		// YYYYMMDD
+		else if (dateFormat.equals(DATE_YYYYMMDD))
+		{
+			if (databaseFormat)
+			{
+				result = EqDataType.cvtDateYYYYMMDDToDb(date);
+			}
+			else
+			{
+				result = EqDataType.cvtDateDbToYYYYMMDD(date);
+			}
+		}
+
+		// YYYY-MM-DD
+		else if (dateFormat.equals(DATE_YYYY_MM_DD))
+		{
+			if (databaseFormat)
+			{
+				result = EqDataType.cvtDateYYYY_MM_DDToDb(date);
+			}
+			else
+			{
+				result = EqDataType.cvtDateDbToYYYY_MM_DD(date);
+			}
+		}
+
+		// Unknown format, just return the date
+		else
+		{
+			return date;
+		}
+
+		// print some debug information
+		if (LOG.isDebugEnabled())
+		{
+			LOG.debug(LanguageResources.getFormattedString("ConversionRules.ValueConvert", new String[] { convertTempId, date,
+							result }));
+		}
+
+		return result;
+	}
+
+	/**
+	 * Amount conversion
+	 * 
+	 * @param amount
+	 *            - the amount
+	 * @param decimal
+	 *            - the number of decimal place
+	 * 
+	 * @return the converted amount
+	 */
+	public String cvtAmount(String amount, int decimal)
+	{
+		String result;
+
+		// null or blank
+		if (amount == null)
+		{
+			return "";
+		}
+
+		if (amount.trim().length() == 0)
+		{
+			return "";
+		}
+
+		// no amount conversion
+		if (amountFormat.equals(AMOUNT_MINOR_CURRENCY))
+		{
+			return amount;
+		}
+
+		// in major currency
+		else if (amountFormat.equals(AMOUNT_MAJOR_CURRENCY))
+		{
+			if (databaseFormat)
+			{
+				result = EqDataType.cvtMajorCcyAmountToMinorCcy(amount, decimal);
+			}
+			else
+			{
+				result = EqDataType.cvtMinorCcyAmountToMajorCcy(amount, decimal);
+			}
+		}
+
+		// Unknown format, just return the amount
+		else
+		{
+			return amount;
+		}
+
+		// print some debug information
+		if (LOG.isDebugEnabled())
+		{
+			LOG.debug(LanguageResources.getFormattedString("ConversionRules.ValueConvert", new String[] { convertTempId, amount,
+							result }));
+		}
+
+		return result;
+	}
+
+	/**
+	 * Amount conversion
+	 * 
+	 * @param amount
+	 *            - the amount
+	 * @param ccy
+	 *            - the ccy
+	 * 
+	 * @return the converted amount
+	 */
+	public String cvtAmount(String amount, String ccy) throws Exception
+	{
+		// no amount conversion
+		if (amountFormat.length() == 0)
+		{
+			return amount;
+		}
+
+		// amount is null or blank
+		else if (amount == null)
+		{
+			return "";
+		}
+
+		else if (amount.trim().length() == 0)
+		{
+			return "";
+		}
+
+		else if (amount.trim().equals("0"))
+		{
+			return "";
+		}
+
+		// convert amount based on currency
+		else
+		{
+			int decimal = 2;
+			C8RecordDataModel c8Record = equationUnit.getRecords().getC8Record(ccy);
+			if (c8Record != null)
+			{
+				decimal = Toolbox.parseInt(c8Record.getEditField(), 2);
+			}
+			else
+			{
+				throw new RuntimeException(LanguageResources.getFormattedString("ConversionRules.InvalidCcy", ccy));
+			}
+			return cvtAmount(amount, decimal);
+		}
+	}
+
+	/**
+	 * Convert field value
+	 * 
+	 * @param inputField
+	 *            - the Input Field
+	 * @param fieldValue
+	 *            - the field value
+	 * @param parameters
+	 *            - the parameters
+	 * 
+	 * @return the converted value
+	 */
+	public String convert(InputField inputField, String fieldValue, String... parameter)
+	{
+		// vallue is null, then nothing to convert
+		if (fieldValue == null)
+		{
+			return fieldValue;
+		}
+
+		// debug info
+		if (LOG.isDebugEnabled())
+		{
+			convertTempId = inputField.getId() + " " + inputField.rtvLabel();
+		}
+
+		try
+		{
+			// date format?
+			if (EqDataType.isDate(inputField.getDataType()))
+			{
+				return cvtDate(fieldValue);
+			}
+
+			// amount format identified by parameter 1
+			if (parameter != null && parameter[ConversionRules.PARAMETER_LINKED_CCY] != null)
+			{
+				return cvtAmount(fieldValue, parameter[ConversionRules.PARAMETER_LINKED_CCY]);
+			}
+		}
+		catch (Exception e)
+		{
+			LOG.error(e);
+			addMessage(e.getMessage(), inputField.getId());
+		}
+
+		return fieldValue;
+	}
+
+	/**
+	 * Return BankFusion complex type
+	 * 
+	 * @param fullClassName
+	 *            - the full package name of the class to be loaded
+	 * 
+	 * @return the complex type
+	 */
+	public Object getBankfusionDataType(String fullClassName) throws EQException
+	{
+		return xSDStructureLink.getBankFusionDataType(session, fullClassName, functionAdaptor);
+	}
+
+	/**
+	 * Load the response classes (enhanced XSD)
+	 * 
+	 * @param session
+	 *            - the Equation standard session
+	 * 
+	 * @Return the main response class instance
+	 */
+	public Object loadResponseClasses() throws EQException
+	{
+		return xSDStructureLink.loadResponseClasses(session, functionAdaptor);
+	}
+
+	/**
+	 * Load all request classes (enhanced XSD)
+	 * 
+	 * @param session
+	 *            - the Equation standard session
+	 * 
+	 * @Return the main request class instance
+	 */
+	public Object loadRequestClasses() throws EQException
+	{
+		return xSDStructureLink.loadRequestClasses(session, functionAdaptor);
+	}
+
+	/**
+	 * Set and initialise the list of fields to be included in the complex type
+	 * 
+	 * @param filters
+	 *            - the list of fields to be included in the complex type
+	 */
+	public void setFieldFilter(String[] filters)
+	{
+		// clear filter
+		fieldFilterLocator.clear();
+		fieldFilterLocator.setFieldFilter(filters, "");
+	}
+
+	/**
+	 * Add additional field filters
+	 * 
+	 * @param filters
+	 *            - the list of fields to be included in the complex type
+	 */
+	public void addFieldFilter(Set<String> filters)
+	{
+		for (String s : filters)
+		{
+			fieldFilterLocator.addFilterField(s);
+		}
+	}
+
+	/**
+	 * Determine if the XSD is included in the filter (enhanced XSD)
+	 * 
+	 * @param xsd
+	 *            - the XSD structure
+	 * 
+	 * @return a flag to determine whether the field is included or not, and the reason why it is included (see constant
+	 *         FieldFilterLocator.FILTERING_*)
+	 */
+	public int isIncludedInFilter(XSDStructure xsd)
+	{
+		// Note: this uses perf because of the way the getBankFusionDataType() has been implemented for
+		// performance reason. Once a group is known to be included, then there is no need to call this method to determine
+		// if the subfields are included or not. See isIncludedInFilter
+
+		return fieldFilterLocator.isIncludedInFilterPerf(xsd);
+	}
+
+	/**
+	 * Determine if the XSD is included in the filter (Non-enhanced XSD)
+	 * 
+	 * @param webServiceName
+	 *            - the web service name
+	 * 
+	 * @return a flag to determine whether the field is included or not, and the reason why it is included (see constant
+	 *         FieldFilterLocator.FILTERING_*)
+	 */
+	public int isIncludedInFilter(InputField inputField)
+	{
+		return fieldFilterLocator.isIncludedInFilter(inputField);
+	}
+
+	/**
+	 * Determine if all filters are excluded
+	 * 
+	 * @return true if all filters are excluded
+	 */
+	public boolean isExcludedAll()
+	{
+		return fieldFilterLocator.isExcludeAll();
+	}
+
+}

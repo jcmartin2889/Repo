@@ -1,0 +1,359 @@
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/repos/bfeq_src/!svn/ver/16770/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans
+END
+GPETotalPerDateDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/GPETotalPerDateDataModel.java
+END
+GARecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/GARecordDataModel.java
+END
+ACERecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/ACERecordDataModel.java
+END
+GPRRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/GPRRecordDataModel.java
+END
+GBRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/GBRecordDataModel.java
+END
+CHRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/CHRecordDataModel.java
+END
+AbsRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/AbsRecord.java
+END
+GDRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/GDRecordDataModel.java
+END
+AAIRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/AAIRecordDataModel.java
+END
+ACHRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/ACHRecordDataModel.java
+END
+GFRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/GFRecordDataModel.java
+END
+GAERecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/GAERecordDataModel.java
+END
+XVRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/XVRecordDataModel.java
+END
+WE2RecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/WE2RecordDataModel.java
+END
+ACMRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/ACMRecordDataModel.java
+END
+OCRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/OCRecordDataModel.java
+END
+ACNRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/ACNRecordDataModel.java
+END
+ACORecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/ACORecordDataModel.java
+END
+SCRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/SCRecordDataModel.java
+END
+OHRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/OHRecordDataModel.java
+END
+WARecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/WARecordDataModel.java
+END
+GMEDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/GMEDataModel.java
+END
+WERecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/WERecordDataModel.java
+END
+GMGDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/GMGDataModel.java
+END
+INORDRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/INORDRecordDataModel.java
+END
+WFRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/WFRecordDataModel.java
+END
+WECRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/WECRecordDataModel.java
+END
+GAXRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/GAXRecordDataModel.java
+END
+INORHRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/INORHRecordDataModel.java
+END
+GMLDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/GMLDataModel.java
+END
+OSRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/OSRecordDataModel.java
+END
+GAZRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16770/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/GAZRecordDataModel.java
+END
+SessionRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/SessionRecordDataModel.java
+END
+WEHRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/WEHRecordDataModel.java
+END
+BDRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/BDRecordDataModel.java
+END
+BFRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/BFRecordDataModel.java
+END
+HARecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/HARecordDataModel.java
+END
+HeaderRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/HeaderRecordDataModel.java
+END
+HBRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/HBRecordDataModel.java
+END
+QZRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/QZRecordDataModel.java
+END
+GPMRecordDataManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/GPMRecordDataManager.java
+END
+GFEExtractDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/GFEExtractDataModel.java
+END
+C1RecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/C1RecordDataModel.java
+END
+GFGDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/GFGDataModel.java
+END
+WEYRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/WEYRecordDataModel.java
+END
+package.html
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/package.html
+END
+BTRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/BTRecordDataModel.java
+END
+SearchResultDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/SearchResultDataModel.java
+END
+GYWRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/GYWRecordDataModel.java
+END
+HPRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/HPRecordDataModel.java
+END
+GFLDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/GFLDataModel.java
+END
+APJRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/APJRecordDataModel.java
+END
+C8RecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/C8RecordDataModel.java
+END
+GFETotalPerDateDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/GFETotalPerDateDataModel.java
+END
+FPGDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/FPGDataModel.java
+END
+JTRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/JTRecordDataModel.java
+END
+HBXRecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/HBXRecordDataModel.java
+END
+OC2RecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/OC2RecordDataModel.java
+END
+CARecordDataModel.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/dao/beans/CARecordDataModel.java
+END

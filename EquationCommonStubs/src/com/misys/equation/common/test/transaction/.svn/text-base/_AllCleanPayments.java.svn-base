@@ -1,0 +1,54 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
+import com.misys.equation.common.test.AbstractTestSuite;
+
+public class _AllCleanPayments extends AbstractTestSuite
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	public static Test suite()
+	{
+		// test suite
+		TestSuite suite = new TestSuite("Tests for Clean Payments");
+
+		addTests(suite, DPT.class); // Add/Maintain Payment Type
+
+		addTests(suite, AOP.class); // Add Outward Clean Payments
+		addTests(suite, AOP2.class); // Add Outward Clean Payments
+		addTests(suite, ROP2.class); // Review Outward Clean Payments
+		addTests(suite, AOC2.class); // Authorise Outward Clean Payments
+		addTests(suite, COP.class); // Confirm Outward Clean Payments
+
+		addTests(suite, AIR.class); // Add Inward Clean Payments
+		addTests(suite, AIR2.class); // Add Inward Clean Payments
+		addTests(suite, RIP2.class); // Review Inward Clean Payments
+
+		addTests(suite, AIR3.class); // Add Inward Clean Payments
+		addTests(suite, CIT.class); // Collect Inward Clean Payments
+
+		addTests(suite, AIN.class); // Authorise Inward Clean Payments
+
+		addTests(suite, ROC.class); // Request Outward CP Cancellation
+		addTests(suite, COC.class); // Confirm Outward CP Cancellation
+		addTests(suite, RIC.class); // Request Inward CP Cancellation
+		addTests(suite, CIU.class); // Confirm Inward CP Cancellation
+
+		addTests(suite, PCP.class); // Retry/Process Clean Payments
+
+		return suite;
+	}
+}

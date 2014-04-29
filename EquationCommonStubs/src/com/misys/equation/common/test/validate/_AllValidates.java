@@ -1,0 +1,81 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.validate;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
+public class _AllValidates
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: _AllValidates.java 8505 2010-08-05 15:48:25Z CHALLIP1 $";
+	public static Test suite()
+	{
+		// Create test suite
+		TestSuite suite = new TestSuite("Test for com.misys.equation.common.test.standard.enquiry");
+		
+		// suite.addTestSuite(ACGV10R.class); *NO DATA*
+		suite.addTestSuite(DUV01R.class); 
+		suite.addTestSuite(DVR01R.class);
+		suite.addTestSuite(FBR01R.class);
+		suite.addTestSuite(GAV01R.class);
+		suite.addTestSuite(GFV71R.class);
+		suite.addTestSuite(GVR10R.class); 
+		suite.addTestSuite(GWV03R.class); 
+		suite.addTestSuite(GWV04R.class);
+		suite.addTestSuite(GWV06R.class);
+		suite.addTestSuite(GWV07R.class);
+		// suite.addTestSuite(GWV09R.class); *NO DATA*
+		suite.addTestSuite(GWV13R.class);
+		suite.addTestSuite(GWV20R.class);
+		suite.addTestSuite(GWV26R.class);
+		suite.addTestSuite(GWV28R.class);
+		suite.addTestSuite(GWV29R.class);
+		suite.addTestSuite(GWV30R.class);
+		suite.addTestSuite(GWV31R.class);
+		suite.addTestSuite(GWV32R.class);
+		suite.addTestSuite(GWV40R.class);
+		// suite.addTestSuite(GWV41R.class); *NO DATA*
+		suite.addTestSuite(GWV45R.class);
+		suite.addTestSuite(GWV46R.class);
+		suite.addTestSuite(GWV50R.class);
+		suite.addTestSuite(GWV51R.class);
+		suite.addTestSuite(GWV53R.class);
+		suite.addTestSuite(GWV59R.class);
+		suite.addTestSuite(GWV60R.class);
+		// suite.addTestSuite(GWV61R.class); *NO DATA*
+		suite.addTestSuite(GWV64R.class);
+		suite.addTestSuite(GWV65R.class);
+		suite.addTestSuite(GWV72R.class);
+		suite.addTestSuite(GWV80R.class);
+		suite.addTestSuite(GWV81R.class);
+		//suite.addTestSuite(GWV82R.class); *NO DATA*
+		suite.addTestSuite(GWV90R.class);
+		suite.addTestSuite(GWV91R.class);
+		suite.addTestSuite(GWV93R.class);
+		suite.addTestSuite(GWV94R.class);
+		suite.addTestSuite(GWV96R.class);
+		suite.addTestSuite(GWV97R.class);
+		suite.addTestSuite(GWV98R.class);
+		// suite.addTestSuite(GWV99R.class); *NEED TO SET SECURITY*
+		suite.addTestSuite(IIV10R.class);
+		// suite.addTestSuite(JYR04R.class); *NO DATA*
+		// suite.addTestSuite(NEV01R.class); *NEEDS IBAN LENGTH SET!*
+		suite.addTestSuite(UHV02R.class);
+		suite.addTestSuite(UTR71R.class);
+		// suite.addTestSuite(XFV10R.class); *NO DATA*
+		suite.addTestSuite(XZV02R.class);
+
+		return suite;
+	}
+
+}

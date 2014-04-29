@@ -1,0 +1,211 @@
+package com.misys.equation.common.globalcustomers;
+
+import java.util.List;
+import java.util.Map;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.dao.DaoFactory;
+import com.misys.equation.common.dao.IGFRecordDao;
+import com.misys.equation.common.dao.beans.GFRecordDataModel;
+import com.misys.equation.common.utilities.EquationLogger;
+
+public class GlobalCustomerEnquiry
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	private List<EquationStandardSession> equationStandardSessions;
+	private DaoFactory daoFactory = new DaoFactory();
+	private static final EquationLogger LOG = new EquationLogger(GASCustomerDetails.class);
+	private String globalCustomerNumberID;
+	private EquationStandardSession session;
+
+	/**
+	 * This is the class constructor.
+	 * 
+	 * @param session
+	 *            this is the current session.
+	 * @param globalCustomerNumberID
+	 *            this is the universal customer id.
+	 */
+	public GlobalCustomerEnquiry(EquationStandardSession session, String globalCustomerNumberID)
+	{
+		if (session != null)
+		{
+			this.session = session;
+			this.globalCustomerNumberID = globalCustomerNumberID;
+		}
+		else
+		{
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error("The session cannot be null.");
+			}
+		}
+		initialisation();
+	}
+
+	/**
+	 * This method will initialise all resources.
+	 */
+	private void initialisation()
+	{
+		daoFactory = new DaoFactory();
+
+		try
+		{
+			equationStandardSessions = EquationCommonContext.getContext().getGlobalProcessingEquationStandardSessions(
+							session.getSessionIdentifier());
+		}
+		catch (Exception eQException)
+		{
+			if (LOG.isErrorEnabled())
+			{
+				StringBuilder message = new StringBuilder("There is a problem creating Global processing the sessions");
+				LOG.error(message.toString(), eQException);
+			}
+		}
+	}
+	//
+	// /**
+	// * This method will return the Global customer details basic.
+	// *
+	// * @return List of <code> CLDRecordDataModel </code>
+	// */
+	// public List<CLDRecordDataModel> getGlobalCustomerDetails()
+	// {
+	// List<ListOrderedMap> globalCustomerDataResult = null;
+	// ICLDRecordDaoImp cldRecordDao;
+	//
+	// cldRecordDao = daoFactory.getCLDRecordDao(session, new CLDRecordDataModel());
+	// globalCustomerDataResult = cldRecordDao.getGlobalCustomerData(globalCustomerNumberID);
+	// return populateCLDRecordDataModels(globalCustomerDataResult);
+	// }
+	//
+	// /**
+	// * This method will populate
+	// *
+	// * @param globalCustomerDataResult
+	// */
+	// private List<CLDRecordDataModel> populateCLDRecordDataModels(List<ListOrderedMap> globalCustomerDataResult)
+	// {
+	// List<CLDRecordDataModel> cldRecordDataModels = new ArrayList<CLDRecordDataModel>();
+	// CLDRecordDataModel cldRecordDataModel = null;
+	//
+	// for (ListOrderedMap currentResult : globalCustomerDataResult)
+	// {
+	// cldRecordDataModel = new CLDRecordDataModel();
+	// cldRecordDataModel.setGlobalCustomerId((String) currentResult.get("CLDGCID"));
+	// cldRecordDataModel.setSystemName((String) currentResult.get("CLDSYS"));
+	// cldRecordDataModel.setCustomerOwningUnit((String) currentResult.get("CLDCOUN"));
+	// cldRecordDataModel.setCustomerNumber((String) currentResult.get("CLDCNO"));
+	// cldRecordDataModel.setSequenceNumber(((BigDecimal) currentResult.get("CLDSEQ")).intValue());
+	// cldRecordDataModel.setMasterFlag(Boolean.parseBoolean((String) currentResult.get("CLDMFLG")));
+	//
+	// cldRecordDataModels.add(cldRecordDataModel);
+	// }
+	// return cldRecordDataModels;
+	// }
+
+	/**
+	 * This method will return the global customer id.
+	 * 
+	 * @return This method will return the global customer id.
+	 */
+	public String getGlobalCustomerNumberID()
+	{
+		return globalCustomerNumberID;
+	}
+
+	/**
+	 * This method will return true is there is not any universal customer id.
+	 * 
+	 * @return true is there is not any universal customer id.
+	 */
+	public boolean isGlobalCustomerNumberIDEmpty()
+	{
+		return globalCustomerNumberID.equals("");
+	}
+	/**
+	 * this method will return the customer local mnemonic and location for the passed system and unit.
+	 * 
+	 * @param system
+	 *            this is the system where the customer information can be found.
+	 * @param unit
+	 *            this is the unit where the customer information can be found.
+	 * @param customerNumber
+	 *            this is the customer number.
+	 * @return a String containing the mnemonic and location with a space between
+	 */
+	public String getCustomerLocalInformation(String system, String unit, String customerNumber)
+	{
+		GFRecordDataModel gfCustomerRecord = getCustomerLocalCustomerInformation(system, unit, customerNumber);
+		return gfCustomerRecord.getCustomerMnemonic() + " " + gfCustomerRecord.getCustomerLocation();
+	}
+
+	/**
+	 * this method will return the customer local information for the passed system and unit.
+	 * 
+	 * @param system
+	 *            this is the system where the customer information can be found.
+	 * @param unit
+	 *            this is the unit where the customer information can be found.
+	 * @param customerNumber
+	 *            this is the customer number.
+	 * @return <code>GFRecordDataModel</code>
+	 */
+	public GFRecordDataModel getCustomerLocalCustomerInformation(String system, String unit, String customerNumber)
+	{
+		IGFRecordDao iGFRecordDao;
+		List<Map<String, Object>> result = null;
+		GFRecordDataModel model = new GFRecordDataModel();
+
+		for (EquationStandardSession currentSession : equationStandardSessions)
+		{
+			// it is only going to query using the System and unit defined in CLD table.
+			if (currentSession.getSystemId().trim().equals(system.trim())
+							&& currentSession.getUnit().getUnitId().trim().equals(unit.trim()))
+			{
+				iGFRecordDao = daoFactory.getGFRecordDao(currentSession, model);
+				result = iGFRecordDao.getCustomerLocationAndMnemonic(customerNumber);
+				// if it is true, it means that there is not any customer defined in that unit which correspond to the passed
+				// customer number.
+				if (result.isEmpty())
+				{
+					continue;
+				}
+				populateGFRecordDataModel(result, model);
+			}
+
+		}
+		return model;
+	}
+
+	private void populateGFRecordDataModel(List<Map<String, Object>> result, GFRecordDataModel model)
+	{
+		for (Map<String, Object> currentResult : result)
+		{
+			model.setCustomerMnemonic((String) currentResult.get("GFCUS"));
+			model.setCustomerLocation((String) currentResult.get("GFCLC"));
+		}
+	}
+
+	public String getCLDUnitDescription(String system, String unit)
+	{
+		String description = "";
+		for (EquationStandardSession currentSession : equationStandardSessions)
+		{
+			// it is only going to query using the System and unit defined in CLD table.
+			if (currentSession.getSystemId().trim().equals(system.trim())
+							&& currentSession.getUnit().getUnitId().trim().equals(unit.trim()))
+			{
+
+				description = currentSession.getUnit().getDescription();
+			}
+
+		}
+		return description;
+	}
+
+}

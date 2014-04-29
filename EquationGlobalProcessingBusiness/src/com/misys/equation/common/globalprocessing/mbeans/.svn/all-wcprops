@@ -1,0 +1,119 @@
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/mbeans
+END
+SessionManagementService.java
+K 25
+svn:wc:ra_dav:version-url
+V 176
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/mbeans/SessionManagementService.java
+END
+AdHocExportService.java
+K 25
+svn:wc:ra_dav:version-url
+V 170
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/mbeans/AdHocExportService.java
+END
+MBeanOperation.java
+K 25
+svn:wc:ra_dav:version-url
+V 166
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/mbeans/MBeanOperation.java
+END
+RulesService.java
+K 25
+svn:wc:ra_dav:version-url
+V 164
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/mbeans/RulesService.java
+END
+UnitOptionsService.java
+K 25
+svn:wc:ra_dav:version-url
+V 170
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/mbeans/UnitOptionsService.java
+END
+GroupService.java
+K 25
+svn:wc:ra_dav:version-url
+V 164
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/mbeans/GroupService.java
+END
+V45Command.java
+K 25
+svn:wc:ra_dav:version-url
+V 162
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/mbeans/V45Command.java
+END
+GlobalJobControlWebServiceMBean.java
+K 25
+svn:wc:ra_dav:version-url
+V 183
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/mbeans/GlobalJobControlWebServiceMBean.java
+END
+EquationManagedBeanFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 178
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/mbeans/EquationManagedBeanFactory.java
+END
+DatabaseComparisonService.java
+K 25
+svn:wc:ra_dav:version-url
+V 177
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/mbeans/DatabaseComparisonService.java
+END
+GlobalWebServiceMBean.java
+K 25
+svn:wc:ra_dav:version-url
+V 173
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/mbeans/GlobalWebServiceMBean.java
+END
+CommandsService.java
+K 25
+svn:wc:ra_dav:version-url
+V 167
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/mbeans/CommandsService.java
+END
+Meta.java
+K 25
+svn:wc:ra_dav:version-url
+V 156
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/mbeans/Meta.java
+END
+AuditService.java
+K 25
+svn:wc:ra_dav:version-url
+V 164
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/mbeans/AuditService.java
+END
+RuleSetsService.java
+K 25
+svn:wc:ra_dav:version-url
+V 167
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/mbeans/RuleSetsService.java
+END
+MBeanConstructor.java
+K 25
+svn:wc:ra_dav:version-url
+V 168
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/mbeans/MBeanConstructor.java
+END
+SystemUnitsService.java
+K 25
+svn:wc:ra_dav:version-url
+V 170
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/mbeans/SystemUnitsService.java
+END
+LinkedCustomerSynchCodesService.java
+K 25
+svn:wc:ra_dav:version-url
+V 183
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/mbeans/LinkedCustomerSynchCodesService.java
+END
+GlobalOptionsService.java
+K 25
+svn:wc:ra_dav:version-url
+V 172
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalprocessing/mbeans/GlobalOptionsService.java
+END

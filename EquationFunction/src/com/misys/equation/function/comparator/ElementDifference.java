@@ -1,0 +1,178 @@
+package com.misys.equation.function.comparator;
+
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+
+public class ElementDifference
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: ElementDifference.java 9096 2010-09-10 10:15:32Z lima12 $";
+	private String id;
+	private String tag;
+	private List<PropertyDifference> propertyDifferences;
+	private Map<String, ElementDifference> subElementDifferences;
+	private List<String> subElementDifferencesKey;
+
+	/**
+	 * Construct an Element Difference with an id
+	 * 
+	 * @param id
+	 *            - the id
+	 */
+	public ElementDifference(String id, String tag)
+	{
+		this.id = id;
+		this.tag = tag;
+		this.propertyDifferences = new ArrayList<PropertyDifference>();
+		this.subElementDifferences = null;
+		this.subElementDifferencesKey = null;
+	}
+
+	/**
+	 * Add the property that differs
+	 * 
+	 * @param propertyDifference
+	 *            - the property that differs
+	 */
+	public void addPropertyDifference(PropertyDifference propertyDifference)
+	{
+		propertyDifferences.add(propertyDifference);
+	}
+
+	/**
+	 * Add all the properties that differs
+	 * 
+	 * @param elementDifference
+	 *            - the properties that differs
+	 */
+	public void addPropertyDifference(ElementDifference elementDifference)
+	{
+		propertyDifferences.addAll(elementDifference.propertyDifferences);
+
+		if (subElementDifferences == null)
+		{
+			subElementDifferences = elementDifference.subElementDifferences;
+			subElementDifferencesKey = elementDifference.subElementDifferencesKey;
+		}
+		else
+		{
+			subElementDifferences.putAll(elementDifference.subElementDifferences);
+		}
+	}
+
+	/**
+	 * Add a child property that differs
+	 * 
+	 * @param id
+	 *            - the id
+	 * @param elementDifference
+	 *            - the list of difference for the child
+	 */
+	public void addSubElementDifference(String id, ElementDifference elementDifference)
+	{
+		if (subElementDifferences == null)
+		{
+			subElementDifferences = new Hashtable<String, ElementDifference>();
+			subElementDifferencesKey = new ArrayList<String>();
+		}
+		subElementDifferencesKey.add(id);
+		subElementDifferences.put(id, elementDifference);
+	}
+
+	/**
+	 * Return the list of properties
+	 * 
+	 * @return the list of properties
+	 */
+	public List<PropertyDifference> getPropertyDifferences()
+	{
+		return propertyDifferences;
+	}
+
+	/**
+	 * Return the list of sub-elements
+	 * 
+	 * @return the list of sub-elements
+	 */
+	public Map<String, ElementDifference> getSubElementDifferences()
+	{
+		return subElementDifferences;
+	}
+
+	/**
+	 * Return the list of sub-elements key
+	 * 
+	 * @return the list of sub-elements key
+	 */
+	public List<String> getSubElementDifferencesKey()
+	{
+		return subElementDifferencesKey;
+	}
+
+	/**
+	 * Determine if there are any differences
+	 * 
+	 * @return true if there are any differences
+	 */
+	public boolean isDiffer()
+	{
+		return propertyDifferences.size() > 0 || subElementDifferences != null;
+	}
+
+	/**
+	 * Return the full id
+	 * 
+	 * @return the full id
+	 */
+	public String getFullName()
+	{
+		if (tag.length() > 0)
+		{
+			return tag + "." + id;
+		}
+		else
+		{
+			return id;
+		}
+	}
+
+	/**
+	 * Return the String representation
+	 * 
+	 * @return the String representation
+	 */
+	@Override
+	public String toString()
+	{
+		StringBuilder builder = new StringBuilder(getFullName() + "\n");
+
+		for (PropertyDifference propertyDifference : propertyDifferences)
+		{
+			builder.append("\t" + propertyDifference.toString());
+			builder.append("\n");
+		}
+
+		if (subElementDifferences != null)
+		{
+			// Iterator<String> iter = subElementDifferences.keySet().iterator();
+			// while (iter.hasNext())
+			for (String id : subElementDifferencesKey)
+			{
+				// String id = iter.next();
+				ElementDifference elementDifference = subElementDifferences.get(id);
+				String[] lines = elementDifference.toString().split("\n");
+				for (String line : lines)
+				{
+					builder.append("\t" + line);
+					builder.append("\n");
+				}
+			}
+		}
+
+		return builder.toString();
+	}
+
+}

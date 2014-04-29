@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/helpText/helpers
+END
+FileUtils.java
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/helpText/helpers/FileUtils.java
+END
+CommonDefinitions.java
+K 25
+svn:wc:ra_dav:version-url
+V 157
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/helpText/helpers/CommonDefinitions.java
+END
+Toolbox.java
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/helpText/helpers/Toolbox.java
+END
+FileErrorLog.java
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/helpText/helpers/FileErrorLog.java
+END
+HelpTextHelper.java
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/helpText/helpers/HelpTextHelper.java
+END

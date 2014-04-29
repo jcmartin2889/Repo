@@ -1,0 +1,248 @@
+package com.misys.equation.function.tools;
+
+import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.function.beans.Function;
+import com.misys.equation.function.beans.FunctionData;
+import com.misys.equation.function.beans.InputField;
+import com.misys.equation.function.beans.InputFieldSet;
+import com.misys.equation.function.beans.RepeatingDataManager;
+import com.misys.equation.function.beans.XSDStructure;
+
+public class CheckSumCalculator
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	// Log
+	private static final EquationLogger LOG = new EquationLogger(CheckSumCalculator.class);
+
+	private FunctionData functionData;
+	private Function function;
+	private XSDStructureLink xsdStructureLink;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param functionData
+	 *            - the function data
+	 * @param function
+	 *            - the function bean
+	 * @param xsdStructureLink
+	 *            - the XSD structure link of the function
+	 */
+	public CheckSumCalculator(FunctionData functionData, Function function, XSDStructureLink xsdStructureLink)
+	{
+		this.function = function;
+		this.functionData = functionData;
+
+		this.xsdStructureLink = xsdStructureLink;
+	}
+
+	/**
+	 * Recalculate the checksum
+	 * 
+	 * @param fieldFilterLocator
+	 *            - the list of fields included in the checksum
+	 * @param request
+	 *            - This is relevant only if function is using enhanced XSD<br>
+	 *            - true - the list of fields refers to Request XSD<br>
+	 *            - false - the list of fields refers to Response XSD<br>
+	 * 
+	 * @return the checksum (in HEX format)
+	 */
+	public String calculate(FieldFilterLocator fieldFilterLocator, boolean request) throws EQException
+	{
+		// accumulate fields to be included in the checksum calculation
+		StringBuilder builder = rtvChecksumData(fieldFilterLocator, request);
+
+		// hash
+		String builderStr = builder.toString();
+		byte[] builderByte = builderStr.getBytes();
+
+		try
+		{
+			MessageDigest md = MessageDigest.getInstance("SHA1");
+			md.update(builderByte, 0, builderByte.length);
+			byte[] mdbytes = md.digest();
+
+			// convert the byte to hex format
+			StringBuilder sb = new StringBuilder("");
+			for (int i = 0; i < mdbytes.length; i++)
+			{
+				sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
+			}
+			return sb.toString();
+		}
+		catch (Exception e)
+		{
+			LOG.warn(e);
+			return null;
+		}
+	}
+
+	/**
+	 * Retrieve the data for checksum calculation
+	 * 
+	 * @param fieldFilterLocator
+	 *            - the list of fields included in the checksum
+	 * @param request
+	 *            - This is relevant only if function is using enhanced XSD<br>
+	 *            - true - the list of fields refers to Request XSD<br>
+	 *            - false - the list of fields refers to Response XSD<br>
+	 * 
+	 * @return the data for checksum calculation
+	 */
+	protected StringBuilder rtvChecksumData(FieldFilterLocator fieldFilterLocator, boolean request) throws EQException
+	{
+		// repeating fields info
+		List<String> repeatingGroups = new ArrayList<String>();
+		Hashtable<String, List<String>> repeatingFields = new Hashtable<String, List<String>>();
+
+		// accumulate fields to be included in the checksum calculation
+		StringBuilder builder = new StringBuilder();
+		for (InputFieldSet inputFieldSet : function.getInputFieldSets())
+		{
+			// process non-repeating fields
+			for (InputField inputField : inputFieldSet.getInputFields())
+			{
+				// include in checksum?
+				if (isIncludeInChecksum(inputField, fieldFilterLocator, request))
+				{
+					// repeating fields - then accumulate the list of fields included in checksum
+					if (InputField.isRepeating(inputField))
+					{
+						List<String> fields = repeatingFields.get(inputField.getRepeatingGroup());
+
+						if (fields == null)
+						{
+							repeatingGroups.add(inputField.getRepeatingGroup());
+							fields = new ArrayList<String>();
+							repeatingFields.put(inputField.getRepeatingGroup(), fields);
+						}
+						fields.add(inputField.getId());
+					}
+
+					// non-repeating fields
+					else
+					{
+						String dbValue = functionData.rtvFieldDbValue(inputField.getId());
+						builder.append(dbValue);
+					}
+				}
+			}
+		}
+
+		// include the repeating list
+		builder.append(rtvChecksumDataList(repeatingGroups, repeatingFields, fieldFilterLocator, request));
+
+		// include the filter into the checksum
+		if (fieldFilterLocator != null)
+		{
+			builder.append(fieldFilterLocator.rtvFilters());
+		}
+
+		return builder;
+	}
+
+	/**
+	 * Retrieve the repeating list data for checksum calculation
+	 * 
+	 * @param repeatingGroups
+	 *            - the list of repeating groups
+	 * @param repeatingFields
+	 *            - the list of repeating fields per repeating group
+	 * @param fieldFilterLocator
+	 *            - the list of fields included in the checksum
+	 * @param request
+	 *            - This is relevant only if function is using enhanced XSD<br>
+	 *            - true - the list of fields refers to Request XSD<br>
+	 *            - false - the list of fields refers to Response XSD<br>
+	 * 
+	 * @return the repeating list data for checksum calculation
+	 */
+	protected StringBuilder rtvChecksumDataList(List<String> repeatingGroups, Hashtable<String, List<String>> repeatingFields,
+					FieldFilterLocator fieldFilterLocator, boolean request)
+	{
+		StringBuilder builder = new StringBuilder();
+
+		for (String repeatingGroup : repeatingGroups)
+		{
+			RepeatingDataManager dataManager = functionData.getRepeatingDataManager(repeatingGroup);
+			dataManager.moveFirst();
+			while (dataManager.next())
+			{
+				for (String repeatingField : repeatingFields.get(repeatingGroup))
+				{
+					builder.append(functionData.rtvFieldDbValue(repeatingField));
+				}
+			}
+		}
+
+		return builder;
+	}
+
+	/**
+	 * Determine if field is included in the check sum calculation
+	 * 
+	 * @param inputField
+	 *            - the input field
+	 * @param fieldFilterLocator
+	 *            - the list of field included in checksum
+	 * @param request
+	 *            - This is relevant only if function is using enhanced XSD<br>
+	 *            - true - the list of fields refers to Request XSD<br>
+	 *            - false - the list of fields refers to Response XSD<br>
+	 */
+	protected boolean isIncludeInChecksum(InputField inputField, FieldFilterLocator fieldFilterLocator, boolean request)
+	{
+		// field not included?
+		if (!inputField.isIncludeInChecksum())
+		{
+			return false;
+		}
+
+		// list of field not specified?
+		if (fieldFilterLocator == null)
+		{
+			return true;
+		}
+
+		// enhanced xsd?
+		int filter;
+		if (function.chkXSDGeneric())
+		{
+			// determine the XSD
+			XSDStructure xsd;
+			if (request)
+			{
+				xsd = xsdStructureLink.getRequestXsd(inputField.getId());
+			}
+			else
+			{
+				xsd = xsdStructureLink.getResponseXsd(inputField.getId());
+			}
+
+			// not found
+			if (xsd == null)
+			{
+				return false;
+			}
+
+			filter = fieldFilterLocator.isIncludedInFilter(xsd);
+		}
+		else
+		{
+			filter = fieldFilterLocator.isIncludedInFilter(inputField);
+		}
+
+		// included?
+		return filter != FieldFilterLocator.FILTERING_EXCLUDE;
+	}
+
+}

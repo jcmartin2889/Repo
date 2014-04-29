@@ -1,0 +1,170 @@
+package com.misys.equation.common.utilities;
+
+import java.io.Serializable;
+import java.util.Calendar;
+import java.util.Date;
+
+public class ElapseTime implements Serializable
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	/** */
+	private static final long serialVersionUID = -8001867317138876369L;
+	/** */
+	// private static final String format = "%02d";
+	private static final String DEFAULT_PATTERN = "%02d:%02d:%02d:%02d";
+	/** */
+	private long startTimeMS = 0L;
+	/** */
+	private long endTimeMS = 0L;
+	/** */
+	private long milliseconds = 0L;
+	/** */
+	private long seconds = 0L;
+	/** */
+	private long minutes = 0L;
+	/** */
+	private long hours = 0L;
+	/** */
+	private long elapsedTimeMS = 0L;
+
+	public ElapseTime()
+	{
+	}
+
+	public ElapseTime(long elapsedTime)
+	{
+		this.elapsedTimeMS = elapsedTime;
+		this.endTimeMS = elapsedTime;
+		this.startTimeMS = 0;
+	}
+
+	public ElapseTime(long startTimeMS, long endTimeMS)
+	{
+		this.startTimeMS = startTimeMS;
+		this.endTimeMS = endTimeMS;
+	}
+
+	public ElapseTime(Calendar startCalendar, Calendar endCalendar)
+	{
+		this(startCalendar.getTimeInMillis(), endCalendar.getTimeInMillis());
+	}
+
+	public ElapseTime(Date startDate, Date endDate)
+	{
+		this(startDate.getTime(), endDate.getTime());
+	}
+
+	public void startTimer()
+	{
+		this.startTimeMS = System.currentTimeMillis();
+	}
+
+	public void stopTimer()
+	{
+		this.endTimeMS = System.currentTimeMillis();
+	}
+
+	public long computeElapseTime()
+	{
+		elapsedTimeMS = Math.abs(endTimeMS - startTimeMS);
+		return elapsedTimeMS;
+	}
+
+	public String getDefaultFormattedElapsedTime()
+	{
+		return getFormattedElapsedTime(DEFAULT_PATTERN);
+	}
+
+	public String getFormattedElapsedTime(String pattern)
+	{
+		getElapsedTimeHoursMinutesSecondsString(computeElapseTime());
+		return String.format(pattern, hours, minutes, seconds, milliseconds);
+	}
+
+	/**
+	 * elapsed time in hours/minutes/seconds/milliseconds
+	 * 
+	 * @return String
+	 */
+	private void getElapsedTimeHoursMinutesSecondsString(long elapsedTimeMS)
+	{
+		milliseconds = elapsedTimeMS % 1000;
+		long secs = elapsedTimeMS / 1000;
+		seconds = secs % 60;
+		minutes = (secs % 3600) / 60;
+		hours = secs / 3600;
+	}
+
+	/**
+	 * @return the startTime
+	 */
+	public long getStartTime()
+	{
+		return startTimeMS;
+	}
+	/**
+	 * @param startTime
+	 *            the startTime to set
+	 */
+	public void setStartTime(long startTime)
+	{
+		this.startTimeMS = startTime;
+	}
+	/**
+	 * @return the endTime
+	 */
+	public long getEndTime()
+	{
+		return endTimeMS;
+	}
+	/**
+	 * @param endTime
+	 *            the endTime to set
+	 */
+	public void setEndTime(long endTime)
+	{
+		this.endTimeMS = endTime;
+	}
+
+	/**
+	 * @return the milliseconds
+	 */
+	public long getMilliseconds()
+	{
+		return milliseconds;
+	}
+
+	/**
+	 * @return the seconds
+	 */
+	public long getSeconds()
+	{
+		return seconds;
+	}
+
+	/**
+	 * @return the minutes
+	 */
+	public long getMinutes()
+	{
+		return minutes;
+	}
+
+	/**
+	 * @return the hours
+	 */
+	public long getHours()
+	{
+		return hours;
+	}
+
+	/**
+	 * @return the elapsedTime
+	 */
+	public long getElapsedTime()
+	{
+		return elapsedTimeMS;
+	}
+
+}

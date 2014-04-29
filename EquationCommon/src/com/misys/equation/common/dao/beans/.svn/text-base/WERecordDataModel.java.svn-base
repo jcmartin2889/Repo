@@ -1,0 +1,829 @@
+package com.misys.equation.common.dao.beans;
+
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * WERecord data-model.
+ * 
+ * @author deroset
+ * 
+ */
+public class WERecordDataModel extends AbsRecord
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private static final EquationLogger LOG = new EquationLogger(WERecordDataModel.class);
+
+	private static final long serialVersionUID = 1L;
+	private final static String RECORD_NAME = "WEPF";
+
+	public final static String STAT_AUTH = "1"; // Authorised
+	public final static String STAT_REF = "3"; // Refer to another authoriser
+	public final static String STAT_DECL = "4"; // Declined
+	public final static String STAT_AVAIL = "5"; // Available for authorisation
+	public final static String STAT_CHECK = "6"; // Someone checking the transaction
+	public final static String STAT_ABORT = "7"; // Request for authorisation aborted due to user cancellation
+	public final static String STAT_TMOUT = "8"; // Request for authorisation aborted due to timeout
+	public final static String STAT_WIP = "A"; // Work in progress
+	public final static String STAT_TMPLT = "T"; // Template
+	public final static String STAT_REFUSR = "9"; // Refer by another user for input
+
+	// maker-checker status
+	public final static String MAKER_CHECKER_STAT_AWAIT = "S"; // Submitted/Awaiting checking
+	public final static String MAKER_CHECKER_STAT_APPRVD = "P"; // Approved by Checker
+	public final static String MAKER_CHECKER_STAT_REJCTD = "R"; // Rejected by Checker
+	public final static String MAKER_CHECKER_STAT_COMPL = "C"; // Completed
+	public final static String MAKER_CHECKER_STAT_CANCLD = "D"; // Cancelled/Declined by Maker
+
+	public final static String LVL_ONE = "1"; // User can authorise first warning only
+	public final static String LVL_ALL = "A"; // User can authorise all warnings
+
+	private String jobDesc = ""; // WEJBD
+	private int jobNum; // WEJBN
+	private String authorisor = ""; // WEAUID
+	private String authStat = ""; // WEASTS
+	private String authLevel = ""; // WEAUTH
+	private String optionId = ""; // WEOID
+	private String optionTitle = ""; // WEONM
+	private String appCode = ""; // WEAPPC
+	private String authAppCode = ""; // WESAPC
+	private String defEntryData = ""; // WESLT
+	private int scrnNo; // WESCRN
+	private String veriStat = ""; // WEVFRY
+	private String oneOrMany = ""; // WEONOM
+	private String inputAuth = ""; // WEINP
+	private String maintAuth = ""; // WEMNT
+	private String cancelAuth = ""; // WECNL
+	private String commandKey = ""; // WECKEY
+	private String userId = ""; // WEUID2
+	private String sessionId = ""; // WESID
+	private String transactionId = ""; // WETID
+	private int tranDate; // WEDTE
+	private int tranTime; // WETIM
+	private String userAlerted = ""; // WEALRT
+	private int screenSetId; // WESSET
+	private int lastScrnSetId; // WELSST
+	private String offlineRequest = ""; // WEOFFL
+	private String userId4 = ""; // WEUID
+
+	private String reasonRejection = ""; // WERTXT
+	private String[] messages; // @EM1 - @EM20
+	private String messageBranches; // WEABRN
+	private String messageAmounts; // WEAAMT
+
+	/**
+	 * Construct an empty WE record
+	 */
+	public WERecordDataModel()
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+		initMessages();
+	}
+
+	/**
+	 * Construct a WE record key to retrieve WE record for desktop
+	 * 
+	 * @param optionId
+	 *            - option id
+	 */
+	public WERecordDataModel(String optionId, String sessionId, String transactionId, String userId)
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+
+		setOptionId(optionId);
+		setSessionId(sessionId);
+		setTransactionId(transactionId);
+		setUserId(userId);
+		setUserId4(userId);
+		this.messages = new String[20];
+		initMessages();
+	}
+
+	/**
+	 * Construct a WE record with default values
+	 * 
+	 * @param optionId
+	 *            - option id
+	 * @param programName
+	 *            - program name
+	 * @param programTitle
+	 *            - program title
+	 * @param application
+	 *            - application
+	 */
+	public WERecordDataModel(String optionId, String sessionId, String transactionId, String userId, String authorisor,
+					String optionTitle, int scrnNo, int screenSetId, int lastScrnSetId)
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+
+		setOptionId(optionId);
+		setSessionId(sessionId);
+		setTransactionId(transactionId);
+		setUserId(userId);
+		setUserId4(userId);
+		setAuthorisor(authorisor);
+		setOptionTitle(optionTitle);
+		setScrnNo(scrnNo);
+		setAuthStat(STAT_AUTH);
+		setAuthLevel(LVL_ALL);
+		setScreenSetId(screenSetId);
+		setLastScrnSetId(lastScrnSetId);
+
+		this.userAlerted = "N";
+		initMessages();
+	}
+
+	/**
+	 * Initialise the messages
+	 */
+	private void initMessages()
+	{
+		this.messages = new String[20];
+		for (int i = 0; i < messages.length; i++)
+		{
+			messages[i] = "";
+		}
+	}
+
+	// ---getters and setters----//
+
+	/**
+	 * Return the option id
+	 * 
+	 * @return the option id
+	 */
+	public String getOptionId()
+	{
+		return optionId;
+	}
+
+	/**
+	 * Set the option id
+	 * 
+	 * @param optionId
+	 *            - the option id
+	 */
+	public void setOptionId(String optionId)
+	{
+		this.optionId = Toolbox.trim(optionId, 3);
+	}
+
+	/**
+	 * Return the user id
+	 * 
+	 * @return the user id
+	 */
+	public String getUserId()
+	{
+		return userId;
+	}
+
+	/**
+	 * Return the user id (4 character)
+	 * 
+	 * @return the user id (4 character)
+	 */
+	public String rtvUserId4()
+	{
+		return Toolbox.trim(userId, 4);
+	}
+
+	/**
+	 * Set the user id
+	 * 
+	 * @param userId
+	 *            - the user id
+	 */
+	public void setUserId(String userId)
+	{
+		this.userId = Toolbox.trim(userId, 10);
+	}
+
+	/**
+	 * Return the session id
+	 * 
+	 * @return the session id
+	 */
+	public String getSessionId()
+	{
+		return sessionId;
+	}
+
+	/**
+	 * Set the session id
+	 * 
+	 * @param sessionId
+	 *            - the session id
+	 */
+	public void setSessionId(String sessionId)
+	{
+		this.sessionId = Toolbox.trim(sessionId, 50);
+	}
+
+	/**
+	 * Return the transaction id
+	 * 
+	 * @return the transaction id
+	 */
+	public String getTransactionId()
+	{
+		return transactionId;
+	}
+
+	/**
+	 * Set the transaction id
+	 * 
+	 * @param transactionId
+	 *            - the transaction id
+	 */
+	public void setTransactionId(String transactionId)
+	{
+		this.transactionId = Toolbox.trim(transactionId, 50);
+	}
+
+	/**
+	 * Return the job description
+	 * 
+	 * @return the job description
+	 */
+	public String getJobDesc()
+	{
+		return jobDesc;
+	}
+
+	/**
+	 * Set the job description
+	 * 
+	 * @param jobDesc
+	 *            - the job description
+	 */
+	public void setJobDesc(String jobDesc)
+	{
+		this.jobDesc = Toolbox.trim(jobDesc, 4);
+	}
+
+	/**
+	 * Return the job number
+	 * 
+	 * @return the job number
+	 */
+	public int getJobNum()
+	{
+		return jobNum;
+	}
+
+	/**
+	 * Set the job number
+	 * 
+	 * @param jobNum
+	 *            - the job number
+	 */
+	public void setJobNum(int jobNum)
+	{
+		this.jobNum = jobNum;
+	}
+
+	/**
+	 * Return the authorisor - the user who will authorise the transaction
+	 * 
+	 * @return the authorisor - the user who will authorise the transaction
+	 */
+	public String getAuthorisor()
+	{
+		return authorisor;
+	}
+
+	/**
+	 * Set the the authorisor - the user who will authorise the transaction
+	 * 
+	 * @param authorisor
+	 *            - the authorisor - the user who will authorise the transaction
+	 */
+	public void setAuthorisor(String authorisor)
+	{
+		this.authorisor = Toolbox.trim(authorisor, 4);
+	}
+
+	/**
+	 * Return the authorisation status
+	 * 
+	 * @return the authorisation status
+	 */
+	public String getAuthStat()
+	{
+		return authStat;
+	}
+
+	/**
+	 * Set the authorisation status
+	 * 
+	 * @param authStat
+	 *            the authorisation status
+	 */
+	public void setAuthStat(String authStat)
+	{
+		this.authStat = Toolbox.trim(authStat, 1);
+	}
+
+	/**
+	 * Return the authorisation level
+	 * 
+	 * @return the authorisation level
+	 */
+	public String getAuthLevel()
+	{
+		return authLevel;
+	}
+
+	/**
+	 * Set the authorisation level
+	 * 
+	 * @param authLevel
+	 *            - the authorisation level
+	 */
+	public void setAuthLevel(String authLevel)
+	{
+		this.authLevel = Toolbox.trim(authLevel, 1);
+	}
+
+	/**
+	 * Return the option title
+	 * 
+	 * @return the option title
+	 */
+	public String getOptionTitle()
+	{
+		return optionTitle;
+	}
+
+	/**
+	 * Set the option title
+	 * 
+	 * @param optionTitle
+	 *            - the option title
+	 */
+	public void setOptionTitle(String optionTitle)
+	{
+		this.optionTitle = Toolbox.trim(optionTitle, 35);
+	}
+
+	/**
+	 * Return the application code
+	 * 
+	 * @return the application code
+	 */
+	public String getAppCode()
+	{
+		return appCode;
+	}
+
+	/**
+	 * Set the application code
+	 * 
+	 * @param appCode
+	 *            - the application code
+	 */
+	public void setAppCode(String appCode)
+	{
+		this.appCode = Toolbox.trim(appCode, 3);
+	}
+
+	/**
+	 * Return the authorisor application code
+	 * 
+	 * @return the authorisor application code
+	 */
+	public String getAuthAppCode()
+	{
+		return authAppCode;
+	}
+
+	/**
+	 * Set the authorisor application code
+	 * 
+	 * @param authAppCode
+	 *            - the authorisor application code
+	 */
+	public void setAuthAppCode(String authAppCode)
+	{
+		this.authAppCode = Toolbox.trim(authAppCode, 3);
+	}
+
+	/**
+	 * Return the default entry data
+	 * 
+	 * @return the default entry data
+	 */
+	public String getDefEntryData()
+	{
+		return defEntryData;
+	}
+
+	/**
+	 * Set the default entry data
+	 * 
+	 * @param defEntryData
+	 *            - the default entry data
+	 */
+	public void setDefEntryData(String defEntryData)
+	{
+		this.defEntryData = Toolbox.trim(defEntryData, 55);
+	}
+
+	/**
+	 * Return the screen number where the message is displayed
+	 * 
+	 * @return the screen number where the message is displayed
+	 */
+	public int getScrnNo()
+	{
+		return scrnNo;
+	}
+
+	/**
+	 * Set the screen number where the message is displayed
+	 * 
+	 * @param scrnNo
+	 *            - the screen number where the message is displayed
+	 */
+	public void setScrnNo(int scrnNo)
+	{
+		this.scrnNo = scrnNo;
+	}
+
+	/**
+	 * Return the verification status
+	 * 
+	 * @return the verification status
+	 */
+	public String getVeriStat()
+	{
+		return veriStat;
+	}
+
+	/**
+	 * Set the verification status
+	 * 
+	 * @param veriStat
+	 *            - the verification status
+	 */
+	public void setVeriStat(String veriStat)
+	{
+		this.veriStat = Toolbox.trim(veriStat, 1);
+	}
+
+	/**
+	 * Return the one or many flag
+	 * 
+	 * @return the one or many flag
+	 */
+	public String getOneOrMany()
+	{
+		return oneOrMany;
+	}
+
+	/**
+	 * Set the one or many flag
+	 * 
+	 * @param oneOrMany
+	 *            - the one or many flag
+	 */
+	public void setOneOrMany(String oneOrMany)
+	{
+		this.oneOrMany = Toolbox.trim(oneOrMany, 1);
+	}
+
+	/**
+	 * Return the input authorised flag
+	 * 
+	 * @return the input authorised flag
+	 */
+	public String getInputAuth()
+	{
+		return inputAuth;
+	}
+
+	/**
+	 * Set the input authorised flag
+	 * 
+	 * @param inputAuth
+	 *            - the input authorised flag
+	 */
+	public void setInputAuth(String inputAuth)
+	{
+		this.inputAuth = Toolbox.trim(inputAuth, 1);
+	}
+
+	/**
+	 * Return the maintain authorised flag
+	 * 
+	 * @return the maintain authorised flag
+	 */
+	public String getMaintAuth()
+	{
+		return maintAuth;
+	}
+
+	/**
+	 * Set the maintain authorised flag
+	 * 
+	 * @param maintAuth
+	 *            - the maintain authorised flag
+	 */
+	public void setMaintAuth(String maintAuth)
+	{
+		this.maintAuth = Toolbox.trim(maintAuth, 1);
+	}
+
+	/**
+	 * Return the cancel authorised flag
+	 * 
+	 * @return the cancel authorised flag
+	 */
+	public String getCancelAuth()
+	{
+		return cancelAuth;
+	}
+
+	/**
+	 * Return the cancel authorised flag
+	 * 
+	 * @param cancelAuth
+	 *            - the cancel authorised flag
+	 */
+	public void setCancelAuth(String cancelAuth)
+	{
+		this.cancelAuth = Toolbox.trim(cancelAuth, 1);
+	}
+
+	/**
+	 * Return the command key
+	 * 
+	 * @return the command key
+	 */
+	public String getCommandKey()
+	{
+		return commandKey;
+	}
+
+	/**
+	 * Set the command key
+	 * 
+	 * @param commandKey
+	 *            - the command key
+	 */
+	public void setCommandKey(String commandKey)
+	{
+		this.commandKey = Toolbox.trim(commandKey, 1);
+	}
+
+	/**
+	 * Return the reason of rejection
+	 * 
+	 * @return the reason of rejection
+	 */
+	public String getReasonRejection()
+	{
+		return reasonRejection;
+	}
+
+	/**
+	 * Set the reason of rejection
+	 * 
+	 * @param reasonRejection
+	 *            - the reason of rejection
+	 */
+	public void setReasonRejection(String reasonRejection)
+	{
+		this.reasonRejection = Toolbox.trim(reasonRejection, 70);
+	}
+
+	/**
+	 * Return the list of messages
+	 * 
+	 * @return the list of messages
+	 */
+	public String[] getMessages()
+	{
+		return messages;
+	}
+
+	/**
+	 * Set the list of messages
+	 * 
+	 * @param messages
+	 *            - the list of messages
+	 */
+	public void setMessages(String[] messages)
+	{
+		this.messages = messages;
+	}
+
+	/**
+	 * Return the transaction date
+	 * 
+	 * @return the transaction date
+	 */
+	public int getTranDate()
+	{
+		return tranDate;
+	}
+
+	/**
+	 * Set the transaction date
+	 * 
+	 * @param date
+	 *            - the transaction date
+	 */
+	public void setTranDate(int date)
+	{
+		this.tranDate = date;
+	}
+
+	/**
+	 * Return the transaction time
+	 * 
+	 * @return the transaction time
+	 */
+	public int getTranTime()
+	{
+		return tranTime;
+	}
+
+	/**
+	 * Set the transaction time
+	 * 
+	 * @param time
+	 *            - the transaction time
+	 */
+	public void setTranTime(int time)
+	{
+		this.tranTime = time;
+	}
+
+	/**
+	 * Return the user alerted flag
+	 * 
+	 * @return the user alerted flag
+	 */
+	public String getUserAlerted()
+	{
+		return userAlerted;
+	}
+
+	/**
+	 * Set the user alerted flag
+	 * 
+	 * @param userAlerted
+	 *            - the user alerted flag
+	 */
+	public void setUserAlerted(String userAlerted)
+	{
+		this.userAlerted = Toolbox.trim(userAlerted, 1);
+	}
+
+	/**
+	 * Return the screen set id
+	 * 
+	 * @return the screen set id
+	 */
+	public int getScreenSetId()
+	{
+		return screenSetId;
+	}
+
+	/**
+	 * Set the screen set id
+	 * 
+	 * @param screenSetId
+	 *            - the screen set id
+	 */
+	public void setScreenSetId(int screenSetId)
+	{
+		this.screenSetId = screenSetId;
+	}
+
+	/**
+	 * Return the last screen set id
+	 * 
+	 * @return the last screen set id
+	 */
+	public int getLastScrnSetId()
+	{
+		return lastScrnSetId;
+	}
+
+	/**
+	 * Set the last screen set id
+	 * 
+	 * @param lastScrnSetId
+	 *            - the last screen set id
+	 */
+	public void setLastScrnSetId(int lastScrnSetId)
+	{
+		this.lastScrnSetId = lastScrnSetId;
+	}
+
+	/**
+	 * Return the offline request flag
+	 * 
+	 * @return the offline request flag
+	 */
+	public String getOfflineRequest()
+	{
+		return offlineRequest;
+	}
+
+	/**
+	 * Set the offline request flag
+	 * 
+	 * @param offlineRequest
+	 *            - the offline request flag
+	 */
+	public void setOfflineRequest(String offlineRequest)
+	{
+		this.offlineRequest = offlineRequest;
+	}
+
+	/**
+	 * Return the user id (4 character)
+	 * 
+	 * @return the user id (4 character)
+	 */
+	public String getUserId4()
+	{
+		return userId4;
+	}
+
+	/**
+	 * Set the user id (4 character)
+	 * 
+	 * @param userId4
+	 *            - the user id (4 character)
+	 */
+	public void setUserId4(String userId4)
+	{
+		this.userId4 = Toolbox.trim(userId4, 4);
+	}
+
+	/**
+	 * Set the message
+	 * 
+	 * @param message
+	 *            - the message
+	 * @param index
+	 *            - index (must be 0..19)
+	 */
+	public void setMessage(String message, int index)
+	{
+		this.messages[index] = message;
+	}
+
+	/**
+	 * Return the message branches 20 x 4A
+	 * 
+	 * @return the message branches 20 x 4A
+	 */
+	public String getMessageBranches()
+	{
+		return messageBranches;
+	}
+
+	/**
+	 * Set the message branches 20 x 4A
+	 * 
+	 * @param messageBranches
+	 *            - the message branches 20 x 4A
+	 */
+	public void setMessageBranches(String messageBranches)
+	{
+		this.messageBranches = messageBranches;
+	}
+
+	/**
+	 * Return the message amounts 20 x 15,0P
+	 * 
+	 * @return the message amounts 20 x 15,0P
+	 */
+	public String getMessageAmounts()
+	{
+		return messageAmounts;
+	}
+
+	/**
+	 * Set the message amounts 20 x 15,0P
+	 * 
+	 * @param messageAmounts
+	 *            - the message amounts 20 x 15,0P
+	 */
+	public void setMessageAmounts(String messageAmounts)
+	{
+		this.messageAmounts = messageAmounts;
+	}
+
+}

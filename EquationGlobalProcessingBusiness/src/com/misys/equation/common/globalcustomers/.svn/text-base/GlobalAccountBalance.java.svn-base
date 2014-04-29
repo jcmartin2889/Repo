@@ -1,0 +1,421 @@
+package com.misys.equation.common.globalcustomers;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.Map.Entry;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationStandardListEnquiry;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.GlobalProcessingApiExecuter;
+import com.misys.equation.common.access.IEquationStandardObject;
+import com.misys.equation.common.dao.DaoFactory;
+import com.misys.equation.common.dao.IDH0RecordDao;
+import com.misys.equation.common.dao.INE1RecordDao;
+import com.misys.equation.common.dao.beans.DH0RecordDataModel;
+import com.misys.equation.common.dao.beans.NE1RecordDataModel;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.Toolbox;
+
+public class GlobalAccountBalance
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private EquationStandardSession session;
+	private GlobalProcessingApiExecuter globalProcessingApiExecuter;
+	private String globalCustomerNumberID;
+	private final String apiName = "H70DER"; // layout HZH701 HZH702
+	private String currency;
+	private String systemAccountId;
+	private String system = "";
+	private DaoFactory daoFactory;
+	private List<EquationStandardSession> equationStandardSessions = null;
+
+	private static final EquationLogger LOG = new EquationLogger(GlobalAccountBalance.class);
+	private Map<String, GlobalAccountBalancePerBranch> globalAccountBalances;
+
+	private String customerNumber;
+	private String currentUnit;
+
+	public GlobalAccountBalance(EquationStandardSession session)
+	{
+		initialisation(session);
+	}
+
+	public GlobalAccountBalance(EquationStandardSession session, String globalCustomerNumberID)
+	{
+		this.globalCustomerNumberID = globalCustomerNumberID;
+		initialisation(session);
+	}
+
+	/**
+	 * This method will initialise all resources.
+	 */
+	private void initialisation(EquationStandardSession session)
+	{
+		if (session != null)
+		{
+			this.session = session;
+			this.globalAccountBalances = new TreeMap<String, GlobalAccountBalancePerBranch>();
+		}
+		else
+		{
+
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error("The session cannot be null.");
+			}
+		}
+	}
+
+	private void createSessionsForAllUnits()
+	{
+		EquationCommonContext equationCommonContext = null;
+		equationCommonContext = EquationCommonContext.getContext();
+		try
+		{
+			daoFactory = new DaoFactory();
+			equationStandardSessions = equationCommonContext.getGlobalProcessingEquationStandardSessions(session
+							.getSessionIdentifier());
+		}
+		catch (Exception eQException)
+		{
+			if (LOG.isErrorEnabled())
+			{
+				StringBuilder message = new StringBuilder("There is a problem creating Global processing the sessions");
+				LOG.error(message.toString(), eQException);
+			}
+		}
+	}
+
+	public Map<String, GlobalAccountBalancePerBranch> getGlobalAccountBalances()
+	{
+		GASCustomerDetails gASCustomerDetails = new GASCustomerDetails(this.session, globalCustomerNumberID);
+		List<Map<String, Object>> customerNumberAcrossUnits = null;
+		List<UniversalCustomerBasicInformationBean> customerBasicInformatioLists = null;
+		Map<String, IEquationStandardObject> apiCallResults;
+
+		createSessionsForAllUnits();
+
+		if (globalCustomerNumberID.equals(""))
+		{
+			gASCustomerDetails.setCurrentUnit(currentUnit);
+			gASCustomerDetails.setCustomerNumber(customerNumber);
+			gASCustomerDetails.setDefinedSystem(system);
+
+			customerBasicInformatioLists = gASCustomerDetails.getCustomerMnemonicAndLoctionInASpecificUnit();
+		}
+		else
+		{
+			customerNumberAcrossUnits = gASCustomerDetails.getCustomerNumberAcrossAllUnits();
+			customerBasicInformatioLists = gASCustomerDetails
+							.getCustomerMnemonicAndLoctionAcrossAllUnits(customerNumberAcrossUnits);
+		}
+
+		for (UniversalCustomerBasicInformationBean universalCustomerBasicInformationBean : customerBasicInformatioLists)
+		{
+			apiCallResults = callAPIH70DER(universalCustomerBasicInformationBean);
+			populateGASCustomerDetailsBeans(apiCallResults, universalCustomerBasicInformationBean);
+		}
+		sortGlobalAccountBalances();
+
+		return globalAccountBalances;
+	}
+
+	public Map<String, GlobalAccountBalancePerBranch> getGlobalSystemAccountBalances(String systemAccountId)
+	{
+		List<UniversalCustomerBasicInformationBean> listUniversalCustomerBasicInformationBean = null;
+		Map<String, IEquationStandardObject> apiCallResults;
+
+		this.systemAccountId = systemAccountId;
+
+		createSessionsForAllUnits();
+		listUniversalCustomerBasicInformationBean = getSystemAccountInformation();
+
+		for (UniversalCustomerBasicInformationBean universalCustomerBasicInformationBean : listUniversalCustomerBasicInformationBean)
+		{
+			apiCallResults = callAPIH70DER(universalCustomerBasicInformationBean);
+			populateGASCustomerDetailsBeans(apiCallResults, universalCustomerBasicInformationBean);
+		}
+		sortGlobalAccountBalances();
+
+		return globalAccountBalances;
+	}
+
+	/**
+	 * This method will sort all accounts.
+	 */
+	private void sortGlobalAccountBalances()
+	{
+		String currentBranch = null;
+		GlobalAccountBalancePerBranch globalAccountBalancePerBranch = null;
+
+		for (Iterator<String> iterator = globalAccountBalances.keySet().iterator(); iterator.hasNext();)
+		{
+			currentBranch = iterator.next();
+			globalAccountBalancePerBranch = globalAccountBalances.get(currentBranch);
+			globalAccountBalancePerBranch.sortGlobalAccountBalances();
+		}
+	}
+
+	private List<UniversalCustomerBasicInformationBean> getSystemAccountInformation()
+	{
+		IDH0RecordDao iDH0RecordDao = null;
+		List<UniversalCustomerBasicInformationBean> systemAccountInformation = new ArrayList<UniversalCustomerBasicInformationBean>();
+		List<Map<String, Object>> result;
+		UniversalCustomerBasicInformationBean universalCustomerBasicInformationBean = null;
+
+		for (EquationStandardSession currentSession : equationStandardSessions)
+		{
+			iDH0RecordDao = daoFactory.getDH0Dao(currentSession, new DH0RecordDataModel());
+			result = iDH0RecordDao.getSystemAccountInformation(systemAccountId);
+
+			for (Map<String, Object> listOrderedMap : result)
+			{
+				universalCustomerBasicInformationBean = new UniversalCustomerBasicInformationBean();
+
+				universalCustomerBasicInformationBean.setSystem(currentSession.getSystemId());
+				universalCustomerBasicInformationBean.setUnit(currentSession.getUnitId());
+
+				universalCustomerBasicInformationBean.setCustomerNumber(((String) listOrderedMap.get("DHBNOC")));
+				systemAccountInformation.add(universalCustomerBasicInformationBean);
+			}
+		}
+		return systemAccountInformation;
+	}
+
+	private Map<String, IEquationStandardObject> callAPIH70DER(
+					UniversalCustomerBasicInformationBean universalCustomerBasicInformationBean)
+	{
+		Map<String, String> apiFields = new HashMap<String, String>();
+		Map<String, IEquationStandardObject> apiCallResults = null;
+
+		if (universalCustomerBasicInformationBean.getCustomerMnemonic() == null)
+		{
+
+			apiFields.put("HZAN", universalCustomerBasicInformationBean.getCustomerNumber()); // Customer number (6A)
+		}
+		else
+		{
+			apiFields.put("HZCUS", universalCustomerBasicInformationBean.getCustomerMnemonic()); // Customer mnemonic (6A)
+			apiFields.put("HZCLC", universalCustomerBasicInformationBean.getCustomerLocation()); // Customer location (3A)
+		}
+
+		if (currency != null)
+		{
+			apiFields.put("HZCCYR", currency);
+		}
+
+		globalProcessingApiExecuter = new GlobalProcessingApiExecuter(session);
+		globalProcessingApiExecuter.setApiFields(apiFields);
+		globalProcessingApiExecuter.setApiName(apiName);
+		globalProcessingApiExecuter.setSystemAndUnitToBeUsed(universalCustomerBasicInformationBean.getSystem(),
+						universalCustomerBasicInformationBean.getUnit());
+		globalProcessingApiExecuter.executeAPI();
+		apiCallResults = globalProcessingApiExecuter.getResults();
+
+		return apiCallResults;
+
+	}
+
+	private void populateGASCustomerDetailsBeans(Map<String, IEquationStandardObject> apiCallResults,
+					UniversalCustomerBasicInformationBean universalCustomerBasicInformationBean)
+	{
+		IEquationStandardObject equationStandardObject;
+		EquationStandardListEnquiry apiResultForUnit = null;
+		String unit = null;
+
+		for (Entry<String, IEquationStandardObject> apiCallResult : apiCallResults.entrySet())
+		{
+			unit = apiCallResult.getKey();
+			equationStandardObject = apiCallResults.get(unit);
+
+			if (equationStandardObject instanceof EquationStandardListEnquiry)
+			{
+				apiResultForUnit = (EquationStandardListEnquiry) equationStandardObject;
+			}
+			else
+			{
+				if (LOG.isErrorEnabled())
+				{
+					LOG.error(new IllegalArgumentException("There was a problem trying to iterate  the record."));
+				}
+			}
+			processCurrentRecord(apiResultForUnit, universalCustomerBasicInformationBean);
+		}
+	}
+
+	private void processCurrentRecord(EquationStandardListEnquiry apiResultForUnit,
+					UniversalCustomerBasicInformationBean universalCustomerBasicInformationBean)
+	{
+		String branchNumber = null;
+		String account = null;
+		StringBuilder branchAccount = null;
+		int recordSize = 0;
+		String gasId = null;
+
+		GlobalAccountBalanceBean globalAccountBalanceBean;
+		GlobalAccountBalancePerBranch globalAccountBalancePerBranch;
+
+		recordSize = apiResultForUnit.getHzListRcds().size();
+
+		for (int index = 0; index < recordSize; index++)
+		{
+			try
+			{
+				branchNumber = apiResultForUnit.getListField("HZAB", index);
+
+				globalAccountBalanceBean = new GlobalAccountBalanceBean();
+
+				globalAccountBalanceBean.setGlobalUserId(universalCustomerBasicInformationBean.getGlobalUserId());
+				globalAccountBalanceBean.setUnit(universalCustomerBasicInformationBean.getUnit());
+				globalAccountBalanceBean.setSystem(universalCustomerBasicInformationBean.getSystem());
+
+				account = getAccount(apiResultForUnit, index);
+				String[] accountDetails = account.split("-");
+
+				branchAccount = new StringBuilder(branchNumber);
+				branchAccount.append("-");
+				branchAccount.append(account);
+
+				globalAccountBalanceBean.setBranchNumber(branchNumber);
+				globalAccountBalanceBean.setAccount(branchAccount.toString());
+
+				globalAccountBalanceBean.setAccountShortName(apiResultForUnit.getListField("HZSHN", index).trim());
+
+				globalAccountBalanceBean.setAccountType(apiResultForUnit.getListField("HZACT", index).trim());
+
+				globalAccountBalanceBean.setCurrency(apiResultForUnit.getListField("HZCCY", index).trim());
+				globalAccountBalanceBean.setEquivalentCurrency(apiResultForUnit.getListField("HZCCYR", index).trim());
+
+				globalAccountBalanceBean.setStatusBalance(apiResultForUnit.getListField("HZSBL", index).trim());
+				globalAccountBalanceBean.setStatusBalanceCurrency(apiResultForUnit.getListField("HZSBLR", index).trim());
+				globalAccountBalanceBean.setMessages(apiResultForUnit.getErrorList());
+
+				setIbanAndExternalAccount(branchNumber, accountDetails[0], accountDetails[1], globalAccountBalanceBean);
+
+				globalAccountBalanceBean.setApplication(apiResultForUnit.getListField("HZAPP", index).trim());
+				globalAccountBalanceBean.setAccountClosing(apiResultForUnit.getListField("HZAI30", index).trim());
+				globalAccountBalanceBean.setAccountBlocked(apiResultForUnit.getListField("HZAI17", index).trim());
+				globalAccountBalanceBean.setJointAccount(apiResultForUnit.getListField("HZAIC7", index).trim());
+				globalAccountBalanceBean.setLiableToTax(apiResultForUnit.getListField("HZAIF5", index).trim());
+
+				gasId = globalAccountBalanceBean.getGasId();
+				if (globalAccountBalances.containsKey(gasId))
+				{
+					globalAccountBalancePerBranch = globalAccountBalances.get(gasId);
+					globalAccountBalancePerBranch.addGlobalAccountBalance(globalAccountBalanceBean);
+					globalAccountBalances.put(gasId, globalAccountBalancePerBranch);
+				}
+				else
+				{
+
+					globalAccountBalancePerBranch = new GlobalAccountBalancePerBranch(gasId);
+					globalAccountBalancePerBranch.addGlobalAccountBalance(globalAccountBalanceBean);
+					globalAccountBalances.put(gasId, globalAccountBalancePerBranch);
+				}
+			}
+			catch (Exception exception)
+			{
+				if (LOG.isErrorEnabled())
+				{
+					LOG.error(exception);
+				}
+			}
+		}
+	}
+
+	/**
+	 * This method will set the Iban and the external account.
+	 * 
+	 * @param branch
+	 *            this is the current account branch.
+	 * @param basicNumber
+	 *            this is the current account basic.
+	 * @param suffix
+	 *            this is the current account suffix. *
+	 */
+	private void setIbanAndExternalAccount(String branch, String basicNumber, String suffix,
+					GlobalAccountBalanceBean globalAccountBalanceBean)
+	{
+		INE1RecordDao dao = null;
+		List<Map<String, Object>> result = null;
+		for (EquationStandardSession currentSession : equationStandardSessions)
+		{
+			if (currentSession.getUnit().getUnitId().trim().equals(globalAccountBalanceBean.getUnit().trim()))
+			{
+				dao = new DaoFactory().getNE1Dao(session, new NE1RecordDataModel());
+				result = dao.getIbanAndEXtAccount(branch, basicNumber, suffix);
+			}
+		}
+
+		for (Map<String, Object> listOrderedMap : result)
+		{
+			globalAccountBalanceBean.setExternalAccountNumber((String) listOrderedMap.get("NEEAN"));
+			globalAccountBalanceBean.setIban((String) listOrderedMap.get("NEIBAN"));
+		}
+	}
+
+	private String getAccount(EquationStandardListEnquiry apiResultForUnit, int index) throws Exception
+	{
+		StringBuilder accountNumber = new StringBuilder();
+
+		if (Toolbox.removeWhitesSpaces(apiResultForUnit.getListField("HZPNOC", index)).equals(""))
+		{
+			accountNumber.append(apiResultForUnit.getFieldValue("HZAN"));
+			accountNumber.append("-");
+			accountNumber.append(apiResultForUnit.getListField("HZAS", index));
+		}
+		else
+		{
+			accountNumber.append(apiResultForUnit.getListField("HZPNOC", index));
+			accountNumber.append("-");
+			accountNumber.append(apiResultForUnit.getListField("HZAS", index));
+		}
+		return accountNumber.toString();
+	}
+
+	public String getSystem()
+	{
+		return system;
+	}
+
+	public void setSystem(String system)
+	{
+		this.system = system;
+	}
+
+	public String getCurrency()
+	{
+		return currency;
+	}
+
+	public void setCurrency(String currency)
+	{
+		this.currency = currency;
+	}
+
+	public String getCustomerNumber()
+	{
+		return customerNumber;
+	}
+
+	public void setCustomerNumber(String customerNumber)
+	{
+		this.customerNumber = customerNumber;
+	}
+
+	public String getCurrentUnit()
+	{
+		return currentUnit;
+	}
+
+	public void setCurrentUnit(String currentUnit)
+	{
+		this.currentUnit = currentUnit;
+	}
+}

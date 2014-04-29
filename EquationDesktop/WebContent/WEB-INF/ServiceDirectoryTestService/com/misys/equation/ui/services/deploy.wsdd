@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?><!-- Use this file to deploy some handlers/chains and services      --><!-- Two ways to do this:                                           --><!--   java org.apache.axis.client.AdminClient deploy.wsdd          --><!--      after the axis server is running                          --><!-- or                                                             --><!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   --><!--      from the same directory that the Axis engine runs         --><deployment xmlns="http://xml.apache.org/axis/wsdd/" xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+  <!-- Services from ServiceDirectoryTestService WSDL service -->
+
+  <service name="ServiceDirectoryTest" provider="java:RPC" style="wrapped" use="literal">
+      <parameter name="wsdlTargetNamespace" value="http://services.ui.equation.misys.com"/>
+      <parameter name="wsdlServiceElement" value="ServiceDirectoryTestService"/>
+      <parameter name="schemaQualified" value="http://services.ui.equation.misys.com"/>
+      <parameter name="wsdlServicePort" value="ServiceDirectoryTest"/>
+      <parameter name="className" value="com.misys.equation.ui.services.ServiceDirectoryTest"/>
+      <parameter name="wsdlPortType" value="ServiceDirectoryTest"/>
+      <parameter name="typeMappingVersion" value="1.2"/>
+      <operation xmlns:operNS="http://services.ui.equation.misys.com" xmlns:retNS="http://services.ui.equation.misys.com" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="xaTests" qname="operNS:xaTests" returnQName="retNS:xaTestsReturn" returnType="rtns:string" soapAction="">
+        <parameter xmlns:pns="http://services.ui.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:sessionIdentifier" type="tns:string"/>
+        <parameter xmlns:pns="http://services.ui.equation.misys.com" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:transactionIdentifier" type="tns:string"/>
+      </operation>
+      <parameter name="allowedMethods" value="xaTests"/>
+
+  </service>
+</deployment>

@@ -1,0 +1,191 @@
+/**
+ * This class will update the EQ version number in jars names.
+ * There are some jar files whose name have an hard-coded EQ version number.</br>
+ * This class will replace it for  the new EQ version number. for example: equation-common-1.2.2.jar
+ * @author DeRoset
+ *
+ */
+package com.misys.equation.common.ant.builder.version;
+
+import com.misys.equation.common.ant.builder.helpers.FileHelper;
+import com.misys.equation.common.ant.builder.helpers.PropertiesFileHelper;
+
+public class JarVersionNumberModifier {
+	
+	public static final String _revision = "$Id$";
+
+	private String[] jarList=null;
+	
+	
+	private String newEQVersionNumber;
+	private String previousEQVesionNumber;
+	private static JarVersionNumberModifier currentInstance;
+	
+	/**
+	 * private default constructor. 
+	 */
+	private JarVersionNumberModifier()
+	{
+
+	}
+	
+	/**
+	 * This method will return the only instance of <code>JarVersionNumberModifier</code>
+	 * @param newEQVersionNumber this is the new EQ version number that will be set in the jar name.
+	 * @param previousEQVesionNumber this is the old EQ version number to be updated.
+	 * @return the only instance of <code>JarVersionNumberModifier</code>
+	 */
+	public static JarVersionNumberModifier getInstance(String newEQVersionNumber,String previousEQVesionNumber)
+	{
+
+		synchronized (FileHelper.class)
+		{
+			if (currentInstance == null)
+			{
+				currentInstance = new JarVersionNumberModifier();
+				currentInstance.setNewEQVersionNumber(newEQVersionNumber);
+				currentInstance.setPreviousEQVesionNumber(previousEQVesionNumber);
+			}
+		}
+		return currentInstance;
+	}
+
+		
+	/**
+	 * This method will set the passed jar list in an Array of <code>String</code>. 
+	 * The passed jar list <code>String</code> will be split using the LOCAL_LINE_BREAK delimiter. 
+	 * The passed list could look like this </br>>
+	 * axis.jar,\:BankFusionBPD.jar,\:BankFusionClient.jar,\:BankFusionDeviceService.jar,\:BankFusionCommander.jar,\:BankFusionCommonSupport.jar
+	 * In this example the LOCAL_LINE_BREAK is :
+	 * @param jarList this the passed jar list to be split.
+	 * 
+	 * @throws Exception if the passed list is null an <code>Exception</code> will be thrown.
+	 */
+	private void setJarList(String jarList)throws Exception{
+		
+		if(jarList!=null){
+			
+			this.jarList = jarList.split(EuqationVersionNumberDefinitions.LOCAL_LINE_BREAK_REXP.toString());
+		}else{
+			
+			throw new Exception("The jarList is null; please check it!");
+		}
+	}
+	/**
+	 * This method will update the EQ version number in the list of jars names.
+	 * @param jarList jarList this the passed jar list to be split.
+	 * The passed list could look like this </br>
+	 * axis.jar,\:BankFusionBPD.jar,\:BankFusionClient.jar,\:BankFusionDeviceService.jar,\:BankFusionCommander.jar,\:BankFusionCommonSupport.jar </br>
+	 * In this example the LOCAL_LINE_BREAK is :
+	 */
+	public void updateEquationJarVersionNumber(String jarList){
+		
+		String currentFile=null;
+		
+		System.out.println(new StringBuilder( "This is the jar list to be updated:").append(jarList));
+		
+		try {
+			setJarList(jarList);
+			
+			for (int index = 0; index < this.jarList.length; index++) {
+				
+				currentFile=this.jarList[index];
+				
+				if(currentFile.contains("equation")){
+					
+					System.out.println(new StringBuilder( "This jar name will be updated:").append(currentFile));
+					this.jarList[index]=currentFile.replace(previousEQVesionNumber, newEQVersionNumber);
+					System.out.println(new StringBuilder( "This is the new jar name:").append(this.jarList[index]));
+				}
+				
+				
+			}
+		} catch (Exception exception) {
+			
+			exception.printStackTrace();
+		}
+	}
+	
+	/**
+	 * This method will return a String representation of a list of jar names with an special format.
+	 * The passed list could look like this </br>
+	 * axis.jar,\:BankFusionBPD.jar,\:BankFusionClient.jar,\:BankFusionDeviceService.jar,\:BankFusionCommander.jar,\:BankFusionCommonSupport.jar
+	 * 
+	 * @return a String representation of a list of jar names with an special format.
+	 */
+	public String getFormatedJarList(){
+		
+		StringBuilder formatedJarList= new StringBuilder();
+		
+		for (int index = 0; index < this.jarList.length; index++) {
+			
+			formatedJarList.append(this.jarList[index]);
+			
+			if(index!= this.jarList.length-1){
+				
+				formatedJarList.append(EuqationVersionNumberDefinitions.LOCAL_LINE_BREAK.toString());
+			}
+			
+		}
+		return formatedJarList.toString();
+	}
+	
+	/***getter and setters ***/
+	
+	public String getNewEQVersionNumber() {
+		
+		return newEQVersionNumber;
+	}
+
+	public void setNewEQVersionNumber(String newEQVersionNumber) {
+		
+		this.newEQVersionNumber = newEQVersionNumber;
+	}
+
+	public String getPreviousEQVesionNumber() {
+		
+		return previousEQVesionNumber;
+	}
+
+	public void setPreviousEQVesionNumber(String previousEQVesionNumber) {
+		
+		this.previousEQVesionNumber = previousEQVesionNumber;
+	}
+
+	/**
+	 * Sole entry point to the class and application.
+	 * @param args Array of String arguments.
+	 */
+	public static void main(String[] args) {
+
+		
+		String PROPFILE= "C:\\Thor\\workspaces\\Equation-workspace\\EquationBuilder\\resources\\test\\Application.properties";
+		String newEQVersionNumber;
+		String previousEQVesionNumber;
+		String jarList;
+		
+		EquationVersionIncrementor versionIncrementor =null;
+		PropertiesFileHelper propertiesFileHelper= PropertiesFileHelper.getInstance();
+		JarVersionNumberModifier jarVersionNumberModifier;
+		
+				
+		// Input Properties File
+		propertiesFileHelper.setFileName(PROPFILE.trim());		
+		propertiesFileHelper.printProperties();
+		
+		previousEQVesionNumber=propertiesFileHelper.getPropertyValue("VERSION");
+		jarList=propertiesFileHelper.getPropertyValue("EQUATION_FUNCTION_WIZARD_JARS");
+		
+		versionIncrementor = new EquationVersionIncrementor(previousEQVesionNumber);
+		newEQVersionNumber=versionIncrementor.getNewEquationVersionNumber();
+		
+		jarVersionNumberModifier=JarVersionNumberModifier.getInstance(newEQVersionNumber, previousEQVesionNumber);
+		jarVersionNumberModifier.updateEquationJarVersionNumber(jarList);
+		
+		propertiesFileHelper.modifyProperty("VERSION",newEQVersionNumber);
+		propertiesFileHelper.modifyProperty("EQUATION_FUNCTION_WIZARD_JARS",jarVersionNumberModifier.getFormatedJarList());
+		propertiesFileHelper.printProperties();
+
+		
+	}
+}

@@ -1,0 +1,53 @@
+<EquationPVMetaData PFile="GF03LF" description="CUSTR" id="CUSTR" globalConsolidatedPrompt="true" globalLibraryPrompt="false"  label="CUSTR" packageName="com.misys.pvs">
+  <databaseXref/>
+  <decodeMetaData>
+    <decodeMetaData decode=" " description="Default Decode" index="0" length="0" pFile="GF03LF" sqlFrom="GF03LF">
+      <keyFields>
+        <keyField>GFCPNC</keyField>
+      </keyFields>
+      <pvFields>
+        <pvField>GFCPNC</pvField>
+      </pvFields>
+    </decodeMetaData>
+  </decodeMetaData>
+  <fieldMetaData>
+    <fieldMetaData alpha="false" composite="false" decimal="0" description="System" header="System" id="SYSTEM" index="0" key="false" length="10" numericField="false" packed="false" usage="B" zoned="false"/>
+    <fieldMetaData alpha="false" composite="false" decimal="0" description="Unit" header="Unit" id="UNIT" index="0" key="false" length="3" numericField="false" packed="false" usage="B" zoned="false"/>
+    <fieldMetaData alpha="false" composite="false" decimal="0" description="Unit Description" header="Unit Description" id="UNITDESC" index="3" key="false" length="20" numericField="false" packed="false" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="GFCUS" decimal="0" description="Customer mnemonic" header="Customer mnemonic" id="GFCUS" index="23" key="false" length="6" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="GFCLC" decimal="0" description="Customer location" header="Customer location" id="GFCLC" index="29" key="false" length="3" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="GFCUN" decimal="0" description="Customer full name" header="Customer full name" id="GFCUN" index="32" key="false" length="35" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="GFCPNC" decimal="0" description="Customer&apos;s basic number" header="Customer&apos;s basic number" id="GFCPNC" index="67" key="true" length="6" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="GFCUB" decimal="0" description="Blocked for deal input?" header="Blocked for deal input?" id="GFCUB" index="73" key="false" length="1" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="GFGRP" decimal="0" description="Group name" header="Group name" id="GFGRP" index="74" key="false" length="6" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="GFACO" decimal="0" description="Responsibility code" header="Responsibility code" id="GFACO" index="80" key="false" length="3" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+  </fieldMetaData>
+  <hdrNames>
+    <hdrName>UNIT</hdrName>
+    <hdrName>UNITDESC</hdrName>
+    <hdrName>GFCUS</hdrName>
+    <hdrName>GFCLC</hdrName>
+    <hdrName>GFCUN</hdrName>
+    <hdrName>GFCPNC</hdrName>
+    <hdrName>GFCUB</hdrName>
+    <hdrName>GFGRP</hdrName>
+    <hdrName>GFACO</hdrName>
+  </hdrNames>
+  <hdrPositions>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+  </hdrPositions>
+  <pvDvals>
+    <pvDval>GFCPNC</pvDval>
+  </pvDvals>
+  <pvOvals>
+    <pvOval>GFCPNC</pvOval>
+  </pvOvals>
+</EquationPVMetaData>

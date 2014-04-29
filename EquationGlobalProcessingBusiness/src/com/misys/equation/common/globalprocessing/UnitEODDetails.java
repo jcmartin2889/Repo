@@ -1,0 +1,109 @@
+package com.misys.equation.common.globalprocessing;
+
+import java.io.Serializable;
+
+public class UnitEODDetails implements Serializable
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: UnitEODDetails.java 9725 2010-11-08 12:34:45Z MACDONP1 $";
+	/** */
+	private static final long serialVersionUID = -2297127176058619602L;
+	/** */
+	private long totalElapsedTime = 0L;
+	/** */
+	private String endingProcess = "";
+	/** */
+	private Status endingStatus = Status.NOT_STARTED;
+	/** */
+	private String errorMsg = "";
+
+	public enum Status
+	{
+		NOT_STARTED, FAILED, IN_PROGRESS, PARTIALLY_COMPLETED, COMPLETED, ERROR;
+	}
+
+	/** */
+	public UnitEODDetails()
+	{
+	}
+
+	/**
+	 * @param totalElapsedTime
+	 * @param endingProcess
+	 * @param endingStatus
+	 */
+	public UnitEODDetails(long totalElapsedTime, String endingProcess, Status endingStatus)
+	{
+		this.totalElapsedTime = totalElapsedTime;
+		this.endingProcess = endingProcess;
+		this.endingStatus = endingStatus;
+	}
+
+	/**
+	 * @return the totalElapsedTime
+	 */
+	public long getTotalElapsedTime()
+	{
+		return totalElapsedTime;
+	}
+
+	/**
+	 * @param totalElapsedTime
+	 *            the totalElapsedTime to set
+	 */
+	public void setTotalElapsedTime(long totalElapsedTime)
+	{
+		this.totalElapsedTime = totalElapsedTime;
+	}
+
+	/**
+	 * @return the endingProcess
+	 */
+	public String getEndingProcess()
+	{
+		return endingProcess;
+	}
+
+	/**
+	 * @param endingProcess
+	 *            the endingProcess to set
+	 */
+	public void setEndingProcess(String endingProcess)
+	{
+		this.endingProcess = endingProcess;
+	}
+
+	/**
+	 * @return the endingStatus
+	 */
+	public Status getEndingStatus()
+	{
+		return endingStatus;
+	}
+
+	/**
+	 * @param endingStatus
+	 *            the endingStatus to set
+	 */
+	public void setEndingStatus(Status endingStatus)
+	{
+		this.endingStatus = endingStatus;
+	}
+
+	/**
+	 * @return the errorMsg
+	 */
+	public String getErrorMsg()
+	{
+		return errorMsg;
+	}
+
+	/**
+	 * @param errorMsg
+	 *            the errorMsg to set
+	 */
+	public void setErrorMsg(String errorMsg)
+	{
+		this.errorMsg = errorMsg;
+	}
+}

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+     This files contains all common builder definitions.
+     
+     All paths and class-paths will be defined here. 
+     
+     These ones will be used  for compiling java classes, generating 
+     Javadocs and others.
+     ====================================================================== -->
+<project  name="EquationBuilderDefinitionsCommon" basedir=".">
+
+	<!-- ************************** PROPERTIES ***************************** -->
+
+	<!--Sets the properties values using the predefined build.properties. -->
+	<property file="build.properties" />	
+
+	<!-- ************************** PATHS ********************************** -->
+
+	<!--This is the defined class-path for all build process.-->
+	<path id="classpath" >
+
+		<fileset id="tomcat.lib" dir="${tomcat.home.lib.path}">
+			<include name="**/**/*.jar" />
+		</fileset>
+
+		<fileset id="libFiles" dir="${classpath.dir}">
+			<include name="*.jar" />
+		</fileset>
+
+		<fileset dir="${eclipse.plugins.lib.path}">
+			<include name="**/**/*.jar" />
+		</fileset>
+
+		<fileset dir="${temp.dir}">
+			<include name="**/**/*.jar" />
+		</fileset>
+
+	</path>
+				
+	<!-- This is  the class-path which defines all *.jars for the ant custom tasks . -->
+	<path id="classpathAntTaks">
+		<fileset id="libFiles" dir="${classpath.dir}">
+			<include name="ant.jar" />
+			<include name="log4j-1.2.15.jar" />
+			<include name="commons-logging-1.1.1.jar" />
+			<include name="resolver.jar"/>
+			<include name="serializer-2.7.1.jar"/>
+			<include name="xercesImpl-2.9.1.jar"/>
+			<include name="xml-apis.jar"/>
+			<include name="saxon9.jar"/>
+			<include name="saxon9-dom-9.0.0.6j"/>
+			<include name="jt400.jar"/>
+			<include name="xerces.jar"/>
+			<include name="org.springframework.core-3.0.5.RELEASE.jar"/>
+			<include name="org.springframework.jdbc-3.0.5.RELEASE.jar"/>
+			<include name="org.springframework.transaction-3.0.5.RELEASE.jar"/>
+			<include name="org.springframework.beans-3.0.5.RELEASE.jar"/>
+			<include name="org.springframework.web-3.0.5.RELEASE.jar"/>
+			<include name="org.springframework.context-3.0.5.RELEASE.jar"/>
+			<include name="org.springframework.asm-3.0.5.RELEASE.jar"/>
+			<include name="org.springframework.expression-3.0.5.RELEASE.jar"/>
+		</fileset>
+		<fileset dir="${temp.dir}">
+			<include name="**/**/*.jar" />
+		</fileset>
+	</path>
+
+	<!-- get the source compile classpath in a printable form -->
+	<pathconvert 
+			pathsep="${line.separator}|   |-- " property="echo.path.runtime" refid="classpathAntTaks">
+	</pathconvert>
+	
+	
+	<!-- get the source compile classpath in a printable form -->
+	<pathconvert 
+		pathsep="${line.separator}|   |-- " property="echo.path.compile" refid="classpath">
+	</pathconvert>
+
+	<!-- This file set defines all classes and properties files for the current project. -->
+	<path id="classes">
+		<fileset dir="${class.dir}">
+			<include name="**/*.class" />
+			<include name="**/*.config" />
+			<include name="**/*.properties" />
+			<include name="**/*.xml" />
+		</fileset>
+	</path>
+
+	<!-- ************************** OTHER ********************************** -->
+
+	<!--Current time.-->
+	<tstamp>
+		<format property="today" pattern="yyyy-MM-dd HH:mm:ss" />
+	</tstamp>	
+		
+</project>

@@ -1,0 +1,314 @@
+package com.misys.equation.common.dao.beans;
+
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * GAZRecord data-model.
+ * 
+ * @author deroset
+ * 
+ */
+public class GAZRecordDataModel extends AbsRecord
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private static final long serialVersionUID = 1L;
+	private static final String RECORD_NAME = "GAZPF";
+
+	/** A service outer class */
+	public static final String TYP_SERVICE = " "; // FunctionAdaptor
+	public static final String TYP_FIELD = "1";
+	public static final String TYP_VALUE = "2"; // Value adaptor
+	public static final String TYP_UPDATE = "3"; // UpdateValueAdaptor based on ValueAdaptor
+	public static final String TYP_LOAD = "4"; // LoadValueAdaptor based on ValueAdaptor
+
+	/**
+	 * An inner class representing an API FieldSet.
+	 * <p>
+	 * These are currently used to determine whether to execute the API module that the FieldSet represents. The possible cases for
+	 * this type, and the identifiers required, are described below:
+	 * <ul>
+	 * <li>Load API - needs to use the (Load) API FieldSet Id</li>
+	 * <li>Update API - needs to use the (Update) API FieldSet id</li>
+	 * </ul>
+	 * <p>
+	 * Note that Load API records will use the InputFieldSet Id in the GAZFLD column and the Load API Fieldset Id in the GAZPVN
+	 * column, even though Load API IDs have to be globally unique and do not have to be distinguished by InputFieldSet. This is
+	 * required to differentiate between Load and Update APIs.
+	 * 
+	 * <pre>
+	 * GAZFLD GAZPVN GAZTYP    Class name
+	 * FS1    A      5         FS1_A__LoadFieldSet
+	 * A             5         A__UpdateFieldSet
+	 * </pre>
+	 */
+	public static final String TYP_APIFIELDSET = "5";
+
+	/**
+	 * An inner class representing a PVFieldSet.
+	 * <p>
+	 * These are currently used to determine whether to execute the PV module that the FieldSet represents. The possible cases for
+	 * this type, and the identifiers required, are described below:
+	 * <ul>
+	 * <li>Load PV - needs to use the PV FieldSet id</li>
+	 * <li>Validate PV - needs to use Input Field id and PV FieldSet id</li>
+	 * </ul>
+	 * <p>
+	 * The following indicates how the GAZPF fields should be populate and the inner class name will be generated to ensure
+	 * uniqueness:
+	 * 
+	 * <pre>
+	 * GAZFLD GAZPVN GAZTYP		Class Name
+	 *        GFR70R  5			GFR70R__PVFieldSet
+	 * A_CUS  GFR70R  5         A_CUS__GFR70R__PVFieldSet
+	 * </pre>
+	 */
+	public static final String TYP_PVFIELDSET = "6";
+
+	public static final String TYP_INPUTFIELDSET = "7"; // InputFieldSet adaptor
+
+	/** A layout button link attributes inner class */
+	public static final String TYP_BUTTONLINK_ATTRIBUTES = "8";
+
+	/** A layout outer class */
+	public static final String TYP_LAYOUT = "L";
+
+	/** A PV outer class */
+	public static final String TYP_PV = "P";
+
+	/** A layout field level attributes inner class */
+	public static final String TYP_ATTRIBUTES = "A";
+
+	/** A layout group attributes inner class */
+	public static final String TYP_GROUP_ATTRIBUTES = "G";
+
+	/** A layout label attributes inner class */
+	public static final String TYP_LABEL_ATTRIBUTES = "B";
+
+	/** A layout attributes set inner class */
+	public static String TYP_ATTRIBUTESSET_ATTRIBUTES = "U";
+
+	/**
+	 * EQ4 Service User Exit Java
+	 * <p>
+	 * In this case, the GAZOPT field should be blank, and the GAZFLD field should contain the name of the service user exit class
+	 */
+	public static final String TYP_SERVICE_USEREXIT = "J";
+	public static final String TYP_SERVICE_USEREXIT_SRC = "K"; // Java Source for Service User Exit that matches with "J"
+
+	/**
+	 * EQ4 RPG User Exit Java
+	 * <p>
+	 * In this case, the GAZOPT field should be blank, and the GAZFLD field should contain the name of the RPG validation module
+	 */
+	public static final String TYP_RPGUSEREXIT = "R";
+
+	/** BankFusion equivalent data type class */
+	public static final String TYP_BFTYPE = "T";
+	public static final String TYP_BFTYPEDESCRIPTOR = "S";
+	public static final String TYP_BFTYPE_SRC = "C";
+	public static final String TYP_BFTYPEDESCRIPTOR_SRC = "D";
+
+	/** For Import Wizard Related changes **/
+	public static final String TYP_SERVICE_SRC = "W"; // Java Source for Service that matches with " "
+	public static final String TYP_LAYOUT_SRC = "X"; // Java Source for layout that matches with "L"
+	public static final String TYP_PV_SRC = "Y"; // Java Source for PV that matches with "P"
+	public static final String TYP_RPGUSEREXIT_SRC = "Z"; // Java Source for RPG User Exit that matches with "R"
+
+	private String optionId; // GAZOID
+	private String fieldId; // GAZFLD
+	private String pvId; // GAZPVN
+	private String type; // GAZTYP
+	private String className; // GAZCLN
+	private byte[] classByte; // GAZCLS
+
+	/**
+	 * Construct an empty file
+	 * 
+	 */
+	public GAZRecordDataModel()
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+	}
+
+	/**
+	 * Construct a new GAZ record key
+	 * 
+	 * @param optionId
+	 *            - the option Id
+	 * @param fieldId
+	 *            - the field Id
+	 * @param pvId
+	 *            - the PV Id
+	 * @param type
+	 *            - the record type
+	 */
+	public GAZRecordDataModel(String optionId, String fieldId, String pvId, String type)
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+
+		setOptionId(optionId);
+		setFieldId(fieldId);
+		setPvId(pvId);
+		setType(type);
+	}
+
+	/**
+	 * Construct a new GAZ record
+	 * 
+	 * @param optionId
+	 *            - the option Id
+	 * @param fieldId
+	 *            - the field Id
+	 * @param pvId
+	 *            - the PV Id
+	 * @param type
+	 *            - the record type
+	 * @param className
+	 *            - the class name
+	 * @param classByte
+	 *            - the class bytes
+	 */
+	public GAZRecordDataModel(String optionId, String fieldId, String pvId, String type, String className, byte[] classByte)
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+
+		setOptionId(optionId);
+		setFieldId(fieldId);
+		setPvId(pvId);
+		setType(type);
+		setClassName(className);
+		setClassByte(classByte);
+	}
+
+	// ---getters and setters----//
+
+	/**
+	 * Return the option id
+	 * 
+	 * @return the option id
+	 */
+	public String getOptionId()
+	{
+		return optionId;
+	}
+
+	/**
+	 * Set the option id
+	 * 
+	 * @param optionId
+	 *            - the option id
+	 */
+	public void setOptionId(String optionId)
+	{
+		this.optionId = Toolbox.trim(optionId, 6);
+	}
+
+	/**
+	 * Return the field Id
+	 * 
+	 * @return the field Id
+	 */
+	public String getFieldId()
+	{
+		return fieldId;
+	}
+
+	/**
+	 * Set the field Id
+	 * 
+	 * @param fieldId
+	 *            - the field Id
+	 */
+	public void setFieldId(String fieldId)
+	{
+		this.fieldId = Toolbox.trim(fieldId, 35);
+	}
+
+	/**
+	 * Return the PV field id
+	 * 
+	 * @return the PV field id
+	 */
+	public String getPvId()
+	{
+		return pvId;
+	}
+
+	/**
+	 * Set the PV field id
+	 * 
+	 * @param pvId
+	 *            - the PV field id
+	 */
+	public void setPvId(String pvId)
+	{
+		this.pvId = Toolbox.trim(pvId, 256);
+	}
+
+	/**
+	 * Return the user exit type
+	 * 
+	 * @return the user exit type
+	 */
+	public String getType()
+	{
+		return type;
+	}
+
+	/**
+	 * Set the user exit type
+	 * 
+	 * @param type
+	 *            - the user exit type
+	 */
+	public void setType(String type)
+	{
+		this.type = Toolbox.trim(type, 1);
+	}
+
+	/**
+	 * Return the class name
+	 * 
+	 * @return the class name
+	 */
+	public String getClassName()
+	{
+		return className;
+	}
+
+	/**
+	 * Set the class name
+	 * 
+	 * @param className
+	 *            - the class name
+	 */
+	public void setClassName(String className)
+	{
+		this.className = Toolbox.trim(className, 256);
+	}
+
+	/**
+	 * Return the class in bytes
+	 * 
+	 * @return the class in bytes
+	 */
+	public byte[] getClassByte()
+	{
+		return classByte;
+	}
+
+	/**
+	 * Set the class in bytes
+	 * 
+	 * @param classByte
+	 *            - the class in bytes
+	 */
+	public void setClassByte(byte[] classByte)
+	{
+		this.classByte = classByte;
+	}
+}

@@ -1,0 +1,109 @@
+/*
+ * This sample code is provided by Misys for illustrative purposes only.
+ * 
+ * These examples have not been thoroughly tested under all conditions.
+ * 
+ * Misys, therefore, cannot guarantee or imply reliability, serviceability, or function of these programs.
+ * 
+ * All programs contained herein are provided to you "AS IS" without any warranties of any kind. The implied warranties of
+ * non-infringement, merchantability and fitness for a particular purpose are expressly disclaimed.
+ */
+package com.misys.equation.common.test.xapi.enhanced;
+
+import com.misys.equation.common.internal.eapi.core.EQSession;
+import com.misys.equation.common.internal.eapi.core.EQTransaction;
+import com.misys.equation.common.test.TestEnvironment;
+import com.misys.equation.common.utilities.Toolbox;
+
+public class ITA
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: ITA.java 11310 2011-06-27 12:20:21Z ESTHER.WILLIAMS $";
+	EQSession session;
+	EQTransaction interAccountTrasfer;
+	String debitAccountBranch = "1000";
+	String debitAccountBasicNumber = "100001";
+	String debitAccountSuffix = "001";
+	String debitCurrency = "CNY";
+	String debitTransactionCode = "010";
+	String creditAccountBranch = "1000";
+	String creditAccountBasicNumber = "879100";
+	String creditAccountSuffix = "156";
+	String creditCurrency = "CNY";
+	String creditTransactionCode = "510";
+	String amount = "10000";
+	String valueDate = "280208";
+	String reference = "SM@RTREF";
+	String chargeAmount = "100";
+	String chargeCode = "AC";
+	long startTime = System.currentTimeMillis();
+	long currentTime = startTime;
+	public ITA()
+	{
+		try
+		{
+			session = TestEnvironment.getTestEnvironment().getEnhancedAPISession();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+	public static void main(String[] args)
+	{
+		try
+		{
+			ITA test = new ITA();
+			test.test();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+	public void test()
+	{
+		try
+		{
+			// Got this far so we may as well have a bash at a couple of transactions...
+			interAccountTrasfer = (EQTransaction) session.createEQObject("ITA");
+			interAccountTrasfer.reset();
+			interAccountTrasfer.setAuditUserID("Sm@rt");
+			interAccountTrasfer.setReference(reference);
+			// Set the fields
+			interAccountTrasfer.setFieldValue("ZLREF", Long.toString(System.currentTimeMillis()));
+			interAccountTrasfer.setFieldValue("ZLAB1", debitAccountBranch);
+			interAccountTrasfer.setFieldValue("ZLAN1", debitAccountBasicNumber);
+			interAccountTrasfer.setFieldValue("ZLAS1", debitAccountSuffix);
+			interAccountTrasfer.setFieldValue("ZLAMZ1", amount);
+			interAccountTrasfer.setFieldValue("ZLVFZ1", valueDate);
+			interAccountTrasfer.setFieldValue("ZLTCD1", debitTransactionCode);
+			interAccountTrasfer.setFieldValue("ZLDRF1", reference);
+			interAccountTrasfer.setFieldValue("ZLAB2", creditAccountBranch);
+			interAccountTrasfer.setFieldValue("ZLAN2", creditAccountBasicNumber);
+			interAccountTrasfer.setFieldValue("ZLAS2", creditAccountSuffix);
+			interAccountTrasfer.setFieldValue("ZLTCD2", creditTransactionCode);
+			interAccountTrasfer.setFieldValue("ZLDRF1", reference);
+			interAccountTrasfer.setAutoOverride(true);
+			interAccountTrasfer.add(session, EQTransaction.ACTION_UPDATE);
+			Toolbox.printFieldMessages(interAccountTrasfer.getMessages());
+			// now we are in a position to commit ...
+			session.commit();
+			// ************
+			Toolbox.log("Commiting");
+			// ************
+			// log out
+			session.logOff();
+			// ************
+			Toolbox.log("Returning the session");
+			// ************
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+}

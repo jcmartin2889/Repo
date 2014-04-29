@@ -1,0 +1,72 @@
+package com.misys.equation.common.dao.beans;
+
+/**
+ * JTRecord data-model.
+ * 
+ * @author deroset
+ * 
+ */
+public class JTRecordDataModel extends AbsRecord
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: JTRecordDataModel.java 4546 2009-08-27 23:01:54Z esther.williams $";
+	private static final long serialVersionUID = 1L;
+	private final static String RECORD_NAME = "JTPF";
+	private String reportMnemonic; // JTRMNM
+	private String runPhase; // JTPHS
+	private String reportDescription; // JTRPD
+
+	/**
+	 * Default constructor
+	 */
+	public JTRecordDataModel()
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+	}
+
+	/**
+	 * Construct a new JT record
+	 * 
+	 * @param reportMnemonic
+	 *            - the report mnemonic
+	 */
+	public JTRecordDataModel(String reportMnemonic)
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+		setReportMnemonic(reportMnemonic);
+	}
+
+	// ---getters and setters----//
+	public String getReportMnemonic()
+	{
+		return reportMnemonic;
+	}
+
+	public void setReportMnemonic(String reportMnemonic)
+	{
+		this.reportMnemonic = reportMnemonic;
+	}
+
+	public String getRunPhase()
+	{
+		return runPhase;
+	}
+
+	public void setRunPhase(String runPhase)
+	{
+		this.runPhase = runPhase;
+	}
+
+	public String getReportDescription()
+	{
+		return reportDescription;
+	}
+
+	public void setReportDescription(String reportDescription)
+	{
+		this.reportDescription = reportDescription;
+	}
+}

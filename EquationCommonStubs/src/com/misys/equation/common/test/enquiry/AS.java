@@ -1,0 +1,41 @@
+package com.misys.equation.common.test.enquiry;
+
+import com.misys.equation.common.access.EquationStandardListEnquiry;
+import com.misys.equation.common.test.EquationTestCase;
+
+/**
+ * AS - Account Summary Enquiry *
+ * 
+ * @author Paul Macdona
+ */
+public class AS extends EquationTestCase // Account Summary Enquiry
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: AS.java 6789 2010-03-30 17:00:33Z hempensp $";
+	private EquationStandardListEnquiry listEnquiry;
+
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+
+		/*
+		 * Get the enquiry class - you'll need to enter the name of the enquiry program e.g. H68EER
+		 */
+		listEnquiry = getEquationStandardListEnquiry("H70DER");
+	}
+
+	public void testRetrieve() throws Exception
+	{
+		/*
+		 * Set up the key fields required for the enquiry
+		 */
+		listEnquiry.setFieldValue("HZCUS", "ACCS"); // Customer mnemonic (6A)
+		listEnquiry.setFieldValue("HZCLC", "DTA"); // / Customer location (3A)
+
+		/*
+		 * See if it works
+		 */
+		assertTestStandardListEnquiry(listEnquiry, true);
+	}
+}

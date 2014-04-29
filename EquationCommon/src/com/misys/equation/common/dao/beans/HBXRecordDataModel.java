@@ -1,0 +1,213 @@
+package com.misys.equation.common.dao.beans;
+
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * [HBX]Record data-model.
+ * 
+ * @author gumtanr1
+ * 
+ */
+public class HBXRecordDataModel extends AbsRecord
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: HBXRecordDataModel.java 11229 2011-06-17 12:11:19Z rpatrici $";
+	private static final long serialVersionUID = 1L;
+	private final static String RECORD_NAME = "HBXPF";
+
+	private String owner; // HBXOWN
+	private String languageCode; // HBXLNM
+	private String type; // HBXTYP
+	private String key; // HBXKEY
+	private String text; // HBXTXT
+	private String timestamp; // HBXTIM
+
+	private byte[] byteText; // code description in bytes
+
+	/** Prefix used for label keys, used to subset list shown in the Service Composer */
+	public final static String HBX_LABEL_PREFIX = "LAB";
+	/** Prefix used for mask keys, used to subset list shown in the Service Composer */
+	public final static String HBX_MASK_PREFIX = "MSK";
+	/** Prefix used for regular expression keys, used to subset list shown in the Service Composer */
+	public final static String HBX_REGEXP_PREFIX = "REG";
+	/** Prefix used for description keys, used to subset list shown in the Service Composer */
+	public final static String HBX_DESCRIPTION_PREFIX = "DSC";
+	/** Prefix used for valid values keys, used to subset list shown in the Service Composer */
+	public final static String HBX_VALIDVALUES_PREFIX = "VLD";
+	/** Misys owned texts */
+	public final static String MISYS_OWNED_TEXT = "misysText.eqt";
+	/** Bank owned texts */
+	public final static String BANK_OWNED_TEXT = "bankText.eqt";
+
+	/**
+	 * Default constructor
+	 */
+	public HBXRecordDataModel()
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+
+	}
+
+	/**
+	 * Construct a new HB record
+	 * 
+	 * @param owner
+	 *            - the owner
+	 * @param languageCode
+	 *            - the language code
+	 * @param type
+	 *            - the type
+	 * @param key
+	 *            - the key
+	 */
+	public HBXRecordDataModel(String owner, String languageCode, String type, String key)
+	{
+
+		super();
+		setEqFileName(RECORD_NAME);
+		this.setOwner(owner);
+		this.setLanguageCode(languageCode);
+		this.setType(type);
+		this.setKey(key);
+	}
+
+	// ---getters and setters----//
+
+	/**
+	 * @param owner
+	 *            the owner to set
+	 */
+	public void setOwner(String owner)
+	{
+		this.owner = owner;
+	}
+
+	/**
+	 * @return the owner
+	 */
+	public String getOwner()
+	{
+		return owner;
+	}
+
+	/**
+	 * @param languageCode
+	 *            the languageCode to set
+	 */
+	public void setLanguageCode(String languageCode)
+	{
+		this.languageCode = languageCode;
+	}
+
+	/**
+	 * @return the languageCode
+	 */
+	public String getLanguageCode()
+	{
+		return languageCode;
+	}
+
+	/**
+	 * @param code
+	 *            the code to set
+	 */
+	public void setType(String type)
+	{
+		this.type = type;
+	}
+
+	/**
+	 * @return the code
+	 */
+	public String getType()
+	{
+		return type;
+	}
+
+	/**
+	 * @param key
+	 *            the key to set
+	 */
+	public void setKey(String key)
+	{
+		this.key = key;
+	}
+
+	/**
+	 * @return the key
+	 */
+	public String getKey()
+	{
+		return key;
+	}
+
+	/**
+	 * @param text
+	 *            the text to set
+	 */
+	public void setText(String text)
+	{
+		this.text = text;
+	}
+
+	/**
+	 * @return the text
+	 */
+	public String getText()
+	{
+		return text;
+	}
+
+	/**
+	 * Set the text in bytes
+	 * 
+	 * @param byteText
+	 *            - the text in bytes
+	 */
+	public void setByteText(byte[] byteText)
+	{
+		this.byteText = byteText;
+	}
+
+	/**
+	 * Return the text in bytes
+	 * 
+	 * @return the text in bytes
+	 */
+	public byte[] getByteText()
+	{
+		return byteText;
+	}
+
+	/**
+	 * @param timestamp
+	 *            the timestamp to set
+	 */
+	public void setTimestamp(String timestamp)
+	{
+		this.timestamp = timestamp;
+	}
+
+	/**
+	 * @return the timestamp
+	 */
+	public String getTimestamp()
+	{
+		return timestamp;
+	}
+
+	public String rtvText(int ccsid)
+	{
+		if (byteText != null)
+		{
+			return Toolbox.convertAS400TextIntoCCSID(byteText, byteText.length, ccsid);
+		}
+		else
+		{
+			return "";
+		}
+	}
+
+}

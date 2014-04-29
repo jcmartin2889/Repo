@@ -1,0 +1,188 @@
+package com.misys.equation.common.internal.dao;
+
+import java.util.Hashtable;
+import java.util.List;
+
+import com.misys.equation.common.dao.IACNRecordDao;
+import com.misys.equation.common.dao.beans.ACNRecordDataModel;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.internal.dao.mappers.ACNRecordRowMapper;
+
+/**
+ * This the ACN-Record Dao implementation.
+ * This class is going to provide all back-end services for ACN-Record.<br>
+ * The ACN file holds Validation Java user exit control records
+ */
+public class ACNRecordDao extends AbsEquationDao implements IACNRecordDao
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: ACNRecordDao.java 11052 2011-05-26 08:08:54Z perkinj1 $";
+	public ACNRecordDao()
+	{
+
+		super();
+	}
+
+	/**
+	 * This method will check if the current record was already set in the database. <br>
+	 * The Sql <code>SELECT COUNT(*)</code> query will be executed.
+	 * 
+	 * @param sqlWhereStatement
+	 *            - the WHERE clause of the SQL statement
+	 * 
+	 * @return true if the SQL statement returns a count >= 1
+	 */
+	public boolean checkIfThisACNRecordIsInTheDB(String sqlWhereStatement)
+	{
+
+		return checkIfThisRecordIsInTheDB(sqlWhereStatement);
+	}
+
+	/**
+	 * This method will check if the current record was already set in the database. <br>
+	 * The Sql <code>SELECT COUNT(*)</code> query will be executed.
+	 * 
+	 * @return true if the SQL statement returns a count >= 1
+	 */
+	public boolean checkIfThisACNRecordIsInTheDB()
+	{
+
+		return checkIfThisRecordIsInTheDB(getWhereConditionBaseOnIdRecord());
+	}
+
+	/**
+	 * This method will return an instance of the preset data model.
+	 * 
+	 * @return an instance of the preset data model.
+	 */
+	public ACNRecordDataModel getMyDataModel()
+	{
+
+		ACNRecordDataModel ACNRecordDataModel = null;
+		AbsRecord record = getRecord();
+
+		if (record instanceof ACNRecordDataModel)
+		{
+			ACNRecordDataModel = (ACNRecordDataModel) getRecord();
+
+		}
+		return ACNRecordDataModel;
+	}
+
+	/**
+	 * This method will return a <code>String</code> which represents and sql where condition base on the record id.<br>
+	 * For example <code>id = getDataModel.getId()</code>
+	 * 
+	 * @return a <code>String</code> which represents and sql filter.
+	 */
+	@Override
+	protected String getWhereConditionBaseOnIdRecord()
+	{
+
+		StringBuilder whereCondition = new StringBuilder("ACNPGM='");
+		whereCondition.append(getMyDataModel().getProgram());
+		whereCondition.append("' ");
+		return whereCondition.toString();
+	}
+
+	/**
+	 * Returns a list of name and ? pairs in the format of:
+	 * <p>
+	 * field1=?, field2=?, field3=?, ...
+	 * 
+	 * @return a list of name and ? pairs
+	 */
+	@Override
+	protected String getParameterizedFields()
+	{
+		String fields = " ACNPGM=?, ACNCLN=? ";
+		return fields;
+	}
+
+	/**
+	 * Returns a list of the field names
+	 * 
+	 * @return a list of the field names
+	 */
+	@Override
+	protected String getFields()
+	{
+		String fields = " ACNPGM, ACNCLN ";
+		return fields;
+	}
+
+	/**
+	 * Returns a list of the filed's parameters
+	 * 
+	 * @return the list of the filed's parameters
+	 */
+	@Override
+	protected String getParameters()
+	{
+		String fields = " ?, ? ";
+		return fields;
+	}
+
+	/**
+	 * This method create an array that contains the fields values and Its types. <br>
+	 * It will be used by JDBC <code>PreparedStatement</code>
+	 * 
+	 * @return An array that contains the fields values and Its types.
+	 */
+	@Override
+	public Object[] getParameterizedFieldsValues()
+	{
+		ACNRecordDataModel dataModel = getMyDataModel();
+
+		Object[] object = new Object[] { dataModel.getProgram(), dataModel.getClassName() };
+
+		return object;
+	}
+
+	/**
+	 * This method is going execute a Sql query using the filter criteria.
+	 * 
+	 * @param whereClause
+	 *            this is the <code>String</code> that represent the sql filter.
+	 * @return a <code>List</code> which contains a records
+	 */
+	public List<AbsRecord> getRecordBy(String whereClause)
+	{
+		return getRecordBy(whereClause, new ACNRecordRowMapper());
+	}
+
+	/**
+	 * This method is going to get all records.
+	 * 
+	 * @return a <code>List</code> which contains a records
+	 */
+	public List<AbsRecord> getRecords()
+	{
+		return getRecordBy(null, new ACNRecordRowMapper());
+	}
+
+	/**
+	 * This method is going to return a <code>ACNRecordDataModel</code> base on ACNFID
+	 * 
+	 * @return a <code>ACNRecordDataModel</code> base on ACNPGM
+	 */
+	public ACNRecordDataModel getACNRecord()
+	{
+		ACNRecordDataModel ACNRecordDataModel = null;
+		List<AbsRecord> results = getRecordBy(getWhereConditionBaseOnIdRecord(), new ACNRecordRowMapper());
+
+		if (!results.isEmpty())
+		{
+			ACNRecordDataModel = (ACNRecordDataModel) results.get(0);
+		}
+
+		return ACNRecordDataModel;
+	}
+
+	@Override
+	protected Hashtable<String, AbsRecord> createHashtableRecordModel(List<AbsRecord> records)
+	{
+		return null;
+	}
+}

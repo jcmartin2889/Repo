@@ -1,0 +1,173 @@
+package com.misys.equation.function.tools;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.misys.equation.function.beans.Mapping;
+
+public class MappingList extends ArrayList<Mapping>
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: MappingList.java 17190 2013-09-03 11:49:59Z Lima12 $";
+
+	/** Serial UID */
+	private static final long serialVersionUID = 1L;
+
+	/*
+	 * Lists of the Source and Target strings. These are maintained in line with the main list of Mappings and are used for
+	 * performance reasons to determine if a given Source / Target exists.
+	 */
+	private final List<String> sources = new ArrayList<String>();
+	private final List<String> targets = new ArrayList<String>();
+
+	/**
+	 * Default constructor
+	 */
+	public MappingList()
+	{
+		super();
+	}
+
+	/**
+	 * Construct a new MappingList based on the supplied mappings
+	 */
+	public MappingList(List<Mapping> mappings)
+	{
+		super();
+		for (Mapping mapping : mappings)
+		{
+			Mapping newMapping = new Mapping(mapping);
+			this.add(newMapping);
+		}
+	}
+
+	/**
+	 * Gets the index of the mapping with the specified target value
+	 * 
+	 * @param targetMapping
+	 *            The target mapping String to locate
+	 * @return the index of the mapping, -1 if not found
+	 */
+	public int getTargetIndex(String targetMapping)
+	{
+		return targets.indexOf(targetMapping);
+	}
+
+	/**
+	 * Gets the index of the mapping with the specified source value
+	 * 
+	 * @param sourceMapping
+	 *            The source mapping String to locate
+	 * @return the index of the mapping, -1 if not found
+	 */
+	public int getSourceIndex(String sourceMapping)
+	{
+		return sources.indexOf(sourceMapping);
+	}
+
+	/**
+	 * Edit a mapping by changing the source and/or target
+	 * 
+	 * @param mapping
+	 *            - the existing mapping to be edited
+	 * @param newSource
+	 *            - the new source, if null then the source is left unchanged
+	 * @param newTarget
+	 *            - the new target, if null then the target is left unchanged
+	 */
+	public void editMapping(Mapping mapping, String newSource, String newTarget)
+	{
+		int index = indexOf(mapping);
+		if (index != -1)
+		{
+			if (newSource != null)
+			{
+				mapping.setSource(newSource);
+				sources.remove(index);
+				sources.add(index, newSource);
+			}
+			if (newTarget != null)
+			{
+				mapping.setTarget(newTarget);
+				targets.remove(index);
+				targets.add(index, newTarget);
+			}
+		}
+	}
+
+	/**
+	 * Add a mapping at the end of the list
+	 * 
+	 * overrides {@link java.util.ArrayList#add(Object)}
+	 */
+	public boolean add(Mapping mapping)
+	{
+		if (super.add(mapping))
+		{
+			sources.add(mapping.getSource());
+			targets.add(mapping.getTarget());
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Add a mapping at the specified position in the list
+	 * 
+	 * overrides {@link java.util.ArrayList#add(int, Object)}
+	 */
+	public void add(int index, Mapping mapping) throws IndexOutOfBoundsException
+	{
+		sources.add(index, mapping.getSource());
+		targets.add(index, mapping.getTarget());
+		super.add(index, mapping);
+	}
+
+	/**
+	 * Removes a mapping
+	 * 
+	 * overrides {@link java.util.ArrayList#remove(Object)}
+	 */
+	public boolean remove(Mapping mapping)
+	{
+		if (super.remove(mapping))
+		{
+			sources.remove(mapping.getSource());
+			targets.remove(mapping.getTarget());
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Remove the mapping at the specified index
+	 * 
+	 * Overrides {@link java.util.ArrayList#remove(int)}
+	 */
+	public Mapping remove(int index) throws IndexOutOfBoundsException
+	{
+		sources.remove(index);
+		targets.remove(index);
+		return super.remove(index);
+	}
+
+	/**
+	 * Add mapping list
+	 * 
+	 * @param mappingList
+	 *            - the mapping list to be added
+	 */
+	public boolean addAll(MappingList mappingList)
+	{
+		boolean added = false;
+		for (Mapping mapping : mappingList)
+		{
+			add(mapping);
+			added = true;
+		}
+		return added;
+	}
+
+}

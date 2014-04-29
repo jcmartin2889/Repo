@@ -1,0 +1,282 @@
+package com.misys.equation.function.runtime;
+
+import bf.com.misys.eqf.types.header.ServiceRqHeader;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.function.adaptor.FunctionAdaptor;
+import com.misys.equation.function.beans.Function;
+import com.misys.equation.function.beans.FunctionData;
+import com.misys.equation.function.beans.InputFieldSet;
+import com.misys.equation.function.tools.ReturnDataMFUserExit;
+
+public class FunctionBankFusionLinkService extends FunctionBankFusion
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	boolean bfNotInstalledError = false;
+
+	/**
+	 * Call default user exit for linked service
+	 * 
+	 * @param screenSet
+	 *            - the screen set
+	 * @param scrnNo
+	 *            - the screen number
+	 * 
+	 * @return true if anything has changed
+	 * 
+	 * @throws EQException
+	 */
+	public boolean callDefaultUserExitLinkService(ScreenSet screenSet, int scrnNo) throws EQException
+	{
+		bfNotInstalledError = false;
+		boolean changed = false;
+
+		// Function data
+		FunctionData functionData = screenSet.getFunctionData();
+
+		// Retrieve the function
+		Function primaryFunction = screenSet.getPrimaryFunction();
+
+		// setup the BF function data
+		Object bf_serviceData = null;
+
+		// setup the BF function header
+		ServiceRqHeader bf_serviceHeader = getFunctionBFHeader(screenSet);
+
+		// call primary function default user exit
+		if (primaryFunction.getInputFieldSets().size() > scrnNo && !primaryFunction.chkXSDGeneric())
+		{
+			InputFieldSet inputFieldSet = primaryFunction.getInputFieldSets().get(scrnNo);
+			if (inputFieldSet.getDefaultMicroflow())
+			{
+				if (!EquationCommonContext.isBankFusionInstalled())
+				{
+					bfNotInstalledError = true;
+					return false;
+				}
+
+				bf_serviceData = getBankFusionDataType(screenSet.getFhd().getEquationUser().getSession(), null, primaryFunction,
+								functionData, true, null);
+
+				changed = callDefaultUserExit(primaryFunction, functionData, bf_serviceHeader, bf_serviceData, scrnNo);
+			}
+		}
+
+		// call secondary functions default user exit
+		if (screenSet.isLinkService())
+		{
+			// retrieve the field set id
+			Function function = screenSet.getFunction();
+			String inputFieldSetId = function.getInputFieldSets().get(scrnNo).getId();
+
+			// initialise variables
+			InputFieldSet inputFieldSet = null;
+			int secondaryScrnNo = -1;
+
+			for (Function secondaryFunction : screenSet.getServiceLinkage().getSecondaryFunctions())
+			{
+				try
+				{
+					inputFieldSet = secondaryFunction.getInputFieldSet(inputFieldSetId);
+					secondaryScrnNo = secondaryFunction.inputFieldSetKeys().indexOf(inputFieldSetId);
+				}
+				catch (EQException e)
+				{
+					inputFieldSet = null;
+				}
+				if (inputFieldSet != null && inputFieldSet.getDefaultMicroflow() && !secondaryFunction.chkXSDGeneric())
+				{
+					if (!EquationCommonContext.isBankFusionInstalled())
+					{
+						bfNotInstalledError = true;
+						return false;
+					}
+
+					bf_serviceData = getBankFusionDataType(screenSet.getFhd().getEquationUser().getSession(), null,
+									secondaryFunction, functionData, true, null);
+
+					boolean changed2 = callDefaultUserExit(secondaryFunction, functionData, bf_serviceHeader, bf_serviceData,
+									secondaryScrnNo);
+					changed = changed || changed2;
+				}
+			}
+		}
+		return changed;
+	}
+
+	/**
+	 * Call validate user exit for linked service
+	 * 
+	 * @param screenSet
+	 *            - the screen set
+	 * @param scrnNo
+	 *            - the screen number
+	 * 
+	 * @return the list of messages and if data has been changed
+	 * 
+	 * @throws EQException
+	 */
+	public ReturnDataMFUserExit callValidateUserExitLinkService(ScreenSet screenSet, int scrnNo) throws EQException
+	{
+		bfNotInstalledError = false;
+		ReturnDataMFUserExit returnData = new ReturnDataMFUserExit();
+
+		// Function data
+		FunctionData functionData = screenSet.getFunctionData();
+
+		// Retrieve the function
+		Function primaryFunction = screenSet.getPrimaryFunction();
+
+		// setup the BF function data
+		Object bf_serviceData = null;
+
+		// setup the BF function header
+		ServiceRqHeader bf_serviceHeader = getFunctionBFHeader(screenSet);
+
+		// call primary function default user exit
+		if (primaryFunction.getInputFieldSets().size() > scrnNo && !primaryFunction.chkXSDGeneric())
+		{
+			InputFieldSet inputFieldSet = primaryFunction.getInputFieldSets().get(scrnNo);
+			if (inputFieldSet.getValidateMicroflow())
+			{
+				if (!EquationCommonContext.isBankFusionInstalled())
+				{
+					bfNotInstalledError = true;
+					return returnData;
+				}
+
+				bf_serviceData = getBankFusionDataType(screenSet.getFhd().getEquationUser().getSession(), null, primaryFunction,
+								functionData, true, null);
+				returnData = callValidateUserExit(primaryFunction, functionData, bf_serviceHeader, bf_serviceData, scrnNo);
+			}
+		}
+
+		// call secondary functions default user exit
+		if (screenSet.isLinkService())
+		{
+			// retrieve the field set id
+			Function function = screenSet.getFunction();
+			String inputFieldSetId = function.getInputFieldSets().get(scrnNo).getId();
+
+			// initialise variables
+			InputFieldSet inputFieldSet = null;
+			int secondaryScrnNo = -1;
+
+			for (Function secondaryFunction : screenSet.getServiceLinkage().getSecondaryFunctions())
+			{
+				try
+				{
+					inputFieldSet = secondaryFunction.getInputFieldSet(inputFieldSetId);
+					secondaryScrnNo = secondaryFunction.inputFieldSetKeys().indexOf(inputFieldSetId);
+				}
+				catch (EQException e)
+				{
+					inputFieldSet = null;
+				}
+				if (inputFieldSet != null && inputFieldSet.getDefaultMicroflow() && !secondaryFunction.chkXSDGeneric())
+				{
+					if (!EquationCommonContext.isBankFusionInstalled())
+					{
+						bfNotInstalledError = true;
+						return returnData;
+					}
+
+					bf_serviceData = getBankFusionDataType(screenSet.getFhd().getEquationUser().getSession(), null,
+									secondaryFunction, functionData, true, null);
+
+					ReturnDataMFUserExit returnData2 = callValidateUserExit(secondaryFunction, functionData, bf_serviceHeader,
+									bf_serviceData, secondaryScrnNo);
+					returnData.append(returnData2);
+				}
+			}
+		}
+
+		// list of messages
+		return returnData;
+	}
+
+	/**
+	 * Call post-update user exit for linked service
+	 * 
+	 * @param screenSet
+	 *            - the screen set
+	 * 
+	 * @return the list of messages
+	 * 
+	 * @throws EQException
+	 */
+	public ReturnDataMFUserExit callPostUpdateUserExitLinkService(ScreenSet screenSet) throws EQException
+	{
+		bfNotInstalledError = false;
+		ReturnDataMFUserExit returnData = new ReturnDataMFUserExit();
+
+		// Function data
+		FunctionData functionData = screenSet.getFunctionData();
+
+		// Retrieve the function
+		Function primaryFunction = screenSet.getPrimaryFunction();
+
+		// setup the BF function data
+		Object bf_serviceData = null;
+
+		// setup the BF function header
+		ServiceRqHeader bf_serviceHeader = getFunctionBFHeader(screenSet);
+
+		// call primary function default user exit
+		FunctionAdaptor functionAdaptor = screenSet.getFunctionAdaptor();
+		if (functionAdaptor.isPostUpdateMicroFlow(primaryFunction) && !primaryFunction.chkXSDGeneric())
+		{
+			if (!EquationCommonContext.isBankFusionInstalled())
+			{
+				bfNotInstalledError = true;
+				return returnData;
+			}
+
+			bf_serviceData = getBankFusionDataType(screenSet.getFhd().getEquationUser().getSession(), null, primaryFunction,
+							functionData, true, null);
+
+			returnData = callPostUpdateUserExit(primaryFunction, functionData, bf_serviceHeader, bf_serviceData);
+		}
+
+		// call secondary functions default user exit
+		if (screenSet.isLinkService())
+		{
+			for (int i = 0; i < screenSet.getServiceLinkage().getSecondayFunctionIds().length; i++)
+			{
+				FunctionAdaptor secondaryFunctionAdaptor = screenSet.getFunctionAdaptor().getSecondaryFunctionAdaptors().get(i);
+				Function secondaryFunction = screenSet.getServiceLinkage().getSecondaryFunctions()[i];
+				if (secondaryFunctionAdaptor.isPostUpdateMicroFlow(secondaryFunction) && !secondaryFunction.chkXSDGeneric())
+				{
+					if (!EquationCommonContext.isBankFusionInstalled())
+					{
+						bfNotInstalledError = true;
+						return returnData;
+					}
+
+					bf_serviceData = getBankFusionDataType(screenSet.getFhd().getEquationUser().getSession(), null,
+									secondaryFunction, functionData, true, null);
+					ReturnDataMFUserExit returnData2 = callPostUpdateUserExit(secondaryFunction, functionData, bf_serviceHeader,
+									bf_serviceData);
+					returnData.append(returnData2);
+				}
+			}
+		}
+
+		// list of messages
+		return returnData;
+	}
+
+	/**
+	 * Return BF not installed error
+	 * 
+	 * @return true if BF not installed error
+	 */
+	public boolean isBFNotInstalledError()
+	{
+		return bfNotInstalledError;
+	}
+
+}

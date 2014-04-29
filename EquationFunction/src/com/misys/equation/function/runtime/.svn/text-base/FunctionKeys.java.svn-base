@@ -1,0 +1,721 @@
+package com.misys.equation.function.runtime;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.misys.equation.bankfusion.lrp.bean.TaskDetail;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.IEquationStandardObject;
+import com.misys.equation.common.dao.beans.AAIRecordDataModel;
+import com.misys.equation.common.dao.beans.GBRecordDataModel;
+import com.misys.equation.common.dao.beans.WERecordDataModel;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EqDataType;
+import com.misys.equation.function.adaptor.AttributesSetAdaptor;
+import com.misys.equation.function.beans.DisplayAttributesSet;
+import com.misys.equation.function.beans.LoadFieldSetStatus;
+import com.misys.equation.function.tools.FunctionRuntimeToolbox;
+
+public class FunctionKeys
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	// Function key codes
+	public final static int KEY_NONE = 99; // None
+	public final static int KEY_ENT = 0; // Enter key
+	public final static int KEY_HELP = 1; // Help
+	public final static int KEY_F2 = 2; // Linked program 1
+	public final static int KEY_EXIT = 3; // Exit
+	public final static int KEY_PRMPT = 4; // Prompt
+	public final static int KEY_VERI = 5; // Verify
+	public final static int KEY_RFRSH = 5; // Refresh
+	public final static int KEY_ADD = 6; // Add (non-supervisor)
+	public final static int KEY_AUTH = 6; // Authorise warning (supervisor)
+	public final static int KEY_PGUP = 7; // Page up
+	public final static int KEY_PGDN = 8; // Page down
+	public final static int KEY_CHARGE = 9; // Charge
+	public final static int KEY_DECL = 10; // Decline
+	public final static int KEY_F11 = 11; // Linked program 2
+	public final static int KEY_REFER = 11; // Refer
+	public final static int KEY_PREV = 12; // Cancel
+	public final static int KEY_F13 = 13; // Reserved for triggering child window
+	public final static int KEY_F14 = 14; // Linked program 3
+	public final static int KEY_DRILLUP = 15; // Return to (top most) parent
+	public final static int KEY_PRINT = 16; // Print
+	public final static int KEY_TOGLE = 17; // Toggle fields
+	public final static int KEY_AUTHA = 18; // Authorise all warnings (supervisor)
+	public final static int KEY_ACCPT = 18; // Accept (non-supervisor)
+	public final static int KEY_DEL = 22; // Delete
+	public final static int KEY_F23 = 23; // Linked program 4
+	public final static int KEY_OVR = 24; // Override warning
+	public final static int KEY_SAVE = 51; // Save
+	public final static int KEY_SVTMPL = 53; // Save as template
+	public final static int KEY_RMVSES = 54; // Remove the save session
+	public final static int KEY_VERIWARN = 55; // Similar to KEY_VERI and also allow warnings
+	public final static int KEY_LOAD = 56; // Load
+	public final static int KEY_UNLOAD = 57; // Unload
+	public final static int KEY_EXIT2 = 58; // Similar to KEY_EXIT but no update of session
+	public final static int KEY_EXIT_OFLNE_OVR = 59; // Exit when request for offline override
+	public final static int KEY_DRILLDOWN = 60; // Function key to trigger drill down processing (list)
+	public final static int KEY_DRILLDOWN2 = 61; // Function key to trigger drill down processing on a specific row (list)
+	public final static int KEY_DRILLDOWN3 = 62; // Function key to trigger drill down processing on a global function (list)
+	public final static int KEY_EXCEL = 63; // Export to Excel
+
+	// List of valid keys
+	private List<Integer> keys;
+	private final List<String> labels;
+
+	// Current function key
+	private int funcKey;
+
+	// Field associated with the function key
+	private String fieldId;
+
+	// session
+	private EquationStandardSession session = null;
+
+	/**
+	 * Construct an empty function keys
+	 */
+	public FunctionKeys()
+	{
+		keys = new ArrayList<Integer>();
+		labels = new ArrayList<String>();
+		funcKey = -1;
+		fieldId = "";
+	}
+
+	/**
+	 * Clear the list of function keys
+	 */
+	public void clear()
+	{
+		keys.clear();
+		labels.clear();
+	}
+
+	/**
+	 * Check if the function key is a valid function key
+	 * 
+	 * @param ckey
+	 *            - function key
+	 * 
+	 * @return true if the function key is in the list of function keys
+	 */
+	public boolean chkValidKey(int ckey)
+	{
+		Integer i = Integer.valueOf(ckey);
+		return keys.contains(i);
+	}
+
+	/**
+	 * Insert a valid function key to the list
+	 * 
+	 * @param ckey
+	 *            - function key
+	 * @param text
+	 *            - function key text
+	 */
+	public void addKey(Integer ckey, String label)
+	{
+		// empty, then simply add it
+		if (keys.size() == 0)
+		{
+			keys.add(ckey);
+			labels.add(label);
+			return;
+		}
+
+		// determine the location of this key
+		int index = 0;
+		while (ckey.intValue() > keys.get(index).intValue())
+		{
+			index++;
+			if (index >= keys.size())
+			{
+				break;
+			}
+		}
+
+		// index position is greater than the size of the array
+		if (index >= keys.size())
+		{
+			keys.add(ckey);
+			labels.add(label);
+		}
+
+		// insert this new key at this index via moving all the elements from this index up to the
+		// last
+		else
+		{
+			keys.add(ckey);
+			labels.add(label);
+			for (int i = keys.size() - 1; i > index; i--)
+			{
+				keys.set(i, keys.get(i - 1));
+				labels.set(i, labels.get(i - 1));
+			}
+			keys.set(index, ckey);
+			labels.set(index, label);
+		}
+	}
+
+	/**
+	 * Delete a key
+	 * 
+	 * @param ckey
+	 *            - function key
+	 * 
+	 * @return true, if key has been deleted
+	 */
+	public boolean deleteKey(Integer ckey)
+	{
+		int i = keys.indexOf(ckey);
+		if (i >= 0)
+		{
+			keys.remove(i);
+			labels.remove(i);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	/**
+	 * Return the list of keys
+	 * 
+	 * @return the list of keys
+	 */
+	public List<Integer> getKeys()
+	{
+		return keys;
+	}
+
+	/**
+	 * Set the list of keys
+	 * 
+	 * @param keys
+	 *            - the list of keys
+	 */
+	public void setKeys(List<Integer> keys)
+	{
+		this.keys = keys;
+	}
+
+	/**
+	 * Return the current function key pressed
+	 * 
+	 * @return the current function key pressed
+	 */
+	public int getFuncKey()
+	{
+		return funcKey;
+	}
+
+	/**
+	 * Set the current function key pressed
+	 * 
+	 * @param funcKey
+	 *            - the current function key pressed
+	 */
+	public void setFuncKey(int funcKey)
+	{
+		this.funcKey = funcKey;
+	}
+
+	/**
+	 * Return the field associated with the function key
+	 * 
+	 * @return the field associated with the function key
+	 */
+	public String getFieldId()
+	{
+		return fieldId;
+	}
+
+	/**
+	 * Set the field associated with the function key
+	 * 
+	 * @param fieldId
+	 *            - the field associated with the function key
+	 */
+	public void setFieldId(String fieldId)
+	{
+		this.fieldId = fieldId;
+	}
+
+	/**
+	 * Return the function keys
+	 * 
+	 * @return the function key text
+	 */
+	public String rtvFunctionKeys()
+	{
+		StringBuffer buffer = new StringBuffer();
+		for (int i = 0; i < keys.size(); i++)
+		{
+			Integer ckey = keys.get(i);
+			buffer.append(" " + ckey + " ");
+		}
+		return buffer.toString();
+	}
+
+	/**
+	 * Return the function keys - full list
+	 * 
+	 * @return the function key text
+	 */
+	public String rtvFunctionKeysWithLabel()
+	{
+		StringBuffer buffer = new StringBuffer();
+		for (int i = 0; i < keys.size(); i++)
+		{
+			Integer ckey = keys.get(i);
+			buffer.append("F" + ckey + "=" + labels.get(i) + " ");
+		}
+		return buffer.toString();
+	}
+
+	/**
+	 * Return the function keys - full list
+	 * 
+	 * @return the function key text
+	 */
+	public String rtvFunctionKeysText()
+	{
+		StringBuffer buffer = new StringBuffer();
+		for (int i = 0; i < keys.size(); i++)
+		{
+			Integer ckey = keys.get(i);
+			if (ckey >= 1 && ckey <= 24)
+			{
+				buffer.append("F" + ckey + "=" + labels.get(i) + " ");
+			}
+		}
+		return buffer.toString();
+	}
+
+	/**
+	 * Generate the function keys for a supervisor
+	 * 
+	 * @param screenSetHandler
+	 *            - the screen set handler
+	 * @param screenSet
+	 *            - the current screen set
+	 * @param functionMessages
+	 *            - the function messages
+	 */
+	public void generateSuperFunctionKeys(ScreenSetHandler screenSetHandler, ScreenSet screenSet, FunctionMessages functionMessages)
+					throws EQException
+	{
+		// clear all the keys
+		clear();
+
+		// Enter key
+		if (screenSet.getFhd().getFunctionSession().getStatus() != null
+						&& (screenSet.getFhd().getFunctionSession().getStatus().equals(WERecordDataModel.MAKER_CHECKER_STAT_AWAIT) || screenSet
+										.getFhd().getFunctionSession().getStatus().equals(
+														WERecordDataModel.MAKER_CHECKER_STAT_APPRVD)))
+		{
+			addKey(KEY_ENT, "");
+		}
+		else
+		{
+			addKey(KEY_ENT, "Finish");
+		}
+
+		// Help key
+		addKey(KEY_HELP, "Help");
+
+		// F3 = Exit
+		addKey(KEY_EXIT, "Exit");
+
+		// F12 = Previous
+		addKey(KEY_PREV, "Cancel");
+
+		// F58 = Exit
+		addKey(KEY_EXIT2, "Exit");
+
+		// Drill down
+		addKey(KEY_DRILLDOWN, "Drill down");
+
+		// retrieve number of messages
+		int numberOfMessages = functionMessages.getMessages().size();
+
+		// maker checker then always assume one message only in order to display F6=Authorise
+		if (screenSet.getFhd().getEquationUser().getEquationUnit().hasMakerCheckerEnhancement()
+						&& (screenSet.getFhd().getSecurityLevel().getCheckerType() == SecurityLevel.CHCKR_MAKER_CHECKER || screenSet
+										.getFhd().getSecurityLevel().getCheckerType() == SecurityLevel.CHCKR_MAKER_MAKER))
+		{
+			numberOfMessages = 1;
+		}
+
+		// F6 = Complete
+		if (screenSet.getFhd().getSecurityLevel().getCheckerType() == SecurityLevel.CHCKR_MAKER_MAKER
+						|| (screenSet.getFhd().getSecurityLevel().getCheckerType() == SecurityLevel.CHCKR_MAKER_CHECKER && screenSet
+										.getFKeyToNextScreenSet() == KEY_AUTH))
+		{
+			addKey(KEY_AUTH, "Complete");
+		}
+
+		// F6 = Authorise
+		else if (numberOfMessages == 1)
+		{
+			addKey(KEY_AUTH, "Authorise");
+		}
+
+		// F6 = Authorise first warning
+		if (numberOfMessages > 1)
+		{
+			addKey(KEY_AUTH, "Auth First Warning");
+		}
+
+		// F7 = Page up
+		if (screenSet.getScrnNo() > 0 || screenSetHandler.getCurScreenSet() > 0)
+		{
+			addKey(KEY_PGUP, "Back");
+		}
+
+		// F8 = Page down
+		if (screenSet.getScrnNo() < (screenSet.getMaxScrnNo() - 1)
+						|| (screenSetHandler.getCurScreenSet() < screenSetHandler.rtvLastScreenSetId() && !(screenSet.getFhd()
+										.getSecurityLevel().getCheckerType() == SecurityLevel.CHCKR_MAKER_MAKER && screenSet
+										.getFhd().getFunctionSession().getStatus().equals(
+														WERecordDataModel.MAKER_CHECKER_STAT_APPRVD))))
+		{
+			addKey(KEY_PGDN, "Next");
+		}
+
+		// F10 = Decline
+		addKey(KEY_DECL, "Decline");
+
+		// F18 = Authorise all
+		if (numberOfMessages > 1)
+		{
+			addKey(KEY_AUTHA, "Authorise All");
+		}
+
+		// LRP - for AUTH type
+		FunctionHandlerData fhd = screenSet.getFhd();
+		if (fhd.isLRPAuthTask())
+		{
+			deleteKey(KEY_AUTH);
+			deleteKey(KEY_DECL);
+			deleteKey(KEY_AUTHA);
+
+			SecurityLevel securityLevel = fhd.getSecurityLevel();
+			if (securityLevel.isAuthorizeAllowed() && functionMessages.getMsgSev() < FunctionMessages.MSG_ERROR)
+			{
+				String functionMode = fhd.getTaskRqHeader().getFunctionMode();
+				if (!functionMode.equals(IEquationStandardObject.FCT_DEL))
+				{
+					addKey(KEY_AUTHA, "Authorise");
+				}
+
+				if (functionMode.equals(IEquationStandardObject.FCT_DEL) || functionMode.equals(""))
+				{
+					String mode = fhd.getScreenSetHandler().rtvScreenSetMain().getMode();
+					if (mode.equals(IEquationStandardObject.FCT_DEL) || mode.equals(IEquationStandardObject.FCT_FUL))
+					{
+						addKey(KEY_DEL, "Delete");
+					}
+				}
+			}
+
+			if (securityLevel.isReferAllowed())
+			{
+				addKey(KEY_REFER, "Refer");
+			}
+
+			if (securityLevel.isDeclineAllowed())
+			{
+				addKey(KEY_DECL, "Decline");
+			}
+		}
+	}
+
+	/**
+	 * Generate the function keys
+	 * 
+	 * @param fct
+	 *            - function mode
+	 * @param screenSetHandler
+	 *            - the screen set Handler
+	 * @param screenSet
+	 *            - the screen set
+	 * @param functionMessages
+	 *            - the function messages
+	 * @param securityLevel
+	 *            - the security level
+	 * @param gbRecord
+	 *            - the GB record of the main option
+	 * @param aaiRecord
+	 *            - the AAI record of the main option
+	 * @param functionSession
+	 *            - the function session
+	 * @param allowedSaveTempate
+	 *            - allow user to save template?
+	 * @throws EQException
+	 */
+	public void generateFunctionKeys(String fct, ScreenSetHandler screenSetHandler, ScreenSet screenSet,
+					FunctionMessages functionMessages, SecurityLevel securityLevel, GBRecordDataModel gbRecord,
+					AAIRecordDataModel aaiRecord, FunctionSession functionSession, boolean allowedSaveTemplate) throws EQException
+	{
+		int curScrn = screenSet.getScrnNo();
+		int maxScrnNo = screenSet.getMaxScrnNo();
+		String inputFieldSetId = screenSet.getCurrentFieldSet();
+		LoadFieldSetStatus loadFieldSetStatus = screenSet.getLoadFieldSetStatusHandler().getFieldSetStatus(inputFieldSetId);
+		DisplayGroupHandler displayGroupHandler = screenSet.getDisplayGroupHandler();
+
+		this.session = screenSet.getFhd().getEquationUser().getSessionForNonUpdate();
+		DisplayAttributesSet displayAttributesSet = screenSet.getLayout().getDisplayAttributesSet(inputFieldSetId);
+		AttributesSetAdaptor attributesSetAdaptor = screenSet.getLayoutAdaptor().getAttributesSetAdaptor(session,
+						displayAttributesSet.getId());
+
+		TaskDetail taskDetail = screenSet.getFhd().getTaskDetail();
+
+		// clear all the keys
+		clear();
+
+		// Enter key - What is the enter key?
+		if (!securityLevel.isUpdateMessage())
+		{
+			if (loadFieldSetStatus.isKeyExist() && !loadFieldSetStatus.isDetailOpen())
+			{
+				addKey(KEY_ENT, "Load");
+			}
+			else if (functionSession.getStatus() != null
+							&& ((functionSession.getStatus().equals(WERecordDataModel.MAKER_CHECKER_STAT_REJCTD) && !functionSession
+											.isResubmitted()) || functionSession.getStatus().equals(
+											WERecordDataModel.MAKER_CHECKER_STAT_AWAIT)))
+			{
+				addKey(KEY_ENT, "");
+			}
+			else if (attributesSetAdaptor.isFinishButtonEnabled(displayAttributesSet))
+			{
+				addKey(KEY_ENT, "Finish");
+			}
+		}
+
+		// Resubmit key - only show when on rejected list
+		if (functionSession.getStatus() != null && functionSession.getStatus().equals(WERecordDataModel.MAKER_CHECKER_STAT_REJCTD))
+		{
+			addKey(KEY_AUTH, "Resubmit");
+		}
+
+		// Decline key
+		if (functionSession.getStatus() != null
+						&& (functionSession.getStatus().equals(WERecordDataModel.MAKER_CHECKER_STAT_AWAIT) || functionSession
+										.getStatus().equals(WERecordDataModel.MAKER_CHECKER_STAT_REJCTD)))
+		{
+			addKey(KEY_DECL, "Decline");
+		}
+
+		// Help key
+		addKey(KEY_HELP, "Help");
+
+		// F3 = Exit
+		addKey(KEY_EXIT, "Exit");
+
+		// F59 = Exit
+		addKey(KEY_EXIT_OFLNE_OVR, "Exit");
+
+		// F16 = Print
+		addKey(KEY_PRINT, "Print");
+
+		// Excel
+		addKey(KEY_EXCEL, "Excel");
+
+		// F5 = Verify
+		if (!securityLevel.isUpdateMessage())
+		{
+			// Show refresh button only if enquiry
+			if (fct.equals(IEquationStandardObject.FCT_ENQ))
+			{
+				addKey(KEY_RFRSH, "Refresh");
+			}
+			else
+			{
+				addKey(KEY_VERI, "Verify");
+			}
+		}
+
+		// F7 = Page up
+		if (curScrn > 0)
+		{
+			addKey(KEY_PGUP, "Back");
+		}
+
+		// F8 = Page down
+		if ((!loadFieldSetStatus.isKeyExist() && curScrn < (maxScrnNo - 1))
+						|| (loadFieldSetStatus.isKeyExist() && loadFieldSetStatus.isDetailOpen() && curScrn < (maxScrnNo - 1)))
+		{
+			addKey(KEY_PGDN, "Next");
+		}
+
+		// F12 = Cancel
+		addKey(KEY_PREV, "Cancel");
+
+		// F17 = Toggle
+		if (displayGroupHandler.isGroupExists(inputFieldSetId) > 0)
+		{
+			addKey(KEY_TOGLE, "Toggle");
+		}
+
+		// Update processing has not returned any messages
+		if (!securityLevel.isUpdateMessage())
+		{
+			// F22 = Delete
+			if (fct.equals(IEquationStandardObject.FCT_DEL) || fct.equals(IEquationStandardObject.FCT_FUL))
+			{
+				// displaying key screen, then disallow delete
+				if (loadFieldSetStatus.isDetailOpen())
+				{
+					addKey(KEY_DEL, "Delete");
+				}
+			}
+
+			// F24 = Override
+			if (functionMessages.getMsgSev() == FunctionMessages.MSG_WARN && funcKey != KEY_VERI && !securityLevel.isEnquireMode()
+							&& securityLevel.getRequiredCheckerType() == SecurityLevel.CHCKR_NONE)
+			{
+				addKey(KEY_OVR, "Override");
+			}
+		}
+
+		// Linked program 1
+		if (!gbRecord.getUserFuncKey1().trim().equals("") && taskDetail == null)
+		{
+			boolean authorised = FunctionRuntimeToolbox.isAllowLinkFunction(screenSet.getFhd().getFunctionInfo().getSessionType(),
+							screenSet.getFhd().getEquationUser(), gbRecord.getUserFuncKey1(), screenSet.getFhd().getFunctionInfo()
+											.isWebFacingInstalled());
+			if (authorised)
+			{
+				addKey(KEY_F2, gbRecord.getUserFuncKey1().trim());
+			}
+		}
+
+		// Linked program 2
+		if (!gbRecord.getUserFuncKey2().trim().equals("") && taskDetail == null)
+		{
+			boolean authorised = FunctionRuntimeToolbox.isAllowLinkFunction(screenSet.getFhd().getFunctionInfo().getSessionType(),
+							screenSet.getFhd().getEquationUser(), gbRecord.getUserFuncKey2(), screenSet.getFhd().getFunctionInfo()
+											.isWebFacingInstalled());
+			if (authorised)
+			{
+				addKey(KEY_F11, gbRecord.getUserFuncKey2().trim());
+			}
+		}
+
+		// Linked program 3
+		if (!gbRecord.getUserFuncKey3().trim().equals("") && taskDetail == null)
+		{
+			boolean authorised = FunctionRuntimeToolbox.isAllowLinkFunction(screenSet.getFhd().getFunctionInfo().getSessionType(),
+							screenSet.getFhd().getEquationUser(), gbRecord.getUserFuncKey3(), screenSet.getFhd().getFunctionInfo()
+											.isWebFacingInstalled());
+			if (authorised)
+			{
+				addKey(KEY_F14, gbRecord.getUserFuncKey3().trim());
+			}
+		}
+
+		// Linked program 4
+		if (!gbRecord.getUserFuncKey4().trim().equals("") && taskDetail == null)
+		{
+			boolean authorised = FunctionRuntimeToolbox.isAllowLinkFunction(screenSet.getFhd().getFunctionInfo().getSessionType(),
+							screenSet.getFhd().getEquationUser(), gbRecord.getUserFuncKey4(), screenSet.getFhd().getFunctionInfo()
+											.isWebFacingInstalled());
+			if (authorised)
+			{
+				addKey(KEY_F23, gbRecord.getUserFuncKey4().trim());
+			}
+		}
+
+		// Charge, but not unless we are on the charge screen already
+		if (loadFieldSetStatus.isDetailOpen() && !screenSet.getOptionId().equals(ScreenSetAC2.OPTION)
+						&& aaiRecord.getSupEFC().equals(EqDataType.YES))
+		{
+			addKey(KEY_CHARGE, "Charges");
+		}
+
+		// Save
+		if (taskDetail == null)
+		{
+			addKey(KEY_SAVE, "Save");
+		}
+
+		// Drill down
+		addKey(KEY_DRILLDOWN, "Drill down");
+		addKey(KEY_DRILLDOWN2, "Drill down double click");
+		addKey(KEY_DRILLDOWN3, "Drill down global link");
+
+		// Drill up
+		if (screenSet.getFhd().getParentFunctionHandler() != null)
+		{
+			addKey(KEY_DRILLUP, "Drill up");
+		}
+
+		// Save template
+		if (allowedSaveTemplate && taskDetail == null)
+		{
+			// save template not allowed when keys has already been loaded
+			ScreenSet screenSetMain = screenSetHandler.rtvScreenSetMain();
+			LoadFieldSetStatus primaryFieldSet = screenSetMain.getLoadFieldSetStatusHandler().getFieldSetStatus(
+							screenSetMain.getFunction().rtvPrimaryInputFieldSet().getId());
+			if (!primaryFieldSet.isKeyExist() || !primaryFieldSet.isDetailOpen())
+			{
+				addKey(KEY_SVTMPL, "Save template");
+			}
+		}
+
+		// Dummy function key to perform validation but not submitting
+		addKey(KEY_VERIWARN, "Verify and Warnings");
+
+		// Remove session
+		if (functionSession.isSessionRestored())
+		{
+			addKey(KEY_RMVSES, "Remove session");
+		}
+
+		// Load available when key exists
+		if (loadFieldSetStatus.isKeyExist())
+		{
+			if (loadFieldSetStatus.isDetailOpen())
+			{
+				addKey(KEY_UNLOAD, "Unload");
+			}
+			else
+			{
+				addKey(KEY_LOAD, "Load");
+			}
+		}
+
+		// LRP
+		if (taskDetail != null)
+		{
+			// display authorise only on detail screen and there are no messages
+			if (securityLevel.isAuthorizeAllowed() && loadFieldSetStatus.isDetailOpen())
+			{
+				// Show authorise on the main screenst, CRM and AC2, but not AC1/AC3
+				if (screenSet.getId() == 0 || screenSet.getId() == ScreenSetHandler.FUNCTION_CRM_SCREEN
+								|| screenSet.getId() == ScreenSetHandler.FUNCTION_EFC_SCREEN_1)
+				{
+					addKey(KEY_AUTHA, "Authorise");
+				}
+			}
+
+			if (securityLevel.isReferAllowed())
+			{
+				addKey(KEY_REFER, "Refer");
+			}
+
+			if (securityLevel.isDeclineAllowed())
+			{
+				addKey(KEY_DECL, "Decline");
+			}
+		}
+	}
+}

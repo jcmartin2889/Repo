@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<!-- TODO: Whenever you add configuration that is specific to Equation and BankFusion please add corresponding annotation -->
+
+<!-- 
+	The configuration for log4j can be found at http://logging.apache.org/log4j/1.2/manual.html
+ -->
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+	<!--  Appenders - Please refer to http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/PatternLayout.html  
+		for details about supported patterns. -->
+		
+	<!-- 
+		The following block determines the layout when logging to the console. 
+	-->
+	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="%d %-4r [%c] %-5p %t - %m%n" />
+		</layout>
+	</appender>
+		
+	<!-- The following block determines the layout when logging user traces to a file.  
+	User traces have an appender name staring with "user." followed by the user id.
+	TRACE/INFO/DEBUG logging will be suppressed for users that do not match. -->
+  
+	<!--<appender name="user.xxx" class="org.apache.log4j.RollingFileAppender">
+		<param name="Threshold" value="TRACE" /> 
+		<param name="File" value="user-xxx.log" />
+		<param name="Append" value="true" />
+		<param name="MaxFileSize" value="100KB" />
+		<param name="MaxBackupIndex" value="1" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %-5p class:%c method:%M line:%-5L %m%n" />
+		</layout>
+	</appender>	
+	
+ 	--><!-- The following block determines the layout when logging ip address traces to a file.  
+	IP address traces have an appender name staring with "ipAddress." followed by the ip address.
+	TRACE/INFO/DEBUG logging will be suppressed for ip addresses that do not match. -->   
+			 
+	<!--<appender name="ipAddress.127.0.0.0" class="org.apache.log4j.RollingFileAppender">
+		<param name="Threshold" value="TRACE" /> 
+		<param name="File" value="ipAddress-127000.log" />
+		<param name="Append" value="true" />
+		<param name="MaxFileSize" value="100KB" />
+		<param name="MaxBackupIndex" value="1" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d %-5p class:%c method:%M line:%-5L %m%n" />
+		</layout>
+	</appender>	
+	
+	--><!--  Loggers -->
+	
+	<!-- The following block makes the spring package do logging whenever ERROR or higher is specified -->
+	<logger name="org.springframework" additivity="false">
+		<level value="ERROR" />
+	</logger>
+	
+	<!-- The following block makes the Misys Equation Common classes for communication output all log statements whenever TRACE level is specified.
+		User tracing is enabled as the user appender is specified.
+		The Misys log statements will not appear in the console as additivity is false.
+	-->
+	<!--<logger name="com.misys.equation.common.access" additivity="false">
+		<level value="TRACE" />
+		<appender-ref ref="user:xxx"/>  
+	</logger>
+	
+	--><!-- The following block makes the Misys packages output all log statements whenever TRACE level is specified.
+		User tracing is enabled as the user appender is specified.
+		The Misys log statements will not appear in the console as additivity is false.
+	-->
+	<!--<logger name="com.misys.equation" additivity="false">
+		<level value="TRACE" />
+		<appender-ref ref="user:xxx"/>  
+	</logger>
+	
+	--><!-- The following block makes the Misys packages output all log statements whenever TRACE level is specified.  
+		Ip address tracing is enabled as the ip address appender is specified.
+		The Misys log statements will not appear in the console as additivity is false.
+	-->
+	<!--<logger name="com.misys.equation" additivity="false">
+		<level value="TRACE" />
+		<appender-ref ref="ipAddress:127.0.0.0"/>  
+	</logger>
+		
+	--><!-- The following determines that the default logging is at level ERROR and logging is rooted to the console -->
+	<root>
+		<level value="ERROR" />
+		<appender-ref ref="CONSOLE" />
+	</root>
+ 
+</log4j:configuration>

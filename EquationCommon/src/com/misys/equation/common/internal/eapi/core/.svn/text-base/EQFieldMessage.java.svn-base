@@ -1,0 +1,204 @@
+// ------------------------------------------------------------------------------
+// Copyright Misys IBS
+//
+// Owner: Des Middlemass
+//
+// Class: EQFieldMessage: Class to store error/warning/info messages for an Equation field
+// ------------------------------------------------------------------------------
+package com.misys.equation.common.internal.eapi.core;
+
+/***********************************************************************************************************************************
+ * Represents an Equation Field Message.
+ * <P>
+ * Equation provides realtime diagnostic messages during its processing. These can have severities of Errors, Warnings and
+ * Information Only. Messages can be accessed using the EQObject's getMessages method. This method returns an ArrayList of EQMessage
+ * objects. If messages related to fields have occurred then EQFieldMessage objects will be in the ArrayList.
+ * <P>
+ * 
+ * @author Misys International Banking Systems Ltd.
+ */
+public class EQFieldMessage extends EQMessage implements java.io.Serializable
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/*******************************************************************************************************************************
+	 * Copyright <a href="http://www.misys.com"> Misys International Banking Systems Ltd, 2006 </a>
+	 */
+	public static final String copyright = "Copyright Misys International Banking Systems Ltd, 2006";
+	// name of the field and record format which this message refers to
+	protected String formatName;
+	protected String fieldName;
+	// whether the message was caused by a limit breach
+	protected boolean bLimit;
+	// whether the message causes a referral
+	protected boolean bReferral;
+	// the authority level required to overrride,
+	// e.g. blank, L, or a two digit number
+	protected String authority;
+	// the message group number
+	protected int groupNumber;
+	// row number, for messages associated with lists
+	protected int rowNumber;
+	/*******************************************************************************************************************************
+	 * Default Constructor.
+	 */
+	public EQFieldMessage()
+	{
+		formatName = "";
+		fieldName = "";
+		bLimit = false;
+		bReferral = false;
+		authority = "";
+		groupNumber = -1;
+		rowNumber = -1;
+	}
+	/*******************************************************************************************************************************
+	 * Construct a message from a fixed format message buffer.
+	 * <P>
+	 * This is used after a call to Equation to constuct messages. The buffer may contain more than one message. This constructor
+	 * builds one EQFieldMessage from part of the buffer, starting at the specified index. The format of the buffer starting at that
+	 * index must conform to the following:
+	 * 
+	 * <pre>
+	 *  format 10 chars; field
+	 * 10 chars; messageID 7 chars; severity 2 chars; limit 1 char; referral 1 char; text 132 chars; authority 2 chars; group 2
+	 * chars; row 5 chars; TOTAL = 172 chars
+	 * </pre>
+	 * 
+	 * @param buff
+	 *            a buffer of messages
+	 * @param offet
+	 *            the index within the buffer for the start of the message
+	 */
+	protected EQFieldMessage(char[] buff, int offset)
+	{
+		formatName = new String(buff, offset, 10).trim();
+		fieldName = new String(buff, offset + 10, 10).trim();
+		messageID = new String(buff, offset + 20, 7).trim();
+		severity = new String(buff, offset + 27, 2);
+		bLimit = buff[offset + 29] == 'Y' ? true : false;
+		bReferral = buff[offset + 30] == 'Y' ? true : false;
+		// removing control characters from text before creating string
+		char character = ' ';
+		int txtStartIndex = offset + 31;
+		int txtEndIndex = offset + 163;
+		for (int i = txtStartIndex; i < txtEndIndex; i++)
+		{
+			character = buff[i];
+			if (character >= 0x0080 && character <= 0x0090)
+			{
+				buff[i] = ' ';
+			}
+		}
+		formattedMessage = new String(buff, txtStartIndex, 132).trim();
+		authority = new String(buff, offset + 163, 2);
+		String strGroup = new String(buff, offset + 165, 2).trim();
+		groupNumber = Integer.parseInt(strGroup);
+		String strRowNum = new String(buff, offset + 167, 5).trim();
+		if (strRowNum.length() > 0)
+		{
+			rowNumber = Integer.parseInt(strRowNum);
+		}
+		else
+		{
+			rowNumber = -1;
+		}
+		unFormattedText = null;
+	}
+	/*******************************************************************************************************************************
+	 * Get the name of the screen that generated this message.
+	 * <P>
+	 * An equation function may consist of a number of screens, any one of which might generate messages. This method returns the
+	 * name of the screen that generated it.
+	 * <P>
+	 * 
+	 * @return the record format (screen) of the field message that was generated by.
+	 */
+	public String getFormatName()
+	{
+		return formatName;
+	}
+	/*******************************************************************************************************************************
+	 * Get the name of the field the message relates to.
+	 * <P>
+	 * If the message was generated by the validation associated with a specific field this method can be called to determine the
+	 * name of that field.
+	 * <P>
+	 * If the field is not related to a particular field this returns an empty string.
+	 * <P>
+	 * 
+	 * @return the field name of the field message it is associated with.
+	 */
+	public String getFieldName()
+	{
+		return fieldName;
+	}
+	/*******************************************************************************************************************************
+	 * Determine if this message was caused by a limit breach.
+	 * <P>
+	 * 
+	 * @return true if the message is caused by a limit breach.
+	 */
+	public boolean isLimitBreach()
+	{
+		return bLimit;
+	}
+	/*******************************************************************************************************************************
+	 * Determine if this message relates to a referral.
+	 * <P>
+	 * 
+	 * @return true if the message causes a referral.
+	 */
+	public boolean isReferral()
+	{
+		return bReferral;
+	}
+	/*******************************************************************************************************************************
+	 * Get the required override authority level.
+	 * <P>
+	 * 
+	 * @return the authority level required to override the message.
+	 */
+	public String getAuthority()
+	{
+		return authority;
+	}
+	/*******************************************************************************************************************************
+	 * Get the message's group.
+	 * <P>
+	 * If a number of messages are returned together some may be related. In this case they will have the same group number. If they
+	 * are unrelated they will have different group numbers.
+	 * <P>
+	 * 
+	 * @return the message group this message is within.
+	 */
+	public int getGroup()
+	{
+		return groupNumber;
+	}
+	/*******************************************************************************************************************************
+	 * Get the row number for the message if it is caused by a field in a list.
+	 * <P>
+	 * 
+	 * @return the row of the list this message is associated with, -1 if not associated with a list.
+	 */
+	public int getRow()
+	{
+		return rowNumber;
+	}
+	/*******************************************************************************************************************************
+	 * Get a string representation of the message.
+	 * <P>
+	 * 
+	 * @return getFormattedMessage().
+	 */
+	@Override
+	public String toString()
+	{
+		return getFormattedMessage();
+	}
+}

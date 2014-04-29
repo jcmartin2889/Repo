@@ -1,0 +1,188 @@
+package com.misys.equation.function.comparator;
+
+import java.util.Map;
+
+import com.misys.equation.common.access.EquationDataStructure;
+import com.misys.equation.common.access.EquationFieldDefinition;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.Toolbox;
+import com.misys.equation.function.beans.Field;
+import com.misys.equation.function.beans.Function;
+import com.misys.equation.function.beans.InputField;
+import com.misys.equation.function.journal.JournalFile;
+
+public class FunctionJournalComparator extends ElementComparator
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/**
+	 * Constructor
+	 */
+	public FunctionJournalComparator()
+	{
+	}
+
+	/**
+	 * Compare the function against its journal file
+	 * 
+	 * @param session
+	 *            - the Equation standard session
+	 * @param id
+	 *            - the Function id. This normally refers to the Function bean. But for a linkage, this could refer to another
+	 *            option id
+	 * @param function
+	 *            - the Function bean
+	 * 
+	 * @return the list of different fields in the journal and in the function
+	 * 
+	 * @throws EQException
+	 */
+	public ElementDifference compare(EquationStandardSession session, String id, Function function) throws EQException
+	{
+		// get the list of fields
+		Map<String, InputField> inputFields = function.rtvInputFields();
+
+		// get the list of journal file fields
+		String gzFormatName = JournalFile.getJournalName(id);
+		session.removeEquationDataStructure(gzFormatName);
+		EquationDataStructure gzDataStructure = session.getEquationDataStructure(gzFormatName);
+
+		ElementDifference properties = new ElementDifference(id, "");
+		compareMissingFieldsInFunction(properties, inputFields, gzDataStructure);
+		compareMissingFieldsInJournal(properties, inputFields, gzDataStructure);
+
+		// return the differences
+		return properties;
+	}
+
+	/**
+	 * Determine the list of missing fields in the GZ
+	 * 
+	 * @param properties
+	 *            - the list of differences
+	 * @param inputFields
+	 *            - the list of input fields
+	 * @param gzDataStructure
+	 *            - the list of GZ fields
+	 */
+	protected void compareMissingFieldsInFunction(ElementDifference properties, Map<String, InputField> inputFields,
+					EquationDataStructure gzDataStructure)
+	{
+		for (String fieldName : inputFields.keySet())
+		{
+			InputField inputField = inputFields.get(fieldName);
+
+			// Ignore repeating fields, as this is not written to GZ
+			if (Field.isRepeating(inputField))
+			{
+			}
+			// field not in GZ
+			else if (!gzDataStructure.containsField(fieldName))
+			{
+				ElementDifference elementDifference = new ElementDifference(fieldName, "");
+				elementDifference.addPropertyDifference(new PropertyDifference("", ElementComparatorToolbox.TEXT_NEW,
+								ElementComparatorToolbox.TEXT_MISSING, PropertyDifference.FLAG_INSERTED));
+				properties.addSubElementDifference(fieldName, elementDifference);
+			}
+
+			// compare attributes
+			else
+			{
+				EquationFieldDefinition fieldDefinition = gzDataStructure.getFieldDefinitions().get(fieldName);
+				compare(inputField, fieldDefinition);
+			}
+		}
+	}
+
+	/**
+	 * Determine the list of missing fields in the Function
+	 * 
+	 * @param properties
+	 *            - the list of differences
+	 * @param inputFields
+	 *            - the list of input fields
+	 * @param gzDataStructure
+	 *            - the list of GZ fields
+	 */
+	protected void compareMissingFieldsInJournal(ElementDifference properties, Map<String, InputField> inputFields,
+					EquationDataStructure gzDataStructure)
+	{
+		// field in GZ, but not in the list of fields
+		for (String fieldName : gzDataStructure.getFieldNames())
+		{
+			ElementDifference elementDifference = new ElementDifference(fieldName, "");
+
+			InputField inputField = inputFields.get(fieldName);
+			if (JournalFile.isStandardGZField(fieldName))
+			{
+				// ignore standard GZ field
+			}
+			else if (inputField == null)
+			{
+				elementDifference.addPropertyDifference(new PropertyDifference("", ElementComparatorToolbox.TEXT_MISSING,
+								ElementComparatorToolbox.TEXT_NEW, PropertyDifference.FLAG_DELETED));
+			}
+
+			// compare attributes
+			else
+			{
+				EquationFieldDefinition fieldDefinition = gzDataStructure.getFieldDefinitions().get(fieldName);
+				elementDifference = compare(inputField, fieldDefinition);
+			}
+
+			// Something is different?
+			if (elementDifference.isDiffer())
+			{
+				properties.addSubElementDifference(fieldName, elementDifference);
+			}
+		}
+	}
+
+	/**
+	 * Compare the input field definition vs the GZ field definition
+	 * 
+	 * @param inputField
+	 *            - the input field
+	 * @param fieldDefinition
+	 *            - the field definition
+	 * 
+	 * @return the list of properties that differs between 2 elements
+	 */
+	protected ElementDifference compare(InputField inputField, EquationFieldDefinition fieldDefinition)
+	{
+		ElementDifference properties = new ElementDifference(inputField.getId(), "");
+
+		// compare base type
+		if (!inputField.rtvBaseType().equals(fieldDefinition.getFieldDataTypeString()))
+		{
+			PropertyDifference pd = new PropertyDifference("Field type", inputField.getDataType(), String.valueOf(fieldDefinition
+							.getFieldDataTypeString()), PropertyDifference.FLAG_CHANGED);
+			properties.addPropertyDifference(pd);
+
+		}
+
+		// compare length
+		int size = Toolbox.parseInt(inputField.getSize(), 0);
+		if (size != fieldDefinition.getFieldLength())
+		{
+			PropertyDifference pd = new PropertyDifference("Field size", inputField.getSize(), String.valueOf(fieldDefinition
+							.getFieldLength()), PropertyDifference.FLAG_CHANGED);
+			properties.addPropertyDifference(pd);
+		}
+
+		// compare decimal
+		int decimal = Toolbox.parseInt(inputField.getDecimals(), 0);
+		if (decimal != fieldDefinition.getFieldDecimal())
+		{
+			PropertyDifference pd = new PropertyDifference("Field decimal", inputField.getDecimals(), String
+							.valueOf(fieldDefinition.getFieldDecimal()), PropertyDifference.FLAG_CHANGED);
+			properties.addPropertyDifference(pd);
+		}
+
+		return properties;
+	}
+
+}

@@ -1,0 +1,65 @@
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseFullyAdd;
+
+/**
+ * Equation test cases for Maintain Other Stock Items
+ */
+public class AddTest_SDD extends EquationTestCaseFullyAdd
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: AddTest_SDD.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	String programName = "S10FRR";
+	String optionId = "SDD";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZSIT", "CARL"); // Stock item type
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	@Override
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZSIT", "CARL"); // Stock item type
+		transaction.setFieldValue("GZSITD", "Carl's Stock Item"); // Stock item description
+		transaction.setFieldValue("GZSIHO", "ACC1"); // Stock item head office
+		transaction.setFieldValue("GZSIDC", "Y"); // Stock item denomination control?
+	}
+
+}

@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+     This ant project will package the equation components.
+     ====================================================================== -->
+<project name="Equation builder" basedir=".">
+
+	<description>
+		This ant project will package the equation components.
+    </description>
+
+	<!-- ************************** PROPERTIES ***************************** -->
+
+	<!-- Set properties with values from the external property file -->
+	<property file="build.properties" />
+
+	<property name="dist.dir" value="${DIST}" />
+	<property name="dist.target" location="${dist.dir}/${TARGET}" />
+	<property name="deliverable" location="${DELIVERABLE}" />
+	<property name="release" location="${RELEASE}" />
+
+	<!-- External project properties files. It will load the ext properties files  with a different prefix.-->
+	<property file="${EQUATION_COMMON}/build.properties" prefix="equation.common" />
+	<property file="${EQUATION_FUNCTION}/build.properties" prefix="equation.function" />
+	<property file="${EQUATION_INSTALLER}/build.properties" prefix="equation.installer" />
+	<property file="${EQUATION_BANK_FUSION_CLIENT}/build.properties" prefix="equation.bankfusionclient" />
+	<property file="${EQUATION_BANK_FUSION_SERVER}/build.properties" prefix="equation.bankfusionserver" />
+	<property file="${EQUATION_GLOBAL_PROCESSING_BUSINESS}/build.properties" prefix="equation.global.processing.business" />
+	<property file="${EQUATION_DESKTOP}/build.properties" prefix="equation.desktop" />
+	<property file="${EQUATION_FUNCTION_WIZARD}/build.properties" prefix="equation.function.wizard" />
+	<property file="${EQUATION_COMMON_STUBS}/build.properties" prefix="equation.common.stubs" />
+	<property file="${EQUATION_FUNCTION_STUBS}/build.properties" prefix="equation.function.stubs" />
+	<property file="${EQUATION_SERVICE_COMPOSER_HELP}/build.properties" prefix="equation.service.composer.help" />
+	<property file="${EQUATION_ECLIPSE_COMMON}/build.properties" prefix="equation.eclipse.common" />
+	<property file="${EQUATION_SAMPLES}/build.properties" prefix="equation.samples" />
+	<property file="${EQUATION_WAS_CONFIG}/build.properties" prefix="equation.was.config" />
+
+
+	<!--  External projects'dist.-->
+	<property name="equation.common.dist.dir" value="${dist.dir}\${equation.common.TARGET}" />
+	<property name="equation.function.dist.dir" value="${dist.dir}\${equation.function.TARGET}" />
+	<property name="equation.installer.dist.dir" value="${dist.dir}\${equation.installer.TARGET}" />
+
+	<property name="equation.function.wizard.dist.dir" value="${dist.dir}\${equation.function.wizard.TARGET}" />
+	<property name="equation.common.stubs.dist.dir" value="${dist.dir}\${equation.common.stubs.TARGET}" />
+	<property name="equation.service.composer.help.dist.dir" value="${dist.dir}\${equation.service.composer.help.TARGET}" />
+	<property name="equation.samples.dist.dir" value="${dist.dir}\${equation.samples.TARGET}" />
+	<property name="equation.was.config.dist.dir" value="${dist.dir}\${equation.was.config.TARGET}" />
+
+	<!-- 
+	<property name="equation.bankfusionclient.dist.dir" value="${dist.dir}\${equation.bankfusionclient.TARGET}" />
+	<property name="equation.bankfusionserver.dist.dir" value="${dist.dir}\${equation.bankfusionserver.TARGET}" />
+	<property name="equation.eclipse.common.dist.dir" value="${dist.dir}\${equation.eclipse.common.TARGET}" />
+	
+	<property name="equation.global.processing.business.dist.dir" value="${dist.dir}\${equation.global.processing.business.TARGET}" />
+	<property name="equation.desktop.dist.dir" 	value="${dist.dir}\${equation.desktop.TARGET}" />
+	<property name="equation.function.stubs.dist.dir" value="${dist.dir}\${equation.function.stubs.TARGET}" />
+	-->
+	<property name="equation.update.site.dist.dir" value="${dist.dir}\BankFusionEquationUpdateSite_${equation.function.wizard.VERSION}" />
+	<property name="equation.installer.files.dist.dir" value="${dist.dir}\${equation.installer.files.TARGET}" />
+
+	<!--  External projects'versions.-->
+	<property name="equation.common.version" value="${equation.common.VERSION}" />
+	<property name="equation.function.version" value="${equation.function.VERSION}" />
+	<property name="equation.installer.version" value="${equation.installer.VERSION}" />
+	<property name="equation.function.wizard.version" value="${equation.function.wizard.VERSION}" />
+	<property name="equation.common.stubs.version" value="${equation.common.stubs.VERSION}" />
+	<property name="equation.service.composer.help.version" value="${equation.service.composer.help.VERSION}" />
+	<property name="equation.samples.version" value="${equation.samples.VERSION}" />
+	<property name="equation.was.config.version" value="${equation.was.config.VERSION}" />
+
+	<!--
+	<property name="equation.global.processing.business.version" value="${equation.global.processing.business.VERSION}" />
+	<property name="equation.bankfusionclient.version" value="${equation.bankfusionclient.VERSION}" />
+	<property name="equation.bankfusionserver.version" value="${equation.bankfusionserver.VERSION}" />
+	<property name="equation.eclipse.common.version" value="${equation.eclipse.common.VERSION}" />
+	<property name="equation.function.stubs.version" value="${equation.function.stubs.VERSION}" />
+	<property name="equation.desktop.version" value="${equation.desktop.VERSION}" />
+	-->
+
+
+
+	<!--  External projects jars.-->
+	<property name="equation.common.deliverable" value="${deliverable}/Javadoc/equation-common-${equation.common.VERSION}.zip" />
+	<property name="equation.function.deliverable" value="${deliverable}/Javadoc/equation-function-${equation.function.VERSION}.zip" />
+	<property name="equation.common.stubs.deliverable" value="${deliverable}/Samples/equation-common-stubs-${equation.common.stubs.VERSION}.zip" />
+
+	<property name="equation.function.wizard.deliverable" value="${deliverable}/Plugin/equation-function-wizard-${equation.function.wizard.VERSION}.zip" />
+	<property name="equation.service.composer.help.deliverable" value="${deliverable}/Plugin/equation-service-composer-help-${equation.service.composer.help.VERSION}.zip" />
+	<property name="equation.samples.deliverable" value="${deliverable}/Samples/equation-samples-${equation.samples.VERSION}.zip" />
+	<property name="equation.was.config.deliverable" value="${deliverable}/LiteWASInstaller/equation-was-config-${equation.was.config.VERSION}.zip" />
+
+	<!--
+	<property name="equation.eclipse.common.deliverable" value="${deliverable}/equation-eclipse-common-${equation.eclipse.common.VERSION}.zip" />
+	<property name="equation.global.processing.business.deliverable" value="${deliverable}/equation-global-processing-business-${equation.global.processing.business.VERSION}.zip" />
+	<property name="equation.bankfusionclient.deliverable" value="${deliverable}/equation-bankfusionclient-${equation.bankfusionclient.VERSION}.zip" />
+	<property name="equation.bankfusionserver.deliverable" value="${deliverable}/equation-bankfusionserver-${equation.bankfusionserver.VERSION}.zip" />	
+	<property name="equation.desktop.deliverable" value="${deliverable}/equation-desktop-${equation.desktop.VERSION}.zip" />
+	<property name="equation.function.stubs.deliverable" value="${deliverable}/equation-function-stubs-${equation.function.stubs.VERSION}.zip" />
+	-->
+	<property name="equation.update.site.deliverable" value="${deliverable}/UpdateSite/equation-update-site-${equation.common.VERSION}.zip" />
+	<property name="equation.release" value="${release}/BankFusionEquation-${equation.common.VERSION}.zip" />
+
+	<!--  External projects reference.-->
+	<property name="equation.common.dir" location="${EQUATION_COMMON}" />
+	<property name="equation.global.processing.business.dir" location="${EQUATION_GLOBAL_PROCESSING_BUSINESS}" />
+	<property name="equation.function.dir" location="${EQUATION_FUNCTION}" />
+	<property name="equation.installer.dir" location="${EQUATION_INSTALLER}" />
+	<property name="equation.bankfusionclient.dir" location="${EQUATION_BANK_FUSION_CLIENT}" />
+	<property name="equation.bankfusionserver.dir" location="${EQUATION_BANK_FUSION_SERVER}" />
+	<property name="equation.desktop.dir" location="${EQUATION_DESKTOP}" />
+	<property name="equation.function.wizard.dir" location="${EQUATION_FUNCTION_WIZARD}" />
+	<property name="equation.external.jars.dir" location="${EXTERNAL_JARS}" />
+	<property name="equation.common.stubs.dir" location="${EQUATION_COMMON_STUBS}" />
+	<property name="equation.function.stubs.dir" location="${EQUATION_FUNCTION_STUBS}" />
+	<property name="equation.service.composer.help.dir" location="${EQUATION_SERVICE_COMPOSER_HELP}" />
+	<property name="equation.eclipse.common.dir" location="${EQUATION_ECLIPSE_COMMON}" />
+	<property name="equation.samples.dir" location="${EQUATION_SAMPLES}" />
+	<property name="equation.was.config.dir" location="${EQUATION_WAS_CONFIG}" />
+	<property name="equation.bundledata.dir" location="${EQUATION_BUNDLEDATA}" />
+
+	<!-- *************************** TARGETS ******************************* -->
+
+	<!-- =================================================================== -->
+	<!-- target: package                                                     -->
+	<!-- =================================================================== -->
+
+	<target name="package" description="This task will package all projects.">
+
+		<ant antfile="${equation.external.jars.dir}\build.xml" target="package" inheritall="false">
+		</ant>
+
+		<ant antfile="${equation.common.dir}\build.xml" target="package" inheritall="false">
+		</ant>
+
+		<ant antfile="${equation.global.processing.business.dir}\build.xml" target="package" inheritall="false">
+		</ant>
+
+		<ant antfile="${equation.eclipse.common.dir}\build.xml" target="package" inheritall="false">
+		</ant>
+
+		<ant antfile="${equation.bankfusionclient.dir}\build.xml" target="package" inheritall="false">
+		</ant>
+		<!-- Note: function is dependent on bankfusionclient -->
+		<ant antfile="${equation.function.dir}\build.xml" target="package" inheritall="false">
+		</ant>
+		<!-- Note: installer is dependent on common and function -->
+		<ant antfile="${equation.installer.dir}\build.xml" target="package" inheritall="false">
+		</ant>
+
+		<ant antfile="${equation.bankfusionserver.dir}\build.xml" target="package" inheritall="false">
+		</ant>
+
+		<ant antfile="${equation.bundledata.dir}\build.xml" target="copyBFArtefacts" inheritall="false">
+		</ant>
+
+		<ant antfile="${equation.desktop.dir}\build.xml" target="package" inheritall="false">
+		</ant>
+
+		<ant antfile="${equation.service.composer.help.dir}\build.xml" target="package" inheritall="false">
+		</ant>
+
+		<ant antfile="${equation.function.wizard.dir}\build.xml" target="package" inheritall="false">
+		</ant>
+
+		<ant antfile="${equation.common.stubs.dir}\build.xml" target="package" inheritall="false">
+		</ant>
+
+		<ant antfile="${equation.function.stubs.dir}\build.xml" target="package" inheritall="false">
+		</ant>
+
+		<ant antfile="${equation.samples.dir}\build.xml" target="package" inheritall="false">
+		</ant>
+
+		<ant antfile="${equation.was.config.dir}\build.xml" target="package" inheritall="false">
+		</ant>
+		
+		<ant antfile="workerBuild.xml" target="generatePluginUpdateSite" inheritall="true" inheritRefs="true">
+		</ant>
+
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: deleteOldDeliverables                                       -->
+	<!-- =================================================================== -->
+	<target name="deleteOldDeliverables" description="This task is going to delete old deliverables.">
+		<delete verbose="true" failonerror="false">
+			<fileset dir="${deliverable}">
+				<exclude name=".svn" />
+			</fileset>
+			<fileset dir="${release}">
+				<exclude name=".svn" />
+			</fileset>
+		</delete>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: createDeliverable                                           -->
+	<!-- =================================================================== -->
+
+	<target name="createDeliverable" description="This task is going to create the deliverable package.">
+
+		<mkdir dir="${deliverable}" />
+		<mkdir dir="${release}" />
+
+		<mkdir dir="${deliverable}/Bundle" />
+		<mkdir dir="${deliverable}/InstallerFiles" />
+		<mkdir dir="${deliverable}/ServerFiles" />
+		<mkdir dir="${deliverable}/Javadoc" />
+		<mkdir dir="${deliverable}/Samples" />
+		<mkdir dir="${deliverable}/UpdateSite" />
+		<mkdir dir="${deliverable}/LiteWASInstaller" />
+		<zip destfile="${equation.common.deliverable}">
+			<fileset dir="${equation.common.dist.dir}" />
+		</zip>
+
+		<zip destfile="${equation.common.stubs.deliverable}">
+			<fileset dir="${equation.common.stubs.dist.dir}" />
+		</zip>
+
+		<zip destfile="${equation.function.deliverable}">
+			<fileset dir="${equation.function.dist.dir}" />
+		</zip>
+
+		<!--
+		In update site. 
+		
+		<zip destfile="${equation.function.wizard.deliverable}">
+			<fileset dir="${equation.function.wizard.dist.dir}"/>
+		</zip>
+		-->
+
+		<!--
+		Internal projects.
+		
+		<zip destfile="${equation.function.stubs.deliverable}">
+			<fileset dir="${equation.function.stubs.dist.dir}"/>
+		</zip>
+			
+		<zip destfile="${equation.global.processing.business.deliverable}">
+			<fileset dir="${equation.global.processing.business.dist.dir}" />
+		</zip>		
+			
+		<zip destfile="${equation.bankfusionclient.deliverable}">
+			<fileset dir="${equation.bankfusionclient.dist.dir}" />
+		</zip>		
+		
+		<zip destfile="${equation.bankfusionserver.deliverable}">
+			<fileset dir="${equation.bankfusionserver.dist.dir}" />
+		</zip>
+		
+		<zip destfile="${equation.desktop.deliverable}">
+			<fileset dir="${equation.desktop.dist.dir}" />
+		</zip>
+		
+		<zip destfile="${equation.eclipse.common.deliverable}">
+			<fileset dir="${equation.eclipse.common.dist.dir}"/>
+		</zip>		                  
+		-->
+
+		<!--
+		In update site.
+		<zip destfile="${equation.service.composer.help.deliverable}">
+			<fileset dir="${equation.service.composer.help.dist.dir}"/>
+		</zip>
+		-->
+
+		<zip destfile="${equation.samples.deliverable}">
+			<fileset dir="${equation.samples.dist.dir}" />
+		</zip>
+
+		<zip destfile="${equation.update.site.deliverable}">
+			<fileset dir="${equation.update.site.dist.dir}" />
+		</zip>
+		
+		<echo level="info" message="BankFusionInstaller:  copy files. " />
+		<copy todir="${deliverable}/InstallerFiles" overwrite="true" verbose="true">
+			<fileset dir="../BankFusionInstaller">
+				<include name="**/*.properties" />
+				<include name="**/*.xml" />
+				<include name="**/*.jacl" />
+			</fileset>
+		</copy>
+		<echo level="info" message="BankFusionServerFiles:  copy files. " />
+		<copy todir="${deliverable}/ServerFiles" overwrite="true" verbose="true">
+			<fileset dir="../EquationBankFusionServer/resources">
+				<include name="application.properties" />
+			</fileset>
+		</copy>
+		<echo level="info" message="EquationBundler:  copy files. " />
+		<copy todir="${deliverable}/Bundle" overwrite="true" verbose="true">
+			<fileset dir="../EquationBundler/#bundle">
+				<include name="**/*.bfj" />
+			</fileset>
+		</copy>
+		
+		<echo level="info" message="Equation WAS Config:  copy files. " />
+		<copy todir="${deliverable}/LiteWASInstaller" overwrite="true" verbose="true">
+			<fileset dir="${equation.was.config.dist.dir}" />
+		</copy>
+		
+		<zip destfile="${equation.release}">
+			<fileset dir="${deliverable}" />
+		</zip>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: clean_all                                                   -->
+	<!-- =================================================================== -->
+
+	<target name="clean_all" description="This task will clean all projects.">
+
+		<ant antfile="${equation.external.jars.dir}\build.xml" target="clean" inheritall="false">
+		</ant>
+
+		<ant antfile="${equation.common.dir}\build.xml" target="clean" inheritall="false">
+		</ant>
+
+		<ant antfile="${equation.global.processing.business.dir}\build.xml" target="clean" inheritall="false">
+		</ant>
+
+		<ant antfile="${equation.eclipse.common.dir}\build.xml" target="clean" inheritall="false">
+		</ant>
+
+		<ant antfile="${equation.installer.dir}\build.xml" target="clean" inheritall="false">
+		</ant>
+
+		<ant antfile="${equation.bankfusionclient.dir}\build.xml" target="clean" inheritall="false">
+		</ant>
+
+		<ant antfile="${equation.function.dir}\build.xml" target="clean" inheritall="false">
+		</ant>
+
+		<ant antfile="${equation.bankfusionserver.dir}\build.xml" target="clean" inheritall="false">
+		</ant>
+
+		<ant antfile="${equation.desktop.dir}\build.xml" target="clean" inheritall="false">
+		</ant>
+
+		<ant antfile="${equation.service.composer.help.dir}\build.xml" target="clean" inheritall="false">
+		</ant>
+
+		<ant antfile="${equation.function.wizard.dir}\build.xml" target="clean" inheritall="false">
+		</ant>
+
+		<ant antfile="${equation.common.stubs.dir}\build.xml" target="clean" inheritall="false">
+		</ant>
+
+		<ant antfile="${equation.function.stubs.dir}\build.xml" target="clean" inheritall="false">
+		</ant>
+
+		<ant antfile="${equation.samples.dir}\build.xml" target="clean" inheritall="false">
+		</ant>
+
+		<ant antfile="${equation.was.config.dir}\build.xml" target="clean" inheritall="false">
+		</ant>
+		
+		<delete verbose="true" failonerror="false">
+			<fileset dir="${deliverable}">
+				<exclude name=".svn" />
+			</fileset>
+		</delete>
+
+	</target>
+</project>

@@ -1,0 +1,18 @@
+file_export_version=3.4
+# Malformed Javadoc comments:
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.compiler.problem.invalidJavadoc=warning
+# Validate tag arguments (@param, @throws, @exception, @see, @link)
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.compiler.problem.invalidJavadocTags=enabled
+# Only consider members as visible as 
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.compiler.problem.invalidJavadocTagsVisibility=private
+#Wed Apr 25 10:37:28 BST 2012
+#Unnecessary cast or 'instanceof' operation 		Change Ignore to Warning
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.compiler.problem.unnecessaryTypeCheck=warning
+#Parameter is never read: 				Change Ignore to Warning
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.compiler.problem.unusedParameter=warning
+#Forbidden reference (access rules): 			Change warning to Error
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.compiler.problem.forbiddenReference=error
+#Possible accidental boolean assignment (e.g. 'if (a = b)'): 	Change Ignore to Error
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.compiler.problem.possibleAccidentalBooleanAssignment=error
+# Potential null pointer access: Change Ignore to Error
+/instance/org.eclipse.jdt.core/org.eclipse.jdt.core.compiler.problem.potentialNullReference=warning

@@ -1,0 +1,194 @@
+// ------------------------------------------------------------------------------
+// Copyright Misys IBS
+//
+// Owner: Des Middlemass
+//
+// Class: Constants: class for Equation Constants
+// ------------------------------------------------------------------------------
+package com.misys.equation.common.utilities;
+
+import java.math.BigDecimal;
+
+/***********************************************************************************************************************************
+ * Specifies static constants used by the core classes, and helper methods.
+ * <P>
+ * 
+ * @author Misys International Banking Systems Ltd.
+ */
+public abstract class EQCommonConstants
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EQCommonConstants.java 11293 2011-06-24 14:10:00Z hempensp $";
+	protected EQCommonConstants()
+	{
+	}
+	/*******************************************************************************************************************************
+	 * Copyright <a href="http://www.misys.com"> Misys International Banking Systems Ltd, 2006 </a>
+	 */
+	public static final String copyright = "Copyright Misys International Banking Systems Ltd, 2006";
+	/*******************************************************************************************************************************
+	 * Length of an Equation Branch Menmonic field
+	 */
+	static public final int BRANCH_MNEMONIC_LENGTH = 4;
+	/*******************************************************************************************************************************
+	 * Length of an Equation Deal Type field
+	 */
+	static public final int DEAL_TYPE_LENGTH = 3;
+	/*******************************************************************************************************************************
+	 * Length of an Equation Deal Reference field
+	 */
+	static public final int DEAL_REFERENCE_LENGTH = 13;
+	// SQL Types
+	public static final int CHAR = java.sql.Types.CHAR;
+	public static final int VARCHAR = java.sql.Types.VARCHAR;
+	public static final int INT = java.sql.Types.INTEGER;
+	public static final int DOUBLE = java.sql.Types.DOUBLE;
+	public static final int DECIMAL = java.sql.Types.DECIMAL;
+	// Decimal Types
+	public static final BigDecimal BD0 = new BigDecimal("0");
+	public static final BigDecimal BD1 = new BigDecimal("1");
+	public static final BigDecimal BD16 = new BigDecimal("16");
+	final static char spaceChar = ' ';
+
+	/*******************************************************************************************************************************
+	 * Helper method to initialise blank strings and string buffers.
+	 * <P>
+	 * Returns a StringBuffer object. Use .toString to obtain the string.
+	 * <P>
+	 * 
+	 * @param numBlanks
+	 *            the length of the string required
+	 * @return a StringBuffer of length numBlanks with each character initialised with space (i.e. ASCII 32, unicode character
+	 *         "\\u0020").
+	 */
+	public static StringBuffer initBlankStringBuffer(int numBlanks)
+	{
+		StringBuffer sb = new StringBuffer(numBlanks);
+		for (int i = 0; (i < numBlanks); i++)
+		{
+			sb.append(spaceChar);
+		}
+		return sb;
+	}
+	/*******************************************************************************************************************************
+	 * Helper method to initialise blank byte arrays.
+	 * <P>
+	 * 
+	 * @param numBlanks
+	 *            the length of the array required
+	 * @return a byte array of length numBlanks with each byte initialised with space (i.e. ASCII 32, unicode character "\\u0020").
+	 */
+	public static byte[] initBlankByteArray(int numBlanks)
+	{
+		byte[] ba = new byte[numBlanks];
+		for (int i = 0; (i < numBlanks); i++)
+		{
+			ba[i] = spaceChar;
+		}
+		return ba;
+	}
+	/*******************************************************************************************************************************
+	 * Helper method to create a String based on a character array, but with any trailing whitespace omitted.
+	 * <P>
+	 * Use instead of the String.trim() method when the leading whitespace is required.
+	 * <P>
+	 * Returns a new String that contains all, or a portion, of the character array. Only the characters between the beginIndex and
+	 * endIndex are used in the creation of the String, and all trailing whitespace at position endIndex and less is omitted.
+	 * <P>
+	 * 
+	 * @param arrayToTrim
+	 *            the array of characters to be used as the source for the resulting string
+	 * @param beginIndex
+	 *            the zero-based index in arrayToTrim for the start of the String
+	 * @param endIndex
+	 *            the zero-based index for the end of the String.
+	 * @return a String consisting of length equal to or less than endIndex-beginIndex
+	 */
+	public static String rightTrimmedString(char[] arrayToTrim, int beginIndex, int endIndex)
+	{
+		// calculate a right trimmed string
+		int endPos = endIndex - 1;
+		while (endPos >= beginIndex)
+		{
+			if (arrayToTrim[endPos] > spaceChar)
+			{
+				break;
+			}
+			else
+			{
+				endPos--;
+			}
+		}
+		String result = new String(arrayToTrim, beginIndex, endPos - beginIndex + 1);
+		return result;
+	}
+	/*******************************************************************************************************************************
+	 * Helper method to convert a century format date into an ISO format date.
+	 * <P>
+	 * 
+	 * @param centuryDate
+	 *            a date string in the format cyymmdd.
+	 * @return a date string in the format yyyy-mm-dd.
+	 */
+	static public String getIsoDate(String centuryDate)
+	{
+
+		String c = centuryDate.substring(0, 1);
+		int century = 1900 + 100 * Integer.parseInt(c);
+		String yy = centuryDate.substring(1, 3);
+		int year = century + Integer.parseInt(yy);
+		StringBuffer isoDate = new StringBuffer(10);
+		isoDate.append(String.valueOf(year));
+		isoDate.append("-");
+		isoDate.append(centuryDate.charAt(3));
+		isoDate.append(centuryDate.charAt(4));
+		isoDate.append("-");
+		isoDate.append(centuryDate.charAt(5));
+		isoDate.append(centuryDate.charAt(6));
+		return isoDate.toString();
+
+	}
+	/*******************************************************************************************************************************
+	 * Helper method to convert an Equation timeStamp into an ISO format time.
+	 * <P>
+	 * This method handles times in the format hh.mm.ss and optionally parts of seconds (by determining the length of the input time
+	 * string.
+	 * <P>
+	 * An input of 123126 produces an output of 12.31.26
+	 * <P>
+	 * An input of 123126123456 produces an output of 12.31.26.123456
+	 * 
+	 * @param timeStamp
+	 *            a time string in the format hhmmss[mmmmmm]
+	 * @return a time string in the format hh.mm.ss[.mmmmmm]
+	 */
+	static public String getIsoTime(String timeStamp)
+	{
+		try
+		{
+			int len = timeStamp.length();
+			StringBuffer isoTime = new StringBuffer(len + 3);
+			isoTime.append(timeStamp.charAt(0));
+			isoTime.append(timeStamp.charAt(1));
+			isoTime.append(".");
+			isoTime.append(timeStamp.charAt(2));
+			isoTime.append(timeStamp.charAt(3));
+			isoTime.append(".");
+			isoTime.append(timeStamp.charAt(4));
+			isoTime.append(timeStamp.charAt(5));
+			if (len > 6)
+			{
+				isoTime.append(".");
+				for (int i = 6; i < len; i++)
+				{
+					isoTime.append(timeStamp.charAt(i));
+				}
+			}
+			return isoTime.toString();
+		}
+		catch (Exception e)
+		{
+			return "";
+		}
+	}
+}

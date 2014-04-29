@@ -1,0 +1,53 @@
+package com.misys.equation.common.consolidation;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.dao.DaoFactory;
+import com.misys.equation.common.dao.IDao;
+import com.misys.equation.common.dao.INostroPositionsDao;
+import com.misys.equation.common.internal.eapi.core.EQException;
+
+public class NostroPositionsDaoConsolidator extends DaoConsolidator
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	/**
+	 * Constructor
+	 * 
+	 * @param session
+	 *            EquationStandardSession
+	 * @throws EQException
+	 */
+	public NostroPositionsDaoConsolidator(EquationStandardSession session) throws EQException
+	{
+		super(session, DaoFactory.NOSTRO_POSITIONS_DAO);
+	}
+
+	/**
+	 * This method will return all nostro-accounts information across units base on the passed currency.
+	 * 
+	 * @param currency
+	 *            this is the padded currency.
+	 * @return this a collection of nostro-accounts information.
+	 */
+	public List<Map<String, Object>> getAllNostrosAccountsInThePassedCurrency(String currency)
+	{
+		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+
+		int index = 0;
+		for (IDao iDao : daos)
+		{
+			INostroPositionsDao dao = (INostroPositionsDao) iDao;
+
+			result.addAll(dao.getAllNostrosAccountsBaseOnThePassedCurrency(currency));
+
+			index++;
+		}
+		return result;
+	}
+
+}

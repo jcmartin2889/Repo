@@ -1,0 +1,181 @@
+package com.misys.equation.common.globalprocessing;
+
+import java.io.Serializable;
+
+/**
+ * The fields shown on the screen will be taken from KLIBxxx data areas as follows:
+ * 
+ * <BR>
+ * Unit description - KAPUNDES -- display the contents of data area <BR>
+ * <P>
+ * Phase - KAPPHS -- display the contents of data area <BR>
+ * Input Mode - KQIMODE -- if set to SUSP display --Suspended-- <BR>
+ * <P>
+ * KQISTAT -- if set to YNNN display --Normal-- <BR>
+ * KQISTAT -- if set to YYYN display --Extended-- KQISTAT -- otherwise display --Disabled--
+ * 
+ * <BR>
+ * EoD Unit - KAPPHS -- display the contents of data area <BR>
+ * <P>
+ * Today - DASYSCTL -- held as YYMMDD starts in position 135 <BR>
+ * Tomorrow - DASYSCTL - held as YYMMDD starts in position 147 <BR>
+ * Yesterday - DASYSCTL - held as YYMMDD starts in position 159
+ * <P>
+ * <BR>
+ * If the unit supports 24x7 mode (K401) or extended mode (NBHI) then an asterisk will be displayed if the primary unit is running
+ * an end of day and the End of Day Unit Phase will be shown.
+ * 
+ */
+@SuppressWarnings("serial")
+public class UnitDetails implements Serializable
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private String unitId;
+	private String unitDescription;
+	private String phase;
+	private InputMode inputMode;
+	private long jobSignedOnSize;
+	private String todayDate;
+	private String tomorrowDate;
+	private String yesterdayDate;
+	private String twentyFourBySeven;
+	private UnitEODDetails eodDetails;
+	private String systemId;
+
+	public enum InputMode
+	{
+		SUSP, NORMAL, EXTENDED, DISABLED;
+	}
+
+	public UnitDetails(String systemId, String unitId, String unitDescription, String phase, InputMode inputMode,
+					long jobSignedOnSize, String todayDate, String tomorrowDate, String yesterdayDate, String twentyFourBySeven,
+					UnitEODDetails eodDetails)
+	{
+		this.systemId = systemId;
+		this.unitId = unitId;
+		this.unitDescription = unitDescription;
+		this.phase = phase;
+		this.inputMode = inputMode;
+		this.jobSignedOnSize = jobSignedOnSize;
+		this.todayDate = todayDate;
+		this.yesterdayDate = yesterdayDate;
+		this.tomorrowDate = tomorrowDate;
+		this.twentyFourBySeven = twentyFourBySeven;
+		this.eodDetails = eodDetails;
+
+	}
+	public String getUnitId()
+	{
+		return unitId;
+	}
+	public String getUnitDescription()
+	{
+		return unitDescription;
+	}
+	public String getPhase()
+	{
+		return phase;
+	}
+	public InputMode getInputMode()
+	{
+		return inputMode;
+	}
+	public String getTodayDate()
+	{
+		return todayDate;
+	}
+	public String getTomorrowDate()
+	{
+		return tomorrowDate;
+	}
+	public String getYesterdayDate()
+	{
+		return yesterdayDate;
+	}
+	public String getTwentyFourBySeven()
+	{
+		return twentyFourBySeven;
+	}
+	public void setUnitId(String unitId)
+	{
+		this.unitId = unitId;
+	}
+	public void setUnitDescription(String unitDescription)
+	{
+		this.unitDescription = unitDescription;
+	}
+	public void setPhase(String phase)
+	{
+		this.phase = phase;
+	}
+	public void setInputMode(InputMode inputMode)
+	{
+		this.inputMode = inputMode;
+	}
+	public void setTodayDate(String todayDate)
+	{
+		this.todayDate = todayDate;
+	}
+	public void setTomorrowDate(String tomorrowDate)
+	{
+		this.tomorrowDate = tomorrowDate;
+	}
+	public void setYesterdayDate(String yesterdayDate)
+	{
+		this.yesterdayDate = yesterdayDate;
+	}
+	public void setTwentyFourBySeven(String twentyFourBySeven)
+	{
+		this.twentyFourBySeven = twentyFourBySeven;
+	}
+
+	@Override
+	public String toString()
+	{
+		StringBuilder b = new StringBuilder(unitId);
+		return (b.append(" ").append(unitDescription).append(" ").append(phase).append(" ").append(inputMode).append(" ").append(
+						todayDate).append(" ").append(tomorrowDate).append(" ").append(yesterdayDate).append(twentyFourBySeven))
+						.toString();
+	}
+	/**
+	 * @return the jobSignedOnSize
+	 */
+	public long getJobSignedOnSize()
+	{
+		return jobSignedOnSize;
+	}
+	/**
+	 * @param jobSignedOnSize
+	 *            the jobSignedOnSize to set
+	 */
+	public void setJobSignedOnSize(long jobSignedOnSize)
+	{
+		this.jobSignedOnSize = jobSignedOnSize;
+	}
+	/**
+	 * @return the eodDetails
+	 */
+	public UnitEODDetails getEodDetails()
+	{
+		return eodDetails;
+	}
+	/**
+	 * @param eodDetails
+	 *            the eodDetails to set
+	 */
+	public void setEodDetails(UnitEODDetails eodDetails)
+	{
+		this.eodDetails = eodDetails;
+	}
+	public String getSystemId()
+	{
+		return systemId;
+	}
+
+	public void setSystemId(String systemId)
+	{
+		this.systemId = systemId;
+	}
+
+}

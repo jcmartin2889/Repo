@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/repos/bfeq_src/!svn/ver/17823/branches/BFEQ_Branch_3-1/EquationDesktop/src/com/misys/equation/ui/servlets
+END
+EqSpooledFileServlet.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/src/com/misys/equation/ui/servlets/EqSpooledFileServlet.java
+END
+DesktopStartupServlet.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/17823/branches/BFEQ_Branch_3-1/EquationDesktop/src/com/misys/equation/ui/servlets/DesktopStartupServlet.java
+END
+DesktopSessionListener.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/src/com/misys/equation/ui/servlets/DesktopSessionListener.java
+END
+DesktopContextListener.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/src/com/misys/equation/ui/servlets/DesktopContextListener.java
+END
+PrintSessionServlet.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/src/com/misys/equation/ui/servlets/PrintSessionServlet.java
+END

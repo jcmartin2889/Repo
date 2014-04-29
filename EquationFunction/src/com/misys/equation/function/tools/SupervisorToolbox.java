@@ -1,0 +1,1038 @@
+package com.misys.equation.function.tools;
+
+import bf.com.misys.eqf.types.header.EsfKey;
+import bf.com.misys.eqf.types.header.MessageStatus;
+import bf.com.misys.eqf.types.header.TaskEsfRqHeader;
+import bf.com.misys.eqf.types.header.TaskEsfRsHeader;
+
+import com.misys.equation.bankfusion.lrp.engine.ITaskEngine;
+import com.misys.equation.bankfusion.lrp.engine.TaskEngineToolbox;
+import com.misys.equation.bankfusion.tools.BFToolbox;
+import com.misys.equation.bankfusion.tools.LRPToolbox;
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationPVData;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationStandardValidation;
+import com.misys.equation.common.access.EquationUnit;
+import com.misys.equation.common.access.EquationUser;
+import com.misys.equation.common.dao.DaoFactory;
+import com.misys.equation.common.dao.IWE2RecordDao;
+import com.misys.equation.common.dao.IWERecordDao;
+import com.misys.equation.common.dao.IWFRecordDao;
+import com.misys.equation.common.dao.beans.OCRecordDataModel;
+import com.misys.equation.common.dao.beans.WE2RecordDataModel;
+import com.misys.equation.common.dao.beans.WERecordDataModel;
+import com.misys.equation.common.dao.beans.WFRecordDataModel;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.Toolbox;
+import com.misys.equation.function.adaptor.FunctionAdaptor;
+import com.misys.equation.function.beans.Function;
+import com.misys.equation.function.beans.FunctionData;
+import com.misys.equation.function.context.EquationFunctionContext;
+import com.misys.equation.function.language.LanguageResources;
+import com.misys.equation.function.runtime.FunctionBankFusion;
+import com.misys.equation.function.runtime.FunctionBankFusionSrv;
+import com.misys.equation.function.runtime.FunctionHandlerData;
+import com.misys.equation.function.runtime.FunctionKeys;
+import com.misys.equation.function.runtime.FunctionMessages;
+import com.misys.equation.function.runtime.FunctionSession;
+import com.misys.equation.function.runtime.ScreenSet;
+import com.misys.equation.function.runtime.ScreenSetAC2;
+import com.misys.equation.function.runtime.ScreenSetCRM;
+import com.misys.equation.function.runtime.ScreenSetHandler;
+import com.misys.equation.function.runtime.SecurityLevel;
+import com.misys.equation.function.useraccess.UserExitESFProcessDetail;
+
+public class SupervisorToolbox
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: SupervisorToolbox.java 17190 2013-09-03 11:49:59Z Lima12 $";
+
+	// Log
+	private static final EquationLogger LOG = new EquationLogger(SupervisorToolbox.class);
+
+	// Transaction type
+	public static final String VAL_ESF = "";
+	public static final String VAL_CRM_S = "S";
+
+	/** Indicates that the class of user cannot authorise any warnings */
+	public static final String AUTHORISATION_LEVEL_NONE = "L";
+
+	// Default authorisor
+	public static final String AUTO_SUPERVISOR = "*USR";
+
+	// Supervisor mode
+	public static final String TYP_ONLINE = "N";
+	public static final String TYP_OFFLINE = "Y";
+	public static final String TYP_LRP = "L";
+
+	/**
+	 * Request for supervisor via writing the session
+	 * 
+	 * @param superId
+	 *            - supervisor user id
+	 * @param offline
+	 *            - offline authorisation request?
+	 * @param fhd
+	 *            - the Function Handler Data
+	 * 
+	 * @return the error message (message severity + message text)
+	 */
+	public static String remoteSupervisor(String superId, boolean offline, FunctionHandlerData fhd)
+	{
+		// clear the messages
+		fhd.getFunctionMsgManager().clearOtherMessages();
+
+		// user is authorised for the transaction, assume not
+		boolean valid = false;
+
+		// equation session from the pool
+		EquationStandardSession sessionFromPool = null;
+		try
+		{
+			// get the Equation standard session
+			sessionFromPool = FunctionRuntimeToolbox.rtvEquationSessionFromPool(fhd.getEquationUser().getEquationUnit());
+			if (!EquationFunctionContext.getContext().isEquationAuthentication())
+			{
+				superId = EquationFunctionContext.getContext().getEquationUserIdForBFUser(fhd.getEquationUser().getEquationUnit(),
+								superId);
+			}
+			// check if supervisor is authorised to override warnings
+			valid = checkSupervisor(superId, VAL_ESF, fhd);
+
+			// valid user profile, then save the session
+			if (valid)
+			{
+				// any remnants?
+				if (fhd.getFunctionSuperSession() != null)
+				{
+					fhd.getFunctionSuperSession().delete(sessionFromPool, true);
+				}
+
+				// write the session details into the database
+				FunctionSession fs1 = fhd.getFunctionSession();
+				fhd.setFunctionSuperSession(new FunctionSession(fs1.getOptionId(), fs1.getSessionId(), fs1.getUserId(), fs1
+								.getTransactionId()));
+
+				// status of WE record
+				String status = WERecordDataModel.STAT_AVAIL;
+
+				// maker-checker?
+				boolean makerChecker = fhd.getSecurityLevel().getRequiredCheckerType() == SecurityLevel.CHCKR_MAKER_CHECKER;
+				if (fhd.getEquationUser().getEquationUnit().hasMakerCheckerEnhancement() && makerChecker)
+				{
+					status = WERecordDataModel.MAKER_CHECKER_STAT_AWAIT;
+					sessionFromPool.startEquationTransaction();
+					int msgSev = MakerCheckerUtility.updateMakerCheckerStatus(sessionFromPool, FunctionKeys.KEY_ACCPT, "", fhd,
+									superId, true);
+					if (msgSev >= FunctionMessages.MSG_ERROR)
+					{
+						valid = false;
+					}
+				}
+
+				// LRP task?
+				if (valid && offline && EquationCommonContext.getContext().isLRPProcessing() && fhd.isLRPTask())
+				{
+					// DAO factory
+					WE2RecordDataModel we2Record = new WE2RecordDataModel(fhd.getTaskDetail().getTkiid());
+					DaoFactory daoFactory = new DaoFactory();
+					IWE2RecordDao we2Dao = daoFactory.getWE2Dao(sessionFromPool, we2Record);
+					FunctionSession fs = fhd.getFunctionSuperSession();
+					we2Record.setLinkedSessionId(fs.getSessionId());
+					we2Record.setLinkedOptionId(fs.getOptionId());
+					we2Record.setLinkedTransactionId(fs.getTransactionId());
+					we2Record.setLinkedUserId(fs.getUserId());
+					we2Dao.insertOrUpdateRecord(we2Record);
+				}
+
+				if (valid && fhd.getEquationUser().getEquationUnit().hasMakerCheckerEnhancement() && makerChecker)
+				{
+					fhd.getFunctionSuperSession().save(sessionFromPool, false, fhd.getScreenSetHandler(),
+									fhd.getFunctionMsgManager(), superId, status, WERecordDataModel.LVL_ALL, offline);
+					sessionFromPool.endEquationTransaction();
+					sessionFromPool.commitTransaction();
+				}
+				else
+				{
+					fhd.getFunctionSuperSession().save(sessionFromPool, true, fhd.getScreenSetHandler(),
+									fhd.getFunctionMsgManager(), superId, status, WERecordDataModel.LVL_ALL, offline);
+				}
+
+				// successful - then clear the task so it will not be unclaimed
+				if (valid && offline && EquationCommonContext.getContext().isLRPProcessing() && fhd.isLRPTask())
+				{
+					EquationFunctionContext.getContext().clearTaskActiveList(fhd);
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			try
+			{
+				sessionFromPool.rollbackTransactions();
+			}
+			catch (Exception e2)
+			{
+				LOG.error(e2);
+			}
+			LOG.error(e);
+			return "20KSM7340" + Toolbox.pad(Toolbox.getExceptionMessage(e), 30);
+		}
+		finally
+		{
+			FunctionRuntimeToolbox.returnEquationSessionToPool(fhd.getEquationUser().getEquationUnit(), sessionFromPool);
+		}
+
+		// return whether the profile is valid or not
+		if (valid)
+		{
+			return "00";
+		}
+		else
+		{
+			return "20" + fhd.getFunctionMsgManager().getOtherMessages().getMessages().get(0).getEqMessage().getUnFormattedText();
+		}
+	}
+
+	/**
+	 * Remove the request for supervisor
+	 * 
+	 * @param status
+	 *            - reason for removing the authorisation request<br>
+	 *            (e.g. 1-Authorised, 4-Declined, 7-Cancelled by user, 8-Timeout)
+	 * @param fhd
+	 *            - the Function Handler Data
+	 * 
+	 * @return the status of the record
+	 */
+	public static WERecordDataModel removeSupervisor(String status, FunctionHandlerData fhd)
+	{
+		// clear the messages
+		fhd.getFunctionMsgManager().clearOtherMessages();
+
+		// WE record
+		WERecordDataModel weRecord = null;
+
+		// write the session details into the database
+		if (fhd.getFunctionSuperSession() != null)
+		{
+			// get the Equation standard session
+			EquationStandardSession sessionFromPool = null;
+
+			try
+			{
+				sessionFromPool = FunctionRuntimeToolbox.rtvEquationSessionFromPool(fhd.getEquationUser().getEquationUnit());
+				weRecord = fhd.getFunctionSuperSession().check(sessionFromPool);
+				if (weRecord == null)
+				{
+					return null;
+				}
+
+				// If the supervisor has already been notified, then do not delete
+				// simply change the status in order to inform the supervisor that the
+				// request has been aborted
+				sessionFromPool = FunctionRuntimeToolbox.rtvEquationSessionFromPool(fhd.getEquationUser().getEquationUnit());
+				if ((status.equals(WERecordDataModel.STAT_ABORT) || status.equals(WERecordDataModel.STAT_TMOUT))
+								&& weRecord.getUserAlerted().equals("Y"))
+				{
+					fhd.getFunctionSuperSession().reset(sessionFromPool, true, status, "N");
+				}
+				else
+				{
+					fhd.getFunctionSuperSession().delete(sessionFromPool, true);
+				}
+				fhd.setFunctionSuperSession(null);
+			}
+			catch (Exception e)
+			{
+				LOG.error(e);
+			}
+			finally
+			{
+				FunctionRuntimeToolbox.returnEquationSessionToPool(fhd.getEquationUser().getEquationUnit(), sessionFromPool);
+			}
+		}
+
+		return weRecord;
+	}
+
+	/**
+	 * Retrieve the WE record of the supervisor session
+	 * 
+	 * @param fhd
+	 *            - the Function Handler Data
+	 * 
+	 * @return the WE record
+	 */
+	public static WERecordDataModel checkSuperSessionStatus(FunctionHandlerData fhd)
+	{
+		// supervisor session no longer exists
+		if (fhd.getFunctionSuperSession() == null)
+		{
+			return new WERecordDataModel();
+		}
+
+		WERecordDataModel weRecord = null;
+		EquationStandardSession sessionFromPool = null;
+		try
+		{
+			// get the Equation standard session
+			sessionFromPool = FunctionRuntimeToolbox.rtvEquationSessionFromPool(fhd.getEquationUser().getEquationUnit());
+
+			// retrieve the record
+			weRecord = fhd.getFunctionSuperSession().check(sessionFromPool);
+		}
+		catch (Exception e)
+		{
+			LOG.error("checkSuperSessionStatus", e);
+		}
+		finally
+		{
+			FunctionRuntimeToolbox.returnEquationSessionToPool(fhd.getEquationUser().getEquationUnit(), sessionFromPool);
+		}
+
+		return weRecord;
+	}
+
+	/**
+	 * Mark the messages as overridden after supervisor has overridden the message (supervisor enters password on supervisor's
+	 * machine)
+	 * 
+	 * @param fhd
+	 *            - the Function Handler Data
+	 * 
+	 * @return the error message (message severity + message text)
+	 */
+	public static String authoriseBySupervisorOverride(FunctionHandlerData fhd)
+	{
+		// clear the messages
+		fhd.getFunctionMsgManager().clearOtherMessages();
+
+		// remove the supervisor request
+		WERecordDataModel weRecord = removeSupervisor(WERecordDataModel.STAT_AUTH, fhd);
+		if (weRecord == null)
+		{
+			return "00";
+		}
+
+		// authorise 1 warning only
+		if (weRecord.getAuthStat().equals(WERecordDataModel.STAT_AUTH))
+		{
+			if (weRecord.getAuthLevel().equals(WERecordDataModel.LVL_ONE))
+			{
+				fhd.getFunctionMsgManager().overrideFirstWarning(weRecord.getAuthorisor());
+			}
+
+			// authorise all warnings
+			if (weRecord.getAuthLevel().equals(WERecordDataModel.LVL_ALL))
+			{
+				fhd.getFunctionMsgManager().overrideAllWarning(weRecord.getAuthorisor());
+			}
+		}
+
+		return "00";
+	}
+
+	/**
+	 * Mark the messages as overridden after supervisor has overridden the message (supervisor enters password on teller's machine)
+	 * 
+	 * @param authLevel
+	 *            - authorisation level
+	 * @param fhd
+	 *            - the Function Handler Data
+	 * 
+	 * @return the error message (message severity + message text)
+	 */
+	public static String authoriseBySupervisorOverride(String superId, String authLevel, FunctionHandlerData fhd)
+	{
+		// clear the messages
+		fhd.getFunctionMsgManager().clearOtherMessages();
+
+		// remove the supervisor request
+		removeSupervisor(WERecordDataModel.STAT_AUTH, fhd);
+
+		// authorise 1 warning only
+		if (authLevel.equals(WERecordDataModel.LVL_ONE))
+		{
+			fhd.getFunctionMsgManager().overrideFirstWarning(superId);
+		}
+
+		// authorise all warnings
+		if (authLevel.equals(WERecordDataModel.LVL_ALL))
+		{
+			fhd.getFunctionMsgManager().overrideAllWarning(superId);
+		}
+
+		return "00";
+	}
+
+	/**
+	 * Perform supervisor authorisation when the supervisor has override the warnings locally on the teller computer.
+	 * 
+	 * Note that the supervisor id and password may be Equation credentials, or BankFusion (CAS/LDAP) credentials, depending on the
+	 * system configuration
+	 * 
+	 * @param superId
+	 *            - supervisor id
+	 * @param password
+	 *            - supervisor password
+	 * @param fhd
+	 *            - the Function Handler Data
+	 * 
+	 * @return the error message (message severity + message text)
+	 */
+	public static String authoriseBySupervisorId(String superId, String password, String tranType, FunctionHandlerData fhd)
+	{
+		boolean valid = false;
+
+		// clear the messages
+		fhd.getFunctionMsgManager().clearOtherMessages();
+
+		// get the Equation standard session
+		EquationStandardSession equationSession = fhd.getEquationUser().getSession();
+
+		try
+		{
+			String eqUser;
+			if (!EquationFunctionContext.getContext().isEquationAuthentication())
+			{
+				eqUser = EquationFunctionContext.getContext().getEquationUserIdForBFUser(fhd.getEquationUser().getEquationUnit(),
+								superId);
+			}
+			else
+			{
+				eqUser = Toolbox.trim(superId.toUpperCase(), 4);
+				superId = eqUser;
+			}
+
+			// check if supervisor is authorised to override warnings
+			if (checkSupervisor(eqUser, tranType, fhd))
+			{
+				// Validate the password
+				String dsepms = validatePassword(equationSession, superId, password, tranType);
+				if (dsepms.trim().length() == 0)
+				{
+					valid = true;
+					authoriseBySupervisorOverride(eqUser, WERecordDataModel.LVL_ONE, fhd);
+				}
+				else
+				{
+					fhd.getFunctionMsgManager().insertOtherMessage(equationSession, fhd.getScreenSetHandler().getCurScreenSet(), 0,
+									"", 1, null, dsepms, "", "");
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			FunctionRuntimeToolbox.generateOtherMessages(fhd.getFunctionMsgManager(), equationSession, fhd.getScreenSetHandler()
+							.getCurScreenSet(), fhd.getScreenSetHandler().rtvScrnSetCurrent().getScrnNo(),
+							"authoriseBySupervisorId", e);
+		}
+
+		// return status back to caller
+		if (valid)
+		{
+			return "00";
+		}
+		else
+		{
+			return "20" + fhd.getFunctionMsgManager().getOtherMessages().getMessages().get(0).getEqMessage().getUnFormattedText();
+		}
+	}
+
+	/**
+	 * Check if the supervisor is authorised to override the warning messages
+	 * 
+	 * @param superId
+	 *            - the supervisor Id
+	 * @param fhd
+	 *            - the Function Handler Data
+	 * 
+	 * @return true if the supervisor is authorised
+	 */
+	public static boolean checkSupervisor(String superId, String tranType, FunctionHandlerData fhd) throws EQException
+	{
+		boolean valid = false;
+		EquationStandardSession equationSession = fhd.getEquationUser().getSession();
+
+		// cannot authorise own transaction
+		String superId4 = Toolbox.trim(superId, 4);
+		String userId4 = Toolbox.trim(fhd.getEquationUser().getUserId(), 4);
+		if (userId4.trim().equals(superId4.trim()))
+		{
+			fhd.getFunctionMsgManager().insertOtherMessage(equationSession, fhd.getScreenSetHandler().getCurScreenSet(), 0, "", 1,
+							null, "KSM9995", "", "");
+			valid = false;
+		}
+
+		// perform validation for CRM level = S
+		else if (tranType.equals(SupervisorToolbox.VAL_CRM_S))
+		{
+			// no validation, as the validation is part of UTW21R
+			valid = true;
+		}
+
+		// perform validation on the user via the pv supervisor
+		else
+		{
+			// Check if this supervisor is allowed to override these messages
+			EquationPVData equationPVData = new EquationPVData(equationSession.getUnit().getPVMetaData("OCR32R"), equationSession
+							.getCcsid());
+			equationPVData.setFieldValue("$OCUSID", superId);
+			equationPVData.setFieldValue("$OCEMH", fhd.getFunctionMsgManager().getFunctionMessages().rtvMessageIds());
+			equationPVData.setFieldValue("$OCEA", fhd.getFunctionMsgManager().getFunctionMessages().rtvAmounts());
+			equationPVData.setFieldValue("$OCEB", fhd.getFunctionMsgManager().getFunctionMessages().rtvBranches());
+			equationPVData.setFieldValue("$OCDR", fhd.getFunctionMsgManager().getFunctionMessages().rtvDrCr());
+
+			EquationStandardValidation validation = new EquationStandardValidation("", "OCR32R", equationPVData, "N", "N");
+			equationSession.executeValidate(validation);
+
+			// user is not allowed to override it?
+			if (validation.getValid())
+			{
+				valid = true;
+			}
+			else
+			{
+				valid = false;
+				fhd.getFunctionMsgManager().insertOtherMessage(equationSession, fhd.getScreenSetHandler().getCurScreenSet(), 0, "",
+								1, null, validation.getError(), "", "");
+			}
+		}
+
+		// supervisor authorised to override?
+		return valid;
+	}
+
+	/**
+	 * Remove the session
+	 * 
+	 * @param fs
+	 *            - the function session to remove
+	 * @param eqUnit
+	 *            - the equation unit
+	 */
+	public static void removeSession(FunctionSession fs, EquationUnit eqUnit)
+	{
+		EquationStandardSession sessionFromPool = null;
+		try
+		{
+			sessionFromPool = FunctionRuntimeToolbox.rtvEquationSessionFromPool(eqUnit);
+			fs.delete(sessionFromPool, true);
+		}
+		catch (Exception e)
+		{
+			LOG.error("removeSession", e);
+		}
+	}
+
+	/**
+	 * Marked the session as authorised after the supervisor has remotely authorised it
+	 * 
+	 * @param functionKey
+	 *            - the function key
+	 * @param password
+	 *            - the supervisor password
+	 * @param fhd
+	 *            - the Function Handler Data
+	 * 
+	 * @return the error message (message severity + message text)
+	 */
+	public static String authoriseBySupervisorRemote(int ckey, String password, FunctionHandlerData fhd)
+	{
+		boolean valid = false;
+		// clear the messages
+		fhd.getFunctionMsgManager().clearOtherMessages();
+
+		// get the Equation standard session
+		EquationStandardSession equationSession = fhd.getEquationUser().getSession();
+		try
+		{
+			String logonUser = EquationFunctionContext.getContext().getLoginUserBySessionId(equationSession.getSessionIdentifier());
+			if (EquationFunctionContext.getContext().isEquationAuthentication())
+			{
+				// change user to uppercase otherwise password checking will fail
+				logonUser = Toolbox.trim(logonUser, 4).toUpperCase();
+			}
+			// check if password is correct
+			String dsepms = validatePassword(equationSession, logonUser, password, VAL_ESF);
+			if (dsepms.trim().length() == 0)
+			{
+				int msgSev = updateSuper(ckey, "", fhd);
+				if (msgSev != FunctionMessages.MSG_ERROR)
+				{
+					valid = true;
+				}
+			}
+			else
+			{
+				fhd.getFunctionMsgManager().insertOtherMessage(equationSession, fhd.getScreenSetHandler().getCurScreenSet(), 0, "",
+								1, null, dsepms, "", "");
+			}
+
+			if (fhd.getEquationUser().getEquationUnit().hasMakerCheckerEnhancement() && ckey == FunctionKeys.KEY_AUTH
+							&& ckey == FunctionKeys.KEY_AUTHA && fhd.getFunctionSession().validatePendingStatus(equationSession))
+			{
+				valid = false;
+				FunctionRuntimeToolbox.generateOtherMessages(fhd.getFunctionMsgManager(), equationSession, fhd
+								.getScreenSetHandler().getCurScreenSet(),
+								fhd.getScreenSetHandler().rtvScrnSetCurrent().getScrnNo(), "authoriseBySupervisorId",
+								new EQException(LanguageResources.getString("SupervisorToolbox.InvalidWEStatus")));
+			}
+		}
+		catch (Exception e)
+		{
+			LOG.error(e);
+			FunctionRuntimeToolbox.generateOtherMessages(fhd.getFunctionMsgManager(), equationSession, fhd.getScreenSetHandler()
+							.getCurScreenSet(), fhd.getScreenSetHandler().rtvScrnSetCurrent().getScrnNo(),
+							"authoriseBySupervisorId", e);
+		}
+
+		// return status back to caller
+		if (valid)
+		{
+			return "00";
+		}
+		else
+		{
+			return "20" + fhd.getFunctionMsgManager().getOtherMessages().getMessages().get(0).getEqMessage().getUnFormattedText();
+		}
+	}
+
+	/**
+	 * Performs update on the session when the supervisor remotely overrides warnings
+	 * 
+	 * @param functionKey
+	 *            - function key pressed
+	 * @param reason
+	 *            - reason for rejection
+	 * 
+	 * @return the message severity
+	 * 
+	 * @throws EQException
+	 */
+	public static int updateSuper(int functionKey, String reason, FunctionHandlerData fhd) throws EQException
+	{
+		EquationStandardSession sessionFromPool = null;
+		boolean rollback = true;
+		try
+		{
+			// retrieve session
+			sessionFromPool = FunctionRuntimeToolbox.rtvEquationSessionFromPool(fhd.getEquationUser().getEquationUnit());
+
+			// clear messages
+			fhd.getFunctionMsgManager().clearOtherMessages();
+
+			// initialise
+			String authStat = "";
+			String authLevel = "";
+			String alert = "Y";
+			String taskAction = null;
+
+			// process the function key
+			if (functionKey == FunctionKeys.KEY_AUTH)
+			{
+				authStat = WERecordDataModel.STAT_AUTH;
+				alert = "N";
+				if (fhd.getFunctionMsgManager().getFunctionMessages().getMessages().size() == 1)
+				{
+					authLevel = WERecordDataModel.LVL_ALL;
+					taskAction = TaskEngineToolbox.TASK_ACTION_AUTH;
+				}
+				else
+				{
+					authLevel = WERecordDataModel.LVL_ONE;
+					taskAction = TaskEngineToolbox.TASK_ACTION_ONE;
+				}
+				fhd.getFunctionMsgManager().overrideFirstWarning(fhd.getEquationUser().getUserId());
+			}
+
+			// Authorise all warnings
+			else if (functionKey == FunctionKeys.KEY_AUTHA)
+			{
+				authStat = WERecordDataModel.STAT_AUTH;
+				authLevel = WERecordDataModel.LVL_ALL;
+				alert = "N";
+				taskAction = TaskEngineToolbox.TASK_ACTION_AUTH;
+				fhd.getFunctionMsgManager().overrideAllWarning(fhd.getEquationUser().getUserId());
+			}
+
+			// Decline
+			else if (functionKey == FunctionKeys.KEY_DECL)
+			{
+				authStat = WERecordDataModel.STAT_DECL;
+				authLevel = WERecordDataModel.LVL_ALL;
+				alert = "N";
+				taskAction = TaskEngineToolbox.TASK_ACTION_DECL;
+			}
+
+			// Exit
+			else if (functionKey == FunctionKeys.KEY_EXIT || functionKey == FunctionKeys.KEY_PREV)
+			{
+				authStat = WERecordDataModel.STAT_AVAIL;
+				authLevel = WERecordDataModel.LVL_ALL;
+				taskAction = null;
+			}
+
+			// LRP process
+			if (fhd.getTaskDetail() != null && taskAction != null)
+			{
+				// Task engine
+				ITaskEngine engine = EquationFunctionContext.getContext().getTaskEngine(fhd.getFunctionInfo().getSessionId());
+
+				// make sure user still owns the task
+				if (!engine.isTaskOwnedByUser(fhd.getTaskDetail().getTkiid(), fhd.getEquationUser().getUserId()))
+				{
+					fhd.getFunctionMsgManager().insertOtherMessage(fhd.getEquationUser().getSession(),
+									fhd.getScreenSetHandler().getCurScreenSet(), 0, "", 1, null, "KSM7609", "", "");
+					return fhd.getFunctionMsgManager().getOtherMessages().getMsgSev();
+				}
+
+				// Setup the payload
+				TaskEsfRsHeader payload = LRPToolbox.getRespondEsfPayload(taskAction, reason);
+
+				// update the authorisor in WE. Note: this should not be here but in WID, is there a way to know the user who
+				// claimed a task?
+				DaoFactory daoFactory = new DaoFactory();
+				FunctionSession fs = fhd.getFunctionSession();
+				WERecordDataModel weRecord = new WERecordDataModel(fs.getOptionId(), fs.getSessionId(), fs.getTransactionId(), fs
+								.getUserId());
+				IWERecordDao weDao = daoFactory.getWEDao(sessionFromPool, weRecord);
+				weRecord = weDao.getWERecord();
+				weRecord.setAuthorisor(fhd.getEquationUser().getUserId());
+				weDao.updateRecord(weRecord);
+
+				// complete the task
+				engine.completEsfTask(fhd.getTaskDetail().getTkiid(), payload, reason);
+
+				sessionFromPool.commitTransaction();
+				rollback = false;
+
+				// Task completed?
+				if (EquationCommonContext.getContext().isLRPProcessing() && fhd.getTaskDetail() != null)
+				{
+					fhd.setCompletedTask(fhd.getTaskDetail().getTkiid());
+				}
+
+				return FunctionMessages.MSG_NONE;
+			}
+
+			// update the session
+			boolean found = fhd.getFunctionSession().update(sessionFromPool, true, authStat, authLevel, reason, alert);
+
+			// not updated, inform the supervisor
+			if (!found)
+			{
+				fhd.getFunctionMsgManager().insertOtherMessage(fhd.getEquationUser().getSession(),
+								fhd.getScreenSetHandler().getCurScreenSet(), 0, "", 1, null, "KSM7344", "", "");
+			}
+
+			rollback = false;
+			return fhd.getFunctionMsgManager().getOtherMessages().getMsgSev();
+		}
+		finally
+		{
+			try
+			{
+				if (rollback && sessionFromPool != null)
+				{
+					sessionFromPool.rollbackTransactions();
+				}
+			}
+			catch (Exception e2)
+			{
+				LOG.error(e2);
+			}
+
+			FunctionRuntimeToolbox.returnEquationSessionToPool(fhd.getEquationUser().getEquationUnit(), sessionFromPool);
+		}
+	}
+
+	/**
+	 * Request for supervisor via writing the session
+	 * 
+	 * @param superId
+	 *            - supervisor user id
+	 * @param mode
+	 *            - mode
+	 * @param fhd
+	 *            - the Function Handler Data
+	 * 
+	 * @return the error message (message severity + message text)
+	 */
+	public static String lrpSupervisor(String superId, String mode, FunctionHandlerData fhd)
+	{
+		// clear the messages
+		fhd.getFunctionMsgManager().clearOtherMessages();
+
+		// user is authorised for the transaction, assume not
+		boolean valid = false;
+
+		// equation session from the pool
+		EquationStandardSession sessionFromPool = null;
+		try
+		{
+			// get the Equation standard session
+			sessionFromPool = FunctionRuntimeToolbox.rtvEquationSessionFromPool(fhd.getEquationUser().getEquationUnit());
+
+			// check if supervisor is authorised to override warnings
+			valid = checkSupervisor(superId, VAL_ESF, fhd);
+
+			// valid user profile, then save the session
+			if (valid)
+			{
+				// any remnants?
+				if (fhd.getFunctionSuperSession() != null)
+				{
+					fhd.getFunctionSuperSession().delete(sessionFromPool, true);
+				}
+
+				// Webservice URL
+				String serviceName = null;
+				FunctionAdaptor functionAdaptor = fhd.getScreenSetHandler().rtvScreenSetMain().getFunctionAdaptor();
+				UserExitESFProcessDetail userExitEsf = functionAdaptor.getLRPTemplateProcessDetail();
+				if (userExitEsf != null && userExitEsf.rtvURL().length() > 0)
+				{
+					serviceName = userExitEsf.rtvURL();
+				}
+
+				// Make sure URL is available
+				if ((serviceName == null || serviceName.trim().length() == 0)
+								&& TaskEngineToolbox.getInstance().getEqDefaultEsfProcess().length() == 0)
+				{
+					valid = false;
+					fhd.getFunctionMsgManager().insertOtherMessage(sessionFromPool, fhd.getScreenSetHandler().getCurScreenSet(), 0,
+									"", 1, null, "KSM7604", "", "");
+				}
+
+				else
+				{
+					startESFProcess(fhd, sessionFromPool, superId, serviceName);
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			try
+			{
+				sessionFromPool.rollbackTransactions();
+			}
+			catch (Exception e2)
+			{
+				LOG.error(e2);
+			}
+			LOG.error(e);
+			return "20KSM7340" + Toolbox.pad(Toolbox.getExceptionMessage(e), 30);
+		}
+		finally
+		{
+			FunctionRuntimeToolbox.returnEquationSessionToPool(fhd.getEquationUser().getEquationUnit(), sessionFromPool);
+		}
+
+		// return whether the profile is valid or not
+		if (valid)
+		{
+			return "00";
+		}
+		else
+		{
+			return "20" + fhd.getFunctionMsgManager().getOtherMessages().getMessages().get(0).getEqMessage().getUnFormattedText();
+		}
+	}
+
+	/**
+	 * Start an ESF process
+	 * 
+	 * @param fhd
+	 *            - the FunctionHandlerData
+	 * @param sessionFromPool
+	 *            - the Equation standard session to update the WE record
+	 * @param superId
+	 *            - the supervisor id
+	 * @param serviceName
+	 *            - service name URL to start the ESF process
+	 * 
+	 * @throws EQException
+	 */
+	private static void startESFProcess(FunctionHandlerData fhd, EquationStandardSession sessionFromPool, String superId,
+					String serviceName) throws EQException
+	{
+		ScreenSetHandler screenSetHandler = fhd.getScreenSetHandler();
+		ScreenSet screenSetMain = screenSetHandler.rtvScreenSetMain();
+
+		// retrieve information
+		FunctionBankFusion functionBankfusion = new FunctionBankFusion();
+		FunctionAdaptor functionAdaptor = screenSetMain.getFunctionAdaptor();
+		EquationUser equationUser = fhd.getEquationUser();
+		EquationStandardSession session = equationUser.getSession();
+		Function function = screenSetMain.getFunction();
+		FunctionData functionData = screenSetMain.getFunctionData();
+		String optionId = screenSetMain.getOptionId();
+		String systemId = equationUser.getEquationUnit().getSystem().getSystemId();
+		String unitId = equationUser.getEquationUnit().getUnitId();
+
+		// current screen set
+		ScreenSet screenSet = screenSetHandler.rtvScreenSet(screenSetHandler.getCurScreenSet());
+
+		// write the session details into the database
+		FunctionSession fs1 = fhd.getFunctionSession();
+		fhd.setFunctionSuperSession(new FunctionSession(fs1.getOptionId(), fs1.getSessionId(), fs1.getUserId(), fs1
+						.getTransactionId()));
+		FunctionSession fs = fhd.getFunctionSuperSession();
+
+		// setup ESF key
+		EsfKey esfKey = new EsfKey();
+		esfKey.setOptionId(fs.getOptionId());
+		esfKey.setSessionId(fs.getSessionId());
+		esfKey.setTransactionId(fs.getTransactionId());
+		esfKey.setUserId(fs.getUserId());
+
+		// Message
+		MessageStatus messageStatus = new MessageStatus();
+		messageStatus.setEqMessages(functionBankfusion.rtvMessagesAsMessageArray(fhd.getFunctionMsgManager().getFunctionMessages()
+						.getMessages(), screenSetHandler));
+		messageStatus.setOverallStatus(FunctionRuntimeToolbox.OVERALL_MESSAGE_WARNING);
+
+		TaskEsfRqHeader taskEsfRqHeader = LRPToolbox.getRequestEsfPayload(optionId, TaskEngineToolbox.TASK_TYPE_ESF, systemId,
+						unitId);
+		taskEsfRqHeader.setServiceData(functionBankfusion.getBankFusionDataType(session, functionAdaptor, function, functionData,
+						false, FunctionRuntimeToolbox.getConversionRules(null, fhd)));
+		taskEsfRqHeader.setCurrentFieldSet(String.valueOf(screenSet.getScrnNo()));
+		taskEsfRqHeader.setCurrentScreenFieldSet(screenSet.getOptionId());
+		taskEsfRqHeader.setEsfKey(esfKey);
+		taskEsfRqHeader.setMessages(messageStatus);
+
+		String userId = BFToolbox.rtvUserId(fhd.getEquationUser().getEquationUnit().rtvFullUserId(superId));
+		taskEsfRqHeader.setSupervisorId(userId);
+
+		// Update CRM
+		if (screenSetHandler.isScreenSetCRMExist())
+		{
+			FunctionBankFusionSrv functionBankFusionSrv = new FunctionBankFusionSrv();
+			ScreenSetCRM screenSetCRM = (ScreenSetCRM) screenSetHandler.rtvScreenSet(ScreenSetHandler.FUNCTION_CRM_SCREEN);
+			Object crmData = functionBankFusionSrv.getBankFusionDataTypeCRM(session, screenSetCRM);
+			taskEsfRqHeader.setCrmData(crmData);
+		}
+
+		// Update EFC
+		if (screenSetHandler.isScreenSetEFCExist())
+		{
+			FunctionBankFusionSrv functionBankFusionSrv = new FunctionBankFusionSrv();
+			ScreenSetAC2 screenSetAC2 = (ScreenSetAC2) screenSetHandler.rtvScreenSet(ScreenSetHandler.FUNCTION_EFC_SCREEN_1);
+			Object efcData = functionBankFusionSrv.getBankFusionDataTypeAC2(session, screenSetAC2);
+			taskEsfRqHeader.setEfcData(efcData);
+		}
+
+		// create the WE record
+		fhd.getFunctionSuperSession().save(sessionFromPool, false, fhd.getScreenSetHandler(), fhd.getFunctionMsgManager(), superId,
+						WERecordDataModel.STAT_CHECK, WERecordDataModel.LVL_ALL, true);
+
+		// Dao factory
+		DaoFactory daoFactory = new DaoFactory();
+
+		// if this is a task, then create a linked from the task to the ESF key
+		if (fhd.isLRPTask())
+		{
+			WE2RecordDataModel we2Record = new WE2RecordDataModel(fhd.getTaskDetail().getTkiid());
+			we2Record.setLinkedSessionId(fs.getSessionId());
+			we2Record.setLinkedOptionId(fs.getOptionId());
+			we2Record.setLinkedTransactionId(fs.getTransactionId());
+			we2Record.setLinkedUserId(fs.getUserId());
+			IWE2RecordDao we2Dao = daoFactory.getWE2Dao(sessionFromPool, we2Record);
+			we2Dao.insertOrUpdateRecord(we2Record);
+		}
+
+		// DAO factory
+		WE2RecordDataModel we2Record = new WE2RecordDataModel(fs.getSessionId(), fs.getUserId(), fs.getOptionId(), fs
+						.getTransactionId());
+		IWE2RecordDao we2Dao = daoFactory.getWE2Dao(sessionFromPool, we2Record);
+		we2Dao.insertOrUpdateRecord(we2Record);
+
+		// Create the process
+		ITaskEngine taskEngine = EquationFunctionContext.getContext().getTaskEngine(fhd.getFunctionInfo().getSessionId());
+		String processId = taskEngine.startLrpEsfProcess(serviceName, taskEsfRqHeader);
+
+		// Update WE2
+		we2Record.setLinkedTaskId(processId);
+		we2Dao.insertOrUpdateRecord(we2Record);
+
+		// Clear task so it will not be unclaimed
+		EquationFunctionContext.getContext().clearTaskActiveList(fhd);
+
+		// commit the transaction
+		sessionFromPool.commitTransaction();
+	}
+
+	/**
+	 * Validates a supervisors password and performs other checks that the user can perform the override.
+	 * 
+	 * Note that the user id and password may be Equation credentials, or BankFusion (CAS/LDAP) credentials, depending on the system
+	 * configuration. For Equation credentials, the IBM i program UTW21R is called. For CAS credentials, the password validation is
+	 * performed against CAS using a BF API
+	 * 
+	 * @param equationSession
+	 *            An EquationStandardSession.
+	 * @param userId
+	 *            - the user name
+	 * @param password
+	 *            - the user password
+	 * @param tranType
+	 *            - the transaction type
+	 * 
+	 * @return an error message if user name/password and any validation are not valid
+	 * @throws EQException
+	 */
+	private static String validatePassword(EquationStandardSession equationSession, String userId, String password, String tranType)
+					throws EQException
+	{
+		String dsepms = "";
+		if (EquationFunctionContext.getContext().isEquationAuthentication())
+		{
+			dsepms = equationSession.supervisorPassword(userId, password.toUpperCase(), tranType);
+		}
+		else
+		{
+			if (!new BFToolbox().validateCredentials(userId, password))
+			{
+				dsepms = "KSM9989"; // Password invalid
+			}
+			else
+			{
+				// Retrieve supervisor's OCPF record
+				OCRecordDataModel ocRecord = equationSession.getUnit().getOCByBFUser(userId);
+				if (ocRecord == null)
+				{
+					dsepms = "KSM998B";
+					LOG.error("Failed to find user [" + userId + "]");
+				}
+				else
+				{
+					// If CRM (tranType = 'S') then OCLVA must be #YES
+					if (VAL_CRM_S.equals(tranType))
+					{
+						if (!"Y".equals(ocRecord.getLimitAuth()))
+						{ // Unauthorised user
+							dsepms = "KSM0520";
+						}
+					}
+					else
+					{
+						// ESF override.
+						// Check the user can act as a supervisor:
+						WFRecordDataModel wfRecord = new WFRecordDataModel(ocRecord.getUserClass());
+						IWFRecordDao wfDao = new DaoFactory().getWFDao(equationSession, wfRecord);
+						wfRecord = wfDao.getWFRecord();
+						if (wfRecord == null || AUTHORISATION_LEVEL_NONE.equals(wfRecord.getAuthorisationLevel()))
+						{
+							// User is not allowed to act as supervisor
+							dsepms = "KSM998B";
+						}
+					}
+				}
+			}
+		}
+		return dsepms;
+	}
+}

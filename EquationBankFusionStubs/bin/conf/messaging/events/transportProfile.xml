@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	* ********************************************************************************* 	
+	* Copyright (c) 2002,2004 Trapedza Financial Systems Ltd. All Rights Reserved.		
+	*																						
+	* This software is the proprietary information of Trapedza Financial Systems Ltd.		
+	* Use is subject to license terms.													
+	*																						
+	* *********************************************************************************	
+	*																						
+	* $Id: transportProfile.xml,v 1.2 2012-02-24 12:20:31 williae1 Exp $						
+	*																						
+	* CVS/RCS Ident Block inserted at Wed Feb 11 12:33:26 GMT 2004						
+	* 																					
+	*																						
+	* $Log: not supported by cvs2svn $
+	* Revision 1.1  2009/03/04 15:15:05  misysroot\weddelc1
+	* *** empty log message ***
+	*
+	* Revision 1.1.2.1.2.4  2008/05/13 18:12:07  nmacmaghnais
+	* BugID: Unreported
+	* Summary: Could not login from BFTC
+	* Fix: Change to config file
+	*
+	* Revision 1.1.2.1.2.3  2008/05/13 17:05:20  arun
+	* Reverting changes after the Ninja Tag - Broke  build/demo
+	*
+	* Revision 1.1.2.1.2.1  2008/05/13 09:25:59  ruslans
+	* BugID: 429-2 Requirement
+	* Fix: allow to create single outgoing channel message for a number of
+	* collected events and notification tasks
+	*
+	* Revision 1.1.2.1  2008/04/15 04:53:14  vishnuj
+	* conf folder holds all the configuration files
+	*
+	* Revision 1.12.4.1.4.2.2.1.2.1  2008/04/01 10:08:40  vishnuj
+	* BankFusionServer refactoring project.
+	*
+	* Corrected the package structures.
+	*
+	* Revision 1.12.4.1.4.2.2.1  2008/03/07 13:07:32  ronnie
+	* Project 814 - Implementation Robustness (Messaging).  Includes the following changes:
+	* 	1.	Provides for incoming an outgoing messages via JMS
+	* 	2.	Refacored much of the Messaging project concerning the JMS implementation
+	* 	3.	Enabled redirection of incoming messages via JMS to another transport profile
+	* 	4.	Included a Local transport profile to execute an AbstractCommand locally if currently executing on the server
+	* rather than through the default profile, whcih is possibly pointing to a remote destination, thus causing unnecessary serialization.
+	*
+	* Revision 1.12.4.1.4.2  2007/12/06 14:37:38  nmacmaghnais
+	* Re-factoring - Merge with Branch3A, 06.12.2007
+	*
+	* Revision 1.12.4.1.4.1  2007/11/06 18:19:06  arun
+	* Merged with 3A
+	*
+	* Revision 1.10.4.3  2007/08/16 14:16:26  arun
+	* Merged with Head (Ruslan's Changes :412)
+	*
+	* Revision 1.10.4.2  2007/07/31 15:23:43  arun
+	* added cvsRevision
+	*
+	*
+	*																						
+	*
+	
+	cvsRevision = "$Revision: 1.2 $" 
+-->
+<transportProfile>
+	<profile name="default">
+		<http host="uk1vswbfeq01" port="9080"
+			path="/bfweb/servlet/BFTCServlet" />
+	</profile>
+	<profile name="local">
+		<local
+			className="com.misys.bankfusion.command.impl.ExecuteLocalCommand" />
+	</profile>
+	<profile name="JMX Connector">
+		<jmx host="localhost" port="5565" connectorType="jmxmp" />
+	</profile>
+</transportProfile>
+

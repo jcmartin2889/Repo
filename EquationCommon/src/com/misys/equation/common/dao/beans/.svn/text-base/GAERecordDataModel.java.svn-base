@@ -1,0 +1,731 @@
+package com.misys.equation.common.dao.beans;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.internal.eapi.core.EQRuntimeException;
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * GAERecord data-model.
+ * <p>
+ * The Y/N fields have been implemented either as boolean or String, depending on whether the GAE appears to allow blanks or not
+ */
+public class GAERecordDataModel extends AbsRecord
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private static final long serialVersionUID = 1L;
+	/** Name of the EQUATION database file - GAEPF */
+	private static final String RECORD_NAME = "GAEPF";
+	/** The maximum key size (150) */
+	public static final int MAX_KEY_SIZE = 150;
+
+	private String functionId = ""; // GAEFID
+	private String programName = ""; // GAEFPR
+	private String description = ""; // GAEFNM
+	private String userDefinedKeysAllowed = ""; // GAEEFF
+	private String userDefinedAndPromptable = ""; // GAEUDEF
+	private String pcProgramName = ""; // GAEPCI
+	private boolean extendedInputAllowed; // GAEEIA
+	private String enhancement = ""; // GAEENC
+	private String apiId = ""; // GAEAID
+	private String programRoot = ""; // GAEAPIR
+	private String displayFile = ""; // GAEDSPF
+	private String screenHandler = ""; // GAESCN
+	private String type = ""; // GAEATYP
+	private String screenHandlerDescription = ""; // GAESCND
+	private boolean supportsAdd; // GAEAPIA
+	private boolean supportsMaintain; // GAEAPIM
+	private boolean supportsDelete; // GAEAPID
+	private String listSizeFixed = ""; // GAEALSF
+	private String listRetrievalRequired = ""; // GAELRR
+	private String standardAPIEnhanced = ""; // GAESAE
+	private String enabledFor24x7 = ""; // GAEE247
+	private String enhancedAPIEnhanced = ""; // GAEAPIE
+	private String keys = ""; // GAEKEY
+	private String copysourceName = ""; // GAECPY
+	private String datastructureName = ""; // GAEDSN
+	private String promptable = ""; // GAEPMT
+	private String primaryPVModule = ""; // GAEPPV
+	private boolean mapperOnly; // GAEMAPO
+	private String headerJournalFileName = ""; // GAEJFH
+	private String detailJournalFileName = ""; // GAEJFD
+	private int repeatingDataOffset; // GAERDOFF
+	private int repeatingDataLength; // GAERDLEN
+
+	/** An Input API (not List) */
+	public static final String TYPE_FIXED_INPUT_API = "001";
+	/** A List Input API */
+	public static final String TYPE_LIST_INPUT_API = "002";
+	/** An Enquiry API */
+	public static final String TYPE_FIXED_ENQUIRY_API = "003";
+	/** A list Enquiry API */
+	public static final String TYPE_LIST_ENQUIRY_API = "004";
+	/** A PV Module */
+	public static final String TYPE_PV = "009";
+	/** A BFEQ PV Module */
+	public static final String TYPE_BFEQPV = "011";
+
+	/**
+	 * Default Constructor
+	 */
+	public GAERecordDataModel()
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+	}
+
+	/**
+	 * Construct a GAE record with key field
+	 * 
+	 * @param apiId
+	 *            - API id
+	 */
+	public GAERecordDataModel(String apiId)
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+		this.apiId = apiId;
+	}
+	/*
+	 * Determines the name of the journal file for this GAERecord <p> This will have a GZ prefix for input transactions or a HZ
+	 * prefix for enquiry transaction
+	 * 
+	 * @return a <code>String</code> containing the name of the journal file
+	 */
+	public String getJournalFileName()
+	{
+		StringBuilder builder = new StringBuilder(10);
+		if (getProgramRoot().length() != 4)
+		{
+			throw new EQRuntimeException("Invalid program root [" + programRoot + "]");
+		}
+		if (EquationStandardTransaction.EDF_ROOT.equals(programRoot))
+		{
+			// Importing an EQ4 service
+			builder.append("GZX");
+			builder.append(apiId);
+		}
+		else
+		{
+			if (TYPE_FIXED_ENQUIRY_API.equals(type) || TYPE_LIST_ENQUIRY_API.equals(type))
+			{
+				builder.append("HZ");
+			}
+			else
+			{
+				builder.append("GZ");
+			}
+			builder.append(programRoot.substring(0, 3));
+		}
+		builder.append("1");
+
+		return builder.toString();
+	}
+
+	/**
+	 * Determines the name of the repeating journal file for this GAERecord
+	 * <p>
+	 * These are in the following format HZnnn2, where nnn is the first 3 characters of the program root. For example, HZH702 for
+	 * the AS enquiry.
+	 * <p>
+	 * This method is only relevant for List Enquiries.
+	 * 
+	 * @return a <code>String</code> containing the name of the journal file. This will be blank if not a List Enquiry
+	 */
+	public String getEnquiryListJournalFileName()
+	{
+		StringBuilder builder = new StringBuilder(10);
+
+		if (TYPE_LIST_ENQUIRY_API.equals(type))
+		{
+			if (getProgramRoot().length() != 4)
+			{
+				throw new EQRuntimeException("Invalid program root [" + programRoot + "]");
+			}
+
+			if (EquationStandardTransaction.EDF_ROOT.equals(programRoot))
+			{
+				throw new EQRuntimeException("Importing of EQ4 list enquiry services is not yet handled");
+			}
+			else
+			{ // EQ/3 List Enquiry API
+				builder.append("HZ");
+				builder.append(programRoot.substring(0, 3));
+			}
+			builder.append("2");
+		}
+
+		return builder.toString();
+	}
+	/**
+	 * Return the String representation
+	 * 
+	 * @return the String representation
+	 */
+	@Override
+	public String toString()
+	{
+		// - do not change the toString() format as the format is being used
+		StringBuilder builder = new StringBuilder(1024);
+		builder.append(apiId.trim());
+		builder.append(Toolbox.TEXT_DELIMITER);
+		builder.append(description.trim());
+		builder.append(Toolbox.TEXT_DELIMITER);
+		builder.append(getProgramRoot());
+		return builder.toString();
+	}
+
+	/**
+	 * @return the functionId
+	 */
+	public String getFunctionId()
+	{
+		return functionId;
+	}
+
+	/**
+	 * @param functionId
+	 *            the functionId to set
+	 */
+	public void setFunctionId(String functionId)
+	{
+		this.functionId = functionId;
+	}
+
+	/**
+	 * @return the programName
+	 */
+	public String getProgramName()
+	{
+		return programName;
+	}
+
+	/**
+	 * @param programName
+	 *            the programName to set
+	 */
+	public void setProgramName(String programName)
+	{
+		this.programName = programName;
+	}
+
+	/**
+	 * @return the description
+	 */
+	public String getDescription()
+	{
+		return description;
+	}
+
+	/**
+	 * @param description
+	 *            the description to set
+	 */
+	public void setDescription(String description)
+	{
+		this.description = description;
+	}
+
+	/**
+	 * @return the userDefinedKeysAllowed
+	 */
+	public String getUserDefinedKeysAllowed()
+	{
+		return userDefinedKeysAllowed;
+	}
+
+	/**
+	 * @param userDefinedKeysAllowed
+	 *            the userDefinedKeysAllowed to set
+	 */
+	public void setUserDefinedKeysAllowed(String userDefinedKeysAllowed)
+	{
+		this.userDefinedKeysAllowed = userDefinedKeysAllowed;
+	}
+
+	/**
+	 * @return the userDefinedAndPromptable
+	 */
+	public String getUserDefinedAndPromptable()
+	{
+		return userDefinedAndPromptable;
+	}
+
+	/**
+	 * @param userDefinedAndPromptable
+	 *            the userDefinedAndPromptable to set
+	 */
+	public void setUserDefinedAndPromptable(String userDefinedAndPromptable)
+	{
+		this.userDefinedAndPromptable = userDefinedAndPromptable;
+	}
+
+	/**
+	 * @return the pcProgramName
+	 */
+	public String getPcProgramName()
+	{
+		return pcProgramName;
+	}
+
+	/**
+	 * @param pcProgramName
+	 *            the pcProgramName to set
+	 */
+	public void setPcProgramName(String pcProgramName)
+	{
+		this.pcProgramName = pcProgramName;
+	}
+
+	/**
+	 * @return the extendedInputAllowed
+	 */
+	public boolean isExtendedInputAllowed()
+	{
+		return extendedInputAllowed;
+	}
+
+	/**
+	 * @return the extendedInputAllowed
+	 */
+	public String getExtendedInputAllowed()
+	{
+		return extendedInputAllowed ? "Y" : "N";
+	}
+
+	/**
+	 * @param extendedInputAllowed
+	 *            the extendedInputAllowed to set
+	 */
+	public void setExtendedInputAllowed(boolean extendedInputAllowed)
+	{
+		this.extendedInputAllowed = extendedInputAllowed;
+	}
+
+	/**
+	 * @return the enhancement
+	 */
+	public String getEnhancement()
+	{
+		return enhancement;
+	}
+
+	/**
+	 * @param enhancement
+	 *            the enhancement to set
+	 */
+	public void setEnhancement(String enhancement)
+	{
+		this.enhancement = enhancement;
+	}
+
+	/**
+	 * @return the apiId
+	 */
+	public String getApiId()
+	{
+		return apiId;
+	}
+
+	/**
+	 * @param apiId
+	 *            the apiId to set
+	 */
+	public void setApiId(String apiId)
+	{
+		this.apiId = apiId;
+	}
+
+	/**
+	 * @return the programRoot
+	 */
+	public String getProgramRoot()
+	{
+		// If we are getting an API record use first 4 characters of Screen Handler Name as Root
+		// This change is to allow EAPIs to coexist with EQ4.
+		if (!getType().equals(TYPE_PV) && !getScreenHandler().trim().equals(""))
+		{
+			return Toolbox.trim(getScreenHandler(), 4);
+		}
+		return programRoot;
+	}
+	/**
+	 * @param programRoot
+	 *            the programRoot to set
+	 */
+	public void setProgramRoot(String programRoot)
+	{
+		this.programRoot = programRoot;
+	}
+
+	/**
+	 * @return the displayFile
+	 */
+	public String getDisplayFile()
+	{
+		return displayFile;
+	}
+
+	/**
+	 * @param displayFile
+	 *            the displayFile to set
+	 */
+	public void setDisplayFile(String displayFile)
+	{
+		this.displayFile = displayFile;
+	}
+
+	/**
+	 * @return the screenHandler
+	 */
+	public String getScreenHandler()
+	{
+		return screenHandler;
+	}
+
+	/**
+	 * @param screenHandler
+	 *            the screenHandler to set
+	 */
+	public void setScreenHandler(String screenHandler)
+	{
+		this.screenHandler = screenHandler;
+	}
+
+	/**
+	 * @return the type
+	 */
+	public String getType()
+	{
+		return type;
+	}
+
+	/**
+	 * @param type
+	 *            the type to set
+	 */
+	public void setType(String type)
+	{
+		this.type = type;
+	}
+
+	/**
+	 * @return the screenHandlerDescription
+	 */
+	public String getScreenHandlerDescription()
+	{
+		return screenHandlerDescription;
+	}
+
+	/**
+	 * @param screenHandlerDescription
+	 *            the screenHandlerDescription to set
+	 */
+	public void setScreenHandlerDescription(String screenHandlerDescription)
+	{
+		this.screenHandlerDescription = screenHandlerDescription;
+	}
+
+	/**
+	 * @return the supportsAdd
+	 */
+	public boolean isSupportsAdd()
+	{
+		return supportsAdd;
+	}
+
+	/**
+	 * @param supportsAdd
+	 *            the supportsAdd to set
+	 */
+	public void setSupportsAdd(boolean supportsAdd)
+	{
+		this.supportsAdd = supportsAdd;
+	}
+
+	/**
+	 * @return the supportsAdd
+	 */
+	public String getSupportsAdd()
+	{
+		return supportsAdd ? "Y" : "N";
+	}
+
+	/**
+	 * @return the supportsMaintain
+	 */
+	public boolean isSupportsMaintain()
+	{
+		return supportsMaintain;
+	}
+
+	/**
+	 * @return the supportsMaintain
+	 */
+	public String getSupportsMaintain()
+	{
+		return supportsMaintain ? "Y" : "N";
+	}
+
+	/**
+	 * @param supportsMaintain
+	 *            the supportsMaintain to set
+	 */
+	public void setSupportsMaintain(boolean supportsMaintain)
+	{
+		this.supportsMaintain = supportsMaintain;
+	}
+
+	/**
+	 * @return the supportsDelete
+	 */
+	public boolean isSupportsDelete()
+	{
+		return supportsDelete;
+	}
+
+	/**
+	 * @return the supportsDelete
+	 */
+	public String getSupportsDelete()
+	{
+		return supportsDelete ? "Y" : "N";
+	}
+
+	/**
+	 * @param supportsDelete
+	 *            the supportsDelete to set
+	 */
+	public void setSupportsDelete(boolean supportsDelete)
+	{
+		this.supportsDelete = supportsDelete;
+	}
+
+	/**
+	 * @return the listSizeFixed
+	 */
+	public String getListSizeFixed()
+	{
+		return listSizeFixed;
+	}
+
+	/**
+	 * @param listSizeFixed
+	 *            the listSizeFixed to set
+	 */
+	public void setListSizeFixed(String listSizeFixed)
+	{
+		this.listSizeFixed = listSizeFixed;
+	}
+
+	/**
+	 * @return the listRetrievalRequired
+	 */
+	public String getListRetrievalRequired()
+	{
+		return listRetrievalRequired;
+	}
+
+	/**
+	 * @param listRetrievalRequired
+	 *            the listRetrievalRequired to set
+	 */
+	public void setListRetrievalRequired(String listRetrievalRequired)
+	{
+		this.listRetrievalRequired = listRetrievalRequired;
+	}
+
+	/**
+	 * @return the standardAPIEnhanced
+	 */
+	public String getStandardAPIEnhanced()
+	{
+		return standardAPIEnhanced;
+	}
+
+	/**
+	 * @param standardAPIEnhanced
+	 *            the standardAPIEnhanced to set
+	 */
+	public void setStandardAPIEnhanced(String standardAPIEnhanced)
+	{
+		this.standardAPIEnhanced = standardAPIEnhanced;
+	}
+
+	/**
+	 * @return the enabledFor24x7
+	 */
+	public String getEnabledFor24x7()
+	{
+		return enabledFor24x7;
+	}
+
+	/**
+	 * @param enabledFor24x7
+	 *            the enabledFor24x7 to set
+	 */
+	public void setEnabledFor24x7(String enabledFor24x7)
+	{
+		this.enabledFor24x7 = enabledFor24x7;
+	}
+
+	/**
+	 * @return the enhancedAPIEnhanced
+	 */
+	public String getEnhancedAPIEnhanced()
+	{
+		return enhancedAPIEnhanced;
+	}
+
+	/**
+	 * @param enhancedAPIEnhanced
+	 *            the enhancedAPIEnhanced to set
+	 */
+	public void setEnhancedAPIEnhanced(String enhancedAPIEnhanced)
+	{
+		this.enhancedAPIEnhanced = enhancedAPIEnhanced;
+	}
+
+	/**
+	 * @return the keys
+	 */
+	public String getKeys()
+	{
+		return keys;
+	}
+
+	/**
+	 * @param keys
+	 *            the keys to set
+	 */
+	public void setKeys(String keys)
+	{
+		this.keys = keys;
+	}
+
+	/**
+	 * @return the copysourceName
+	 */
+	public String getCopysourceName()
+	{
+		return copysourceName;
+	}
+
+	/**
+	 * @param copysourceName
+	 *            the copysourceName to set
+	 */
+	public void setCopysourceName(String copysourceName)
+	{
+		this.copysourceName = copysourceName;
+	}
+
+	/**
+	 * @return the datastructureName
+	 */
+	public String getDatastructureName()
+	{
+		return datastructureName;
+	}
+
+	/**
+	 * @param datastructureName
+	 *            the datastructureName to set
+	 */
+	public void setDatastructureName(String datastructureName)
+	{
+		this.datastructureName = datastructureName;
+	}
+
+	/**
+	 * @return the promptable
+	 */
+
+	public String getPromptable()
+	{
+		return promptable;
+	}
+
+	/**
+	 * @param promptable
+	 *            the promptable to set
+	 */
+	public void setPromptable(String promptable)
+	{
+		this.promptable = promptable;
+	}
+
+	/**
+	 * @return the primaryPVModule
+	 */
+	public String getPrimaryPVModule()
+	{
+		return primaryPVModule;
+	}
+
+	/**
+	 * @param primaryPVModule
+	 *            the primaryPVModule to set
+	 */
+	public void setPrimaryPVModule(String primaryPVModule)
+	{
+		this.primaryPVModule = primaryPVModule;
+	}
+	/**
+	 * @return the mapperOnly
+	 */
+	public String getMapperOnly()
+	{
+		return mapperOnly ? "Y" : "N";
+	}
+	public boolean isMapperOnly()
+	{
+		return mapperOnly;
+	}
+
+	public void setMapperOnly(boolean mapperOnly)
+	{
+		this.mapperOnly = mapperOnly;
+	}
+
+	public String getHeaderJournalFileName()
+	{
+		return headerJournalFileName;
+	}
+
+	public void setHeaderJournalFileName(String headerJournalFileName)
+	{
+		this.headerJournalFileName = headerJournalFileName;
+	}
+
+	public String getDetailJournalFileName()
+	{
+		return detailJournalFileName;
+	}
+
+	public void setDetailJournalFileName(String detailJournalFileName)
+	{
+		this.detailJournalFileName = detailJournalFileName;
+	}
+
+	public int getRepeatingDataOffset()
+	{
+		return repeatingDataOffset;
+	}
+
+	public void setRepeatingDataOffset(int repeatingDataOffset)
+	{
+		this.repeatingDataOffset = repeatingDataOffset;
+	}
+
+	public int getRepeatingDataLength()
+	{
+		return repeatingDataLength;
+	}
+
+	public void setRepeatingDataLength(int repeatingDataLength)
+	{
+		this.repeatingDataLength = repeatingDataLength;
+	}
+
+}

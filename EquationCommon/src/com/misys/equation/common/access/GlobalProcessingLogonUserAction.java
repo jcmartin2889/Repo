@@ -1,0 +1,107 @@
+package com.misys.equation.common.access;
+
+import java.util.concurrent.Callable;
+
+import com.misys.equation.common.globalprocessing.SystemStatusManager;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EquationLogger;
+
+public class GlobalProcessingLogonUserAction implements Callable<Boolean>
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: GlobalProcessingLogonUserAction.java 16593 2013-06-24 15:32:19Z perkinj1 $";
+
+	/** Logger for this class */
+	private static final EquationLogger LOG = new EquationLogger(GlobalProcessingLogonUserAction.class);
+
+	private final String sessionIdentifier;
+	private final EquationLogin existinglogin;
+	private final String systemId, unitId;
+	private final EquationCommonContext context = EquationCommonContext.getContext();
+
+	public GlobalProcessingLogonUserAction(String systemId, String unitId, String sessionIdentifier, EquationLogin existinglogin)
+	{
+		this.systemId = systemId;
+		this.unitId = unitId;
+		this.sessionIdentifier = sessionIdentifier;
+		this.existinglogin = existinglogin;
+	}
+
+	public Boolean call() throws EQException
+	{
+		if (systemId == null)
+		{
+			try
+			{
+				EquationCommonContext.getContext().authenticate(systemId, unitId, existinglogin.getUserId(),
+								existinglogin.getPassword(), EquationCommonContext.PASSWORD_TYPE_TEXT_PLAIN);
+			}
+			catch (EQException eQException)
+			{
+				if (LOG.isErrorEnabled())
+				{
+					StringBuilder message = new StringBuilder("There was a problem trying to authenticate() ");
+
+					message.append("SystemId:");
+					message.append(systemId);
+					message.append("getUnitId");
+					message.append(unitId);
+					message.append("getUserId");
+					message.append(existinglogin.getUserId());
+					LOG.error(message.toString());
+				}
+			}
+		}
+		EquationUser user = null;
+		if (SystemStatusManager.getInstance().isUnitAvailable(systemId, unitId))
+		{
+			boolean userValidForUnit = false;
+			EquationSystem eqSystem = context.getEquationSystem(systemId);
+			if (eqSystem == null)
+			{
+				eqSystem = new EquationSystem(systemId, existinglogin.getUserId(), existinglogin.getPassword());
+			}
+
+			EquationUnit unit = eqSystem.getUnit(unitId);
+
+			// See if we've got a profile token
+			if (existinglogin.getPassword().length() > 10 && !systemId.equals(existinglogin.getSystem()))
+			{
+				user = new EquationUser(unit);
+			}
+			else
+			{
+				// check actual user authorised before initialising user session
+				for (String authorisedUnit : eqSystem.getEqSecAuthorisedUnits(existinglogin.getUserId()))
+				{
+					if (authorisedUnit.equals(unitId))
+					{
+						userValidForUnit = true;
+						break;
+					}
+				}
+				if (!userValidForUnit)
+				{
+					return Boolean.FALSE;
+				}
+			}
+
+			if (user == null)
+			{
+				// Initialise the user
+				user = new EquationUser(unit, existinglogin.getUserId(), existinglogin.getPassword(), null);
+			}
+			// Store in the users hash but prefixed with unit and system
+			String sessionKey = systemId + ":" + unitId + ":" + sessionIdentifier;
+			user.getSession().setSessionIdentifier(sessionKey);
+
+			context.getEqUsers().put(sessionKey, user);
+			EquationLogin globalLogin = new EquationLogin(existinglogin.getUserId(), existinglogin.getPassword(), unitId, systemId,
+							existinglogin.getIpAddress(), sessionKey);
+			context.getEqLogins().put(sessionKey, globalLogin);
+			// everything went well!
+			return Boolean.TRUE;
+		}
+		return Boolean.FALSE;
+	}
+}

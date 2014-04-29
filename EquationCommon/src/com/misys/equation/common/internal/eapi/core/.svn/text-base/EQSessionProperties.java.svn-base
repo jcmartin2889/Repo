@@ -1,0 +1,376 @@
+package com.misys.equation.common.internal.eapi.core;
+
+/**
+ * Used to define the properties of an EQSession.
+ * <P>
+ * The EQSession itself maintains the database connection and specifies how commitment control will be carried out. An
+ * EQSessionProprties object is used to specify exactly how the EQSession will function.
+ * <P>
+ * 
+ * @see com.misys.equation.common.internal.eapi.core.EQSession
+ * @see com.misys.equation.common.internal.eapi.core.EQSessionImpl
+ * @author weddelc1
+ */
+public class EQSessionProperties implements Cloneable
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	// **************************************************************************************************
+	// Define Constants
+	// **************************************************************************************************
+	/**
+	 * A constant indicating transactions scoped to Equation and the JDBC Connection.
+	 * <P>
+	 * When issuing the <code>commit()</code> or <code>rollback</code> methods on either the EQSession or the underlying JDBC
+	 * Connection transactions in the scope of the Equation application (Equation activation group) and the JDBC Connection (default
+	 * activation group) will be committed or rolled back accordingly.
+	 */
+	public static final int TRANSACTION_ISOLATION_DEFAULT_AND_EQUATION = 1;
+	/**
+	 * A constant indicating transactions scoped to Equation only.
+	 * <P>
+	 * When issuing the <code>commit()</code> method on the EQSession only transactions in the scope of the Equation application
+	 * (Equation activation group) will be committed.
+	 * 
+	 * When issuing the <code>commit()</code> method on the underlying JDBC Connection only transactions in the scope of the JDBC
+	 * Connection (default activation group) will be committed.
+	 * 
+	 * When issuing the <code>rollback()</code> method on the EQSession only transactions in the scope of the Equation application
+	 * (Equation activation group) will be rolled back.
+	 * 
+	 * When issuing the <code>rollback()</code> method on the underlying JDBC Connection only transactions in the scope of the JDBC
+	 * Connection (default activation group) will be rolled back.
+	 */
+	public static final int TRANSACTION_ISOLATION_EQUATION_ONLY = 2;
+	/**
+	 * A constant indicating transactions scoped to an XA resource manager.
+	 * <P>
+	 * When using this mode the <code>prepare()</code> method must be used before commiting the XAResource. The EQSession
+	 * <code>commit()</code> and <code>rollback()</code> methods are not valid and will raise an Exception.
+	 */
+	public static final int TRANSACTION_ISOLATION_XA = 3;
+	private boolean autoEQCommit;
+	private String iSeriesWorkstation;
+	private String workstationIPAddr;
+	private String application;
+	private boolean addToActiveUsersList;
+	private final String systemName;
+	private int transactionIsolationLevel;
+	private int timeOut;
+	private final String unitMnemonic;
+
+	/**
+	 * Construct a default EQSessionProperties object using the specified system name and unit mnemonic.
+	 * <P>
+	 * 
+	 * @param systemName
+	 *            name of the iSeries for this session.
+	 * @param unitMnemonic
+	 *            name of the Equation unit mnemonic for this session.
+	 */
+	public EQSessionProperties(String systemName, String unitMnemonic)
+	{
+		this.systemName = systemName;
+		this.unitMnemonic = unitMnemonic;
+		setAddToActiveUsersList(true);
+		setApplication("");
+		setTimeOut(10);
+		autoEQCommit = true;
+		setIseriesWorkstation("");
+		setWorkstationIPAddr("");
+		setTransactionIsolationLevel(TRANSACTION_ISOLATION_EQUATION_ONLY);
+	}
+	/**
+	 * Constructor that uses the settings defined in the EQEnvironment's config file.
+	 * <P>
+	 * 
+	 * @param environment
+	 *            the EQEnvironment to be used
+	 */
+	public EQSessionProperties(EQEnvironment environment)
+	{
+		// Set the system name property from value in config file
+		String systemName = environment.getProperty("systemName");
+		this.systemName = systemName;
+		// Set the unit Mnemonic property from value in config file
+		String unitMnemonic = environment.getProperty("unitMnemonic");
+		this.unitMnemonic = unitMnemonic;
+		// Set addToActiveUsersList property from value in config file, if valid
+		// Default is 'true'
+		String addToActiveUsersList = environment.getProperty("addToActiveUsersList");
+		if (addToActiveUsersList.equalsIgnoreCase("false"))
+		{
+			setAddToActiveUsersList(false);
+		}
+		else
+		{
+			setAddToActiveUsersList(true);
+		}
+		// Set application property from value in config file
+		setApplication(environment.getProperty("applicationID"));
+		// Set timeOut property from value in config file, if valid
+		// Default is 10
+		String timeOut = environment.getProperty("timeOut");
+		try
+		{
+			int timeOutInt = Integer.parseInt(timeOut);
+			setTimeOut(timeOutInt);
+		}
+		catch (NumberFormatException nfe)
+		{
+			setTimeOut(10);
+		}
+		// Set autoEQCommit property from value in config file, if valid
+		// Default is 'true'
+		String autoCommit = environment.getProperty("autoCommit");
+		if (autoCommit.equalsIgnoreCase("false"))
+		{
+			autoEQCommit = false;
+		}
+		else
+		{
+			autoEQCommit = true;
+		}
+		// Initialise iSeries Workstation property
+		setIseriesWorkstation("");
+		// Set iSeriesWorkstation property from value in config file
+		setWorkstationIPAddr(environment.getProperty("workstationIPAddr"));
+		// Initialise Transaction Isolation Level property
+
+		setTransactionIsolationLevel(TRANSACTION_ISOLATION_EQUATION_ONLY);
+
+	}
+	/*******************************************************************************************************************************
+	 * Determine if Equation automatic commitment control is being used.
+	 * <P>
+	 * 
+	 * @return true if autoEQCC is on.
+	 */
+	public boolean isAutoEQCommit()
+	{
+		return autoEQCommit;
+	}
+	/**
+	 * get the name of the system.
+	 * <P>
+	 * 
+	 * @return a String that is the iSeries system name
+	 */
+	public String getSystemName()
+	{
+		return systemName;
+	}
+	/**
+	 * Get the unit mnemonic.
+	 * <P>
+	 * 
+	 * @return a String that is the 3 character unique Equation unit identifier
+	 */
+	public String getUnitMnemonic()
+	{
+		return unitMnemonic;
+	}
+	/*******************************************************************************************************************************
+	 * Specifies whether Equation automatic commitment control is applied.
+	 * <p>
+	 * The autoEQCC state is relevent only if a connection has not been supplied and the transaction isolation level is
+	 * TRANSACTION_ISOLATION_EQUATION_ONLY.
+	 * <P>
+	 * This is an alternative to using the commitment control methods on the EQSession object. It has the advantage of requiring
+	 * less roundtrips to manage commitment control.
+	 * <P>
+	 * In autoEQCC mode EQTransaction objects perform their own commitment control around their updates. When off, the external
+	 * application must perform transaction management control using EQSessionImpl startTrans, commit and rollback methods.
+	 * <p>
+	 * The default is on (true) when the transaction isolation level is EQUATION_ONLY. In this case each EQTransaction will perform
+	 * a commit on its database updates each time the defaultAction, add, maintain or delete method is called. It will also rollback
+	 * any failed updates if required.
+	 * <p>
+	 * If set to off (false), no commitment control will be carried out by these methods and the caller must invoke startTrans
+	 * before any database update method is called, the commit method when all transactions have updated succesfully, and rollback
+	 * in the event of a failure.
+	 * <P>
+	 * 
+	 * @param autoEQCommit
+	 *            whether to use automatic commitment control.
+	 * @throws EQException
+	 *             if the transaction isolation level is not TRANSACTION_ISOLATION_EQUATION_ONLY
+	 */
+	public void setAutoEQCommit(boolean autoEQCommit) throws EQException
+	{
+		if (getTransactionIsolationLevel() != EQSessionProperties.TRANSACTION_ISOLATION_EQUATION_ONLY)
+		{
+			throw new EQException(
+							"EQSessionProperties: setAutoEQCommit() cannot be used as the transaction isolation level is not EQUATION_ONLY");
+		}
+		this.autoEQCommit = autoEQCommit;
+	}
+	/**
+	 * Get if the connection will appear in the list of active iSeries jobs for the unit.
+	 * <P>
+	 * 
+	 * @return whether the connection will appear in the list of active users.
+	 */
+	public boolean addToActiveUsersList()
+	{
+		return addToActiveUsersList;
+	}
+	/**
+	 * Set whether the connection will appear in the list of active iSeries jobs for the unit.
+	 * <P>
+	 * 
+	 * @param b
+	 *            whether the connection will appear in the list of active users.
+	 */
+	public void setAddToActiveUsersList(boolean b)
+	{
+		addToActiveUsersList = b;
+	}
+	/**
+	 * Get the workstation ip address.
+	 * <P>
+	 * 
+	 * @return a String that is the 15 character ip address.
+	 */
+	public String getWorkstationIPAddr()
+	{
+		return workstationIPAddr;
+	}
+	/**
+	 * Set the workstation ip address.
+	 * <P>
+	 * The workstation ip address is a 15 character String which is used to identify the workstation ip address. This data is stored
+	 * on the Equation journal file and is used for auditing purposes.
+	 * <P>
+	 * The workstation ip address is manditory.
+	 * <P>
+	 * 
+	 * @param workstationIPAddr
+	 *            is a 15 character String
+	 */
+	public void setWorkstationIPAddr(String workstationIPAddr)
+	{
+		this.workstationIPAddr = workstationIPAddr;
+	}
+	/**
+	 * Get the iSeries workstation.
+	 * <P>
+	 * 
+	 * @return a String that is the 10 character iSeries workstation.
+	 */
+	public String getIseriesWorkstation()
+	{
+		return iSeriesWorkstation;
+	}
+	/**
+	 * Set the iSeries workstation.
+	 * <P>
+	 * The iSeries workstation is a 10 character String where the first 4 characters must uniquely identify the connection to the
+	 * system name and unit. This data is stored on the Equation Journal file.
+	 * <P>
+	 * The iSeries workstation is optional. If the iSeries workstation is not set then a value will be calculated automatically
+	 * using the iSeries job number. The last 4 characters of the job number will be appended to the job number (e.g. job number
+	 * 123456 will result in iSeries workstation 3456123456).
+	 * <P>
+	 * 
+	 * @param iSeriesWorkstation
+	 *            is a 10 character String
+	 */
+	public void setIseriesWorkstation(String iSeriesWorkstation)
+	{
+		this.iSeriesWorkstation = iSeriesWorkstation;
+	}
+	/*******************************************************************************************************************************
+	 * Get the application.
+	 * <P>
+	 * Get the name of the application which used this object to logon.
+	 * <P>
+	 * 
+	 * @return the application name.
+	 */
+	public String getApplication()
+	{
+		return application;
+	}
+	/**
+	 * Set the application.
+	 * <P>
+	 * Set the name of the application which used this object to logon.
+	 * <P>
+	 * 
+	 * @param app
+	 *            the application which is logging the user on
+	 */
+	public void setApplication(String app)
+	{
+		application = app;
+	}
+	/**
+	 * Get the transaction isolation level.
+	 * <P>
+	 * 
+	 * @return transaction isolation level
+	 */
+	public int getTransactionIsolationLevel()
+	{
+		return transactionIsolationLevel;
+	}
+	/**
+	 * Set the transaction isolation level.
+	 * <P>
+	 * If the new transaction isolation level is TRANSACTION_ISOLATION_EQUATION_ONLY then Equation automatic commitment control is
+	 * set off.
+	 * <P>
+	 * 
+	 * @param i
+	 *            the new transaction isolation level.
+	 * @throws EQException
+	 *             if the new transaction isolation level is not valid
+	 */
+	public void setTransactionIsolationLevel(int i)
+	{
+		if (i < 1 || i > 3)
+		{
+			throw new RuntimeException("EQSessionProperties: transaction isolation level " + i + " is not valid");
+		}
+		transactionIsolationLevel = i;
+		if (transactionIsolationLevel != EQSessionProperties.TRANSACTION_ISOLATION_EQUATION_ONLY)
+		{
+			autoEQCommit = false;
+		}
+	}
+	/**
+	 * Get the value of the time out parameter in seconds.
+	 * <P>
+	 * 
+	 * @return time out seconds
+	 */
+	public int getTimeOut()
+	{
+		return timeOut;
+	}
+	/**
+	 * Set the time out parameter.
+	 * <P>
+	 * 
+	 * @param i
+	 *            new time out in seconds
+	 */
+	public void setTimeOut(int i)
+	{
+		timeOut = i;
+	}
+	@Override
+	public Object clone()
+	{
+		EQSessionProperties clone = new EQSessionProperties(this.systemName, this.unitMnemonic);
+		clone.addToActiveUsersList = this.addToActiveUsersList;
+		clone.application = this.application;
+		clone.autoEQCommit = this.autoEQCommit;
+		clone.timeOut = this.timeOut;
+		clone.transactionIsolationLevel = this.transactionIsolationLevel;
+		clone.iSeriesWorkstation = this.iSeriesWorkstation;
+		clone.workstationIPAddr = this.workstationIPAddr;
+		return clone;
+	}
+}

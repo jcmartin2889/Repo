@@ -1,0 +1,140 @@
+package com.misys.equation.common.access;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * This is a bean class which is represent the property file [equationConfiguration.properties] data.
+ * 
+ * @author deroset
+ */
+public class EquationConfigurationPropertiesBean
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EquationConfigurationPropertiesBean.java 10441 2011-02-04 12:26:53Z hempensp $";
+
+	private final Map<String, UnitPropertiesBean> units = new HashMap<String, UnitPropertiesBean>();
+	private boolean isGlobalProcessingGoodToGo = false;
+	private boolean initialised = false;
+	private String globalLibName = "";
+
+	private static EquationConfigurationPropertiesBean currentInstance;
+
+	/**
+	 * This is the default constructor; that one could only be used in the class scope.
+	 */
+	private EquationConfigurationPropertiesBean()
+	{
+
+	}
+
+	/**
+	 * This method will return the only <code>EquationConfigurationPropertiesBean</code> instance.
+	 * 
+	 * @return the only <code>EquationConfigurationPropertiesBean</code>.
+	 */
+	public static synchronized EquationConfigurationPropertiesBean getInstance()
+	{
+		if (currentInstance == null)
+		{
+			currentInstance = new EquationConfigurationPropertiesBean();
+		}
+		return currentInstance;
+	}
+
+	public String[] getUnitIds()
+	{
+		String[] unitIds = new String[units.size()];
+		Object[] list = units.values().toArray();
+		for (int x = 0; x < list.length; x++)
+		{
+			unitIds[x] = ((UnitPropertiesBean) list[x]).getUnitId();
+		}
+		return unitIds;
+	}
+
+	public String[] getSystemIds()
+	{
+		String[] systemIds = new String[units.size()];
+		Object[] list = units.values().toArray();
+		for (int x = 0; x < list.length; x++)
+		{
+			systemIds[x] = ((UnitPropertiesBean) list[x]).getSystemId();
+		}
+		return systemIds;
+	}
+
+	public boolean isGlobalProcessingGoodToGo()
+	{
+		return isGlobalProcessingGoodToGo;
+	}
+
+	public void setGlobalProcessingGoodToGo(boolean isGlobalProcessingGoodToGo)
+	{
+		this.isGlobalProcessingGoodToGo = isGlobalProcessingGoodToGo;
+	}
+
+	public boolean containsUnit(String system, String unit)
+	{
+		return units.containsKey(system + ":" + unit);
+	}
+
+	public boolean isInitialised()
+	{
+		return initialised;
+	}
+
+	public void initialise(String[] systemIds, String[] unitIds, String[] unitTypes, String[] unitDescriptions)
+	{
+		units.clear();
+		for (int x = 0; x < systemIds.length; x++)
+		{
+			units.put(systemIds[x].toUpperCase().trim() + ":" + unitIds[x].toUpperCase().trim(), new UnitPropertiesBean(
+							systemIds[x].toUpperCase().trim(), unitIds[x].toUpperCase().trim(), unitTypes[x].toUpperCase().trim(),
+							unitDescriptions[x]));
+		}
+		initialised = true;
+	}
+
+	@Override
+	protected Object clone() throws CloneNotSupportedException
+	{
+		throw new CloneNotSupportedException();
+	}
+
+	public String getGlobalUnitVersion(String systemId, String unitID)
+	{
+		if (initialised)
+		{
+			final UnitPropertiesBean bean = units.get(systemId + ":" + unitID);
+			if (bean != null)
+			{
+				return bean.getUnitType();
+			}
+		}
+
+		// otherwise, GP is not loaded, so we have to assume that we are a normal Desktop (EQ4 or fully compatible)
+		return "EQ4";
+	}
+
+	public String getGlobalLibName()
+	{
+		return globalLibName;
+	}
+
+	public void setGlobalLibName(String globalLibName)
+	{
+		this.globalLibName = globalLibName;
+	}
+
+	public Map<String, UnitPropertiesBean> getUnits()
+	{
+		return units;
+	}
+
+	public Collection<UnitPropertiesBean> getUnitsList()
+	{
+		return units.values();
+	}
+}

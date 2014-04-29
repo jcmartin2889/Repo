@@ -1,0 +1,65 @@
+package com.misys.equation.common.ant.builder;
+
+import java.io.FileInputStream;
+import java.util.Properties;
+
+import com.misys.equation.common.ant.builder.core.EquationLogger;
+import com.misys.equation.common.ant.builder.helpText.helpers.FileUtils;
+
+public class EquationJars
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EquationJars.java 7606 2010-06-01 17:04:23Z MACDONP1 $";
+	private Properties properties;
+	private FileUtils fileUtils = FileUtils.getInstance();
+	private static final EquationLogger LOG = new EquationLogger(EquationJars.class);
+	private String propertyFilePath;
+
+	public EquationJars(String propertyFilePath)
+	{
+		this.propertyFilePath = propertyFilePath;
+		initialisation();
+	}
+
+	private void initialisation()
+	{
+		// Read properties file.
+		properties = new Properties();
+		FileInputStream fileInputStream = null;
+
+		try
+		{
+			fileInputStream = new FileInputStream(propertyFilePath.toString());
+			properties.load(fileInputStream);
+		}
+		catch (Exception exception)
+		{
+			if (LOG.isErrorEnabled())
+			{
+				if (LOG.isErrorEnabled())
+				{
+					StringBuilder message = new StringBuilder("There was a problem trying to open the property file: ");
+					message.append(propertyFilePath.toString());
+					LOG.error(message.toString(), exception);
+				}
+			}
+		}
+		finally
+		{
+			fileUtils.close(fileInputStream);
+		}
+	}
+
+	public void setPropertyValue(String propertyName, String propertyValue)
+	{
+		if (properties.containsKey(propertyName))
+		{
+			properties.setProperty(propertyName, propertyValue);
+		}
+	}
+
+	public void setPropertyFilePath(String propertyFilePath)
+	{
+		this.propertyFilePath = propertyFilePath;
+	}
+}

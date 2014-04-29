@@ -1,0 +1,108 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseMaintainCancel;
+
+/**
+ * Equation test cases for Maintain function
+ */
+public class IEM extends EquationTestCaseMaintainCancel
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	String programName = "H18FRR";
+	String optionId = "IEM";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		retrieveBeforeCancel = false;
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup an existing key fields only
+	 */
+	@Override
+	public void setupExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZTREF", "JIATREF0014"); // Transfer reference (16A)
+		transaction.setFieldValue("GZAB1", "0543"); // Debit account branch (4A)
+		transaction.setFieldValue("GZAN1", "123107"); // Debit account basic no (6A)
+		transaction.setFieldValue("GZAS1", "002"); // Debit account suffix (3A)
+		transaction.setFieldValue("GZAB2", "0543"); // Credit account branch (4A)
+		transaction.setFieldValue("GZAN2", "123107"); // Credit account basic no (6A)
+		transaction.setFieldValue("GZAS2", "003"); // Credit account suffix (3A)
+
+	}
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZTREF", "NONEXISTREF"); // Transfer reference (16A)
+		transaction.setFieldValue("GZAB1", "0543"); // Debit account branch (4A)
+		transaction.setFieldValue("GZAN1", "123107"); // Debit account basic no (6A)
+		transaction.setFieldValue("GZAS1", "002"); // Debit account suffix (3A)
+		transaction.setFieldValue("GZAB2", "0543"); // Credit account branch (4A)
+		transaction.setFieldValue("GZAN2", "123107"); // Credit account basic no (6A)
+		transaction.setFieldValue("GZAS2", "003"); // Credit account suffix (3A)
+	}
+
+	/**
+	 * Setup the mandatory fields (maintain mode)
+	 */
+	@Override
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZTCD1", "010"); // Debit transaction code (3A)
+		transaction.setFieldValue("GZAMA1", "-70000"); // Debit amount (15P,0)
+		transaction.setFieldValue("GZVFR1", "0991231"); // Debit value date (7S,0)
+		transaction.setFieldValue("GZDRF1", "JTEST DEBIT - M2"); // Debit user's reference (16A)
+
+		transaction.setFieldValue("GZTCD2", "510"); // Credit transaction code (3A)
+		transaction.setFieldValue("GZAMA2", "70000"); // Credit amount (15P,0)
+		transaction.setFieldValue("GZVFR2", "0991231"); // Credit value date (7S,0)
+		transaction.setFieldValue("GZDRF2", "JTEST CREDIT - M2"); // Credit user's reference (16A)
+
+		transaction.setFieldValue("GZBRNM", "LOND"); // Transfer branch (4A)
+		transaction.setFieldValue("GZBRND", "LOND"); // Branch for whom the transaction is being done (4A)
+		transaction.setFieldValue("GZPBR", "JUNT"); // Posting group id or user id, and group level (5A)
+		transaction.setFieldValue("GZFONT", "N"); // Fontis transfer? (1A)
+	}
+
+}

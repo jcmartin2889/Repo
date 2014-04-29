@@ -1,0 +1,96 @@
+package com.misys.equation.ui.pdfFonts;
+
+public class LangFontHelper
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/**
+	 * Return a PDF specific font for the given language
+	 * 
+	 * @param langId
+	 *            - the language id
+	 * @param rtl
+	 *            - right to left?
+	 * 
+	 * @return a PDF writer with the right font for the language
+	 * 
+	 * @throws Exception
+	 */
+	public static LangFont getLangFont(String langId, boolean rtl) throws Exception
+	{
+		LangFont langFont = null;
+
+		// is language specific font exist?
+		try
+		{
+			Class cLangFont = Class.forName("com.misys.equation.ui.user.LangFont" + langId);
+			if (cLangFont != null)
+			{
+				return (LangFont) cLangFont.newInstance();
+			}
+		}
+		catch (Exception e)
+		{
+		}
+
+		// determine the language font to use
+		if (useZH(langId))
+		{
+			langFont = new LangFontZH();
+		}
+		else if (useAR(langId))
+		{
+			langFont = new LangFontAR();
+		}
+		else
+		{
+			langFont = new LangFont();
+		}
+
+		// return the language font to use
+		return langFont;
+	}
+
+	/**
+	 * Helper to determine whether to use language ZH
+	 * 
+	 * @param langId
+	 *            - the language id
+	 * 
+	 * @return true if the language id should use this font
+	 */
+	public static boolean useZH(String langId)
+	{
+		if (langId.equals("ZH") || langId.equals("JA") || langId.equals("KO"))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	/**
+	 * Helper to determine whether to use language ZH
+	 * 
+	 * @param langId
+	 *            - the language id
+	 * 
+	 * @return true if the language id should use this font
+	 */
+	public static boolean useAR(String langId)
+	{
+		if (langId.equals("AR"))
+		{
+			return false;
+			// return true; // for some reason the langFontAR is not working for Arabic anymore!!
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+}

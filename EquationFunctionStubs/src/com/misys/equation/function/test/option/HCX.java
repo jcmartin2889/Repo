@@ -1,0 +1,149 @@
+package com.misys.equation.function.test.option;
+
+import java.util.Calendar;
+
+import com.misys.equation.common.access.IEquationStandardObject;
+import com.misys.equation.common.dao.beans.GAXRecordDataModel;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.Toolbox;
+import com.misys.equation.function.beans.APIFieldSet;
+import com.misys.equation.function.beans.DisplayAttributes;
+import com.misys.equation.function.beans.InputField;
+import com.misys.equation.function.beans.InputFieldSet;
+import com.misys.equation.function.test.helper.DisplayFieldSetWrapper;
+import com.misys.equation.function.test.helper.DisplayFieldWrapper;
+import com.misys.equation.function.test.helper.FunctionGenerator;
+import com.misys.equation.function.tools.FunctionToolbox;
+import com.misys.equation.function.tools.MappingToolbox;
+import com.misys.equation.function.tools.XMLToolbox;
+
+public class HCX extends TestOptionStub
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: HCX.java 7138 2010-05-04 14:59:54Z lima12 $";
+
+	public HCX()
+	{
+		try
+		{
+			setUp();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+
+	private DisplayFieldSetWrapper getSet1() throws EQException
+	{
+		DisplayFieldSetWrapper setWrapper = new DisplayFieldSetWrapper();
+		DisplayFieldWrapper fieldWrapper;
+
+		DisplayAttributes displayAttributes;
+		InputField inputField;
+		InputFieldSet inputFieldSet = setWrapper.getInputFieldSet();
+
+		setWrapper.setId("REC1");
+		setWrapper.setLabel("REC1");
+		setWrapper.setDescription("REC1");
+
+		// add the record
+		// Sub-FieldSets - where's the requirements?
+		// fieldSet.setSubInputFieldSet(getSubFieldSet1(fieldSet));
+
+		// add all the fields in this section ---------------------------------------
+
+		// HLD
+		fieldWrapper = setWrapper.addDisplayField("HLD");
+		fieldWrapper.setLabel("Hold code");
+		fieldWrapper.setDescription("This is the hold code");
+		inputField = fieldWrapper.getInputField();
+		inputField.setDataType("A");
+		inputField.setSize("3");
+		inputField.setKey(true);
+		displayAttributes = fieldWrapper.getDisplayAttributes();
+		displayAttributes.setPrompt("JVR01R");
+		FunctionToolbox.addPVFieldSet(inputField, FunctionToolbox.getPVFieldSet(session, "JVR01R", "", false, ""));
+
+		// DSC
+		fieldWrapper = setWrapper.addDisplayField("DSC");
+		fieldWrapper.setLabel("Description");
+		fieldWrapper.setDescription("This is the description");
+		inputField = fieldWrapper.getInputField();
+		inputField.setDataType("A");
+		inputField.setSize("35");
+		inputField.setUpperCase(false);
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		FunctionToolbox.addPVFieldSet(inputField, FunctionToolbox.getPVFieldSet(session, "GWV59R", "", false, ""));
+
+		return setWrapper;
+	}
+
+	private void addLoadAPI(FunctionGenerator fg, InputField owner) throws EQException
+	{
+		APIFieldSet apiFieldSet = FunctionToolbox.getAPIFieldSet(session, "HCIID", "HCI", "J46F", "Add/Maintain/Delete Hold Code",
+						IEquationStandardObject.FCT_ADD);
+		// fg.addLoadAPIFieldSet(apiFieldSet, FunctionToolbox.getPVFieldSet(session, "JVR01R", "", false, "", owner.getPath()));
+	}
+	private void addUpdateAPI(FunctionGenerator fg, InputField owner) throws EQException
+	{
+		APIFieldSet apiFieldSet = FunctionToolbox.getAPIFieldSet(session, "HCIID", "HCI", "J46F", "Add/Maintain/Delete Hold Code",
+						IEquationStandardObject.FCT_ADD);
+		fg.addUpdateAPIFieldSet(apiFieldSet);
+	}
+
+	private void addMappings(FunctionGenerator fg) throws EQException
+	{
+		// add validate mapping
+		fg.addValidateMappingFromPV("REC1", "HLD", "JVR01R", "HRC", "REC1", "HLD", MappingToolbox.TYPE_PRIMITIVE);
+		fg.addValidateMappingFromPV("REC1", "HLD", "JVR01R", "HRD", "REC1", "HLD", MappingToolbox.TYPE_OUTPUT);
+
+		// add update mapping
+		fg.addUpdateMapping("REC1", "HLD", "HCIID", "GZHRC");
+		fg.addUpdateMapping("REC1", "DSC", "HCIID", "GZHRD");
+
+		// add load mapping
+		fg.addLoadMappingToLoad("REC1", "HLD", "REC1", "HCIID", "GZHRC");
+		fg.addLoadMappingFromLoad("REC1", "HCIID", "GZHRD", "REC1", "DSC", MappingToolbox.TYPE_PRIMITIVE);
+		fg.addLoadMappingFromLoad("REC1", "HCIID", "GZHRD", "REC1", "DSC", MappingToolbox.TYPE_OUTPUT);
+		fg.addLoadMappingToPVLoad("REC1", "HLD", "HCIID", "JVR01R", "HRC");
+	}
+
+	public void testHCX()
+	{
+		// Have a bash...
+		try
+		{
+			printStartStatus(this.getClass().getSimpleName());
+			FunctionGenerator fg = new FunctionGenerator("HCX", "Add hold code", "Description of Add Hold Code",
+							"com.misys.equation.screens", "com.misys.equation.screens.layout");
+
+			DisplayFieldSetWrapper setWrapper = getSet1();
+			// fg.addInputFieldSet(setWrapper.getInputFieldSet());
+			// addLoadAPI(fg);
+			// addUpdateAPI(fg);
+
+			addMappings(fg);
+
+			System.out.println(fg);
+
+			// Print the XML
+			// EqBeanFactory beanFactory = EqBeanFactory.getEqBeanFactory();
+			// String xml = beanFactory.serialiseBeanAsXML(fg);
+			String xml = fg.toString();
+
+			// Write to GAXPF
+			XMLToolbox.getXMLToolbox().writeDefinitionXMLtoDB(session, unit.getKFILLibrary(), GAXRecordDataModel.SERVICE_CODE,
+							fg.getFunctionId(), Toolbox.formatDate(Calendar.getInstance(), Toolbox.TIMESTAMP_FORMAT), xml);
+
+			// print
+			printCompleteStatus(fg, this.getClass().getSimpleName(), printXML);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+}

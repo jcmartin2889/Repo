@@ -1,0 +1,76 @@
+package com.misys.equation.function.test.option;
+
+import com.misys.equation.common.access.IEquationStandardObject;
+
+public class AallOptions
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: AallOptions.java 17139 2013-08-29 16:00:56Z whittap1 $";
+
+	// HCI hold code = ALZ
+	// HCI hold code = SS4
+	// HCI hold code = ALU
+	// HCI hold code = HPV
+	// NCM commitment = TEST-COMMIT, OCA-account type RL
+	// RAL period code = Y1
+	// RAA basic rates = RTD, GBP
+	// DAL authorisation limit = user profile
+
+	// "User defined" files PRDACC and PRDA10LF in the unit
+	// Copy all charge event component from AAJ and AAK
+	// LIMA profile must have interbranch authority to authorise warning messages
+	// KMENU 8 option 5, authorise user to all options
+
+	// Setup K388 - KSM4142, KSM4143
+	// Setup CRM
+	// Setup K319 - EANL=20
+	// Setup K465
+	// Setup K534
+	// Setup K535
+	// EQUIADMIN, EQCHINESE - interbranch authority WDPF
+	// ANC - 312162 789
+	// ANC - 009041 164
+	// ANC - 134103 323
+	// OCA - 0543 000001 001
+	// ASI - 0543 000001 001 >=6x
+
+	// Prior to running, make sure TestOptionStub.workSpace is pointing to the correct workspace
+
+	public static void main(String[] inputParameters)
+	{
+		// mandatory
+		// (new AC12()).test();
+		// (new AC22()).test();
+		// (new AC32()).test();
+		// (new CRM2()).test();
+
+		// test options
+		(new HCX2()).test("HCX", "Add/Maintain Hold Code", IEquationStandardObject.FCT_FUL, true);
+		(new HCX3()).test();
+		(new HCX4()).test();
+		(new HCX5()).test();
+		(new ALW()).test();
+		(new ALY()).test();
+		(new ALZ2()).test();
+		(new ASY()).test("ASY", "Add Standing order", IEquationStandardObject.FCT_FUL, true);
+		(new CBY()).test("CBY", "Maintain Customer Basic Details", IEquationStandardObject.FCT_FUL, true);
+		(new COM()).test();
+		(new DSP()).test();
+		(new JAX()).test();
+		(new MCY()).test("MCY", "Maintain Customer Basic Details", IEquationStandardObject.FCT_FUL, true);
+		(new RL2()).test();
+		(new RLX()).test();
+		(new RPT()).test();
+		(new WPD()).test("WPD", "GreenFields", IEquationStandardObject.FCT_FUL, true);
+		(new ZT1()).test();
+		(new ALU()).test();
+		(new ZY1()).test("ZY1", "Account summary", IEquationStandardObject.FCT_FUL, true);
+		(new ZY2()).test("ZY2", "Account summary", IEquationStandardObject.FCT_FUL, true);
+		(new ZY3()).test("ZY3", "Account summary + aggregation", IEquationStandardObject.FCT_FUL, true);
+		(new ZY4()).test("ZY4", "Deal movements + aggregation", IEquationStandardObject.FCT_FUL, true);
+		(new ZY5()).test("ZY5", "Account summary + aggregation", IEquationStandardObject.FCT_FUL, true);
+		(new ZY6()).test("ZY6", "Account summary", IEquationStandardObject.FCT_FUL, true);
+		(new ZY7()).test("ZY7", "Loan details", IEquationStandardObject.FCT_FUL, true);
+	}
+
+}

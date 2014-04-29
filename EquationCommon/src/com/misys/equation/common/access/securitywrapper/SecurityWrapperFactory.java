@@ -1,0 +1,197 @@
+package com.misys.equation.common.access.securitywrapper;
+
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.Vector;
+
+import com.misys.equation.common.access.EquationStandardSession;
+
+/**
+ * This class is used to create the SecurityWrapper classes required for a particular ResultSet and SQL query.
+ * 
+ * @author camillen
+ * 
+ */
+public class SecurityWrapperFactory
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: SecurityWrapperFactory.java 8910 2010-08-26 15:25:20Z MACDONP1 $";
+	private static long totalTime = 0;
+
+	// Security mapping information
+	private static List<SecurityMappingInfo> securityMappingList = new Vector<SecurityMappingInfo>();
+	static
+	{
+		// Load the security mapping information on class loading ...
+		loadSecurityMappingsList();
+	}
+
+	public static void incTotalTime(long totalTime)
+	{
+		SecurityWrapperFactory.totalTime += totalTime;
+	}
+
+	public static long getTotalTime()
+	{
+		return totalTime;
+	}
+
+	/**
+	 * Given a result set and an SQL string this method will return a number of security wrappers that in turn will allow us to
+	 * filter the records accordingly.
+	 * 
+	 * @param rs
+	 *            ResultSet - Result set to be filtered
+	 * @param sql
+	 *            String - SQL statement that was used to get the result set
+	 * @return
+	 * @throws SQLException
+	 */
+	public static synchronized List<SecurityWrapper> getSecurityWrappers(final EquationStandardSession session, final ResultSet rs,
+					final String sql) throws SQLException
+	{
+		// Create the list to hold the security wrappers ...
+		final List<SecurityWrapper> securityWrappersList = new ArrayList<SecurityWrapper>();
+
+		// Create a set as we do not want duplicates of the same security wrapper instance ...
+		final Set<String> secWrapperSet = getSecurityWrappersForQuery(rs, sql);
+		Iterator<String> iSecWrapper = secWrapperSet.iterator();
+		while (iSecWrapper.hasNext())
+		{
+			String wrapperId = iSecWrapper.next();
+			if (wrapperId.equals("ACCOUNT"))
+			{
+				securityWrappersList.add(new AccountSecurityWrapper(session, rs, getSecurityFields("ACCOUNT", rs)));
+			}
+			else if (wrapperId.equals("BRANCH"))
+			{
+				securityWrappersList.add(new BranchSecurityWrapper(session, rs, getSecurityFields("BRANCH", rs)));
+			}
+		}
+
+		// Finally return the whole list to be applied ...
+		return securityWrappersList;
+	}
+	/**
+	 * This method pre-loads the security mappings
+	 */
+	private static void loadSecurityMappingsList()
+	{
+		// TODO CAMILLN1 - This should be loaded from the database ...
+		securityMappingList.add(new SecurityMappingInfo("CA20LF", "CABBN", 1, "BRANCH"));
+	}
+
+	/**
+	 * This method should only be used by JUnit Tests that want to change the security mappings list for testing purposes.
+	 * 
+	 * @param securityMappingList
+	 */
+	public static void setSecurityMappingsList(List<SecurityMappingInfo> securityMappingList)
+	{
+		SecurityWrapperFactory.securityMappingList = securityMappingList;
+	}
+
+	/**
+	 * Given a result set this method will determine the fields which require security. This method need to be intelligent enough to
+	 * determine that duplicate values for same security fields have to be eliminated.
+	 * 
+	 * @param rs
+	 * @return
+	 * @throws SQLException
+	 */
+	private synchronized static List<String> getSecurityFields(final String wrapperType, final ResultSet rs) throws SQLException
+	{
+		final List<String> secFields = new ArrayList<String>();
+		// Get the meta-data for the ResultSet ...
+		final ResultSetMetaData metaData = rs.getMetaData();
+
+		// Loop through each of the columns and get the table name for them ...
+		int numberOfColumns = metaData.getColumnCount();
+		for (int i = 1; i <= numberOfColumns; i++)
+		{
+			List<SecurityMappingInfo> secInfoList = matchSecurityMappingsToFieldName(metaData.getColumnName(i));
+			for (SecurityMappingInfo secInfo : secInfoList)
+			{
+				if (secInfo.getType().equals(wrapperType))
+				{
+					secFields.add(secInfo.getField());
+				}
+			}
+		}
+
+		return secFields;
+	}
+
+	/**
+	 * Given a field name this method matches all possible security mappings.
+	 * 
+	 * @param fieldName
+	 * @return
+	 */
+	private synchronized static List<SecurityMappingInfo> matchSecurityMappingsToFieldName(final String fieldName)
+	{
+		final List<SecurityMappingInfo> list = new ArrayList<SecurityMappingInfo>();
+		for (SecurityMappingInfo secMapping : securityMappingList)
+		{
+			if (fieldName.equals(secMapping.getField()))
+			{
+				list.add(secMapping);
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * Given an SQL query and a result set this method uses the meta-data to determine if there are and fields (and matching tables)
+	 * which require security checks. This is done by looking at the securityMappings map which is loaded from the security mappings
+	 * table.
+	 * 
+	 * @param sql
+	 * @return
+	 */
+	private synchronized static Set<String> getSecurityWrappersForQuery(final ResultSet rs, final String sql)
+	{
+		final Set<String> securityWrapperIds = new HashSet<String>();
+		try
+		{
+
+			// Get the meta-data for the ResultSet ...
+			final ResultSetMetaData metaData = rs.getMetaData();
+
+			// Loop through each of the columns and get the table name for them ...
+			int numberOfColumns = metaData.getColumnCount();
+			for (int i = 1; i <= numberOfColumns; i++)
+			{
+				// From the current column get the table name in the security mappings ...
+				final List<SecurityMappingInfo> securityMappings = matchSecurityMappingsToFieldName(metaData.getColumnName(i));
+
+				if (securityMappings.size() > 0)
+				{
+					for (SecurityMappingInfo secInfo : securityMappings)
+					{
+						// If the column name exists in the security mapping the table name is returned
+						// All we need to do now, is to check that the table name the one in the query
+						// IMP NOTE: Tried to use metaData.getTableName(i) but IBM JT400 does not support this method
+						// See AS400JDBCResultSetMetaData JavaDocs
+						if (sql.contains(secInfo.getTable()))
+						{
+							securityWrapperIds.add(secInfo.getType());
+						}
+					}
+				}
+			}
+		}
+		catch (SQLException e)
+		{
+		}
+
+		return securityWrapperIds;
+	}
+
+}

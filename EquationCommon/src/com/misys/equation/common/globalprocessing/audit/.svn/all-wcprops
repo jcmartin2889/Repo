@@ -1,0 +1,167 @@
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/globalprocessing/audit
+END
+SAPJ10RUtils.java
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/globalprocessing/audit/SAPJ10RUtils.java
+END
+GlobalAuditPropagationHeader.java
+K 25
+svn:wc:ra_dav:version-url
+V 161
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/globalprocessing/audit/GlobalAuditPropagationHeader.java
+END
+AuditAckDelFlag.java
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/globalprocessing/audit/AuditAckDelFlag.java
+END
+GlobalAuditingApplicator.java
+K 25
+svn:wc:ra_dav:version-url
+V 157
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/globalprocessing/audit/GlobalAuditingApplicator.java
+END
+H56H1RDS.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/globalprocessing/audit/H56H1RDS.java
+END
+H56HSRDS.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/globalprocessing/audit/H56HSRDS.java
+END
+EnquiryGlobalData.java
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/globalprocessing/audit/EnquiryGlobalData.java
+END
+SAPJ10RDS.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/globalprocessing/audit/SAPJ10RDS.java
+END
+APVCacheUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/globalprocessing/audit/APVCacheUtil.java
+END
+AuditType.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/globalprocessing/audit/AuditType.java
+END
+GlobalAuditUtils.java
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/globalprocessing/audit/GlobalAuditUtils.java
+END
+CharacterSubstitutionRequiredException.java
+K 25
+svn:wc:ra_dav:version-url
+V 171
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/globalprocessing/audit/CharacterSubstitutionRequiredException.java
+END
+AuditStatus.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/globalprocessing/audit/AuditStatus.java
+END
+PropData.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/globalprocessing/audit/PropData.java
+END
+EnquiryGlobalDataPropagation.java
+K 25
+svn:wc:ra_dav:version-url
+V 161
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/globalprocessing/audit/EnquiryGlobalDataPropagation.java
+END
+AuditEquationAPIMode.java
+K 25
+svn:wc:ra_dav:version-url
+V 153
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/globalprocessing/audit/AuditEquationAPIMode.java
+END
+RefType.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/globalprocessing/audit/RefType.java
+END
+GlobalAuditingManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/globalprocessing/audit/GlobalAuditingManager.java
+END
+SystemUnit.java
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/globalprocessing/audit/SystemUnit.java
+END
+GlobalAuditPropagationData.java
+K 25
+svn:wc:ra_dav:version-url
+V 159
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/globalprocessing/audit/GlobalAuditPropagationData.java
+END
+DSAIMUtilForCleanPayments.java
+K 25
+svn:wc:ra_dav:version-url
+V 158
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/globalprocessing/audit/DSAIMUtilForCleanPayments.java
+END
+UnitAuditUtils.java
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/globalprocessing/audit/UnitAuditUtils.java
+END
+ApplyType.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/globalprocessing/audit/ApplyType.java
+END
+ApplyStatus.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/globalprocessing/audit/ApplyStatus.java
+END
+IGlobalAuditingManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/globalprocessing/audit/IGlobalAuditingManager.java
+END
+DSAIMUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/globalprocessing/audit/DSAIMUtil.java
+END
+GlobalAuditEnquiryData.java
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/globalprocessing/audit/GlobalAuditEnquiryData.java
+END

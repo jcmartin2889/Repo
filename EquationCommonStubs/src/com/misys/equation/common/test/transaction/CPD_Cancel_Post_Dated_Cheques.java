@@ -1,0 +1,86 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseCancel;
+import com.misys.equation.common.test.TestEnvironment;
+
+/**
+ * Equation test cases for Cancel Post Dated Cheques function
+ */
+public class CPD_Cancel_Post_Dated_Cheques extends EquationTestCaseCancel
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: CPD_Cancel_Post_Dated_Cheques.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	String programName = "E65CRR";
+	String optionId = "CPD";
+	String addOptionId = "MDC";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		retrieveBeforeCancel = true;
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZDRF", "054312310007"); // Cheque deposit reference (12A)
+		transaction.setFieldValue("GZITM", "999"); // Cheque item number (3P,0)// Payment value date (7S,0)
+	}
+
+	/**
+	 * Setup an existing key fields
+	 */
+	@Override
+	public void setupExistKeyFields(EquationStandardTransaction transaction)
+	{
+		// transaction.setField("GZDRF", "054312310007"); // Cheque deposit reference (12A)
+		String reference = TestEnvironment.getTestEnvironment().getParameter(addOptionId);
+		if (reference != null)
+		{
+			transaction.setFieldValue("GZDRF", reference); // Transaction refer
+		}
+		else
+		{
+			transaction.setFieldValue("GZDRF", "Unknown"); // Transaction refer
+		}
+		transaction.setFieldValue("GZITM", "1"); // Cheque item number (3P,0)// Payment value date (7S,0)
+	}
+
+}

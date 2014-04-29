@@ -1,0 +1,366 @@
+package com.misys.equation.common.dao.beans;
+
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * SessionRecord data-model.
+ * 
+ * @author deroset
+ * 
+ */
+public class SessionRecordDataModel extends AbsRecord
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: SessionRecordDataModel.java 5234 2009-10-30 12:16:51Z macdonp1 $";
+
+	private static final long serialVersionUID = 1L;
+	private final static String RECORD_NAME = "WEXPF";
+
+	private String userId; // WEXUID
+	private String optionId; // WEXOID
+	private String sessionId; // WEXSID
+	private String transactionId; // WEXTID
+	private String mode; // WEXFCT
+	private String functionData; // WEXDTA
+	private String functionCRMData; // WEXDTA2
+	private String functionEFCData; // WEXDTA3
+	private String functionEFC2Data; // WEXDTA4
+	private String functionMessages; // WEXMSG
+	private String warningMessages; // WEXWARN
+	private String beforeImage; // WEBDTA
+
+	/**
+	 * Default constructor
+	 */
+	public SessionRecordDataModel()
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+
+	}
+
+	/**
+	 * Construct a new session record key
+	 * 
+	 * @param optionId
+	 *            - option id
+	 * @param sessionId
+	 *            - session id
+	 * @param transactionId
+	 *            - transaction id
+	 */
+	public SessionRecordDataModel(String optionId, String sessionId, String transactionId, String userId)
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+
+		setOptionId(optionId);
+		setSessionId(sessionId);
+		setTransactionId(transactionId);
+		setUserId(userId);
+	}
+
+	/**
+	 * Construct a new session record with details
+	 * 
+	 * @param optionId
+	 *            - option id
+	 * @param sessionId
+	 *            - session id
+	 * @param transactionId
+	 *            - transaction id
+	 * @param userId
+	 *            - user id
+	 * @param mode
+	 *            - function mode
+	 * @param functionData
+	 *            - function data
+	 * @param functionMessage
+	 *            - function message
+	 * @param functionCRMData
+	 *            - CRM function data
+	 * @param functionEFCData
+	 *            - EFC function data
+	 * @param functionEFC2Data
+	 *            - EFC 2 function data
+	 * @param warningMessages
+	 *            - warning messages
+	 * @param beforeImage
+	 *            - before image function data
+	 */
+	public SessionRecordDataModel(String optionId, String sessionId, String transactionId, String userId, String mode,
+					String functionData, String functionMessage, String functionCRMData, String functionEFCData,
+					String functionEFC2Data, String warningMessages, String beforeImage)
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+
+		setUserId(userId);
+		setOptionId(optionId);
+		setSessionId(sessionId);
+		setTransactionId(transactionId);
+		setMode(mode);
+		this.functionData = functionData;
+		this.functionMessages = functionMessage;
+		this.functionCRMData = functionCRMData;
+		this.functionEFCData = functionEFCData;
+		this.functionEFC2Data = functionEFC2Data;
+		this.warningMessages = warningMessages;
+		this.beforeImage = beforeImage;
+	}
+
+	// ---getters and setters----//
+
+	/**
+	 * Return the user id
+	 * 
+	 * @return the user id
+	 */
+	public String getUserId()
+	{
+		return userId;
+	}
+
+	/**
+	 * Set the user id
+	 * 
+	 * @param userId
+	 *            - the user id
+	 */
+	public void setUserId(String userId)
+	{
+		this.userId = Toolbox.trim(userId, 10);
+	}
+
+	/**
+	 * Return the option id
+	 * 
+	 * @return the option id
+	 */
+	public String getOptionId()
+	{
+		return optionId;
+	}
+
+	/**
+	 * Set the option id
+	 * 
+	 * @param optionId
+	 *            - the option id
+	 */
+	public void setOptionId(String optionId)
+	{
+		this.optionId = Toolbox.trim(optionId, 3);
+	}
+
+	/**
+	 * Return the session id
+	 * 
+	 * @return the session id
+	 */
+	public String getSessionId()
+	{
+		return sessionId;
+	}
+
+	/**
+	 * Set the session id
+	 * 
+	 * @param sessionId
+	 *            - the session id
+	 */
+	public void setSessionId(String sessionId)
+	{
+		this.sessionId = Toolbox.trim(sessionId, 50);
+	}
+
+	/**
+	 * Return the transaction id
+	 * 
+	 * @return the transaction id
+	 */
+	public String getTransactionId()
+	{
+		return transactionId;
+	}
+
+	/**
+	 * Set the transaction id
+	 * 
+	 * @param transactionId
+	 *            - the transaction id
+	 */
+	public void setTransactionId(String transactionId)
+	{
+		this.transactionId = Toolbox.trim(transactionId, 50);
+	}
+
+	/**
+	 * Return the function mode
+	 * 
+	 * @return the function mode
+	 */
+	public String getMode()
+	{
+		return mode;
+	}
+
+	/**
+	 * Set the function mode
+	 * 
+	 * @param mode
+	 *            - the function mode
+	 */
+	public void setMode(String mode)
+	{
+		this.mode = Toolbox.trim(mode, 5);
+	}
+
+	/**
+	 * Return the function data
+	 * 
+	 * @return the function data
+	 */
+	public String getFunctionData()
+	{
+		return functionData;
+	}
+
+	/**
+	 * Set the function data
+	 * 
+	 * @param functionData
+	 *            - the function data
+	 */
+	public void setFunctionData(String functionData)
+	{
+		this.functionData = functionData;
+	}
+
+	/**
+	 * Return the function message
+	 * 
+	 * @return the function message
+	 */
+	public String getFunctionMessages()
+	{
+		return functionMessages;
+	}
+
+	/**
+	 * Set the function message
+	 * 
+	 * @param functionMessage
+	 *            - the function message
+	 */
+	public void setFunctionMessages(String functionMessages)
+	{
+		this.functionMessages = functionMessages;
+	}
+
+	/**
+	 * Return the CRM function data
+	 * 
+	 * @return the CRM function data
+	 */
+	public String getFunctionCRMData()
+	{
+		return functionCRMData;
+	}
+
+	/**
+	 * Set the CRM function data
+	 * 
+	 * @param functionCRMData
+	 *            - the CRM function data
+	 */
+	public void setFunctionCRMData(String functionCRMData)
+	{
+		this.functionCRMData = functionCRMData;
+	}
+
+	/**
+	 * Return the EFC function data
+	 * 
+	 * @return the EFC function data
+	 */
+	public String getFunctionEFCData()
+	{
+		return functionEFCData;
+	}
+
+	/**
+	 * Set the EFC function data
+	 * 
+	 * @param functionEFCData
+	 *            - the EFC function data
+	 */
+	public void setFunctionEFCData(String functionEFCData)
+	{
+		this.functionEFCData = functionEFCData;
+	}
+
+	/**
+	 * Return the single charge detail
+	 * 
+	 * @return the single charge detail
+	 */
+	public String getFunctionEFC2Data()
+	{
+		return functionEFC2Data;
+	}
+
+	/**
+	 * Set the the single charge detail
+	 * 
+	 * @param functionEFC2Data
+	 *            - the single charge detail
+	 */
+	public void setFunctionEFC2Data(String functionEFC2Data)
+	{
+		this.functionEFC2Data = functionEFC2Data;
+	}
+
+	/**
+	 * Return the list of overridden warning messages
+	 * 
+	 * @return the list of overridden warning messages
+	 */
+	public String getWarningMessages()
+	{
+		return warningMessages;
+	}
+
+	/**
+	 * Set the list of overridden warning messages
+	 * 
+	 * @param warningMessages
+	 *            - the list of overridden warning messages
+	 */
+	public void setWarningMessages(String warningMessages)
+	{
+		this.warningMessages = warningMessages;
+	}
+
+	/**
+	 * Return the before image detail
+	 * 
+	 * @return the before image detail
+	 */
+	public String getBeforeImage()
+	{
+		return beforeImage;
+	}
+
+	/**
+	 * Set the before image detail
+	 * 
+	 * @param beforeImage
+	 *            - the before image detail
+	 */
+	public void setBeforeImage(String beforeImage)
+	{
+		this.beforeImage = beforeImage;
+	}
+
+}

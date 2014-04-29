@@ -1,0 +1,123 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseAddMaintain;
+
+/**
+ * Equation test cases for (Watch List) Check Deal Settlement function
+ */
+public class EWD extends EquationTestCaseAddMaintain
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	String programName = "W12MRR";
+	String optionId = "EWD";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZDLP", "FDD"); // Deal type (3A)
+		transaction.setFieldValue("GZDLR", "WLC001"); // Deal reference (13A)
+		transaction.setFieldValue("GZBRNM", "LOND"); // Branch mnemonic (4A)
+		transaction.setFieldValue("GZGDLP", ""); // Group deal type (3A)
+		transaction.setFieldValue("GZGDLR", ""); // Group deal reference (13A)
+		transaction.setFieldValue("GZGBNM", ""); // Group deal branch (4A)
+
+		/**
+		 * Although not actual key fields, these are needed here. Otherwise, case status will be incorrect, i.e. a no hit status
+		 * after the last test.
+		 */
+		transaction.setFieldValue("GZDLFD", "Y"); // Load from database (1A)
+		transaction.setFieldValue("GZDUPF", "Y"); // Update database if watch list unavailable? (1A)
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	@Override
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZDSES", "N"); // Suspect on external system (1A)
+		transaction.setFieldValue("GZDSWC", "N"); // Suppress watch list checking (1A)
+		transaction.setFieldValue("GZDCEX", "N"); // Case exists (1A)
+		transaction.setFieldValue("GZDSAU", "N"); // Suppress authorisation (1A)
+		transaction.setFieldValue("GZDWLC", "N"); // Already performed watch list checking (1A)
+	}
+
+	/**
+	 * Setup the mandatory fields (maintain mode)
+	 */
+	@Override
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZDSES", "N"); // Suspect on external system (1A)
+		transaction.setFieldValue("GZDSWC", "N"); // Suppress watch list checking (1A)
+		transaction.setFieldValue("GZDCEX", "N"); // Case exists (1A)
+		transaction.setFieldValue("GZDSAU", "N"); // Suppress authorisation (1A)
+		transaction.setFieldValue("GZDWLC", "N"); // Already performed watch list checking (1A)
+	}
+
+	/**
+	 * Test: maintain mode: non-existing record<br>
+	 * Expected result: Fail<br>
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public void test00500Maint_NonExistingRecord() throws Exception
+	{
+		// Not a valid test because @FCT is set automatically in the function.
+	}
+	/**
+	 * Test: add mode: duplicate record<br>
+	 * Expected result: Fail<br>
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public void test00700Add_DuplicateRecord() throws Exception
+	{
+		// Not a valid test because @FCT is set automatically in the function.
+	}
+}

@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/WEB-INF/ServiceDirectoryService/com/misys/equation/ui/services
+END
+undeploy.wsdd
+K 25
+svn:wc:ra_dav:version-url
+V 163
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/WEB-INF/ServiceDirectoryService/com/misys/equation/ui/services/undeploy.wsdd
+END
+deploy.wsdd
+K 25
+svn:wc:ra_dav:version-url
+V 161
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/WebContent/WEB-INF/ServiceDirectoryService/com/misys/equation/ui/services/deploy.wsdd
+END

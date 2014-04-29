@@ -1,0 +1,403 @@
+package com.misys.equation.common.dao.beans;
+
+import com.misys.equation.common.utilities.Toolbox;
+
+public class OCRecordDataModel extends AbsRecord
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private static final long serialVersionUID = 1L;
+	public final static String LIMIT_OVERRIDE_SUPERVISOR = "S";
+	public final static String LIMIT_OVERRIDE_ESF = "E";
+
+	private final static String RECORD_NAME = "OCPF";
+
+	private String userId = ""; // OCUSID
+	private String optionId = ""; // OCOID
+	private String branch = ""; // OCBRNM
+	private String language = ""; // OCLNM
+	private String limitAuth = ""; // OCLVA
+	private String userName = ""; // OCUNAM
+	private String branchNo = ""; // OCBBN
+	private String phoneNo = ""; // OCPHN
+	private String extNo = ""; // OCEXTN
+	private String availCode = ""; // OCAVC
+	private String userClass = ""; // OCCOA
+	private String authAnyBranch = ""; // OCAAB
+	private String authClass = ""; // OCAUT
+	private String authLevel = ""; // OCLVL
+	private String showLocalTime = ""; // OCSHLT
+	private String bankFusionUserId = ""; // OCBFUS
+	private String osUserId = ""; // OCOSID
+
+	/**
+	 * Default constructor
+	 */
+	public OCRecordDataModel()
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+
+	}
+
+	/**
+	 * Construct a new OC password
+	 * 
+	 * @param userId
+	 *            - user Id
+	 */
+	public OCRecordDataModel(String userId)
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+		setUserId(userId);
+	}
+
+	// ---getters and setters----//
+
+	/**
+	 * Return the user id
+	 * 
+	 * @return the user id
+	 */
+	public String getUserId()
+	{
+		return userId;
+	}
+
+	/**
+	 * Set the user id
+	 * 
+	 * @param userId
+	 *            - the user id
+	 */
+	public void setUserId(String userId)
+	{
+		this.userId = Toolbox.trim(userId, 4);
+	}
+
+	/**
+	 * Return the option Id
+	 * 
+	 * @return the option Id
+	 */
+	public String getOptionId()
+	{
+		return optionId;
+	}
+
+	/**
+	 * Set the option Id
+	 * 
+	 * @param optionId
+	 *            - the option Id
+	 */
+	public void setOptionId(String optionId)
+	{
+		this.optionId = Toolbox.trim(optionId, 3);
+	}
+
+	/**
+	 * Return the user's branch
+	 * 
+	 * @return the user's branch
+	 */
+	public String getBranch()
+	{
+		return branch;
+	}
+
+	/**
+	 * Set the user's branch
+	 * 
+	 * @param branch
+	 *            - the user's branch
+	 */
+	public void setBranch(String branch)
+	{
+		this.branch = Toolbox.trim(branch, 4);
+	}
+
+	/**
+	 * Return the user's language
+	 * 
+	 * @return the user's language
+	 */
+	public String getLanguage()
+	{
+		return language;
+	}
+
+	/**
+	 * Set the user's language
+	 * 
+	 * @param language
+	 *            - the user's language
+	 */
+	public void setLanguage(String language)
+	{
+		this.language = Toolbox.trim(language, 2);
+	}
+
+	/**
+	 * Return the user's limit violation authority
+	 * 
+	 * @return the user's limit violation authority
+	 */
+	public String getLimitAuth()
+	{
+		return limitAuth;
+	}
+
+	/**
+	 * Set the user's limit violation authority
+	 * 
+	 * @param limitAuth
+	 *            - the user's limit violation authority
+	 */
+	public void setLimitAuth(String limitAuth)
+	{
+		this.limitAuth = Toolbox.trim(limitAuth, 1);
+	}
+
+	/**
+	 * Return the user's name
+	 * 
+	 * @return the user's name
+	 */
+	public String getUserName()
+	{
+		return userName;
+	}
+
+	/**
+	 * Set the user's name
+	 * 
+	 * @param userName
+	 *            - the user's name
+	 */
+	public void setUserName(String userName)
+	{
+		this.userName = Toolbox.trim(userName, 35);
+	}
+
+	/**
+	 * Return the user's branch number
+	 * 
+	 * @return the user's branch number
+	 */
+	public String getBranchNo()
+	{
+		return branchNo;
+	}
+
+	/**
+	 * Set the user's branch number
+	 * 
+	 * @param branchNo
+	 *            - the user's branch number
+	 */
+	public void setBranchNo(String branchNo)
+	{
+		this.branchNo = Toolbox.trim(branchNo, 4);
+	}
+
+	/**
+	 * Return the user's phone number
+	 * 
+	 * @return the user's phone number
+	 */
+	public String getPhoneNo()
+	{
+		return phoneNo;
+	}
+
+	/**
+	 * Set the user's phone number
+	 * 
+	 * @param phoneNo
+	 *            - the user's phone number
+	 */
+	public void setPhoneNo(String phoneNo)
+	{
+		this.phoneNo = Toolbox.trim(phoneNo, 20);
+	}
+
+	/**
+	 * Return the user's extension number
+	 * 
+	 * @return the user's extension number
+	 */
+	public String getExtNo()
+	{
+		return extNo;
+	}
+
+	/**
+	 * Set the user's extension number
+	 * 
+	 * @param extNo
+	 *            - the user's extension number
+	 */
+	public void setExtNo(String extNo)
+	{
+		this.extNo = Toolbox.trim(extNo, 20);
+	}
+
+	/**
+	 * Return the user's availability code
+	 * 
+	 * @return the user's availability code
+	 */
+	public String getAvailCode()
+	{
+		return availCode;
+	}
+
+	/**
+	 * Set the user's availability
+	 * 
+	 * @param availCode
+	 *            - the user's availability
+	 */
+	public void setAvailCode(String availCode)
+	{
+		this.availCode = Toolbox.trim(availCode, 3);
+	}
+
+	/**
+	 * Return the user's class
+	 * 
+	 * @return the user's class
+	 */
+	public String getUserClass()
+	{
+		return userClass;
+	}
+
+	/**
+	 * Set the user's class
+	 * 
+	 * @param userClass
+	 *            - the user's class
+	 */
+	public void setUserClass(String userClass)
+	{
+		this.userClass = Toolbox.trim(userClass, 3);
+	}
+
+	/**
+	 * Return whether user is authorised to any branch
+	 * 
+	 * @return whether user is authorised to any branch
+	 */
+	public String getAuthAnyBranch()
+	{
+		return authAnyBranch;
+	}
+
+	/**
+	 * Set whether user is authorised to any branch
+	 * 
+	 * @param authAnyBranch
+	 *            - whether user is authorised to any branch
+	 */
+	public void setAuthAnyBranch(String authAnyBranch)
+	{
+		this.authAnyBranch = Toolbox.trim(authAnyBranch, 1);
+	}
+
+	/**
+	 * Return user's authorisation class
+	 * 
+	 * @return user's authorisation class
+	 */
+	public String getAuthClass()
+	{
+		return authClass;
+	}
+
+	/**
+	 * Set user's authorisation class
+	 * 
+	 * @param authClass
+	 *            - user's authorisation class
+	 */
+	public void setAuthClass(String authClass)
+	{
+		this.authClass = Toolbox.trim(authClass, 1);
+	}
+
+	/**
+	 * Return user's authorisation level
+	 * 
+	 * @return user's authorisation level
+	 */
+	public String getAuthLevel()
+	{
+		return authLevel;
+	}
+
+	/**
+	 * Set user's authorisation level
+	 * 
+	 * @param authLevel
+	 *            - user's authorisation level
+	 */
+	public void setAuthLevel(String authLevel)
+	{
+		this.authLevel = Toolbox.trim(authLevel, 1);
+	}
+
+	/**
+	 * 
+	 * @param showLocalTime
+	 *            Show local time on Enquiry (Y/N)
+	 */
+	public void setShowLocalTime(String showLocalTime)
+	{
+		this.showLocalTime = showLocalTime;
+	}
+
+	/**
+	 * @return Show local time on Enquiry (Y/N)
+	 */
+	public String getShowLocalTime()
+	{
+		return showLocalTime;
+	}
+
+	/**
+	 * @return the BankFusion UserId
+	 */
+	public String getBankFusionUserId()
+	{
+		return bankFusionUserId;
+	}
+
+	/**
+	 * @param bankFusionUserId
+	 *            the BankFusion UserId
+	 */
+	public void setBankFusionUserId(String bankFusionUserId)
+	{
+		this.bankFusionUserId = bankFusionUserId;
+	}
+
+	/**
+	 * @param osUserId
+	 *            the osUserId to set
+	 */
+	public void setOsUserId(String osUserId)
+	{
+		this.osUserId = osUserId;
+	}
+
+	/**
+	 * @return the osUserId
+	 */
+	public String getOsUserId()
+	{
+		return osUserId;
+	}
+}

@@ -1,0 +1,75 @@
+package com.misys.equation.common.consolidation;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.dao.DaoFactory;
+import com.misys.equation.common.dao.IDao;
+import com.misys.equation.common.dao.IGFLRecordDao;
+import com.misys.equation.common.dao.beans.GFLDataModel;
+import com.misys.equation.common.internal.eapi.core.EQException;
+
+public class GFLDaoConsolidator extends DaoConsolidator
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/**
+	 * Constructor
+	 * 
+	 * @param session
+	 *            EquationStandardSession
+	 * @throws EQException
+	 */
+	public GFLDaoConsolidator(EquationStandardSession session) throws EQException
+	{
+		super(session, DaoFactory.GFL_RECORD_DAO_NAME);
+	}
+
+	public Collection<GFLDataModel> getOvernightPositions(final String enqCurrency)
+	{
+		List<GFLDataModel> coll = new ArrayList<GFLDataModel>();
+
+		int i = 0;
+		for (IDao iDao : daos)
+		{
+			IGFLRecordDao dao = (IGFLRecordDao) iDao;
+			coll.addAll(dao.getOvernightPositions(enqCurrency));
+			i++;
+		}
+
+		return coll;
+	}
+
+	public Collection<GFLDataModel> getStartOfDayMaturityPositions(final String enqCurrency, final String enqEndDate)
+	{
+		List<GFLDataModel> coll = new ArrayList<GFLDataModel>();
+
+		int i = 0;
+		for (IDao iDao : daos)
+		{
+			IGFLRecordDao dao = (IGFLRecordDao) iDao;
+			coll.addAll(dao.getStartOfDayMaturityPositions(enqCurrency, enqEndDate));
+			i++;
+		}
+
+		return coll;
+	}
+
+	public Collection<GFLDataModel> getPositions(final String enqCurrency, final String enqEndDate)
+	{
+		List<GFLDataModel> coll = new ArrayList<GFLDataModel>();
+
+		int i = 0;
+		for (IDao iDao : daos)
+		{
+			IGFLRecordDao dao = (IGFLRecordDao) iDao;
+			coll.addAll(dao.getPositions(enqCurrency, enqEndDate));
+			i++;
+		}
+
+		return coll;
+	}
+}

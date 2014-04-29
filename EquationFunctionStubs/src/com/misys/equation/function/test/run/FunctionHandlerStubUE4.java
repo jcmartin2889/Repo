@@ -1,0 +1,344 @@
+package com.misys.equation.function.test.run;
+
+import java.util.List;
+
+import com.misys.equation.common.dao.DaoFactory;
+import com.misys.equation.common.dao.IHBRecordDao;
+import com.misys.equation.common.dao.beans.HBXRecordDataModel;
+import com.misys.equation.common.dao.beans.HBRecordDataModel;
+import com.misys.equation.common.files.JournalHeader;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.internal.eapi.core.EQMessage;
+import com.misys.equation.common.utilities.Toolbox;
+import com.misys.equation.function.beans.FunctionData;
+import com.misys.equation.function.runtime.FunctionHandler;
+import com.misys.equation.function.runtime.FunctionMessage;
+
+/**
+ * Test Stub for the UE4 service.<br/>
+ * This is basically layout testing. As such the bulk of the testing needs to be carried out interactively
+ */
+public class FunctionHandlerStubUE4 extends FunctionHandlerStubTestCase
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: FunctionHandlerStubUE4.java 11230 2011-06-17 12:25:36Z rpatrici $";
+
+	/** The hold code ID to use in the testing */
+	private static final String HCI_KEY = "ST1";
+
+	private static final String JOURNAL_APPLICATION_CODE = "UE";
+	private static final String JOURNAL_IDENTITY = "Account  number";
+	private static final String JOURNAL_SHORT_NAME = "Test short name";
+	private static final String JOURNAL_REFERENCE = "12345678901234567";
+
+	FunctionHandler functionHandler = null;
+
+	public FunctionHandlerStubUE4()
+	{
+	}
+
+	@Override
+	public void setUp()
+	{
+
+		try
+		{
+			super.setUp();
+			System.out.println("------------------------------- 1");
+			functionHandler = FunctionToolboxStub.getFunctionHandler(user, "SESSIONID", "");
+			addHBXPFRecords();
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Deletes the existing record if it exists
+	 */
+	public void testStubUE4_001()
+	{
+		String inputRef = "Test 001 ";
+		try
+		{
+			// Following assertion will fail if not authorised
+			assertTrue(functionHandler.doNewTransaction("UE2", ""));
+			FunctionData functionData = functionHandler.getFhd().getScreenSetHandler().rtvScrnSetCurrent().getFunctionData();
+
+			functionData.chgFieldDbValue("HCI_HRC", HCI_KEY);
+
+			functionData.chgFieldDbValue("WORK_APP", JOURNAL_APPLICATION_CODE); // Application code
+			functionData.chgFieldDbValue("WORK_WHO", JOURNAL_IDENTITY); // Who (account/customer/nostro)
+			functionData.chgFieldDbValue("WORK_SHN", JOURNAL_SHORT_NAME); // Short name
+			functionData.chgFieldDbValue("WORK_JREF", JOURNAL_REFERENCE); // Journal reference
+			functionData.chgFieldDbValue("WORK_IREF", inputRef); // Journal reference
+
+			List<FunctionMessage> messages = validateFunction(functionHandler);
+			assertEquals(0, messages.size());
+
+			int loadResult = functionHandler.applyRetrieveTransaction();
+			assertEquals(-1, loadResult);
+
+			// Note: don't get a not found message here:
+			messages = validateFunction(functionHandler);
+			FunctionToolboxStub.printMessages(messages);
+			// assertEquals(0, messages.size());
+
+			int deleteResult = functionHandler.applyTransactionDelete();
+			assertEquals(-1, deleteResult);
+			Toolbox.printList(functionHandler.print());
+
+			messages = functionHandler.rtvFunctionMessages().getMessages();
+			FunctionToolboxStub.printMessages(messages);
+			if (containsMessage(functionHandler, "KSM2010" + HCI_KEY, ""))
+			{
+				assertEquals(1, messages.size());
+			}
+			else
+			{
+				assertEquals(0, messages.size());
+				// retrieve journal header
+				JournalHeader journalHeader = functionHandler.getFhd().getJournalHeader();
+				assertNotNull(journalHeader);
+				System.out.println("Journal Header [" + journalHeader + "]");
+			}
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Adds a new hold code<br/>
+	 * Tests assignment of journal header values (via the reserved "GY" pseudo APIFieldSet).<br/>
+	 * Tests basic Load and Update API processing (HCI option)
+	 */
+	public void testStubUE2_002()
+	{
+		String inputRef = "Test 002 (Add)";
+		try
+		{
+			// Following assertion will fail if not authorised
+			assertTrue(functionHandler.doNewTransaction("UE2", ""));
+			FunctionData functionData = functionHandler.getFhd().getScreenSetHandler().rtvScrnSetCurrent().getFunctionData();
+
+			functionData.chgFieldInputValue("HCI_HRC", "A:1"); // Invalid character (must be A-Z, 0-9)
+			List<FunctionMessage> messages = validateFunction(functionHandler);
+			assertTrue(containsMessage(functionHandler, "KSM2039Hold Code", "HCI_HRC"));
+			// TODO: The following has been commented as field min size limit caused 2nd error
+			// assertEquals(1, messages.size());
+
+			functionData.chgFieldInputValue("HCI_HRC", HCI_KEY);
+			// 
+			functionData.chgFieldDbValue("WORK_APP", JOURNAL_APPLICATION_CODE); // Application code
+			functionData.chgFieldDbValue("WORK_WHO", JOURNAL_IDENTITY); // Who (account/customer/nostro)
+			functionData.chgFieldDbValue("WORK_SHN", JOURNAL_SHORT_NAME); // Short name
+			functionData.chgFieldDbValue("WORK_JREF", JOURNAL_REFERENCE); // Journal reference
+			functionData.chgFieldDbValue("WORK_IREF", inputRef); // Journal reference
+
+			messages = validateFunction(functionHandler);
+			assertEquals(0, messages.size());
+
+			int loadResult = functionHandler.applyRetrieveTransaction();
+			assertEquals(-1, loadResult);
+
+			functionData.chgFieldDbValue("HCI_HRD", "System test (added)");
+			validateFunction(functionHandler);
+			messages = functionHandler.rtvFunctionMessages().getMessages();
+			FunctionToolboxStub.printMessages(messages);
+			assertEquals(0, messages.size());
+
+			functionHandler.applyTransaction();
+			Toolbox.printList(functionHandler.print());
+
+			messages = functionHandler.rtvFunctionMessages().getMessages();
+			FunctionToolboxStub.printMessages(messages);
+			assertEquals(0, messages.size());
+
+			// retrieve journal header
+			JournalHeader journalHeader = functionHandler.getFhd().getJournalHeader();
+			assertNotNull(journalHeader);
+			System.out.println("Journal Header [" + journalHeader + "]");
+
+			// Note that this doesn't actually check the journal file...
+			assertEquals(JOURNAL_APPLICATION_CODE, journalHeader.getApplication());
+			assertEquals(JOURNAL_IDENTITY, journalHeader.getIdentity());
+			assertEquals(JOURNAL_SHORT_NAME, journalHeader.getIdentityShortName());
+			assertEquals(JOURNAL_REFERENCE, journalHeader.getJournalRef());
+
+			assertEquals(inputRef, journalHeader.getInputRef());
+
+			System.out.println("The GYPF record must be checked for the actual values.");
+
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Maintains the hold code added in test 003<br/>
+	 */
+	public void testStubUE2_003()
+	{
+		String inputRef = "Test 003 (maintain)";
+		try
+		{
+			// Following assertion will fail if not authorised
+			assertTrue(functionHandler.doNewTransaction("UE2", ""));
+			FunctionData functionData = functionHandler.getFhd().getScreenSetHandler().rtvScrnSetCurrent().getFunctionData();
+
+			functionData.chgFieldInputValue("HCI_HRC", HCI_KEY);
+			// 
+			functionData.chgFieldDbValue("WORK_APP", JOURNAL_APPLICATION_CODE); // Application code
+			functionData.chgFieldDbValue("WORK_WHO", HCI_KEY); // Who (account/customer/nostro)
+			functionData.chgFieldDbValue("WORK_SHN", JOURNAL_SHORT_NAME); // Short name
+			functionData.chgFieldDbValue("WORK_JREF", JOURNAL_REFERENCE); // Journal reference
+			functionData.chgFieldDbValue("WORK_IREF", inputRef); // Journal input reference
+
+			List<FunctionMessage> messages = validateFunction(functionHandler);
+			assertEquals(0, messages.size());
+
+			int loadResult = functionHandler.applyRetrieveTransaction();
+			assertEquals(-1, loadResult);
+
+			functionData.chgFieldDbValue("HCI_HRD", "System test (Maintained)");
+			validateFunction(functionHandler);
+			messages = functionHandler.rtvFunctionMessages().getMessages();
+			FunctionToolboxStub.printMessages(messages);
+			assertEquals(0, messages.size());
+
+			functionHandler.applyTransaction();
+			Toolbox.printList(functionHandler.print());
+
+			messages = functionHandler.rtvFunctionMessages().getMessages();
+			FunctionToolboxStub.printMessages(messages);
+			assertEquals(0, messages.size());
+
+			// retrieve journal header
+			JournalHeader journalHeader = functionHandler.getFhd().getJournalHeader();
+			assertNotNull(journalHeader);
+			System.out.println("Journal Header [" + journalHeader + "]");
+
+			// Note that this doesn't actually check the journal file...
+			assertEquals(JOURNAL_APPLICATION_CODE, journalHeader.getApplication());
+			assertEquals(HCI_KEY, journalHeader.getIdentity());
+			assertEquals(JOURNAL_SHORT_NAME, journalHeader.getIdentityShortName());
+			assertEquals(JOURNAL_REFERENCE, journalHeader.getJournalRef());
+
+			assertEquals(inputRef, journalHeader.getInputRef());
+
+			System.out.println("The GYPF record must be checked for the actual values.");
+
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Deletes the existing record (it should exist)
+	 */
+	public void testStubUE2_004()
+	{
+		String inputRef = "Test 003 (delete)";
+		try
+		{
+			// Following assertion will fail if not authorised
+			assertTrue(functionHandler.doNewTransaction("UE2", ""));
+			FunctionData functionData = functionHandler.getFhd().getScreenSetHandler().rtvScrnSetCurrent().getFunctionData();
+
+			functionData.chgFieldDbValue("HCI_HRC", HCI_KEY);
+
+			functionData.chgFieldDbValue("WORK_APP", JOURNAL_APPLICATION_CODE); // Application code
+			functionData.chgFieldDbValue("WORK_WHO", JOURNAL_IDENTITY); // Who (account/customer/nostro)
+			functionData.chgFieldDbValue("WORK_SHN", JOURNAL_SHORT_NAME); // Short name
+			functionData.chgFieldDbValue("WORK_JREF", JOURNAL_REFERENCE); // Journal reference
+			functionData.chgFieldDbValue("WORK_IREF", inputRef); // Journal reference
+
+			int loadResult = functionHandler.applyRetrieveTransaction();
+			assertEquals(-1, loadResult);
+
+			functionHandler.applyTransactionDelete();
+			Toolbox.printList(functionHandler.print());
+
+			List<FunctionMessage> messages = functionHandler.rtvFunctionMessages().getMessages();
+			assertEquals(0, messages.size());
+
+			// retrieve journal header
+			JournalHeader journalHeader = functionHandler.getFhd().getJournalHeader();
+			assertNotNull(journalHeader);
+			System.out.println("Journal Header [" + journalHeader + "]");
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+
+	}
+
+	/**
+	 * This test checks for mandatory validation on the Reference, CCY and AMT and Value from date fields
+	 */
+
+	private List<FunctionMessage> validateFunction(FunctionHandler functionHandler)
+	{
+		// ScreenSet screenSet = functionHandler.getFhd().getScreenSetHandler().rtvScrnSetCurrent();
+		try
+		{
+			functionHandler.validate();
+		}
+		catch (EQException e)
+		{
+			throw new RuntimeException(e);
+		}
+
+		return functionHandler.rtvFunctionMessages().getMessages();
+	}
+
+	private boolean containsMessage(FunctionHandler functionHandler, String dsepmsText, String fieldId)
+	{
+		boolean result = false;
+		List<FunctionMessage> messages = functionHandler.rtvFunctionMessages().getMessages();
+		for (FunctionMessage message : messages)
+		{
+			if (fieldId == null || fieldId.equals(message.getFieldName()))
+			{
+				EQMessage eqMessage = message.getEqMessage();
+
+				if (eqMessage.getDsepms().equals(dsepmsText))
+				{
+					// Found a match...
+
+					result = true;
+				}
+			}
+		}
+		return result;
+	}
+
+	private void addHBXPFRecords()
+	{
+		HBRecordDataModel hbRecord = new HBRecordDataModel();
+		hbRecord.setLanguageCode("");
+		hbRecord.setFilePrefix("ACE");
+		hbRecord.setDateLastMaintained(0000000);
+
+		DaoFactory daoFactory = new DaoFactory();
+		IHBRecordDao hbRecordDao = daoFactory.getHBDao(session, hbRecord);
+
+		hbRecord.setFileKey(HBXRecordDataModel.HBX_LABEL_PREFIX + "000001");
+		hbRecord.setCodeDescription("0000001 Label");
+		hbRecord.setLanguageCode("");
+		hbRecordDao.insertOrUpdateRecord();
+
+		hbRecord.setFileKey(HBXRecordDataModel.HBX_LABEL_PREFIX + "000002");
+		hbRecord.setCodeDescription("0000002 Label");
+		hbRecordDao.insertOrUpdateRecord();
+	}
+
+}

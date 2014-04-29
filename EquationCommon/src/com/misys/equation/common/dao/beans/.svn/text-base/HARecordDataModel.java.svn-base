@@ -1,0 +1,170 @@
+package com.misys.equation.common.dao.beans;
+
+public class HARecordDataModel extends AbsRecord
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private static final long serialVersionUID = 1L;
+	private final static String RECORD_NAME = "HAPF";
+
+	private String languageCode; // HALNM
+	private String fileKey; // HACFK
+	private String codeDescription; // HASDX
+	private int dateLastMaintained; // HADLM
+	private String maintIllegal; // HAMIL
+	private byte[] byteCodeDescription; // code description in bytes
+
+	/**
+	 * Default constructor
+	 */
+	public HARecordDataModel()
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+
+	}
+
+	/**
+	 * Construct a new HA record
+	 * 
+	 * @param languageCode
+	 *            - the language code
+	 * @param fileKey
+	 *            - the file key
+	 */
+	public HARecordDataModel(String languageCode, String fileKey)
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+		this.languageCode = languageCode;
+		this.fileKey = fileKey;
+	}
+
+	// ---getters and setters----//
+
+	/**
+	 * Return the language code
+	 */
+	public String getLanguageCode()
+	{
+		return languageCode;
+	}
+
+	/**
+	 * Set the language code
+	 * 
+	 * @param languageCode
+	 *            - the language code
+	 */
+	public void setLanguageCode(String languageCode)
+	{
+		this.languageCode = languageCode;
+	}
+
+	/**
+	 * Return the file key
+	 * 
+	 * @return the file key
+	 */
+	public String getFileKey()
+	{
+		return fileKey;
+	}
+
+	/**
+	 * Set the file key
+	 * 
+	 * @param fileKey
+	 *            - the file key
+	 */
+	public void setFileKey(String fileKey)
+	{
+		this.fileKey = fileKey;
+	}
+
+	/**
+	 * Return the code description
+	 * 
+	 * @return the code description
+	 */
+	public String getCodeDescription()
+	{
+		return codeDescription;
+	}
+
+	/**
+	 * Set the code description
+	 * 
+	 * @param codeDescription
+	 *            - the code description
+	 */
+	public void setCodeDescription(String codeDescription)
+	{
+		this.codeDescription = codeDescription;
+	}
+
+	/**
+	 * Return the date last maintained
+	 * 
+	 * @return the date last maintained
+	 */
+	public int getDateLastMaintained()
+	{
+		return dateLastMaintained;
+	}
+
+	/**
+	 * Set the date last maintained
+	 * 
+	 * @param dateLastMaintained
+	 *            - the date last maintained
+	 */
+	public void setDateLastMaintained(int dateLastMaintained)
+	{
+		this.dateLastMaintained = dateLastMaintained;
+	}
+
+	/**
+	 * Return the code description in bytes
+	 * 
+	 * @return the code description in bytes
+	 */
+	public byte[] getByteCodeDescription()
+	{
+		return byteCodeDescription;
+	}
+
+	/**
+	 * Set the code description in bytes
+	 * 
+	 * @param byteCodeDescription
+	 *            - the code description in bytes
+	 */
+	public void setByteCodeDescription(byte[] byteCodeDescription)
+	{
+		this.byteCodeDescription = byteCodeDescription;
+	}
+
+	/**
+	 * Return the maintenance illegal flag
+	 * 
+	 * @return the maintenance illegal flag
+	 */
+	public String getMaintIllegal()
+	{
+		return maintIllegal;
+	}
+
+	/**
+	 * Set the maintenance illegal flag
+	 * 
+	 * @param maintIllegal
+	 *            - the maintenance illegal flag
+	 */
+	public void setMaintIllegal(String maintIllegal)
+	{
+		this.maintIllegal = maintIllegal;
+	}
+
+}

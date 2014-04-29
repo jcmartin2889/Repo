@@ -1,0 +1,1021 @@
+package com.misys.equation.function.beans;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.misys.equation.common.utilities.Toolbox;
+import com.misys.equation.function.beans.valid.FunctionProblemLocation;
+import com.misys.equation.function.beans.valid.MessageContainer;
+
+/**
+ * Represents a Group of DisplayItems.
+ * <p>
+ * A group can have a label for the
+ * 
+ * @author perkinj1
+ */
+public class DisplayGroup extends Element implements IDisplayItem
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: DisplayGroup.java 10275 2011-01-17 14:55:18Z MACDONP1 $";
+
+	/** List of items */
+	private DisplayItemList items = new DisplayItemList();
+
+	/** The prefix that is automatically prepended to all DisplayGroup IDs to distinguish them from DisplayAttributes IDs */
+	public static final String GROUP_ID_PREFIX = "+";
+
+	/**
+	 * The reserved name of a display group that is always created and holds all key fields.
+	 * <p>
+	 * This must be prefixed with the <code>GROUP_ID_PREFIX</code> before comparing against existing group ids
+	 **/
+	public static final String KEY_GROUP_ID = "KEYS";
+
+	/** The name of the KEYS group, including the Group Prefix */
+	public static final String FULL_KEY_GROUP_ID = GROUP_ID_PREFIX + KEY_GROUP_ID;
+
+	/** default view */
+	private boolean defaultOpen;
+
+	private String visible;
+	private String visibleExpression;
+
+	/** Linked functions associated with this repeating group */
+	private List<LinkedFunction> linkedFunctions;
+
+	/** Repeating group Id. Blank if not repeating */
+	private String repeatingGroup;
+
+	/** Key fields for repeating group. This is colon delimited list of field ids */
+	private String keys;
+
+	public static final String EDIT_MODE_DEFAULT = "";
+	public static final String EDIT_MODE_IN_PLACE = "1";
+
+	/** Edit mode for repeating group */
+	private String editMode;
+
+	/** Number of rows to be displayed */
+	private int repeatingRowsDisplayed;
+
+	/** Label for the break by */
+	private String breakByText;
+
+	/** Group by for repeating group. This is colon delimited list of field ids */
+	private String breakBy;
+
+	/** Summation by for repeating group. This is colon delimited list of field ids */
+	private String summationBy;
+
+	/** Determine the position of the text for the totals */
+	private String totalLabelPosition;
+	private String totalLabelTextScript;
+	private String totalSubLabelTextScript;
+
+	// Repeating group unit row. default value.
+	public static final String UNIT_MNEMONIC_VALUE = "";
+	// Repeating group unit row.
+	private String unitMnemonic = "";
+	// Repeating group system row.
+	private String systemId = "";
+
+	/** Determine the row style for the even rows */
+	private String rowStyleEvenExpression;
+
+	/** Determine the row style for the odd rows */
+	private String rowStyleOddExpression;
+
+	/** Table style */
+	private String tableHeaderStyleExpression;
+	private String tableDataStyleExpression;
+	private String tableFooterStyleExpression;
+	private String grandTotalStyleExpression;
+
+	/** Sorting allowed */
+	private boolean allowSorting;
+
+	/** The number of rows to be returned to the client at any given time */
+	private int pagingSize;
+
+	/** Label script - allow user to generate the label at runtime */
+	private String labelScriptRunTime;
+
+	/**
+	 * Construct a new empty DisplayAttributesSet
+	 */
+	public DisplayGroup()
+	{
+		super();
+		commonInitialisation();
+	}
+
+	/**
+	 * Construct a new DisplayAttributesSet with the supplied details
+	 * 
+	 * @param id
+	 *            - identifies the set
+	 * @param label
+	 *            - label of the set
+	 * @param description
+	 *            - description of the set
+	 */
+	public DisplayGroup(String id, String label, String description)
+	{
+		super(id, label, description);
+		commonInitialisation();
+	}
+
+	/**
+	 * Construct a new DisplayGroup, copying the id, label and description from the supplied Element
+	 * 
+	 * @param element
+	 *            - An Element
+	 */
+	public DisplayGroup(Element element)
+	{
+		super(element);
+		commonInitialisation();
+	}
+
+	/**
+	 * Construct a new DisplayGroup from another DisplayGroup
+	 * 
+	 * @param element
+	 *            - A Display Group Element
+	 */
+	public DisplayGroup(DisplayGroup element)
+	{
+		super(element);
+		this.defaultOpen = element.defaultOpen;
+		this.visible = element.visible;
+		this.visibleExpression = element.visibleExpression;
+		this.linkedFunctions = element.linkedFunctions;
+		this.repeatingGroup = element.repeatingGroup;
+		this.items.addAll(element.items);
+		this.keys = element.keys;
+		this.editMode = element.editMode;
+		this.repeatingRowsDisplayed = element.repeatingRowsDisplayed;
+		this.breakBy = element.breakBy;
+		this.breakByText = element.breakByText;
+		this.summationBy = element.summationBy;
+		this.totalLabelPosition = element.totalLabelPosition;
+		this.totalLabelTextScript = element.totalLabelTextScript;
+		this.totalSubLabelTextScript = element.totalSubLabelTextScript;
+		this.rowStyleEvenExpression = element.rowStyleEvenExpression;
+		this.rowStyleOddExpression = element.rowStyleOddExpression;
+		this.tableHeaderStyleExpression = element.tableHeaderStyleExpression;
+		this.tableDataStyleExpression = element.tableDataStyleExpression;
+		this.tableFooterStyleExpression = element.tableFooterStyleExpression;
+		this.grandTotalStyleExpression = element.grandTotalStyleExpression;
+		this.allowSorting = element.allowSorting;
+		this.pagingSize = element.pagingSize;
+		this.labelScriptRunTime = element.labelScriptRunTime;
+	}
+
+	/**
+	 * Common initialisation
+	 */
+	public void commonInitialisation()
+	{
+		this.defaultOpen = true;
+		this.visible = DisplayAttributes.VISIBLE_YES;
+		this.visibleExpression = "";
+		this.linkedFunctions = new ArrayList<LinkedFunction>();
+		this.repeatingGroup = "";
+		this.keys = "";
+		this.editMode = EDIT_MODE_DEFAULT;
+		this.repeatingRowsDisplayed = 0;
+		this.breakBy = "";
+		this.breakByText = "";
+		this.summationBy = "";
+		this.totalLabelPosition = "";
+		this.totalLabelTextScript = "";
+		this.totalSubLabelTextScript = "";
+		this.rowStyleEvenExpression = "";
+		this.rowStyleOddExpression = "";
+		this.tableHeaderStyleExpression = "";
+		this.tableDataStyleExpression = "";
+		this.tableFooterStyleExpression = "";
+		this.grandTotalStyleExpression = "";
+		this.allowSorting = false;
+		this.pagingSize = 0;
+		this.labelScriptRunTime = "";
+		unitMnemonic = UNIT_MNEMONIC_VALUE;
+	}
+
+	/**
+	 * Method to add an IDisplayItem instance to the end of the list
+	 * 
+	 * @param displayItem
+	 */
+	public void addItem(IDisplayItem displayItem)
+	{
+		addItem(items.size(), displayItem);
+	}
+
+	/**
+	 * Method to add an IDisplayItem instance at the specified index in the list
+	 * 
+	 * @param index
+	 * @param displayItem
+	 */
+	public void addItem(int index, IDisplayItem displayItem)
+	{
+		Element element = (Element) displayItem;
+		if (items.contains(element.getId()))
+		{
+			throw new RuntimeException("Duplicate key");
+		}
+		element.setParent(this); // Set 'this' as the parent set
+		items.add(index, displayItem, element.getId());
+	}
+
+	/**
+	 * Gets the collection of DisplayItems in this group
+	 * 
+	 * @return DisplayItemList
+	 */
+	public DisplayItemList getDisplayItems()
+	{
+		return items;
+	}
+
+	/**
+	 * Replaces the collection of DisplayItems in this group
+	 * 
+	 * @param displayItemList
+	 */
+	public void setDisplayItems(DisplayItemList displayItemList)
+	{
+		this.items = displayItemList;
+		if (displayItemList != null)
+		{
+			for (IDisplayItem item : displayItemList)
+			{
+				((Element) item).setParent(this);
+			}
+		}
+	}
+
+	/**
+	 * Apply a change of Id of a child item
+	 * <p>
+	 * This will apply the change by both updating the id of the actual item, <strong>and</strong> updating the key of the item in
+	 * the KeyedArrayList collection.
+	 * 
+	 * @param oldId
+	 *            a String containing the old Id
+	 * @param newId
+	 *            a String containing the new Id
+	 */
+	public void modifyItemId(String oldId, String newId, boolean updateDescriptionLabel)
+	{
+		if (updateDescriptionLabel)
+		{
+			items.updateDescriptionLabel(oldId, newId);
+		}
+		items.modifyItemId(oldId, newId);
+	}
+
+	/**
+	 * Called to validate the bean
+	 * 
+	 * @param messageContainer
+	 *            A MessageContainer to add messages to
+	 * @param subSet
+	 *            A String which may indicate a subset of validation. May be null
+	 * @param includeChildren
+	 *            Whether any children of this bean should also be validated.
+	 * 
+	 * @return boolean (not used)
+	 */
+	public boolean validateBean(MessageContainer messageContainer, String subSet, boolean includeChildren)
+	{
+		// Selection value
+		if (getLabel().length() > 35)
+		{
+			messageContainer.addErrorMessage("Label is too long");
+		}
+		DisplayAttributesSet set = rtvParentSet();
+		Function service = null;
+		if (set != null)
+		{
+			Layout layout = set.rtvLayout();
+			service = layout.service();
+		}
+
+		if (service != null)
+		{
+			// Validate the Group Visible EL expression:
+			if (DisplayAttributes.VISIBLE_SCRIPT.equals(visible))
+			{
+				ValidationHelper.validateBooleanELExpression(visibleExpression, this, messageContainer,
+								ValidationHelper.BooleanELType.DISPLAY_GROUP_VISIBLE_EXPRESSION, new FunctionProblemLocation(this));
+			}
+			// Validate the odd row style script
+			if (rowStyleOddExpression.length() > 0)
+			{
+				ValidationHelper.validateStringELExpression(rowStyleOddExpression, this, messageContainer,
+								ValidationHelper.StringELType.DISPLAYSTYLE_GROUPODD, new FunctionProblemLocation(this), service);
+			}
+			// Validate the even row style script
+			if (rowStyleEvenExpression.length() > 0)
+			{
+				ValidationHelper.validateStringELExpression(rowStyleEvenExpression, this, messageContainer,
+								ValidationHelper.StringELType.DISPLAYSTYLE_GROUPEVEN, new FunctionProblemLocation(this), service);
+			}
+
+			// Validate the even row style script
+			if (tableHeaderStyleExpression.length() > 0)
+			{
+				ValidationHelper.validateStringELExpression(tableHeaderStyleExpression, this, messageContainer,
+								ValidationHelper.StringELType.DISPLAYSTYLE_TABLEHEADER, new FunctionProblemLocation(this), service);
+			}
+			// Validate the even row style script
+			if (tableDataStyleExpression.length() > 0)
+			{
+				ValidationHelper.validateStringELExpression(tableDataStyleExpression, this, messageContainer,
+								ValidationHelper.StringELType.DISPLAYSTYLE_TABLEDATA, new FunctionProblemLocation(this), service);
+			}
+			// Validate the even row style script
+			if (tableFooterStyleExpression.length() > 0)
+			{
+				ValidationHelper.validateStringELExpression(tableFooterStyleExpression, this, messageContainer,
+								ValidationHelper.StringELType.DISPLAYSTYLE_TABLEFOOTER, new FunctionProblemLocation(this), service);
+			}
+			// Validate the even row style script
+			if (grandTotalStyleExpression.length() > 0)
+			{
+				ValidationHelper.validateStringELExpression(grandTotalStyleExpression, this, messageContainer,
+								ValidationHelper.StringELType.DISPLAYSTYLE_GRANDTOTAL, new FunctionProblemLocation(this), service);
+			}
+		}
+		if (includeChildren)
+		{
+			for (IDisplayItem item : items)
+			{
+				item.validateBean(messageContainer, subSet, includeChildren);
+			}
+		}
+
+		return false;
+	}
+	/**
+	 * Return the DisplayAttributesSet that contains this DisplayGroup
+	 * 
+	 * @return the DisplayAttributesSet (may be null for a new DisplayGroup)
+	 */
+	public DisplayAttributesSet rtvParentSet()
+	{
+		Element parent = rtvParent();
+		while (parent != null && !(parent instanceof DisplayAttributesSet))
+		{
+			parent = parent.rtvParent();
+		}
+		return parent == null ? null : (DisplayAttributesSet) parent;
+	}
+
+	/**
+	 * Determine if there are at least 2 subgroups in this group
+	 * <p>
+	 * Note that this method is deliberately not called isToggleable to avoid automatic mapping to XML by Betwixt
+	 * 
+	 * @return true if there is at least 2 subgroups
+	 */
+	public boolean toggleable()
+	{
+		int count = 0;
+		for (int i = 0; i < items.size(); i++)
+		{
+			if (items.get(i) instanceof DisplayGroup)
+			{
+				count++;
+				if (count >= 2)
+				{
+					break;
+				}
+			}
+		}
+		return count >= 2;
+	}
+
+	/**
+	 * Determine if the default view of the group is open or close
+	 * 
+	 * @return true if the default view of the group is open
+	 */
+	public boolean isDefaultOpen()
+	{
+		return defaultOpen;
+	}
+
+	/**
+	 * Set the default view of the group is open or close
+	 * 
+	 * @param defaultOpen
+	 *            - true if the default view of the group is open
+	 */
+	public void setDefaultOpen(boolean defaultOpen)
+	{
+		this.defaultOpen = defaultOpen;
+	}
+
+	/**
+	 * Gets the group visible status
+	 * <p>
+	 * 
+	 * @return an <code>String</code> indicating how the visibility of the field will be determined at runtime. This will be one of
+	 *         the following constants: VISIBLE_YES, VISIBLE_NO, VISIBLE_SCRIPT or VISIBLE_CODE.
+	 */
+	public String getVisible()
+	{
+		return visible;
+	}
+
+	/**
+	 * Sets how the visibility of the group will be determined at run time.
+	 * <p>
+	 * 
+	 * @param visible
+	 *            an <code>int</code> indicating how the visibility is determined. Must be one of VISIBLE_STRING_YES,
+	 *            VISIBLE_STRING_NO, VISIBLE_STRING_SCRIPT or VISIBLE_STRING_CODE.
+	 */
+	public void setVisible(String visible)
+	{
+		this.visible = visible;
+	}
+
+	/**
+	 * Return the visible expression
+	 * 
+	 * @return the visible expression
+	 */
+	public String getVisibleExpression()
+	{
+		return visibleExpression;
+	}
+
+	/**
+	 * Set the visible expression
+	 * 
+	 * @param visibleExpression
+	 *            - the visible expression
+	 */
+	public void setVisibleExpression(String visibleExpression)
+	{
+		this.visibleExpression = visibleExpression;
+	}
+
+	/**
+	 * Set the list of linked functions for this repeating group
+	 * 
+	 * @param linkedFunctions
+	 *            - the list of linked functions for this repeating group
+	 */
+	public void setLinkedFunctions(ArrayList<LinkedFunction> linkedFunctions)
+	{
+		this.linkedFunctions = linkedFunctions;
+	}
+
+	/**
+	 * Return the list of linked functions for this repeating group
+	 * 
+	 * @return the list of linked functions for this repeating group
+	 */
+	public List<LinkedFunction> getLinkedFunctions()
+	{
+		return linkedFunctions;
+	}
+
+	/**
+	 * Add a linked function
+	 * 
+	 * @param linkedFunction
+	 *            - a linked function
+	 */
+	public void addLinkedFunction(LinkedFunction linkedFunction)
+	{
+		linkedFunctions.add(linkedFunction);
+	}
+
+	/**
+	 * Remove a linked function
+	 * 
+	 * @param index
+	 *            - index of the linked function to be removed
+	 */
+	public void removeLinkedFunction(int index)
+	{
+		linkedFunctions.remove(index);
+	}
+
+	public void moveLinkedFunctionUp(int index)
+	{
+		if (index > 0)
+		{
+			LinkedFunction above = linkedFunctions.get(index - 1);
+			linkedFunctions.remove(index - 1);
+			linkedFunctions.add(index, above);
+		}
+	}
+
+	public void moveLinkedFunctionDown(int index)
+	{
+		if (index < linkedFunctions.size())
+		{
+			LinkedFunction below = linkedFunctions.get(index + 1);
+			linkedFunctions.remove(index + 1);
+			linkedFunctions.add(index, below);
+		}
+	}
+
+	/**
+	 * Check if a linked function already exists with the given selection option
+	 * 
+	 * @param selectionOption
+	 *            - the selection option to be checked against existing linked functions
+	 * 
+	 * @return true if linked function already exists, otherwise false
+	 */
+	public boolean containsLinkedFunction(String selectionOption)
+	{
+		for (LinkedFunction link : linkedFunctions)
+		{
+			if (link.getSelectionOption().equals(selectionOption))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * @return the repeatingGroup
+	 */
+	public String getRepeatingGroup()
+	{
+		return repeatingGroup;
+	}
+
+	/**
+	 * @param repeatingGroup
+	 *            the repeatingGroup to set
+	 */
+	public void setRepeatingGroup(String repeatingGroup)
+	{
+		this.repeatingGroup = repeatingGroup;
+	}
+
+	/**
+	 * Indicates whether the group holds repeating data
+	 * 
+	 * @param displayGroup
+	 *            The DisplayGroup to test
+	 * 
+	 * @return boolean
+	 */
+	public static boolean isRepeating(DisplayGroup displayGroup)
+	{
+		String group = displayGroup.getRepeatingGroup();
+		return !(group == null || group.trim().length() == 0);
+	}
+
+	/**
+	 * Return the key fields of a repeating group
+	 * 
+	 * @return the key fields of a repeating group
+	 */
+	public String getKeys()
+	{
+		return keys;
+	}
+
+	/**
+	 * Set the key fields of a repeating group
+	 * 
+	 * @param keys
+	 *            - the key fields of a repeating group
+	 */
+	public void setKeys(String keys)
+	{
+		this.keys = keys;
+	}
+
+	/**
+	 * Return the edit mode of a repeating group
+	 * 
+	 * @return the edit mode of a repeating group
+	 */
+	public String getEditMode()
+	{
+		return editMode;
+	}
+
+	/**
+	 * Set the edit mode of a repeating group
+	 * 
+	 * @param editMode
+	 *            - the edit mode of a repeating group
+	 */
+	public void setEditMode(String editMode)
+	{
+		this.editMode = editMode;
+	}
+
+	/**
+	 * Return the number of rows to be displayed for this repeating group
+	 * 
+	 * @return the number of rows to be displayed for this repeating group
+	 */
+	public int getRepeatingRowsDisplayed()
+	{
+		return repeatingRowsDisplayed;
+	}
+
+	/**
+	 * Set the number of rows to be displayed for this repeating group
+	 * 
+	 * @param repeatingRowsDisplayed
+	 *            - the number of rows to be displayed for this repeating group
+	 */
+	public void setRepeatingRowsDisplayed(int repeatingRowsDisplayed)
+	{
+		this.repeatingRowsDisplayed = repeatingRowsDisplayed;
+	}
+
+	/**
+	 * Return the list of fields included in grouping the repeating data
+	 * 
+	 * @return the list of fields included in grouping the repeating data
+	 */
+	public String getBreakBy()
+	{
+		return breakBy;
+	}
+
+	/**
+	 * Set the list of fields included in grouping the repeating data
+	 * 
+	 * @param breakBy
+	 *            - the list of fields included in grouping the repeating data
+	 */
+	public void setBreakBy(String breakBy)
+	{
+		this.breakBy = breakBy;
+	}
+
+	/**
+	 * Return the label for the "break by"
+	 * 
+	 * @return the label for the "break by"
+	 */
+	public String getBreakByText()
+	{
+		return breakByText;
+	}
+
+	/**
+	 * Set the label for the "break by"
+	 * 
+	 * @param breakByText
+	 *            - the label for the "break by"
+	 */
+	public void setBreakByText(String breakByText)
+	{
+		this.breakByText = breakByText;
+	}
+
+	/**
+	 * Return the list of fields included in the total column
+	 * 
+	 * @return the list of fields included in the total column
+	 */
+	public String getSummationBy()
+	{
+		return summationBy;
+	}
+
+	/**
+	 * Set the list of fields included in the total column
+	 * 
+	 * @param summationBy
+	 *            - the list of fields included in the total column
+	 */
+	public void setSummationBy(String summationBy)
+	{
+		this.summationBy = summationBy;
+	}
+
+	/**
+	 * Check if the field is a repeating field key
+	 * 
+	 * @param fieldName
+	 *            - the field to be checked
+	 * 
+	 * @return true if the field is a repeating field key
+	 */
+	public boolean chkRepeatingFieldKey(String fieldName)
+	{
+		String[] list = keys.split(Toolbox.CONTEXT_DELIMETER);
+		for (String element : list)
+		{
+			if (element.equals(fieldName))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Return the column position for label text for the total
+	 * 
+	 * @return the column position for label text for the total
+	 */
+	public String getTotalLabelPosition()
+	{
+		return totalLabelPosition;
+	}
+
+	/**
+	 * Set the column position for label text for the total
+	 * 
+	 * @param totalLabelPosition
+	 *            - the column position for label text for the total
+	 */
+	public void setTotalLabelPosition(String totalLabelPosition)
+	{
+		this.totalLabelPosition = totalLabelPosition;
+	}
+
+	/**
+	 * Return the expression to generate the label text for the total
+	 * 
+	 * @return the expression to generate the label text for the total
+	 */
+	public String getTotalLabelTextScript()
+	{
+		return totalLabelTextScript;
+	}
+
+	/**
+	 * Set the expression to generate the label text for the total
+	 * 
+	 * @param totalLabelTextScript
+	 *            - the expression to generate the label text for the total
+	 */
+	public void setTotalLabelTextScript(String totalLabelTextScript)
+	{
+		this.totalLabelTextScript = totalLabelTextScript;
+	}
+
+	/**
+	 * Return the expression to generate the label text for the sub total
+	 * 
+	 * @return the expression to generate the label text for the sub total
+	 */
+	public String getTotalSubLabelTextScript()
+	{
+		return totalSubLabelTextScript;
+	}
+
+	/**
+	 * Set the expression to generate the label text for the sub total
+	 * 
+	 * @param totalSubLabelTextScript
+	 *            - the expression to generate the label text for the sub total
+	 */
+	public void setTotalSubLabelTextScript(String totalSubLabelTextScript)
+	{
+		this.totalSubLabelTextScript = totalSubLabelTextScript;
+	}
+
+	/**
+	 * Return the expression to generate the row style for even rows
+	 * 
+	 * @return the expression to generate the row style for even rows
+	 */
+	public String getRowStyleEvenExpression()
+	{
+		return rowStyleEvenExpression;
+	}
+
+	/**
+	 * Set the expression to generate the row style for even rows
+	 * 
+	 * @param rowStyleEvenExpression
+	 *            - the expression to generate the row style for even rows
+	 */
+	public void setRowStyleEvenExpression(String rowStyleEvenExpression)
+	{
+		this.rowStyleEvenExpression = rowStyleEvenExpression;
+	}
+
+	/**
+	 * Return the expression to generate the row style for odd rows
+	 * 
+	 * @return the expression to generate the row style for odd rows
+	 */
+	public String getRowStyleOddExpression()
+	{
+		return rowStyleOddExpression;
+	}
+
+	/**
+	 * Set the expression to generate the row style for odd rows
+	 * 
+	 * @param rowStyleOddExpression
+	 *            - the expression to generate the row style for odd rows
+	 */
+	public void setRowStyleOddExpression(String rowStyleOddExpression)
+	{
+		this.rowStyleOddExpression = rowStyleOddExpression;
+	}
+
+	/**
+	 * Return the expression to generate the table header style
+	 * 
+	 * @return the expression to generate the table header style
+	 */
+	public String getTableHeaderStyleExpression()
+	{
+		return tableHeaderStyleExpression;
+	}
+
+	/**
+	 * Set the expression to generate the table header style
+	 * 
+	 * @param tableHeaderStyleExpression
+	 *            - the expression to generate the table header style
+	 */
+	public void setTableHeaderStyleExpression(String tableHeaderStyleExpression)
+	{
+		this.tableHeaderStyleExpression = tableHeaderStyleExpression;
+	}
+
+	/**
+	 * Return the expression to generate the table data style
+	 * 
+	 * @return the expression to generate the table data style
+	 */
+	public String getTableDataStyleExpression()
+	{
+		return tableDataStyleExpression;
+	}
+
+	/**
+	 * Set the expression to generate the table data style
+	 * 
+	 * @param tableDataStyleExpression
+	 *            - the expression to generate the table data style
+	 */
+	public void setTableDataStyleExpression(String tableDataStyleExpression)
+	{
+		this.tableDataStyleExpression = tableDataStyleExpression;
+	}
+
+	/**
+	 * Return the expression to generate the table footer style
+	 * 
+	 * @return the expression to generate the table footer style
+	 */
+	public String getTableFooterStyleExpression()
+	{
+		return tableFooterStyleExpression;
+	}
+
+	/**
+	 * Set the expression to generate the table footer style
+	 * 
+	 * @param tableFooterStyleExpression
+	 *            - the expression to generate the table footer style
+	 */
+	public void setTableFooterStyleExpression(String tableFooterStyleExpression)
+	{
+		this.tableFooterStyleExpression = tableFooterStyleExpression;
+	}
+
+	/**
+	 * Return the expression to generate the grand total style
+	 * 
+	 * @return the expression to generate the grand total style
+	 */
+	public String getGrandTotalStyleExpression()
+	{
+		return grandTotalStyleExpression;
+	}
+
+	/**
+	 * Set the expression to generate the grand total style
+	 * 
+	 * @param grandTotalStyleExpression
+	 *            - the expression to generate the grand total style
+	 */
+	public void setGrandTotalStyleExpression(String grandTotalStyleExpression)
+	{
+		this.grandTotalStyleExpression = grandTotalStyleExpression;
+	}
+
+	/**
+	 * Determine whether sorting is allowed
+	 * 
+	 * @return true if sorting is allowed
+	 */
+	public boolean isAllowSorting()
+	{
+		return allowSorting;
+	}
+
+	/**
+	 * Set whether sorting is allowed
+	 * 
+	 * @param allowSorting
+	 *            - true if sorting is allowed
+	 */
+	public void setAllowSorting(boolean allowSorting)
+	{
+		this.allowSorting = allowSorting;
+	}
+
+	/**
+	 * Return the number of records that are returned to the client at any given time
+	 * 
+	 * @return the number of records that are returned to the client at any given time
+	 */
+	public int getPagingSize()
+	{
+		return pagingSize;
+	}
+
+	/**
+	 * Set the number of records that are returned to the client at any given time
+	 * 
+	 * @param pagingSize
+	 *            - the number of records that are returned to the client at any given time
+	 */
+	public void setPagingSize(int pagingSize)
+	{
+		this.pagingSize = pagingSize;
+	}
+
+	/**
+	 * Return the script to generate the label at run time
+	 * 
+	 * @return the script to generate the label at run time
+	 */
+	public String getLabelScriptRunTime()
+	{
+		return labelScriptRunTime;
+	}
+
+	/**
+	 * Set the script to generate the label at run time
+	 * 
+	 * @param labelScriptRunTime
+	 *            - the script to generate the label at run time
+	 */
+	public void setLabelScriptRunTime(String labelScriptRunTime)
+	{
+		this.labelScriptRunTime = labelScriptRunTime;
+	}
+
+	/**
+	 * Get the GP Unit mnemonic
+	 * 
+	 * @return the GP Unit mnemonic
+	 */
+	public String getUnitMnemonic()
+	{
+		return unitMnemonic;
+	}
+
+	/**
+	 * Set the GP Unit mnemonic
+	 * 
+	 * @param unitMnemonic
+	 */
+	public void setUnitMnemonic(String unitMnemonic)
+	{
+		this.unitMnemonic = unitMnemonic;
+	}
+
+	/**
+	 * Get the GP system ID
+	 * 
+	 * @return the GP system ID
+	 */
+	public String getSystemId()
+	{
+		return systemId;
+	}
+	/**
+	 * Set the GP system ID
+	 * 
+	 * @param systemId
+	 */
+	public void setSystemId(String systemId)
+	{
+		this.systemId = systemId;
+	}
+}

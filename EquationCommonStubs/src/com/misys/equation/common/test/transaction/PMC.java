@@ -1,0 +1,90 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseFullyAdd;
+
+/**
+ * Equation test cases for Maintain Purpose of Presentation
+ */
+public class PMC extends EquationTestCaseFullyAdd
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "";
+	String programName = "C62ARR";
+	String optionId = "ACG";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZAB", "0000"); // Deal type (3A)
+		transaction.setFieldValue("GZAN", "x00001"); // Deal reference (13A)
+		transaction.setFieldValue("GZAS", "001"); // Branch mnemonic (4A)
+		transaction.setFieldValue("GZVAL", "1000105");// Value date
+		transaction.setFieldValue("GZFLAG", "P"); // Transaction flag
+		transaction.setFieldValue("GZDCHG", "N"); // 
+
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	@Override
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZCCCY", "ITL"); // Curremcy mnemonic
+
+		transaction.setGSFieldValue("GZCHGC", "AD");// Charge code
+		transaction.setGSFieldValue("GSCHA", "1000");// Charge amount
+		transaction.setGSFieldValue("GZDDTD", "1000105");// Start date
+		transaction.setGSFieldValue("GSCCYF", "ITL"); // Funding currency
+		transaction.setGSFieldValue("GSCCYC", "ITL"); // Charge currency
+		transaction.setGSFieldValue("GSECHC", "ITL"); // Entered charge currency
+		transaction.setGSFieldValue("GSENC", "1000"); // Entered charge amount
+		transaction.setGSFieldValue("GSFTF", "N"); // Force to fee?
+		transaction.setGSFieldValue("GSFAB", "0132"); // Funding account branch
+		transaction.setGSFieldValue("GSFAN", "012008"); // Funding account number
+		transaction.setGSFieldValue("GSFAS", "020"); // Funding account suffix
+	}
+
+}

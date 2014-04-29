@@ -1,0 +1,218 @@
+package com.misys.equation.function.testmain;
+
+import java.math.BigDecimal;
+import java.sql.Time;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
+
+import com.misys.equation.common.utilities.EqDataType;
+import com.misys.equation.common.utilities.Toolbox;
+
+// Via Save and Restore
+public class TestMain2
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	public TestMain2()
+	{
+		try
+		{
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] inputParameters)
+	{
+		TestMain2 test = new TestMain2();
+		test.test();
+	}
+
+	private void test()
+	{
+		// Have a bash...
+		try
+		{
+			byte[] numBytes = Toolbox.convertNumberIntoAS400ZonedBytes(-1000, 15, 0);
+			System.out.println(Toolbox.convertAS400Zoned(numBytes, 15, 0));
+			numBytes = Toolbox.convertNumberIntoAS400PackedBytes(-1000, 15, 0);
+			System.out.println(Toolbox.convertAS400Packed(numBytes, 15, 0));
+
+			System.out.println("Packed field with 8 digits");
+			numBytes = Toolbox.convertNumberIntoAS400PackedBytes(0, 8, 0);
+			System.out.println("8digits ==> packed length" + numBytes.length);
+			System.out.println(Toolbox.convertAS400Packed(numBytes, 8, 0));
+
+			System.out.println("Packed field with 9 digits");
+			numBytes = Toolbox.convertNumberIntoAS400PackedBytes(0, 9, 0);
+			System.out.println("9digits ==> packed length" + numBytes.length);
+			System.out.println(Toolbox.convertAS400Packed(numBytes, 9, 0));
+
+			System.out.println("Packed field with 910digits");
+			numBytes = Toolbox.convertNumberIntoAS400PackedBytes(0, 10, 0);
+			System.out.println("10digits ==> packed length" + numBytes.length);
+			System.out.println(Toolbox.convertAS400Packed(numBytes, 10, 0));
+
+			System.out.println("Date");
+			GregorianCalendar gc = new GregorianCalendar(0, 0, 0);
+			System.out.println(gc.get(Calendar.DAY_OF_MONTH));
+			System.out.println(gc.get(Calendar.MONTH));
+			System.out.println(gc.get(Calendar.YEAR));
+			System.out.println(gc);
+
+			System.out.println("Date comparison");
+			GregorianCalendar gc1 = new GregorianCalendar(2000, 11, 11);
+			GregorianCalendar gc2 = new GregorianCalendar(2000, 11, 10);
+			int comp = gc1.compareTo(gc2);
+			System.out.println("gc1 > gc2 = " + comp);
+
+			String nyymmdd = "13/01/2050";
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			sdf.setLenient(false); // this is important!
+			System.out.println(sdf.parse(nyymmdd));
+
+			System.out.println("valid false = " + EqDataType.isValidDate("991231"));
+			System.out.println("valid true = " + EqDataType.isValidDate("0991231"));
+			System.out.println("valid true = " + EqDataType.isValidDate("1000101"));
+			System.out.println("valid false = " + EqDataType.isValidDate("1001301"));
+			System.out.println("valid false = " + EqDataType.isValidDate("10013010"));
+			System.out.println("valid false = " + EqDataType.isValidDate("1000231"));
+			System.out.println("valid true = " + EqDataType.isValidDate("1500131"));
+
+			System.out.println(Toolbox.reformatNumber1("10,000.00", 15, 0, ",", "."));
+			System.out.println(Toolbox.reformatNumber1("10.000,", 15, 2, ".", ","));
+			System.out.println(Toolbox.reformatNumber1("10.000", 15, 2, ".", ","));
+			System.out.println(Toolbox.reformatNumber1("10.0", 15, 6, ",", "."));
+
+			long a = (0 << 24 & 0x00FF000000) + (0 << 16 & 0x00FF0000) + (1 << 8 & 0x00FF00) + (-126 & 0x0000FF);
+
+			System.out.println("(\"5\", 5, 3) = " + Toolbox.reformatNumber2("5", 5, 3, "."));
+			System.out.println("(\"5.3\", 5, 3) = " + Toolbox.reformatNumber2("5.3", 5, 3, "."));
+			System.out.println("(\".5\", 5, 5) = " + Toolbox.reformatNumber2(".5", 5, 5, "."));
+
+			System.out.println(a);
+
+			SimpleDateFormat sdfDDMMMYYhhmmss = new SimpleDateFormat("yyyyMMddhhmmss");
+			Time time = new Time(System.currentTimeMillis());
+			System.out.println(sdfDDMMMYYhhmmss.format(time));
+
+			BigDecimal big1 = new BigDecimal(0.00000);
+			BigDecimal big2 = new BigDecimal(1.123);
+			System.out.println(big1);
+			System.out.println(big2);
+
+			System.out.println((long) 1000000000 * 100000000);
+			System.out.println((double) 1000000000 * 100000);
+
+			System.out.println("Decimal formatter");
+			DecimalFormat myFormatter = new DecimalFormat("#,###.#");
+			System.out.println(myFormatter.format(-0000133434343));
+			System.out.println(myFormatter.format(-1323452332534.34343));
+			System.out.println(myFormatter.format(132334.34343));
+			System.out.println(myFormatter.format(.34343));
+
+			System.out.println("parseEqData()");
+			System.out.println("1000101: " + Toolbox.formatDate(Toolbox.parseEqDate("1000101"), Toolbox.TIMESTAMP_FORMAT));
+			System.out.println("1000202: " + Toolbox.formatDate(Toolbox.parseEqDate("1000202"), Toolbox.TIMESTAMP_FORMAT));
+			System.out.println("1001231: " + Toolbox.formatDate(Toolbox.parseEqDate("1001231"), Toolbox.TIMESTAMP_FORMAT));
+			System.out.println("0991231: " + Toolbox.formatDate(Toolbox.parseEqDate("991231"), Toolbox.TIMESTAMP_FORMAT));
+
+			Date dateToReturn = Toolbox.parseUTCTime("2011-09-27    12:04:11Z");
+			System.out.println(dateToReturn.toString());
+
+			Calendar cal = Calendar.getInstance();
+			Date date = cal.getTime();
+			System.out.println(date);
+
+			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+			System.out.println(formatter.format(date));
+
+			System.out.println("Conversion from YYYYMMDD");
+			System.out.println("20001001 = " + EqDataType.cvtDateYYYYMMDDToDb("20001001"));
+			System.out.println("Blank    = " + EqDataType.cvtDateYYYYMMDDToDb(""));
+			System.out.println("99999999 = " + EqDataType.cvtDateYYYYMMDDToDb("99999999"));
+			System.out.println("0        = " + EqDataType.cvtDateDbToYYYYMMDD("0"));
+
+			System.out.println("0000000  = " + EqDataType.cvtDateDbToYYYYMMDD("0000000"));
+			System.out.println("9999999  = " + EqDataType.cvtDateDbToYYYYMMDD("9999999"));
+			System.out.println("1001001  = " + EqDataType.cvtDateDbToYYYYMMDD("1001001"));
+
+			System.out.println("Conversion from YYYY-MM-DD");
+			System.out.println("2000-10-01 = " + EqDataType.cvtDateYYYY_MM_DDToDb("2000-10-01"));
+			System.out.println("Blank    = " + EqDataType.cvtDateYYYY_MM_DDToDb(""));
+			System.out.println("9999-99-99 = " + EqDataType.cvtDateYYYY_MM_DDToDb("9999-99-99"));
+			System.out.println("0        = " + EqDataType.cvtDateDbToYYYY_MM_DD("0"));
+
+			System.out.println("0000000  = " + EqDataType.cvtDateDbToYYYY_MM_DD("0000000"));
+			System.out.println("9999999  = " + EqDataType.cvtDateDbToYYYY_MM_DD("9999999"));
+			System.out.println("1001001  = " + EqDataType.cvtDateDbToYYYY_MM_DD("1001001"));
+
+			System.out.println("Major cccy to Minor ccy");
+			System.out.println("100.34   = " + EqDataType.cvtMajorCcyAmountToMinorCcy("100.34", 2));
+			System.out.println("100.34   = " + EqDataType.cvtMajorCcyAmountToMinorCcy("100.34", 3));
+			System.out.println("100.3    = " + EqDataType.cvtMajorCcyAmountToMinorCcy("100.3", 3));
+			System.out.println("100.     = " + EqDataType.cvtMajorCcyAmountToMinorCcy("100.", 3));
+			System.out.println("1        = " + EqDataType.cvtMajorCcyAmountToMinorCcy("1", 3));
+			System.out.println("1.       = " + EqDataType.cvtMajorCcyAmountToMinorCcy("1.", 3));
+
+			System.out.println("-100.34  = " + EqDataType.cvtMajorCcyAmountToMinorCcy("-100.34", 2));
+			System.out.println("-100.34  = " + EqDataType.cvtMajorCcyAmountToMinorCcy("-100.34", 3));
+			System.out.println("-100.3   = " + EqDataType.cvtMajorCcyAmountToMinorCcy("-100.3", 3));
+			System.out.println("-100.    = " + EqDataType.cvtMajorCcyAmountToMinorCcy("-100.", 3));
+			System.out.println("-1       = " + EqDataType.cvtMajorCcyAmountToMinorCcy("-1", 3));
+			System.out.println("-1.      = " + EqDataType.cvtMajorCcyAmountToMinorCcy("-1.", 3));
+
+			System.out.println("10034   = " + EqDataType.cvtMajorCcyAmountToMinorCcy("10034", 0));
+			System.out.println("10034   = " + EqDataType.cvtMajorCcyAmountToMinorCcy("10034", 1));
+			System.out.println("10034   = " + EqDataType.cvtMajorCcyAmountToMinorCcy("10034", 2));
+			System.out.println("10034   = " + EqDataType.cvtMajorCcyAmountToMinorCcy("10034.", 3));
+
+			System.out.println("Minor ccy to Major ccy");
+			System.out.println("10034   = " + EqDataType.cvtMinorCcyAmountToMajorCcy("10034", 0));
+			System.out.println("10034   = " + EqDataType.cvtMinorCcyAmountToMajorCcy("10034", 1));
+			System.out.println("10034   = " + EqDataType.cvtMinorCcyAmountToMajorCcy("10034", 2));
+			System.out.println("10034   = " + EqDataType.cvtMinorCcyAmountToMajorCcy("10034.", 3));
+
+			System.out.println("-10034  = " + EqDataType.cvtMinorCcyAmountToMajorCcy("-10034", 0));
+			System.out.println("-10034  = " + EqDataType.cvtMinorCcyAmountToMajorCcy("-10034", 1));
+			System.out.println("-10034  = " + EqDataType.cvtMinorCcyAmountToMajorCcy("-10034", 2));
+			System.out.println("-10034  = " + EqDataType.cvtMinorCcyAmountToMajorCcy("-10034.", 3));
+
+			System.out.println("0       = " + EqDataType.cvtMinorCcyAmountToMajorCcy("0", 0));
+			System.out.println("0       = " + EqDataType.cvtMinorCcyAmountToMajorCcy("0", 1));
+			System.out.println("0       = " + EqDataType.cvtMinorCcyAmountToMajorCcy("0", 2));
+			System.out.println("0       = " + EqDataType.cvtMinorCcyAmountToMajorCcy("0.", 3));
+
+			System.out.println("1       = " + EqDataType.cvtMinorCcyAmountToMajorCcy("1", 0));
+			System.out.println("1       = " + EqDataType.cvtMinorCcyAmountToMajorCcy("1", 1));
+			System.out.println("1       = " + EqDataType.cvtMinorCcyAmountToMajorCcy("1", 2));
+			System.out.println("1       = " + EqDataType.cvtMinorCcyAmountToMajorCcy("1.", 3));
+
+			System.out.println("-1      = " + EqDataType.cvtMinorCcyAmountToMajorCcy("-1", 0));
+			System.out.println("-1      = " + EqDataType.cvtMinorCcyAmountToMajorCcy("-1", 1));
+			System.out.println("-1      = " + EqDataType.cvtMinorCcyAmountToMajorCcy("-1", 2));
+			System.out.println("-1      = " + EqDataType.cvtMinorCcyAmountToMajorCcy("-1.", 3));
+
+			System.out.println("11      = " + EqDataType.cvtMinorCcyAmountToMajorCcy("11", 0));
+			System.out.println("11      = " + EqDataType.cvtMinorCcyAmountToMajorCcy("11", 1));
+			System.out.println("11      = " + EqDataType.cvtMinorCcyAmountToMajorCcy("11", 2));
+			System.out.println("11      = " + EqDataType.cvtMinorCcyAmountToMajorCcy("11.", 3));
+
+			System.out.println("done");
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+}

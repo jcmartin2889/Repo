@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<components>
+	<component id="EQ_VERSION" name="EQ_VERSION" description="{RELEASE_DESCRIPTION}" version="{RELEASE_VERSION}"/>
+  	<component id="EQ_ARTEFACTS_SOURCE" name="EQ_ARTEFACTS_SOURCE" description="{RELEASE_DESCRIPTION}" version="{RELEASE_VERSION}"/>
+ 	<component id="EQ_ARTEFACTS" name="EQ_ARTEFACTS" description="{RELEASE_DESCRIPTION}" version="{RELEASE_VERSION}"/>
+ 	<component id="EQ_FILES" name="EQ_FILES" description="{RELEASE_DESCRIPTION}" version="{RELEASE_VERSION}"/>
+ 	<component id="EQ_INSTALLER_PROPERTIES" name="EQ_INSTALLER_PROPERTIES" description="{RELEASE_DESCRIPTION}" version="{RELEASE_VERSION}"/>
+ 	<component id="EQ_INSTALLER" name="EQ_INSTALLER" description="{RELEASE_DESCRIPTION}" version="{RELEASE_VERSION}"/>
+</components>

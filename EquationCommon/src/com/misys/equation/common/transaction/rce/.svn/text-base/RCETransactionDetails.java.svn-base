@@ -1,0 +1,1055 @@
+package com.misys.equation.common.transaction.rce;
+
+import com.misys.equation.common.conversion.InputParameterConversion;
+
+public class RCETransactionDetails
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/** Determine if date is in yyyymmddDateFormat */
+	private boolean yyyymmddDateFormat = false;
+
+	/** Loan currency */
+	private String currency;
+
+	/** Deal amount */
+	private String dealAmount;
+
+	/** Start date */
+	private String startDate;
+
+	/** Interest days basis */
+	private String idb;
+
+	/** Actual rate */
+	private String actualRate;
+
+	/** Base rate */
+	private String baseRate;
+
+	/** Differential rate */
+	private String differentialRate;
+
+	/** Margin rate */
+	private String marginRate;
+
+	/** Interest frequency */
+	private String interestFrequency;
+
+	/** First interest date */
+	private String firstInterestDate;
+
+	/** Repayment frequency */
+	private String repaymentFrequency;
+
+	/** Number of payments */
+	private String numberOfPayments;
+
+	/** First repayment date */
+	private String firstRepaymentDate;
+
+	/** Maturity date */
+	private String maturityDate;
+
+	/** Loan term */
+	private String loanTerm;
+
+	/** Repayment amount */
+	private String repaymentAmount;
+
+	/** First amount */
+	private String firstAmount;
+
+	/** First amount can differ flag */
+	private String firstAmountCanDiffer;
+
+	/** Charge code 1 */
+	private String chargeCode1;
+
+	/** Charge amount 1 */
+	private String chargeAmount1;
+
+	/** Charge code 2 */
+	private String chargeCode2;
+
+	/** Charge amount 2 */
+	private String chargeAmount2;
+
+	/** Charge code 3 */
+	private String chargeCode3;
+
+	/** Charge amount 3 */
+	private String chargeAmount3;
+
+	/** Address line 1 */
+	private String address1;
+
+	/** Address line 2 */
+	private String address2;
+
+	/** Address line 3 */
+	private String address3;
+
+	/** Address line 4 */
+	private String address4;
+
+	/** Address line 5 */
+	private String address5;
+
+	/** Charge event */
+	private String chargeEvent;
+
+	/** Channel */
+	private String channel;
+
+	/** Schedule recalculate */
+	private String scheduleRecalculate;
+
+	/** Project value */
+	private String projectValue;
+
+	/** Contractor advance payment */
+	private String contractorAdvancePayment;
+
+	/** Construction end date */
+	private String constructionEndDate;
+
+	/** Flat rate */
+	private String flatRate;
+
+	/** Interest amount */
+	private String interestAmount;
+
+	/** Discount amount */
+	private String discountAmount;
+
+	/** Additional profit? */
+	private String additionalProfit;
+
+	/** Reduction in profit? */
+	private String reductionProfit;
+
+	/** Constant amount */
+	private String constantAmount;
+
+	/**
+	 * Determine if date is in yyyymmdd format (true) or cyymmdd format (false)
+	 * 
+	 * @return true if date is in yyyymmdd format (true) or cyymmdd format (false)
+	 */
+	public boolean isYyyymmddDateFormat()
+	{
+		return yyyymmddDateFormat;
+	}
+
+	/**
+	 * Set if date is in yyyymmdd format (true) or cyymmdd format (false)
+	 * 
+	 * If date is in yyyymmdd format, then the date is automatically converted into cyymmdd by its getter method
+	 * 
+	 * @param yyyymmddDateFormat
+	 *            - true if date is in yyyymmdd format (true) or cyymmdd format (false)
+	 */
+	public void setYyyymmddDateFormat(boolean yyyymmddDateFormat)
+	{
+		this.yyyymmddDateFormat = yyyymmddDateFormat;
+	}
+
+	/**
+	 * Return the currency
+	 * 
+	 * @return the currency
+	 */
+	public String getCurrency()
+	{
+		return currency;
+	}
+
+	/**
+	 * Set the currency
+	 * 
+	 * @param currency
+	 *            - the currency
+	 */
+	public void setCurrency(String currency)
+	{
+		this.currency = currency;
+	}
+
+	/**
+	 * Return the deal amount
+	 * 
+	 * @return the deal amount
+	 */
+	public String getDealAmount()
+	{
+		return dealAmount;
+	}
+
+	/**
+	 * Set the deal amount
+	 * 
+	 * @param dealAmount
+	 *            - the deal amount
+	 */
+	public void setDealAmount(String dealAmount)
+	{
+		this.dealAmount = dealAmount;
+	}
+
+	/**
+	 * Return the start date
+	 * 
+	 * @return the start date
+	 */
+	public String getStartDate()
+	{
+		if (yyyymmddDateFormat)
+		{
+			return InputParameterConversion.convertDate(startDate);
+		}
+		else
+		{
+			return startDate;
+		}
+	}
+
+	/**
+	 * Set the start date
+	 * 
+	 * @param startDate
+	 *            - the start date
+	 */
+	public void setStartDate(String startDate)
+	{
+		this.startDate = startDate;
+	}
+
+	/**
+	 * Return the interest days basis
+	 * 
+	 * @return the interest days basis
+	 */
+	public String getIdb()
+	{
+		return idb;
+	}
+
+	/**
+	 * Set the interest days basis
+	 * 
+	 * @param idb
+	 *            - the interest days basis
+	 */
+	public void setIdb(String idb)
+	{
+		this.idb = idb;
+	}
+
+	/**
+	 * Return the actual rate
+	 * 
+	 * @return the actual rate
+	 */
+	public String getActualRate()
+	{
+		return actualRate;
+	}
+
+	/**
+	 * Set the actual rate
+	 * 
+	 * @param actualRate
+	 *            - the actual rate
+	 */
+	public void setActualRate(String actualRate)
+	{
+		this.actualRate = actualRate;
+	}
+
+	/**
+	 * Return the base rate
+	 * 
+	 * @return the base rate
+	 */
+	public String getBaseRate()
+	{
+		return baseRate;
+	}
+
+	/**
+	 * Set the base rate
+	 * 
+	 * @param baseRate
+	 *            - the base rate
+	 */
+	public void setBaseRate(String baseRate)
+	{
+		this.baseRate = baseRate;
+	}
+
+	/**
+	 * Return the differential rate
+	 * 
+	 * @return the differential rate
+	 */
+	public String getDifferentialRate()
+	{
+		return differentialRate;
+	}
+
+	/**
+	 * Set the differential rate
+	 * 
+	 * @param differentialRate
+	 *            - the differential rate
+	 */
+	public void setDifferentialRate(String differentialRate)
+	{
+		this.differentialRate = differentialRate;
+	}
+
+	/**
+	 * Return the margin rate
+	 * 
+	 * @return the margin rate
+	 */
+	public String getMarginRate()
+	{
+		return marginRate;
+	}
+
+	/**
+	 * Set the margin rate
+	 * 
+	 * @param marginRate
+	 *            - the margin rate
+	 */
+	public void setMarginRate(String marginRate)
+	{
+		this.marginRate = marginRate;
+	}
+
+	/**
+	 * Return the interest frequency
+	 * 
+	 * @return the interest frequency
+	 */
+	public String getInterestFrequency()
+	{
+		return interestFrequency;
+	}
+
+	/**
+	 * Set the interest frequency
+	 * 
+	 * @param interestFrequency
+	 *            - the interest frequency
+	 */
+	public void setInterestFrequency(String interestFrequency)
+	{
+		this.interestFrequency = interestFrequency;
+	}
+
+	/**
+	 * Return the first interest date
+	 * 
+	 * @return the first interest date
+	 */
+	public String getFirstInterestDate()
+	{
+		if (yyyymmddDateFormat)
+		{
+			return InputParameterConversion.convertDate(firstInterestDate);
+		}
+		else
+		{
+			return firstInterestDate;
+		}
+	}
+
+	/**
+	 * Set the first interest date
+	 * 
+	 * @param firstInterestDate
+	 *            - the first interest date
+	 */
+	public void setFirstInterestDate(String firstInterestDate)
+	{
+		this.firstInterestDate = firstInterestDate;
+	}
+
+	/**
+	 * Return the repayment frequency
+	 * 
+	 * @return the repayment frequency
+	 */
+	public String getRepaymentFrequency()
+	{
+		return repaymentFrequency;
+	}
+
+	/**
+	 * Set the repayment frequency
+	 * 
+	 * @param repaymentFrequency
+	 *            - the repayment frequency
+	 */
+	public void setRepaymentFrequency(String repaymentFrequency)
+	{
+		this.repaymentFrequency = repaymentFrequency;
+	}
+
+	/**
+	 * Return the number of payments
+	 * 
+	 * @return the number of payments
+	 */
+	public String getNumberOfPayments()
+	{
+		return numberOfPayments;
+	}
+
+	/**
+	 * Set the number of payments
+	 * 
+	 * @param numberOfPayments
+	 *            - the number of payments
+	 */
+	public void setNumberOfPayments(String numberOfPayments)
+	{
+		this.numberOfPayments = numberOfPayments;
+	}
+
+	/**
+	 * Return the first repayment date
+	 * 
+	 * @return the first repayment date
+	 */
+	public String getFirstRepaymentDate()
+	{
+		if (yyyymmddDateFormat)
+		{
+			return InputParameterConversion.convertDate(firstRepaymentDate);
+		}
+		else
+		{
+			return firstRepaymentDate;
+		}
+	}
+
+	/**
+	 * Set the first repayment date
+	 * 
+	 * @param firstRepaymentDate
+	 *            - the first repayment date
+	 */
+	public void setFirstRepaymentDate(String firstRepaymentDate)
+	{
+		this.firstRepaymentDate = firstRepaymentDate;
+	}
+
+	/**
+	 * Return the maturity date
+	 * 
+	 * @return the maturity date
+	 */
+	public String getMaturityDate()
+	{
+		if (yyyymmddDateFormat)
+		{
+			return InputParameterConversion.convertDate(maturityDate);
+		}
+		else
+		{
+			return maturityDate;
+		}
+	}
+
+	/**
+	 * Set the maturity date
+	 * 
+	 * @param maturityDate
+	 *            - the maturity date
+	 */
+	public void setMaturityDate(String maturityDate)
+	{
+		this.maturityDate = maturityDate;
+	}
+
+	/**
+	 * Return the loan term (alternative way of specifying the maturity date)
+	 * 
+	 * @return the loan term
+	 */
+	public String getLoanTerm()
+	{
+		return loanTerm;
+	}
+
+	/**
+	 * Set the loan term (alternative way of specifying the maturity date)
+	 * 
+	 * @param loanTerm
+	 *            -the loan term
+	 */
+	public void setLoanTerm(String loanTerm)
+	{
+		this.loanTerm = loanTerm;
+	}
+
+	/**
+	 * Return the repayment amount
+	 * 
+	 * @return the repayment amount
+	 */
+	public String getRepaymentAmount()
+	{
+		return repaymentAmount;
+	}
+
+	/**
+	 * Set the repayment amount
+	 * 
+	 * @param repaymentAmount
+	 *            - the repayment amount
+	 */
+	public void setRepaymentAmount(String repaymentAmount)
+	{
+		this.repaymentAmount = repaymentAmount;
+	}
+
+	/**
+	 * Return the first amount
+	 * 
+	 * @return the first amount
+	 */
+	public String getFirstAmount()
+	{
+		return firstAmount;
+	}
+
+	/**
+	 * Set the first amount
+	 * 
+	 * @param firstAmount
+	 *            - the first amount
+	 */
+	public void setFirstAmount(String firstAmount)
+	{
+		this.firstAmount = firstAmount;
+	}
+
+	/**
+	 * Return the first amount can differ flag
+	 * 
+	 * @return the first amount can differ flag
+	 */
+	public String getFirstAmountCanDiffer()
+	{
+		return firstAmountCanDiffer;
+	}
+
+	/**
+	 * Set the first amount can differ flag
+	 * 
+	 * @param firstAmountCanDiffer
+	 *            - the first amount can differ flag
+	 */
+	public void setFirstAmountCanDiffer(String firstAmountCanDiffer)
+	{
+		this.firstAmountCanDiffer = firstAmountCanDiffer;
+	}
+
+	/**
+	 * Return the charge code 1
+	 * 
+	 * @return the charge code 1
+	 */
+	public String getChargeCode1()
+	{
+		return chargeCode1;
+	}
+
+	/**
+	 * Set the charge code 1
+	 * 
+	 * @param chargeCode1
+	 *            - the charge code 1
+	 */
+	public void setChargeCode1(String chargeCode1)
+	{
+		this.chargeCode1 = chargeCode1;
+	}
+
+	/**
+	 * Return the charge amount 1
+	 * 
+	 * @return the charge amount 1
+	 */
+	public String getChargeAmount1()
+	{
+		return chargeAmount1;
+	}
+
+	/**
+	 * Set the charge amount 1
+	 * 
+	 * @param chargeAmount1
+	 *            - the charge amount 1
+	 */
+	public void setChargeAmount1(String chargeAmount1)
+	{
+		this.chargeAmount1 = chargeAmount1;
+	}
+
+	/**
+	 * Return the charge code 2
+	 * 
+	 * @return the charge code 2
+	 */
+	public String getChargeCode2()
+	{
+		return chargeCode2;
+	}
+
+	/**
+	 * Set the charge code 2
+	 * 
+	 * @param chargeCode2
+	 *            - the charge code 2
+	 */
+	public void setChargeCode2(String chargeCode2)
+	{
+		this.chargeCode2 = chargeCode2;
+	}
+
+	/**
+	 * Return the charge amount 2
+	 * 
+	 * @return the charge amount 2
+	 */
+	public String getChargeAmount2()
+	{
+		return chargeAmount2;
+	}
+
+	/**
+	 * Set the charge amount 2
+	 * 
+	 * @param chargeAmount2
+	 *            - the charge amount 2
+	 */
+	public void setChargeAmount2(String chargeAmount2)
+	{
+		this.chargeAmount2 = chargeAmount2;
+	}
+	/**
+	 * Return the charge code 3
+	 * 
+	 * @return the charge code 3
+	 */
+	public String getChargeCode3()
+	{
+		return chargeCode3;
+	}
+
+	/**
+	 * Set the charge code 3
+	 * 
+	 * @param chargeCode3
+	 *            - the charge code 3
+	 */
+	public void setChargeCode3(String chargeCode3)
+	{
+		this.chargeCode3 = chargeCode3;
+	}
+
+	/**
+	 * Return the charge amount 3
+	 * 
+	 * @return the charge amount 3
+	 */
+	public String getChargeAmount3()
+	{
+		return chargeAmount3;
+	}
+
+	/**
+	 * Set the charge amount 3
+	 * 
+	 * @param chargeAmount1
+	 *            - the charge amount 3
+	 */
+	public void setChargeAmount3(String chargeAmount3)
+	{
+		this.chargeAmount3 = chargeAmount3;
+	}
+
+	/**
+	 * Return the address 1
+	 * 
+	 * @return the address 1
+	 */
+	public String getAddress1()
+	{
+		return address1;
+	}
+
+	/**
+	 * Set the address 1
+	 * 
+	 * @param address1
+	 *            - the address 1
+	 */
+	public void setAddress1(String address1)
+	{
+		this.address1 = address1;
+	}
+
+	/**
+	 * Return the address 2
+	 * 
+	 * @return the address 2
+	 */
+	public String getAddress2()
+	{
+		return address2;
+	}
+
+	/**
+	 * Set the address 2
+	 * 
+	 * @param address2
+	 *            - the address 2
+	 */
+	public void setAddress2(String address2)
+	{
+		this.address2 = address2;
+	}
+
+	/**
+	 * Return the address 3
+	 * 
+	 * @return the address 3
+	 */
+	public String getAddress3()
+	{
+		return address3;
+	}
+
+	/**
+	 * Set the address 3
+	 * 
+	 * @param address1
+	 *            - the address 3
+	 */
+	public void setAddress3(String address3)
+	{
+		this.address3 = address3;
+	}
+
+	/**
+	 * Return the address 4
+	 * 
+	 * @return the address 4
+	 */
+	public String getAddress4()
+	{
+		return address4;
+	}
+
+	/**
+	 * Set the address 4
+	 * 
+	 * @param address1
+	 *            - the address 4
+	 */
+	public void setAddress4(String address4)
+	{
+		this.address4 = address4;
+	}
+
+	/**
+	 * Return the address 5
+	 * 
+	 * @return the address 5
+	 */
+	public String getAddress5()
+	{
+		return address5;
+	}
+
+	/**
+	 * Set the address 5
+	 * 
+	 * @param address1
+	 *            - the address 5
+	 */
+	public void setAddress5(String address5)
+	{
+		this.address5 = address5;
+	}
+
+	/**
+	 * Return the charge event
+	 * 
+	 * @return the charge event
+	 */
+	public String getChargeEvent()
+	{
+		return chargeEvent;
+	}
+
+	/**
+	 * Set the charge event
+	 * 
+	 * @param chargeEvent
+	 *            - the charge event
+	 */
+	public void setChargeEvent(String chargeEvent)
+	{
+		this.chargeEvent = chargeEvent;
+	}
+
+	/**
+	 * Return the channel
+	 * 
+	 * @return the channel
+	 */
+	public String getChannel()
+	{
+		return channel;
+	}
+
+	/**
+	 * Set the channel
+	 * 
+	 * @param channel
+	 *            - the channel
+	 */
+	public void setChannel(String channel)
+	{
+		this.channel = channel;
+	}
+
+	/**
+	 * Return the schedule recalculation mode
+	 * 
+	 * @return the schedule recalculation mode
+	 */
+	public String getScheduleRecalculate()
+	{
+		return scheduleRecalculate;
+	}
+
+	/**
+	 * Set the schedule recalculation mode
+	 * 
+	 * @param scheduleRecalculate
+	 *            - the schedule recalculation mode
+	 */
+	public void setScheduleRecalculate(String scheduleRecalculate)
+	{
+		this.scheduleRecalculate = scheduleRecalculate;
+	}
+
+	/**
+	 * Return the project value
+	 * 
+	 * @return the project value
+	 */
+	public String getProjectValue()
+	{
+		return projectValue;
+	}
+
+	/**
+	 * Set the project value
+	 * 
+	 * @param projectValue
+	 *            - the project value
+	 */
+	public void setProjectValue(String projectValue)
+	{
+		this.projectValue = projectValue;
+	}
+
+	/**
+	 * Return the contractor advance payment
+	 * 
+	 * @return the contractor advance payment
+	 */
+	public String getContractorAdvancePayment()
+	{
+		return contractorAdvancePayment;
+	}
+
+	/**
+	 * Set the contractor advance payment
+	 * 
+	 * @param contractorAdvancePayment
+	 *            - the contractor advance payment
+	 */
+	public void setContractorAdvancePayment(String contractorAdvancePayment)
+	{
+		this.contractorAdvancePayment = contractorAdvancePayment;
+	}
+
+	/**
+	 * Return the construction end date
+	 * 
+	 * @return the construction end date
+	 */
+	public String getConstructionEndDate()
+	{
+		if (yyyymmddDateFormat)
+		{
+			return InputParameterConversion.convertDate(constructionEndDate);
+		}
+		else
+		{
+			return constructionEndDate;
+		}
+	}
+
+	/**
+	 * Set the construction end date
+	 * 
+	 * @param constructionEndDate
+	 *            - the construction end date
+	 */
+	public void setConstructionEndDate(String constructionEndDate)
+	{
+		this.constructionEndDate = constructionEndDate;
+	}
+
+	/**
+	 * Return the flat rate
+	 * 
+	 * @return the flat rate
+	 */
+	public String getFlatRate()
+	{
+		return flatRate;
+	}
+
+	/**
+	 * Set the flat rate
+	 * 
+	 * @param flatRate
+	 *            - the flat rate
+	 */
+	public void setFlatRate(String flatRate)
+	{
+		this.flatRate = flatRate;
+	}
+
+	/**
+	 * Return the interest amount
+	 * 
+	 * @return the interest amount
+	 */
+	public String getInterestAmount()
+	{
+		return interestAmount;
+	}
+
+	/**
+	 * Set the interest amount
+	 * 
+	 * @param interestAmount
+	 *            - the interest amount
+	 */
+	public void setInterestAmount(String interestAmount)
+	{
+		this.interestAmount = interestAmount;
+	}
+
+	/**
+	 * Return the discount amount
+	 * 
+	 * @return the discount amount
+	 */
+	public String getDiscountAmount()
+	{
+		return discountAmount;
+	}
+
+	/**
+	 * Set the discount amount
+	 * 
+	 * @param discountAmount
+	 *            - the discount amount
+	 */
+	public void setDiscountAmount(String discountAmount)
+	{
+		this.discountAmount = discountAmount;
+	}
+
+	/**
+	 * Return the additional profit flag
+	 * 
+	 * @return the additional profit flag
+	 */
+	public String getAdditionalProfit()
+	{
+		return additionalProfit;
+	}
+
+	/**
+	 * Set the additional profit flag
+	 * 
+	 * @param additionalProfit
+	 *            - the additional profit flag
+	 */
+	public void setAdditionalProfit(String additionalProfit)
+	{
+		this.additionalProfit = additionalProfit;
+	}
+
+	/**
+	 * Return the reduction profit flag
+	 * 
+	 * @return the reduction profit flag
+	 */
+	public String getReductionProfit()
+	{
+		return reductionProfit;
+	}
+
+	/**
+	 * Set the reduction profit flag
+	 * 
+	 * @param reductionProfit
+	 *            - the reduction profit flag
+	 */
+	public void setReductionProfit(String reductionProfit)
+	{
+		this.reductionProfit = reductionProfit;
+	}
+
+	/**
+	 * Return the constant amount
+	 * 
+	 * @return the constant amount
+	 */
+	public String getConstantAmount()
+	{
+		return constantAmount;
+	}
+
+	/**
+	 * Set the constant amount
+	 * 
+	 * @param constantAmount
+	 *            - the constant amount
+	 */
+	public void setConstantAmount(String constantAmount)
+	{
+		this.constantAmount = constantAmount;
+	}
+
+}

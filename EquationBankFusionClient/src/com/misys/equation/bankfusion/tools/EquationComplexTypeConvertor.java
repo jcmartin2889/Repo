@@ -1,0 +1,75 @@
+/* jadclipse */// Decompiled by Jad v1.5.8g. Copyright 2001 Pavel Kouznetsov.
+
+package com.misys.equation.bankfusion.tools;
+
+import java.io.IOException;
+import java.io.StringWriter;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Marshaller;
+import org.exolab.castor.xml.ValidationException;
+import org.exolab.castor.xml.XMLClassDescriptorResolver;
+
+import com.misys.bankfusion.common.ComplexTypeConvertor;
+import com.misys.equation.common.utilities.Toolbox;
+import com.trapedza.bankfusion.events.TechnicalEventSupport;
+
+/**
+ * This class extends the BankFusion ComplexTypeConvertor to override the class loader processing.
+ * <p>
+ * This is used when BankFusion User Exit Microflows are called from the EQ4 service runtime processing.
+ */
+public class EquationComplexTypeConvertor extends ComplexTypeConvertor
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EquationComplexTypeConvertor.java 11387 2011-07-07 13:46:30Z esther.williams $";
+	private static final transient Log logger = LogFactory
+					.getLog(com.misys.equation.bankfusion.tools.EquationComplexTypeConvertor.class.getName());
+	private static final String XML_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+	public EquationComplexTypeConvertor(ClassLoader cl)
+	{
+		super(cl);
+	}
+
+	/**
+	 * Get the XML representation of a Java object
+	 * <p>
+	 * This has been overridden to make sure we set the class loader based on the one that the incoming object was loaded from
+	 */
+	@Override
+	public String getXmlFromJava(String className, Object value)
+	{
+		try
+		{
+			StringWriter writer = new StringWriter();
+			Marshaller m = new Marshaller();
+			XMLClassDescriptorResolver xmlClassDescriptorResolver = (XMLClassDescriptorResolver) m.getResolver();
+			// Our specific processing: Set the class loader for the resolver based
+			// on the incoming class:
+			xmlClassDescriptorResolver.setClassLoader(value.getClass().getClassLoader());
+			m.setWriter(writer);
+			m.marshal(value);
+			String s = writer.toString();
+			return s.substring(XML_HEADER.length());
+		}
+		catch (MarshalException e)
+		{
+			TechnicalEventSupport.getInstance().raiseTechnicalErrorEvent(10500032,
+							new Object[] { className, Toolbox.getExceptionMessage(e) }, logger, e);
+		}
+		catch (ValidationException e)
+		{
+			TechnicalEventSupport.getInstance().raiseTechnicalErrorEvent(10500032,
+							new Object[] { className, Toolbox.getExceptionMessage(e) }, logger, e);
+		}
+		catch (IOException e)
+		{
+			TechnicalEventSupport.getInstance().raiseTechnicalErrorEvent(10500032,
+							new Object[] { className, Toolbox.getExceptionMessage(e) }, logger, e);
+		}
+		return null;
+	}
+}

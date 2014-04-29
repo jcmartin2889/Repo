@@ -1,0 +1,1 @@
+N4R01R,DG111Inward payment type for ILE/CC cust   N    Y YN1   2NNNYY NNMKIICTLOG IAUTSET             MKICANRINCMKICANCINC      N    NN,

@@ -1,0 +1,121 @@
+package com.misys.equation.common.ant.builder.helpText.backEnd;
+
+import java.util.Hashtable;
+import java.util.List;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+
+import com.misys.equation.common.ant.builder.helpText.models.AbsRecord;
+import com.misys.equation.common.ant.builder.helpText.models.GAERecordDataModel;
+
+/**
+ * This the GAE-Record Dao implementation. <br>
+ * This class is going to provide all back-end services for GAE-Record.
+ * 
+ * @author deroset
+ */
+public class GAERecordDao extends AbsEquationDao
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: GAERecordDao.java 9725 2010-11-08 12:34:45Z MACDONP1 $";
+	// default constructor
+	public GAERecordDao()
+	{
+		super();
+	}
+
+	/**
+	 * This method is going execute a Sql query using the filter criteria.
+	 * 
+	 * @param whereClause
+	 *            this is the <code>String</code> that represent the sql filter.
+	 * @return a <code>Hashtable</code> which contains a record of <code>GAERecordDataModel</code>
+	 */
+	public Hashtable<String, GAERecordDataModel> getGAERecordBy(String whereClause)
+	{
+		StringBuilder sqlBuilder = new StringBuilder(1024);
+		List<GAERecordDataModel> dataModels = null;
+
+		sqlBuilder.append("SELECT GAEAPIR, GAEFID, GAEFNM, GAEKEY, GAEATYP, GAESCN, GAEJFH, GAEJFD FROM GAEPF WHERE ");
+		sqlBuilder.append(whereClause);
+		JdbcTemplate select = getJdbcTemplate();
+		dataModels = select.query(sqlBuilder.toString(), new GAERecordRowMapper());
+		return createHashTableModel(dataModels);
+	}
+
+	/**
+	 * This method is going to get all records.
+	 * 
+	 * @return a <code>List</code> which contains a records
+	 */
+	public List<AbsRecord> getRecords()
+	{
+		return getRecordBy(null, new GAERecordRowMapper());
+	}
+
+	/**
+	 * This is a internal helper method which create a <code>Hashtable</code> <br>
+	 * which contains a record of <code>GAERecordDataModel</code>
+	 * 
+	 * @param dataModels
+	 *            record of <code>GAERecordDataModel</code>.
+	 * @return a <code>Hashtable</code> which contains a <code>GAERecordDataModel</code> objects.
+	 */
+	private Hashtable<String, GAERecordDataModel> createHashTableModel(List<GAERecordDataModel> dataModels)
+	{
+		Hashtable<String, GAERecordDataModel> modelTable = new Hashtable<String, GAERecordDataModel>();
+
+		for (GAERecordDataModel record : dataModels)
+		{
+			modelTable.put(record.getId(), record);
+		}
+		return modelTable;
+	}
+
+	/**
+	 * Return the list of the filed's name
+	 * 
+	 * @return the list of the filed's name
+	 */
+	@Override
+	protected String getFields()
+	{
+		String fields = " GAEAPIR, GAEFNM  ";
+		return fields;
+	}
+
+	@Override
+	protected String getParameterizedFields()
+	{
+		return null;
+	}
+
+	@Override
+	protected Object[] getParameterizedFieldsValues()
+	{
+		return null;
+	}
+
+	@Override
+	protected String getWhereConditionBaseOnIdRecord()
+	{
+		return null;
+	}
+
+	@Override
+	protected String getParameters()
+	{
+		return null;
+	}
+
+	public List<AbsRecord> getRecordBy(String whereClause)
+	{
+		return null;
+	}
+
+	@Override
+	protected Hashtable<String, AbsRecord> createHashtableRecordModel(List<AbsRecord> records)
+	{
+		return null;
+	}
+}

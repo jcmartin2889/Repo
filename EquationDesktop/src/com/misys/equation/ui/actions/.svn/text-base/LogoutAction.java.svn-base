@@ -1,0 +1,96 @@
+package com.misys.equation.ui.actions;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.struts.action.Action;
+import org.apache.struts.action.ActionErrors;
+import org.apache.struts.action.ActionForm;
+import org.apache.struts.action.ActionForward;
+import org.apache.struts.action.ActionMapping;
+
+import com.misys.equation.common.access.EquationLogin;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.ui.context.EquationDesktopContext;
+import com.misys.equation.ui.services.ServiceDirectory;
+
+/**
+ * This class encapsulates web-tier calls to trigger the business logic within the backend in order to logout the user from the
+ * system.
+ * 
+ * @author <a href="mailto:nicholas.camilleri@misys.com">camillen</a>
+ */
+public class LogoutAction extends Action
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(LogoutAction.class);
+
+	private static final String FORWARDNAME_LOGOUT = "login";
+	private static final String FORWARDNAME_CONTAINER = "container";
+
+	public LogoutAction()
+	{
+		LOG.debug("LogoutAction created");
+	}
+
+	@Override
+	/*
+	 * * Process the specified HTTP logout request by logging out the user and forwards to another web component that will create
+	 * the HTTP response to be shown to the user once the logout is performed. I also handles exceptions thrown by the business
+	 * logic.
+	 */
+	public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
+	{
+		// initialise method variables
+		ActionErrors ae = null;
+
+		try
+		{
+			LOG.debug("LogoutAction: Executing Logout Call");
+			// Get the session identifier for the current web session ...
+			final EquationLogin eqLogin = (EquationLogin) request.getSession().getAttribute(EquationDesktopContext.SESSION_LOGIN);
+
+			// Call method to perform the logout calls ...
+			if (logOut(eqLogin))
+			{
+				// If we got till this point then the logout has been performed. We can safely re-direct to the login screen.
+				return mapping.findForward(FORWARDNAME_LOGOUT);
+			}
+			else
+			{
+				// Else if we get false from the logout method we forward back to the UI container
+				return mapping.findForward(FORWARDNAME_CONTAINER);
+			}
+
+		}
+		catch (RuntimeException e)
+		{
+			// Handle unexpected errors gracefully
+			LOG.error(e);
+			ae = new ActionErrors();
+			super.saveErrors(request, ae);
+			return mapping.findForward(FORWARDNAME_CONTAINER);
+		}
+	}
+
+	/**
+	 * This private method isolates the logout calls made to the
+	 * 
+	 * @param eqLogin
+	 * @return
+	 */
+	private boolean logOut(final EquationLogin eqLogin)
+	{
+		if (eqLogin == null)
+		{
+			return false;
+		}
+		final String sessionIdentifier = eqLogin.getSessionId();
+		LOG.debug("LogoutAction: Session Identifier: [" + sessionIdentifier + "]");
+		final ServiceDirectory sd = new ServiceDirectory();
+		sd.logoffDesktop(sessionIdentifier, "");
+		return true;
+	}
+}

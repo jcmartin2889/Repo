@@ -1,0 +1,324 @@
+package com.misys.equation.common.access;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.internal.eapi.core.EQMessage;
+
+/**
+ * This class provides methods for setting Equation API fields before the enquiry is executed and for getting fields after the
+ * enquiry is executed - returning list data is not supported.
+ */
+public class EquationStandardEnquiry implements IEquationStandardObject
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	private transient EquationStandardSession session = null;
+	private static final long serialVersionUID = 1L;
+	private String id = "";
+	private String apiName = "";
+	private String formatName = "";
+	private boolean valid = false;
+	private EquationDataStructureData hzDSData;
+
+	// H46 parameters
+	private String begin = "";
+	private int noreq = 0;
+	private int noret = 0;
+	private String eqnln = "";
+	private String ercod = "";
+	private String erprm = "";
+	private int flen = 0;
+	private int rlen = 0;
+	private List<EQMessage> errorList;
+
+	public EquationDataStructureData getHzDSData()
+	{
+		return hzDSData;
+	}
+	protected void setHzDSData(EquationDataStructureData hzDSData)
+	{
+		this.hzDSData = hzDSData;
+	}
+	protected String getBegin()
+	{
+		return begin;
+	}
+	protected void setBegin(String begin)
+	{
+		this.begin = begin;
+	}
+	protected int getNoreq()
+	{
+		return noreq;
+	}
+	protected void setNoreq(int noreq)
+	{
+		this.noreq = noreq;
+	}
+	protected int getNoret()
+	{
+		return noret;
+	}
+	protected void setNoret(int noret)
+	{
+		this.noret = noret;
+	}
+	protected String getEqnln()
+	{
+		return eqnln;
+	}
+	protected void setEqnln(String eqnln)
+	{
+		this.eqnln = eqnln;
+	}
+	public String getErcod()
+	{
+		return ercod;
+	}
+	protected void setErcod(String ercod)
+	{
+		this.ercod = ercod;
+	}
+	public String getErprm()
+	{
+		return erprm;
+	}
+	protected void setErprm(String erprm)
+	{
+		this.erprm = erprm;
+	}
+	protected int getFlen()
+	{
+		return flen;
+	}
+	protected void setFlen(int flen)
+	{
+		this.flen = flen;
+	}
+	protected int getRlen()
+	{
+		return rlen;
+	}
+	protected void setRlen(int rlen)
+	{
+		this.rlen = rlen;
+	}
+	/**
+	 * constructor
+	 * 
+	 * @throws EQException
+	 */
+	public EquationStandardEnquiry(String enquiryApiName, String fixedFormat, EquationStandardSession session) throws EQException
+	{
+		setFormatName(fixedFormat);
+		setAPIName(enquiryApiName);
+		this.session = session;
+		this.errorList = new ArrayList<EQMessage>();
+		initialiseEnquiry();
+	}
+	/**
+	 * constructor
+	 * 
+	 * @throws EQException
+	 */
+	public EquationStandardEnquiry(String enquiryApiName, EquationStandardSession session) throws EQException
+	{
+		this(enquiryApiName, getJournalName(enquiryApiName), session);
+	}
+
+	/**
+	 * Determines the name of the enquiry journal file
+	 * 
+	 * @param enquiryApiName
+	 *            the API name e.g. H68EMR
+	 * 
+	 * @return the enquiry journal file name
+	 */
+	private static String getJournalName(String enquiryApiName)
+	{
+		String root = enquiryApiName.substring(0, 3);
+		return "HZ" + root + "1";
+	}
+	/**
+	 * 
+	 */
+	private void setAPIName(String enquiryApiName)
+	{
+		if (this.id.equals("") || this.apiName.equals(id))
+		{
+			id = enquiryApiName;
+		}
+
+		apiName = enquiryApiName;
+	}
+	/**
+	 * 
+	 */
+	private void setFormatName(String fixedFormat)
+	{
+		formatName = fixedFormat;
+	}
+	/**
+	 * 
+	 */
+	public String getAPIName()
+	{
+		return apiName;
+	}
+	/**
+	 * 
+	 */
+	public String getFormatName()
+	{
+		return formatName;
+	}
+	/**
+	 * @equation.external
+	 */
+	public String getFieldValue(String fieldName)
+	{
+		return hzDSData.getFieldValue(fieldName);
+	}
+	/**
+	 * 
+	 * @equation.external
+	 */
+	public void setFieldValue(String fieldName, String fieldValue)
+	{
+		hzDSData.setFieldValue(fieldName, fieldValue);
+	}
+	/**
+	 * @throws EQException
+	 * 
+	 */
+	private void initialiseEnquiry() throws EQException
+	{
+		hzDSData = new EquationDataStructureData(session.getEquationDataStructure(formatName));
+	}
+	public EquationStandardSession getEquationStandardSession()
+	{
+		return session;
+	}
+	@Override
+	public String toString()
+	{
+		return hzDSData.toString();
+	}
+
+	/**
+	 * Return the id of this transaction
+	 * 
+	 * @return the id of this transaction
+	 */
+	public String getId()
+	{
+		return id;
+	}
+
+	/**
+	 * Set the id of this transaction
+	 * 
+	 * @param id
+	 *            the Id of this transaction
+	 */
+	public void setId(String id)
+	{
+		this.id = id;
+	}
+
+	/**
+	 * Return the list of error messages
+	 * 
+	 * @return the list of error messages
+	 */
+	public List<EQMessage> getMessages()
+	{
+		return errorList;
+	}
+
+	/**
+	 * Return if the transaction has been successfully executed or not
+	 * 
+	 * @return true if transaction is successful
+	 */
+	public boolean getValid()
+	{
+		return valid;
+	}
+
+	/**
+	 * Set whether the transaction is valid
+	 * 
+	 * @param valid
+	 *            - true if the transaction is valid
+	 */
+	public void setValid(boolean valid)
+	{
+		this.valid = valid;
+	}
+
+	/**
+	 * Return the enquiry bytes
+	 * 
+	 * @return the enquiry in bytes
+	 */
+	public byte[] getBytes()
+	{
+		return hzDSData.getBytes();
+	}
+
+	/**
+	 * Set the enquiry bytes
+	 * 
+	 * @param data
+	 *            - the data bytes
+	 */
+	public void setBytes(byte[] data)
+	{
+		hzDSData.setBytes(data);
+	}
+
+	/**
+	 * Return the transaction mode
+	 */
+	public String getMode()
+	{
+		return IEquationStandardObject.FCT_ENQ;
+	}
+
+	/**
+	 * Set the transaction mode
+	 * 
+	 * @param mode
+	 *            - the transaction mode
+	 */
+	public void setMode(String mode)
+	{
+		// do nothing, cannot change mode
+	}
+
+	/**
+	 * Return the list of errors
+	 * 
+	 * @return - the list of errors
+	 * @equation.external
+	 */
+	public List<EQMessage> getErrorList()
+	{
+		return errorList;
+	}
+
+	/**
+	 * Set the list of errors
+	 * 
+	 * @param errorList
+	 *            - the list of errors
+	 */
+	public void setErrorList(List<EQMessage> errorList)
+	{
+		this.errorList = errorList;
+	}
+}

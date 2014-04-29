@@ -1,0 +1,1 @@
+ant clean_all > #clean_output.txt

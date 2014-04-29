@@ -1,0 +1,1164 @@
+package com.misys.equation.function.runtime;
+
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationStandardObjectHelper;
+import com.misys.equation.common.access.EquationStandardQueryList;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationStandardTable;
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.access.IEquationStandardObject;
+import com.misys.equation.common.access.IListTransaction;
+import com.misys.equation.common.dao.beans.GAZRecordDataModel;
+import com.misys.equation.common.files.JournalHeader;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EqDataType;
+import com.misys.equation.common.utilities.EqTimingTest;
+import com.misys.equation.common.utilities.EquationAPICache;
+import com.misys.equation.common.utilities.EquationAPICacheHandler;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.Toolbox;
+import com.misys.equation.function.adaptor.FunctionAdaptor;
+import com.misys.equation.function.beans.APIField;
+import com.misys.equation.function.beans.APIFieldSet;
+import com.misys.equation.function.beans.Field;
+import com.misys.equation.function.beans.FieldData;
+import com.misys.equation.function.beans.Function;
+import com.misys.equation.function.beans.FunctionData;
+import com.misys.equation.function.beans.LoadFieldSetStatus;
+import com.misys.equation.function.beans.Mapping;
+import com.misys.equation.function.beans.RepeatingDataManager;
+import com.misys.equation.function.beans.RepeatingFieldData;
+import com.misys.equation.function.language.LanguageResources;
+import com.misys.equation.function.tools.FunctionRuntimeToolbox;
+import com.misys.equation.function.tools.MappingToolbox;
+
+public class FunctionTransactions
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	// Log
+	private static final EquationLogger LOG = new EquationLogger(FunctionTransactions.class);
+
+	// function handler
+	private final FunctionHandlerData fhd;
+
+	// list of transactions
+	private final List<String> equationTransactionKeys;
+	private final Map<String, IEquationStandardObject> equationTransactions;
+
+	// list of before images as a FunctionTransactions
+	// Only the list of transactions are valid for access for beforeImageTransactions. Never access any other properties
+	private FunctionTransactions beforeImageTransactions;
+
+	// when the transaction has already been applied and there are no change to the details,
+	// it will call the API again (true) or not (false)
+	private boolean applyAlways;
+
+	// function mode
+	private final String mode;
+
+	// adaptor suffix
+	private String adaptor;
+
+	// journal header
+	private JournalHeader journalHeader;
+
+	// function messages
+	private final FunctionMessages functionMessages;
+
+	// debug info
+	private final FunctionDebugInfo functionDebugInfo;
+
+	/**
+	 * Construct the default Function Transactions
+	 * 
+	 * @param mode
+	 *            - function mode
+	 */
+	public FunctionTransactions(FunctionHandlerData fhd, String mode)
+	{
+		this.fhd = fhd;
+		this.mode = mode;
+		this.applyAlways = true;
+		this.journalHeader = null;
+		this.equationTransactionKeys = new ArrayList<String>();
+		this.equationTransactions = new Hashtable<String, IEquationStandardObject>();
+		this.functionMessages = new FunctionMessages();
+		this.adaptor = GAZRecordDataModel.TYP_UPDATE;
+		this.functionDebugInfo = new FunctionDebugInfo();
+	}
+
+	/**
+	 * Return the list of transactions
+	 * 
+	 * @return the list of transactions
+	 */
+	public Map<String, IEquationStandardObject> getEquationTransactions()
+	{
+		return equationTransactions;
+	}
+
+	/**
+	 * Add a transaction to the list
+	 * 
+	 * @param id
+	 *            - unique id name
+	 * @param transaction
+	 *            - the transaction
+	 */
+	public void addTransaction(String id, IEquationStandardObject transaction)
+	{
+		if (!equationTransactionKeys.contains(id))
+		{
+			equationTransactionKeys.add(id);
+		}
+		equationTransactions.put(id, transaction);
+	}
+
+	/**
+	 * Add a transaction to the list
+	 * 
+	 * @param id
+	 *            - unique id name
+	 * @param transaction
+	 *            - the transaction
+	 */
+	public void addTransaction(Map<String, IEquationStandardObject> transactions)
+	{
+		Iterator<String> iterator = transactions.keySet().iterator();
+		while (iterator.hasNext())
+		{
+			String id = iterator.next();
+
+			if (!equationTransactionKeys.contains(id))
+			{
+				equationTransactionKeys.add(id);
+			}
+			equationTransactions.put(id, transactions.get(id));
+		}
+	}
+
+	/**
+	 * Set whether transaction is always applied even if details have not changed
+	 * 
+	 * @param applyAlways
+	 *            - true if transaction is always applied
+	 */
+	public void setApplyAlways(boolean applyAlways)
+	{
+		this.applyAlways = applyAlways;
+	}
+
+	/**
+	 * Set the journal header
+	 * 
+	 * @param journalHeader
+	 *            - the journal header
+	 */
+	public void setJournalHeader(JournalHeader journalHeader)
+	{
+		this.journalHeader = journalHeader;
+	}
+
+	/**
+	 * Set the adaptor suffix
+	 * 
+	 * @param adaptor
+	 *            - the adaptor suffix
+	 */
+	public void setAdaptor(String adaptor)
+	{
+		this.adaptor = adaptor;
+	}
+
+	/**
+	 * Set the list of before images
+	 * 
+	 * @param beforeImages
+	 *            - list of before images
+	 */
+	public void setBeforeImageTransactions(FunctionTransactions beforeImages)
+	{
+		this.beforeImageTransactions = beforeImages;
+	}
+
+	/**
+	 * Remove all transactions
+	 */
+	public void clear()
+	{
+		equationTransactions.clear();
+		functionMessages.clearMessages();
+	}
+
+	/**
+	 * Return the list of transactions
+	 * 
+	 * @return the list of transactions
+	 */
+	public List<IEquationStandardObject> rtvListTransaction()
+	{
+		List<IEquationStandardObject> transactions = new ArrayList<IEquationStandardObject>();
+
+		for (int i = 0; i < equationTransactionKeys.size(); i++)
+		{
+			String apiName = equationTransactionKeys.get(i);
+			transactions.add(equationTransactions.get(apiName));
+		}
+		return transactions;
+	}
+
+	/**
+	 * Create a new Equation transaction
+	 * 
+	 * @param session
+	 *            - the Equation standard transaction
+	 * @param apiFieldSet
+	 *            - the API field sets
+	 * 
+	 * @return the transaction
+	 * 
+	 * @throws EQException
+	 */
+	public IEquationStandardObject rtvTransaction(EquationStandardSession session, APIFieldSet apiFieldSet) throws EQException
+	{
+		String tableName = "";
+		if (apiFieldSet.isGlobalLibrary())
+		{
+			// Table name is only used to check for library later, connection switch replaces later...
+			tableName = EquationCommonContext.getConfigProperty("eq.GlobalLibraryName") + "/" + apiFieldSet.getRoot();
+		}
+		else
+		{
+			tableName = apiFieldSet.getRoot();
+		}
+		// Setup the new transaction
+		IEquationStandardObject transaction = FunctionEquationStandardObjectHelper.getTransaction(session, fhd, apiFieldSet
+						.getType(), apiFieldSet.getId(), apiFieldSet.getLabel(), tableName, apiFieldSet.getKeyFields(), apiFieldSet
+						.getDecode(), apiFieldSet.getNewField(), journalHeader);
+
+		// Setup the transaction mode
+		transaction.setMode(getTransactionMode(apiFieldSet));
+
+		// Equation standard transaction
+		if (transaction instanceof EquationStandardTransaction)
+		{
+			EquationStandardTransaction standardTransaction = (EquationStandardTransaction) transaction;
+			FunctionRuntimeToolbox.setupTransaction(standardTransaction, journalHeader, apiFieldSet.isAlwaysApplyInRecovery(),
+							apiFieldSet.isAlwaysApplyInExtInput());
+		}
+
+		// Equation standard service
+		if (transaction instanceof EquationStandardService)
+		{
+			EquationStandardService standardService = (EquationStandardService) transaction;
+			FunctionRuntimeToolbox.setupTransaction(standardService, journalHeader, apiFieldSet.isAlwaysApplyInRecovery(),
+							apiFieldSet.isAlwaysApplyInExtInput());
+		}
+
+		// return the transaction
+		return transaction;
+	}
+
+	/**
+	 * Determine the mode for the API field set
+	 * 
+	 * @param apiFieldSet
+	 *            - the API field set
+	 * @return
+	 */
+	private String getTransactionMode(APIFieldSet apiFieldSet)
+	{
+		// default the mode based on the API field set
+		String fct = apiFieldSet.getMode().trim();
+
+		// Override if main mode is validate or retrieve mode
+		if (mode.equals(IEquationStandardObject.FCT_RTV) || mode.equals(IEquationStandardObject.FCT_VAL))
+		{
+			fct = mode;
+		}
+
+		// mode still blank (or 'F'), then perform further checking to determine mode
+		if (IEquationStandardObject.FCT_NONE.equals(fct) || IEquationStandardObject.FCT_FUL.equals(fct))
+		{
+			// no before image, then assume add mode
+			if (beforeImageTransactions == null)
+			{
+				fct = IEquationStandardObject.FCT_ADD;
+			}
+			else
+			{
+				// before transaction for this does not exists, then it is an add mode
+				IEquationStandardObject ibeforetransaction = beforeImageTransactions.getEquationTransactions().get(
+								apiFieldSet.getId());
+
+				// if before transaction does not exist or is not valid, then in add mode
+				if (ibeforetransaction == null || !ibeforetransaction.getValid())
+				{
+					fct = IEquationStandardObject.FCT_ADD;
+				}
+				// before transaction exists and is valid, then determine whether in update mode or delete mode
+				else
+				{
+					// delete mode
+					if (mode.equals(IEquationStandardObject.FCT_DEL))
+					{
+						fct = IEquationStandardObject.FCT_DEL;
+					}
+					// maintain mode
+					else
+					{
+						fct = IEquationStandardObject.FCT_MNT;
+					}
+				}
+			}
+
+			// delete mode and the system is auto detecting the mode. If the system detected
+			// add, then simply ignore the transaction
+			if (mode.equals(IEquationStandardObject.FCT_DEL) && fct.equals(IEquationStandardObject.FCT_ADD))
+			{
+				fct = IEquationStandardObject.FCT_XCL;
+			}
+		}
+
+		// return the mode
+		return fct;
+	}
+
+	/**
+	 * Load the function data into the transaction
+	 * 
+	 * @param session
+	 *            - the Equation Standard session
+	 * @param functionAdaptor
+	 *            - the Function Adaptor
+	 * @param transaction
+	 *            - the Equation standard transaction
+	 * @param fieldSet
+	 *            - the API field set
+	 * @param functionData
+	 *            - the Function Data
+	 * @param function
+	 *            - the Function
+	 * @param update
+	 *            - update mode
+	 * 
+	 * @return true - if any field has been changed
+	 * 
+	 * @throws EQException
+	 */
+	public boolean loadToTransactionData(EquationStandardSession session, FunctionAdaptor functionAdaptor,
+					IEquationStandardObject transaction, APIFieldSet fieldSet, FunctionData functionData, Function function,
+					boolean update) throws EQException
+	{
+		boolean nochanged = true;
+
+		// debug info
+		functionDebugInfo.addInfoLn(LanguageResources.getString("FunctionTransactions.Debug.DataMappedToTransaction.Label"));
+
+		// Loop through all the API fields
+		List<APIField> fields = fieldSet.getAPIFields();
+		for (int i = 0; i < fields.size(); i++)
+		{
+			// retrieve the field
+			Field field = fields.get(i);
+			String fieldName = field.getId();
+			String dbValue = "";
+			boolean isSourceNumeric = false;
+			int sourceNumericLength = -1;
+			int sourceNumericDecimals = -1;
+
+			// path exists?
+			boolean tobeUpdated;
+			if (update)
+			{
+				tobeUpdated = function.hasFromUpdateMapping(field.rtvPath());
+			}
+			else
+			{
+				tobeUpdated = function.hasFromLoadMapping(field.rtvPath());
+			}
+
+			// get the mapped from field
+			if (tobeUpdated)
+			{
+				String mappingPath;
+				if (update)
+				{
+					mappingPath = function.getUpdateMappingsFrom(field).get(0);
+				}
+				else
+				{
+					mappingPath = function.getLoadMappingsFrom(field).get(0);
+				}
+				String mapFromField = MappingToolbox.getField(mappingPath);
+				String mapFromFieldSet = MappingToolbox.getFieldSet(mappingPath);
+
+				// Determine whether the mapping is in the Function Data or to a previous transactions
+				// .. mapped from a work field
+				if (mapFromFieldSet.length() == 0)
+				{
+					// Mapping from a WorkField.
+					// TODO: This assumes no clash with InputField names. Need to confirm WorkField naming strategy
+					functionDebugInfo.addInfoLn(LanguageResources.getFormattedString(
+									"FunctionTransactions.Debug.DataMappedToTransaction.WorkField", new String[] { mapFromField,
+													fieldName }));
+					// Get the WorkField value directly from the FunctionData
+					dbValue = functionData.rtvFieldDbValue(mapFromField);
+					if (EqDataType.isNumeric(functionData.rtvFieldData(mapFromField).getFieldType()))
+					{
+						isSourceNumeric = true;
+						sourceNumericLength = functionData.rtvFieldData(mapFromField).getFieldLength();
+						sourceNumericDecimals = functionData.rtvFieldData(mapFromField).getFieldDecimal();
+					}
+				}
+
+				// .. mapped from another transaction
+				else if (equationTransactions.containsKey(mapFromFieldSet))
+				{
+					functionDebugInfo.addInfoLn(LanguageResources.getFormattedString(
+									"FunctionTransactions.Debug.DataMappedToTransaction.LoadAPITransaction", new String[] {
+													mapFromFieldSet, mapFromField, fieldName }));
+					IEquationStandardObject tran = equationTransactions.get(mapFromFieldSet);
+					dbValue = tran.getFieldValue(mapFromField);
+				}
+
+				// .. mapped from function data
+				else
+				{
+					functionDebugInfo.addInfoLn(LanguageResources.getFormattedString(
+									"FunctionTransactions.Debug.DataMappedToTransaction.FunctionData", new String[] { mapFromField,
+													fieldName }));
+					dbValue = functionData.rtvFieldDbValue(mapFromField);
+					if (EqDataType.isNumeric(functionData.rtvFieldData(mapFromField).getFieldType()))
+					{
+						isSourceNumeric = true;
+						sourceNumericLength = functionData.rtvFieldData(mapFromField).getFieldLength();
+						sourceNumericDecimals = functionData.rtvFieldData(mapFromField).getFieldDecimal();
+					}
+				}
+			}
+			else
+			{
+				// If no mapping, check for (and process) script and Java code assignment
+				if (update)
+				{
+					dbValue = FunctionRuntimeToolbox.processUpdateLoadFieldAssignments(fieldSet.getId(), fieldName, field
+									.getUpdateAssignment(), field.getUpdateScript(), functionData, functionAdaptor, session, fhd,
+									adaptor);
+
+					// change the value?
+					if (dbValue != null)
+					{
+						if (Field.ASSIGNMENT_SCRIPT.equals(field.getUpdateAssignment()))
+						{
+							functionDebugInfo.addInfoLn(LanguageResources.getFormattedString(
+											"FunctionTransactions.Debug.DataMappedToTransaction.MappingScript", field.getId()));
+						}
+						else
+						{
+							functionDebugInfo.addInfoLn(LanguageResources.getFormattedString(
+											"FunctionTransactions.Debug.DataMappedToTransaction.ValueAdaptor", new String[] {
+															fieldSet.getId(), fieldName }));
+						}
+					}
+				}
+				else
+				{
+					dbValue = FunctionRuntimeToolbox.processUpdateLoadFieldAssignments(fieldSet.getId(), fieldName, field
+									.getLoadAssignment(), field.getLoadScript(), functionData, functionAdaptor, session, fhd,
+									adaptor);
+					// change the value?
+					if (dbValue != null)
+					{
+						if (Field.ASSIGNMENT_SCRIPT.equals(field.getLoadAssignment()))
+						{
+							functionDebugInfo.addInfoLn(LanguageResources.getFormattedString(
+											"FunctionTransactions.Debug.DataMappedToTransaction.MappingScript", field.getId()));
+						}
+						else
+						{
+							functionDebugInfo.addInfoLn(LanguageResources.getFormattedString(
+											"FunctionTransactions.Debug.DataMappedToTransaction.ValueAdaptor", new String[] {
+															fieldSet.getId(), fieldName }));
+						}
+					}
+				}
+
+				// have we got a viable value?
+				if (dbValue != null)
+				{
+					// Mark for update
+					tobeUpdated = true;
+				}
+			}
+
+			// field to be updated?
+			if (tobeUpdated)
+			{
+				// workout if things have changed...
+				if (nochanged)
+				{
+					String value = transaction.getFieldValue(fieldName);
+					nochanged = value.equals(dbValue);
+				}
+				// If mapping from a numeric to a character then need to format accordingly (dbLength and dbDecimal only set if
+				// numeric)
+				if (isSourceNumeric && EqDataType.isAlpha(field.getDataType()))
+				{
+					if (sourceNumericDecimals == 0)
+					{
+						dbValue = Toolbox.formatInteger(dbValue, sourceNumericLength);
+					}
+					else
+					{
+						dbValue = Toolbox.formatDouble(dbValue, sourceNumericLength - sourceNumericDecimals, sourceNumericDecimals);
+					}
+				}
+
+				// is this the special field mode, then change the transaction mode
+				if (fieldName.equals(APIFieldSet.MODE_FIELD_NAME))
+				{
+					// only if not in retrieve or validate mode
+					if (!mode.equals(IEquationStandardObject.FCT_RTV) && !mode.equals(IEquationStandardObject.FCT_VAL))
+					{
+						if (EquationStandardObjectHelper.isValidModeOnUpdate(dbValue))
+						{
+							transaction.setMode(dbValue);
+						}
+						else
+						{
+							LOG.error(LanguageResources.getFormattedString(
+											"FunctionTransactions.ModeErrorDetermineByAPIFieldSetModeField", new String[] {
+															dbValue, fieldSet.getId() }));
+						}
+					}
+				}
+
+				// change the transaction data
+				else
+				{
+					if (fhd.getEquationUser().getEquationUnit().hasMakerCheckerEnhancement()
+									&& (fieldName.equals(FunctionData.FLD_SUPP_MKR_CHKR) || fieldName
+													.equals(FunctionData.FLD_STAT_MKR_CHKR)))
+					{
+						functionDebugInfo.addInfoLn(LanguageResources.getFormattedString(
+										"FunctionTransactions.Debug.DataMappedToTransaction.MakerChecker", field.getId()));
+					}
+					else
+					{
+						// set the GZ field
+						transaction.setFieldValue(fieldName, dbValue);
+					}
+				}
+			}
+		}
+
+		// internal update api will never have maker-checker
+		if (fhd.getEquationUser().getEquationUnit().hasMakerCheckerEnhancement())
+		{
+			if (transaction instanceof EquationStandardTransaction)
+			{
+				EquationStandardTransaction itransaction = (EquationStandardTransaction) transaction;
+				if (itransaction.getGzDSData().getEqDS().containsField(FunctionData.FLD_SUPP_MKR_CHKR))
+				{
+					transaction.setFieldValue(FunctionData.FLD_SUPP_MKR_CHKR, EqDataType.YES);
+				}
+			}
+			else if (transaction instanceof EquationStandardService)
+			{
+				EquationStandardService itransaction = (EquationStandardService) transaction;
+				itransaction.getFh().rtvFunctionData().getFieldDatas().get(FunctionData.FLD_SUPP_MKR_CHKR);
+				{
+					transaction.setFieldValue(FunctionData.FLD_SUPP_MKR_CHKR, EqDataType.YES);
+				}
+			}
+		}
+
+		// changed?
+		return !nochanged;
+	}
+	/**
+	 * Load the transaction into the Function Data
+	 * 
+	 * @param apiFieldSet
+	 *            - the API field set
+	 * @param transaction
+	 *            - the Equation standard transaction
+	 * @param fieldSet
+	 *            - the API field set
+	 * @param functionData
+	 *            - the Function Data
+	 * @param function
+	 *            - the Function
+	 * 
+	 * @return true
+	 */
+	public boolean loadToFunctionData(APIFieldSet apiFieldSet, IEquationStandardObject transaction, FunctionData functionData,
+					Function function, EquationStandardSession session, FunctionAdaptor functionAdaptor) throws EQException
+	{
+		String apiFieldSetId = apiFieldSet.getId();
+		List<Mapping> repeatMappings = new ArrayList<Mapping>();
+
+		// Loop through all the load mappings
+		for (Mapping mapping : function.getLoadMappings())
+		{
+			if (MappingToolbox.isLoadAPIPath(apiFieldSetId, mapping.getSource()))
+			{
+				// Need to check target (Function Field) to determine if repeating
+				String mapTo = MappingToolbox.getField(mapping.getTarget());
+				FieldData fieldData = functionData.rtvFieldData(mapTo);
+				if (fieldData != null)
+				{
+					if (fieldData instanceof RepeatingFieldData)
+					{
+						// Don't apply now, need to loop:
+						repeatMappings.add(mapping);
+					}
+					else
+					{
+						// Apply non-repeating mappings immediately (and only once)
+						applyOneLoadMapping(transaction, mapping, functionData);
+					}
+				}
+			}
+		}
+
+		// Now process mappings to repeating fields:
+		if (transaction instanceof IListTransaction)
+		{
+			String repeatingGroup = apiFieldSet.getRepeatingGroup();
+			RepeatingDataManager repeatingDataManager = functionData.getRepeatingDataManager(repeatingGroup);
+
+			// default loading - add all details
+			if (apiFieldSet.getRepeatingGroupLoadMode() == APIFieldSet.RPTGRP_LOAD_DEFAULT)
+			{
+				IListTransaction listTransaction = (IListTransaction) transaction;
+				while (listTransaction.next())
+				{
+					repeatingDataManager.addRow();
+					for (Mapping mapping : repeatMappings)
+					{
+						applyOneLoadMapping(transaction, mapping, functionData);
+					}
+				}
+			}
+
+			// sql aggregate, then assume only one record is selected
+			else if (apiFieldSet.getRepeatingGroupLoadMode() == APIFieldSet.RPTGRP_LOAD_SQL_AGGREGATE)
+			{
+				repeatingDataManager.moveFirst();
+				if (repeatingDataManager.next())
+				{
+					IListTransaction listTransaction = (IListTransaction) transaction;
+					if (listTransaction.next())
+					{
+						for (Mapping mapping : repeatMappings)
+						{
+							applyOneLoadMapping(transaction, mapping, functionData);
+						}
+					}
+				}
+
+				// then execute same queries for the rest of the rows
+				while (repeatingDataManager.next())
+				{
+					IEquationStandardObject sqlAggregateTran = rtvTransaction(session, apiFieldSet);
+					loadToTransactionData(session, functionAdaptor, sqlAggregateTran, apiFieldSet, functionData, function, false);
+					session.retrieveEquationQueryList((EquationStandardQueryList) sqlAggregateTran);
+					if (sqlAggregateTran.getValid())
+					{
+						IListTransaction sqlAggregateTranList = (IListTransaction) sqlAggregateTran;
+						if (sqlAggregateTranList.next())
+						{
+							for (Mapping mapping : repeatMappings)
+							{
+								applyOneLoadMapping(sqlAggregateTran, mapping, functionData);
+							}
+						}
+					}
+				}
+			}
+
+			// chain and load - load details if already exists
+			else if (apiFieldSet.getRepeatingGroupLoadMode() == APIFieldSet.RPTGRP_LOAD_CHAIN
+							|| apiFieldSet.getRepeatingGroupLoadMode() == APIFieldSet.RPTGRP_LOAD_CHAIN_ADD
+							|| apiFieldSet.getRepeatingGroupLoadMode() == APIFieldSet.RPTGRP_LOAD_LOOKUP)
+			{
+				IListTransaction listTransaction = (IListTransaction) transaction;
+				String[] contextFields = apiFieldSet.getRepeatingGroupLoadJoinAPIField().split(Toolbox.CONTEXT_DELIMETER);
+				while (listTransaction.next())
+				{
+					// retrieve the context field values
+					StringBuilder buffer = new StringBuilder();
+					for (String contextField : contextFields)
+					{
+						// ensure API field exist
+						if (!apiFieldSet.containsField(contextField))
+						{
+							throw new EQException(LanguageResources.getFormattedString(
+											"FunctionTransactions.LoadJoinAPIFieldKeyNotFound", new String[] { contextField,
+															apiFieldSet.getId() }));
+						}
+						String value = transaction.getFieldValue(contextField);
+						buffer.append(value.trim());
+						buffer.append(Toolbox.CONTEXT_DELIMETER);
+					}
+					if (buffer.length() > 0)
+					{
+						buffer.setLength(buffer.length() - 1);
+					}
+					String inputValueFields = buffer.toString();
+
+					// search for this key in the repeating data manager
+					int rowIndex = repeatingDataManager.search(apiFieldSet.getRepeatingGroupLoadJoinInputField(), inputValueFields,
+									false, functionData);
+
+					// updates all rows that satisfy the condition
+					if (apiFieldSet.getRepeatingGroupLoadMode() == APIFieldSet.RPTGRP_LOAD_LOOKUP)
+					{
+						while (rowIndex >= 0)
+						{
+							repeatingDataManager.setRow(rowIndex);
+							for (Mapping mapping : repeatMappings)
+							{
+								applyOneLoadMapping(transaction, mapping, functionData);
+							}
+							rowIndex = repeatingDataManager.search(apiFieldSet.getRepeatingGroupLoadJoinInputField(),
+											inputValueFields, false, rowIndex + 1, functionData);
+						}
+					}
+					// found the row, then update the row
+					else if (rowIndex >= 0)
+					{
+						repeatingDataManager.setRow(rowIndex);
+						for (Mapping mapping : repeatMappings)
+						{
+							applyOneLoadMapping(transaction, mapping, functionData);
+						}
+					}
+					// row not found, add it
+					else if (apiFieldSet.getRepeatingGroupLoadMode() == APIFieldSet.RPTGRP_LOAD_CHAIN_ADD)
+					{
+						repeatingDataManager.addRow();
+						for (Mapping mapping : repeatMappings)
+						{
+							applyOneLoadMapping(transaction, mapping, functionData);
+						}
+					}
+				}
+			}
+
+			// After loading all the data, move back to the first row
+			repeatingDataManager.moveFirst();
+			repeatingDataManager.next();
+		}
+
+		return true;
+	}
+
+	/**
+	 * Common method to apply one Load mapping.
+	 * 
+	 * @param transaction
+	 *            - the Equation standard transaction
+	 * @param mapping
+	 *            - the Mapping definition to process - the API field set
+	 * @param functionData
+	 *            - the Function Data
+	 */
+	private void applyOneLoadMapping(IEquationStandardObject transaction, Mapping mapping, FunctionData functionData)
+	{
+		String mapTo = MappingToolbox.getField(mapping.getTarget());
+		String mapFrom = MappingToolbox.getField(mapping.getSource());
+		String inputValue = transaction.getFieldValue(mapFrom);
+
+		// null then set to blank
+		if (inputValue == null)
+		{
+			inputValue = "";
+		}
+
+		if (MappingToolbox.isMappedToInput(mapping.getTarget()))
+		{
+			functionData.chgFieldInputValue(mapTo, inputValue);
+		}
+		else if (MappingToolbox.isMappedToOutput(mapping.getTarget()))
+		{
+			functionData.chgFieldOutputValue(mapTo, inputValue);
+		}
+		else if (MappingToolbox.isMappedToPrimitive(mapping.getTarget()))
+		{
+			functionData.chgFieldDbValue(mapTo, inputValue);
+		}
+		else if (MappingToolbox.isMappedToWorkField(mapping.getTarget()))
+		{
+			functionData.chgFieldDbValue(mapTo, inputValue);
+		}
+	}
+
+	/**
+	 * Write the journal details
+	 * 
+	 * @param session
+	 *            - Equation standard session
+	 * @param journalHeader
+	 *            - journal header
+	 * @param function
+	 *            - function
+	 * @param functionData
+	 *            - function data
+	 * 
+	 * @return true if successfully written journal details
+	 * 
+	 * @throws EQException
+	 */
+	public boolean writeJournalTransaction(EquationStandardSession session, JournalHeader journalHeader, Function function,
+					FunctionData functionData, FunctionData functionDataBefore, FunctionAdaptor functionAdaptor, boolean journalIt)
+					throws EQException
+	{
+		EquationStandardTransaction transaction = FunctionRuntimeToolbox.writeJournalTransaction(session, journalHeader, function,
+						functionData, functionDataBefore, functionAdaptor, journalIt, fhd);
+		addTransaction(Function.GY_FIELDSET, transaction);
+		return transaction.getValid();
+	}
+
+	/**
+	 * Write the journal details
+	 * 
+	 * @param session
+	 *            - Equation standard session
+	 * @param journalHeader
+	 *            - journal header
+	 * @param function
+	 *            - function
+	 * @param functionData
+	 *            - function data
+	 * 
+	 * @return true if successfully written journal details
+	 * 
+	 * @throws EQException
+	 */
+	public boolean writeJournalEnquiry(EquationStandardSession session, JournalHeader journalHeader, Function function,
+					FunctionData functionData, FunctionAdaptor functionAdaptor) throws EQException
+	{
+		EquationStandardTransaction transaction = FunctionRuntimeToolbox.writeJournalEnquiry(session, journalHeader, function,
+						functionData, functionAdaptor, fhd);
+		addTransaction(Function.G5_FIELDSET, transaction);
+		return transaction.getValid();
+	}
+
+	/**
+	 * Apply a transaction
+	 * 
+	 * @param session
+	 *            - the Equation session
+	 * @param apiFieldSet
+	 *            - API field set
+	 * @param functionData
+	 *            - function data
+	 * @param limitBytes
+	 *            - the maximum bytes to be retrieved from a list API
+	 * 
+	 * @return true - if the transaction has been successfully applied
+	 * 
+	 * @throws EQException
+	 */
+	public boolean applyTransaction(EquationStandardSession session, FunctionAdaptor functionAdaptor, APIFieldSet apiFieldSet,
+					FunctionData functionData, Function function, long limitBytes) throws EQException
+	{
+		// retrieve the transaction if already exists
+		IEquationStandardObject transaction = equationTransactions.get(apiFieldSet.getId());
+
+		// apply transaction
+		boolean success = applyTransaction(session, functionAdaptor, transaction, apiFieldSet, functionData, function, limitBytes);
+
+		return success;
+	}
+
+	/**
+	 * Apply the transaction
+	 * 
+	 * @param session
+	 *            - the Equation session
+	 * @param transaction
+	 *            - the Equation standard transaction
+	 * @param fieldSet
+	 *            - API field set
+	 * @param functionData
+	 *            - function data
+	 * @param limitBytes
+	 *            - the maximum bytes to be retrieved from a list API
+	 * 
+	 * @return true - if the transaction has been successfully applied
+	 * 
+	 * @throws EQException
+	 */
+	public boolean applyTransaction(EquationStandardSession session, FunctionAdaptor functionAdaptor,
+					IEquationStandardObject itransaction, APIFieldSet fieldSet, FunctionData functionData, Function function,
+					long limitBytes) throws EQException
+	{
+		// print timing test
+		EqTimingTest.printStartTime("FunctionTransactions.applyTransaction()", fieldSet.getId() + fieldSet.getDescription());
+
+		// bypass update?
+		boolean continueUpdate = true;
+
+		// clear the debug info
+		functionDebugInfo.clear();
+
+		// transaction not specified then retrieve a transaction
+		if (itransaction == null)
+		{
+			itransaction = rtvTransaction(session, fieldSet);
+		}
+
+		// Equation standard transaction processing
+		if (itransaction instanceof EquationStandardTransaction)
+		{
+			EquationStandardTransaction transaction = (EquationStandardTransaction) itransaction;
+
+			// setup the details first if it has been loaded (as before image). Also the before image will also be the initial value
+			// of the after image (so that the user does not need to populate all details)
+			if (beforeImageTransactions != null && !mode.equals(IEquationStandardObject.FCT_VAL)
+							&& !mode.equals(IEquationStandardObject.FCT_RTV))
+			{
+				// set the before image
+				transaction.setBeforeImage(beforeImageTransactions.getTransactionData(fieldSet.getId()));
+
+				// before image setup, then initialise after image
+				if (transaction.getBeforeImage() != null)
+				{
+					transaction.setGzBytes(transaction.getBeforeImage());
+				}
+			}
+		}
+
+		// Equation standard transaction processing
+		if (itransaction instanceof EquationStandardTable)
+		{
+			EquationStandardTable transaction = (EquationStandardTable) itransaction;
+
+			// setup the details first if it has been loaded (as before image)
+			// Also the before image will also be the initial value
+			// of the after image (so that the user does not need to populate all details)
+			if (beforeImageTransactions != null && !mode.equals(IEquationStandardObject.FCT_VAL)
+							&& !mode.equals(IEquationStandardObject.FCT_RTV))
+			{
+				// set the before image
+				transaction.setBeforeImage(beforeImageTransactions.getTransactionData(fieldSet.getId()));
+
+				// before image setup, then initialise after image
+				if (transaction.getBeforeImage() != null)
+				{
+					transaction.setBytes(transaction.getBeforeImage());
+					transaction.setExists(true);
+				}
+			}
+		}
+
+		// for list transaction, always reposition to first row
+		if (itransaction instanceof IListTransaction)
+		{
+			RepeatingDataManager dataManager = functionData.getRepeatingDataManager(fieldSet.getRepeatingGroup());
+			dataManager.moveFirst();
+			dataManager.next();
+		}
+
+		// load the function data into the transaction (after-image)
+		boolean updateMode = !mode.equals(IEquationStandardObject.FCT_RTV);
+		boolean changed = loadToTransactionData(session, functionAdaptor, itransaction, fieldSet, functionData, function,
+						updateMode);
+
+		// if the transaction has not changed and do not apply, then assume successful
+		if (!changed && !applyAlways)
+		{
+			return true;
+		}
+
+		// Equation standard service processing
+		if (itransaction instanceof EquationStandardService)
+		{
+			EquationStandardService transaction = (EquationStandardService) itransaction;
+
+			FunctionHandler xfh = transaction.getFh();
+			FunctionHandlerData xfhd = xfh.getFhd();
+			LoadFieldSetStatus status = FunctionRuntimeToolbox.getPrimaryFieldSetStatus(xfhd);
+
+			// key open, then retrieve
+			if (!status.isDetailOpen())
+			{
+				xfh.applyRetrieveTransaction();
+				if (FunctionEquationStandardObjectHelper.chkTransactionValid(transaction))
+				{
+					loadToTransactionData(session, functionAdaptor, itransaction, fieldSet, functionData, function, updateMode);
+				}
+				else
+				{
+					continueUpdate = false;
+				}
+			}
+		}
+
+		// Print the function data
+		LOG.debug(LanguageResources.getFormattedString("FunctionTransactions.Debug.FunctionData.Before", itransaction.getId())
+						+ "\n" + functionData.toString() + "\n");
+
+		// apply the transaction
+		if (continueUpdate)
+		{
+			if (!itransaction.getMode().equals(IEquationStandardObject.FCT_XCL))
+			{
+				// PV already cache?
+				EquationAPICache equationPVResult = null;
+				EquationAPICacheHandler equationPVResultHandler = session.getUnit().getApiCacheHandler();
+				if (fieldSet.isCache())
+				{
+					equationPVResult = equationPVResultHandler.getFromCache(fhd.getEquationUser().getLanguageId(), itransaction);
+				}
+
+				// execute the API if has not been cached
+				if (equationPVResult == null)
+				{
+					EqTimingTest.printStartTime("FunctionTransactions.applyTransaction().applyTransaction()", itransaction.getId());
+					FunctionEquationStandardObjectHelper.applyTransaction(session, itransaction, LOG, limitBytes);
+					EqTimingTest.printTime("FunctionTransactions.applyTransaction().applyTransaction()", itransaction.getId());
+
+					if (fieldSet.isCache())
+					{
+						equationPVResultHandler.addAPICache(fhd.getEquationUser().getLanguageId(), itransaction);
+					}
+				}
+			}
+			else
+			{
+				itransaction.setValid(true);
+			}
+		}
+
+		// load back to Function Data?
+		if (itransaction.getValid())
+		{
+			if (itransaction.getMode().equals(IEquationStandardObject.FCT_RTV)
+							|| itransaction.getMode().equals(IEquationStandardObject.FCT_ENQ))
+			{
+				loadToFunctionData(fieldSet, itransaction, functionData, function, session, functionAdaptor);
+			}
+
+			// Print the function data and other debug info
+			LOG.debug(functionDebugInfo.toString());
+			LOG.debug(LanguageResources.getFormattedString("FunctionTransactions.Debug.FunctionData.After", itransaction.getId())
+							+ "\n" + functionData.toString() + "\n");
+		}
+
+		// add the transaction to the list
+		addTransaction(fieldSet.getId(), itransaction);
+
+		// transaction not successful?
+		if (!itransaction.getValid())
+		{
+			functionDebugInfo.addInfoLn(LanguageResources.getString("FunctionTransactions.Debug.FunctionData.Label"));
+			functionDebugInfo.addInfoLn(functionData.toString());
+			if (updateMode)
+			{
+				LOG.error(LanguageResources.getFormattedString("FunctionTransactions.Debug.ApplyTransaction", itransaction.getId())
+								+ "\n" + functionDebugInfo + "\n");
+			}
+			else
+			{
+				LOG.error(LanguageResources.getFormattedString("FunctionTransactions.Debug.ApplyTransactionLoad", itransaction
+								.getId())
+								+ "\n" + functionDebugInfo + "\n");
+
+			}
+		}
+
+		// print timing test
+		EqTimingTest.printTime("FunctionTransactions.applyTransaction()", fieldSet.getId() + fieldSet.getDescription());
+
+		// transaction successful?
+		return itransaction.getValid();
+	}
+
+	/**
+	 * Return the transaction data of the given field set id
+	 * 
+	 * @param id
+	 *            - the field set identifier
+	 * 
+	 * @return the transaction data of the given field set id
+	 */
+	public byte[] getTransactionData(String id)
+	{
+		IEquationStandardObject transaction = equationTransactions.get(id);
+		if (transaction == null)
+		{
+			return null;
+		}
+		if (!transaction.getValid())
+		{
+			return null;
+		}
+
+		return transaction.getBytes();
+	}
+
+	/**
+	 * Compare 2 list of transactions.
+	 * 
+	 * @param screenSet
+	 *            - the screen set
+	 * @param equationTransactions
+	 *            - the list of transactions
+	 */
+	public String compare(ScreenSet screenSet, Map<String, IEquationStandardObject> equationTransactions)
+	{
+		for (int i = 0; i < screenSet.getFunction().getInputFieldSets().size(); i++)
+		{
+			List<APIFieldSet> loadAPIFieldSets = screenSet.getFunction().getInputFieldSets().get(i).getLoadAPIs();
+			for (int j = 0; j < loadAPIFieldSets.size(); j++)
+			{
+				String id = loadAPIFieldSets.get(j).getId();
+				IEquationStandardObject transaction1 = this.equationTransactions.get(id);
+				IEquationStandardObject transaction2 = equationTransactions.get(id);
+
+				// both must be valid or invalid
+				if (transaction1 == null && transaction2 != null)
+				{
+					if (transaction2.getValid())
+					{
+						return id;
+					}
+				}
+
+				// both must be valid or invalid
+				else if (transaction1 != null && transaction2 == null)
+				{
+					if (transaction1.getValid())
+					{
+						return id;
+					}
+				}
+
+				// both none, then ignore
+				else if (transaction1 == null && transaction2 == null)
+				{
+				}
+
+				// transaction must have the same status
+				else if (transaction1.getValid() != transaction2.getValid())
+				{
+					return id;
+				}
+			}
+		}
+		return "";
+	}
+}

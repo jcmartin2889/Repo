@@ -1,0 +1,191 @@
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svn/repos/bfeq_src/!svn/ver/17770/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test
+END
+EquationTestCaseAddOnce.java
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/EquationTestCaseAddOnce.java
+END
+TestEnvironmentConnectionProperties.java
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/TestEnvironmentConnectionProperties.java
+END
+EquationTestCaseAddCombi.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/EquationTestCaseAddCombi.java
+END
+EquationTestCaseFullyAdd.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/EquationTestCaseFullyAdd.java
+END
+EquationTestCaseGlobalModuleMetaData.java
+K 25
+svn:wc:ra_dav:version-url
+V 156
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/EquationTestCaseGlobalModuleMetaData.java
+END
+EquationTestCaseAddMaintain.java
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/EquationTestCaseAddMaintain.java
+END
+AbstractTestSuite.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/AbstractTestSuite.java
+END
+EquationTestCaseCancelCashier.java
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/EquationTestCaseCancelCashier.java
+END
+EquationTestCasePVMetaData.java
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/EquationTestCasePVMetaData.java
+END
+EquationTestCaseAddCashier.java
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/EquationTestCaseAddCashier.java
+END
+EquationTestCaseFullyList.java
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/EquationTestCaseFullyList.java
+END
+EquationTestCaseValidate.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/EquationTestCaseValidate.java
+END
+TestCaseDialog.java
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/TestCaseDialog.java
+END
+GenerateEquationTestCase.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/GenerateEquationTestCase.java
+END
+EquationTestCaseFully.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/EquationTestCaseFully.java
+END
+EquationTestCaseAddCancel.java
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/EquationTestCaseAddCancel.java
+END
+EquationTestCaseMaintain.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/EquationTestCaseMaintain.java
+END
+EquationTestCaseFullyCancel.java
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/EquationTestCaseFullyCancel.java
+END
+TestEnvironment.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/TestEnvironment.java
+END
+EquationTestCaseComment.java
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/EquationTestCaseComment.java
+END
+AS400PingTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/AS400PingTest.java
+END
+EquationTestCaseDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/EquationTestCaseDao.java
+END
+TestEnvironmentApplicationProperties.java
+K 25
+svn:wc:ra_dav:version-url
+V 156
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/TestEnvironmentApplicationProperties.java
+END
+EquationTestResultsHelper.java
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/EquationTestResultsHelper.java
+END
+EquationTestCaseMaintainCancel.java
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/EquationTestCaseMaintainCancel.java
+END
+EquationTestCaseAddMore.java
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/EquationTestCaseAddMore.java
+END
+EquationTestCase.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/EquationTestCase.java
+END
+EquationTestCaseAddOnceWithRetieval.java
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/EquationTestCaseAddOnceWithRetieval.java
+END
+EquationTestCaseCancel.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/EquationTestCaseCancel.java
+END
+EquationTestCaseAddMoreWithRetrieval.java
+K 25
+svn:wc:ra_dav:version-url
+V 156
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/EquationTestCaseAddMoreWithRetrieval.java
+END
+OrderedTestSuite.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubs/src/com/misys/equation/common/test/OrderedTestSuite.java
+END

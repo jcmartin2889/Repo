@@ -1,0 +1,1016 @@
+package com.misys.equation.common.access;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.misys.equation.common.dao.DaoFactory;
+import com.misys.equation.common.dao.IOCRecordDao;
+import com.misys.equation.common.dao.beans.HARecordDataModel;
+import com.misys.equation.common.dao.beans.HBRecordDataModel;
+import com.misys.equation.common.dao.beans.HBXRecordDataModel;
+import com.misys.equation.common.dao.beans.OCRecordDataModel;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.internal.eapi.core.EQRuntimeException;
+import com.misys.equation.common.utilities.EqDataType;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.SQLToolbox;
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * This class represents an Equation user
+ */
+public class EquationUser
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EquationUser.java 17515 2013-11-06 14:49:22Z lima12 $";
+	private static final long serialVersionUID = 1L;
+
+	// default language
+	public static final String DEF_LANG = "GB";
+	public static final String DEF_LANG2 = "  ";
+
+	// logger
+	private static final EquationLogger LOG = new EquationLogger(EquationUser.class);
+
+	// declare all the strings that are relevant to a user
+
+	// User id may not match the connection/logon user id. User id here is the
+	// Equation user - his password may not be known.
+	private String userId;
+	private String inputBranch;
+	private String inputBranchNo;
+	private String languageId;
+	private boolean languageRTL;
+	private String userName;
+	private String validUnits;
+	private boolean supervisor;
+	private boolean interBranchAllowed;
+	private String limitOverride;
+	private EquationUnit eqUnit;
+
+	// The Equation session
+	private EquationStandardSession session;
+
+	// Non-update session for multi-language retrieval
+	private EquationStandardSession sessionForNonUpdate;
+
+	private EquationDataStructureData dsjobctle;
+
+	// List of options already validated to be authorised or not authorised
+	private final Set<String> authorisedOptions = new HashSet<String>();
+	private final Set<String> unauthorisedOptions = new HashSet<String>();
+
+	/**
+	 * Construct an empty Equation user
+	 */
+	public EquationUser()
+	{
+	}
+
+	/**
+	 * Construct an Equation user with a pooled Equation standard session
+	 * 
+	 * @param unit
+	 *            - the Equation unit
+	 * 
+	 * @throws EQException
+	 */
+	public EquationUser(EquationUnit unit) throws EQException
+	{
+		eqUnit = unit;
+		session = unit.getEquationSessionPool().getEquationStandardSession();
+		sessionForNonUpdate = null;
+		userId = session.getUserId();
+		rtvUserInformation(session.getConnection());
+		rtvUserSessionInformation(session);
+	}
+	/**
+	 * Construct an Equation user with a pooled Equation standard session
+	 * 
+	 * @param unit
+	 *            - the Equation unit
+	 * @param dataSourceName
+	 *            - the data source name
+	 * @param xaMode
+	 *            - whether XA is used or not
+	 * @param equationIseriesProfile
+	 *            - the Equation iSeries profile
+	 * 
+	 * @throws EQException
+	 */
+	public EquationUser(EquationUnit unit, String dataSourceName, boolean xaMode, String equationIseriesProfile) throws EQException
+	{
+		eqUnit = unit;
+		session = unit.getEquationSessionPool(dataSourceName).getEquationStandardSession();
+		sessionForNonUpdate = null;
+
+		if (equationIseriesProfile != null && equationIseriesProfile.length() > 0)
+		{
+			session.setUserId(equationIseriesProfile);
+		}
+		userId = session.getUserId();
+
+		rtvUserInformation(session.getConnection());
+		rtvUserSessionInformation(session);
+
+	}
+	/**
+	 * Construct an Equation user with a pooled Equation standard session using a template user
+	 * 
+	 * @param unit
+	 *            - the Equation unit
+	 * @param dataSourceName
+	 *            - the data source name
+	 * @param xaMode
+	 *            - whether XA is used or not
+	 * @param equationIseriesProfile
+	 *            - the Equation iSeries profile
+	 * @param userTemplate
+	 *            - the Equation user template to copy
+	 * 
+	 * @throws EQException
+	 */
+	public EquationUser(EquationUnit unit, String dataSourceName, boolean xaMode, String equationIseriesProfile,
+					EquationUser userTemplate) throws EQException
+	{
+		eqUnit = unit;
+
+		// create the session
+		AbstractEquationSessionPool dataSourcePool = unit.getEquationSessionPool(dataSourceName);
+		Connection connection = dataSourcePool.getConnection(userId);
+		EquationConnectionWrapper connectionWrapper = new EquationConnectionWrapper(connection, dataSourcePool, xaMode, false);
+		session = new Equation4Session(userTemplate, connectionWrapper);
+
+		// not created
+		sessionForNonUpdate = null;
+
+		if (equationIseriesProfile != null && equationIseriesProfile.length() > 0)
+		{
+			session.setUserId(equationIseriesProfile);
+		}
+		userId = session.getUserId();
+
+		userName = userTemplate.getUserName();
+		inputBranch = userTemplate.getInputBranch();
+		languageId = userTemplate.getLanguageId();
+		languageRTL = userTemplate.isLanguageRTL();
+		limitOverride = userTemplate.getLimitOverride();
+		supervisor = userTemplate.isSupervisor();
+
+		// retrieve the data area dajobclte
+		dsjobctle = userTemplate.getDsjobctle();
+		inputBranchNo = userTemplate.getInputBranchNo();
+		interBranchAllowed = userTemplate.isInterBranchAllowed();
+	}
+
+	/**
+	 * Construct an Equation user without Equation standard session
+	 * 
+	 * @param unit
+	 *            - the Equation unit
+	 * @param userId
+	 *            - the user id
+	 * 
+	 * @throws EQException
+	 */
+	public EquationUser(EquationUnit unit, String userId) throws EQException
+	{
+		eqUnit = unit;
+		this.userId = userId;
+		session = null;
+		sessionForNonUpdate = null;
+
+		// retrieve user information
+		Connection connection = null;
+		try
+		{
+			// get a connection
+			connection = unit.getEquationSessionPool().getConnection(userId);
+
+			// retrieve user information
+			rtvUserInformation(connection);
+		}
+		finally
+		{
+			unit.getEquationSessionPool().returnConnectionToPool(connection);
+		}
+	}
+
+	/**
+	 * Construct an Equation user with Equation standard session without XA
+	 * 
+	 * @param unit
+	 *            - the Equation unit
+	 * @param userId
+	 *            - the user id
+	 * @param password
+	 *            - the user password
+	 * @param equationIseriesProfile
+	 *            - the iSeries/Equation user profile
+	 * 
+	 * @throws EQException
+	 */
+	public EquationUser(EquationUnit unit, String userId, String password, String equationIseriesProfile) throws EQException
+	{
+		this(unit, userId, password, false, equationIseriesProfile);
+	}
+
+	/**
+	 * Construct an Equation user with Equation standard session
+	 * 
+	 * @param unit
+	 *            - the Equation unit
+	 * @param userId
+	 *            - the user id
+	 * @param password
+	 *            - the user password
+	 * @param xaMode
+	 *            - true if an XA connection should be created or false if an non-XA connection should be created
+	 * @param equationIseriesProfile
+	 *            - the iSeries/Equation user profile
+	 * 
+	 * @throws EQException
+	 */
+	public EquationUser(EquationUnit unit, String userId, String password, boolean xaMode, String equationIseriesProfile)
+					throws EQException
+	{
+		eqUnit = unit;
+		// set the user to the real Equation user if one is supplied otherwise the user will be the connection user
+		if (equationIseriesProfile != null && equationIseriesProfile.length() > 0 && !userId.equals(equationIseriesProfile))
+		{
+			this.userId = equationIseriesProfile;
+		}
+		else
+		{
+			this.userId = userId;
+		}
+
+		session = null;
+		sessionForNonUpdate = null;
+
+		// retrieve user information
+		EquationConnectionWrapper connectionWrapper = null;
+		EquationConnectionWrapper connectionWrapper2 = null;
+		try
+		{
+			if (xaMode)
+			{
+				connectionWrapper = unit.getEquationSessionPool().getXAConnection(userId, password, false, false,
+								equationIseriesProfile);
+			}
+			else
+			{
+				connectionWrapper = unit.getEquationSessionPool().getSingleConnection(userId, password, equationIseriesProfile);
+			}
+
+			// retrieve user information
+			rtvUserInformation(connectionWrapper.getConnection());
+
+			// setup a second connection if user is using multi-langauge
+			if (!languageId.equals(DEF_LANG))
+			{
+				connectionWrapper2 = unit.getEquationSessionPool().getSingleConnection(userId, password, equationIseriesProfile);
+			}
+		}
+		finally
+		{
+			if (connectionWrapper != null)
+			{
+				// create the standard session using the created connection
+				if (unit.getUnitVersion().equals(EquationUnit.VERSION_EQ4))
+				{
+					this.session = new Equation4Session(this, connectionWrapper);
+				}
+				else if (unit.getUnitVersion().equals(EquationUnit.VERSION_EQ38))
+				{
+					this.session = new Equation38Session(this, connectionWrapper);
+					// throw new UnsupportedOperationException("Invalid unit level");
+				}
+				// setup second connection
+				if (connectionWrapper2 != null)
+				{
+					if (unit.getUnitVersion().equals(EquationUnit.VERSION_EQ4))
+					{
+						this.sessionForNonUpdate = new Equation4Session(this, connectionWrapper2);
+					}
+					else if (unit.getUnitVersion().equals(EquationUnit.VERSION_EQ38))
+					{
+						this.sessionForNonUpdate = new Equation38Session(this, connectionWrapper2);
+						// throw new UnsupportedOperationException("Invalid unit level");
+					}
+				}
+				rtvUserSessionInformation(this.session);
+			}
+		}
+	}
+	/**
+	 * Retrieve further user information
+	 * 
+	 * @param connection
+	 *            - the connection
+	 * 
+	 * @throws EQException
+	 */
+	private void rtvUserInformation(Connection connection) throws EQException
+	{
+		// Set up statement and result set for OCPF/WFPF sql
+		PreparedStatement sqlStatement = null;
+		ResultSet rs = null;
+		// FIXME: Refactor to use OC DAO!!
+		try
+		{
+			// retrieve the user information from the OC and WF
+			String userId4 = Toolbox.trim(userId, 4).trim();
+			String sqlString = "SELECT OCBRNM,OCLNM,OCUNAM,OCLVA,WFAGXL,C1YRTL FROM ((OCPF LEFT JOIN WFPF ON OCCOA=WFCOA) LEFT JOIN C1PF ON OCLNM=C1LNM) WHERE OCUSID = ?";
+			sqlStatement = connection.prepareStatement(sqlString, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			sqlStatement.setString(1, Toolbox.removeSQLChars(userId4));
+			rs = sqlStatement.executeQuery();
+			if (rs.next())
+			{
+				userName = rs.getString("OCUNAM").trim();
+				inputBranch = rs.getString("OCBRNM").trim();
+				languageId = rs.getString("OCLNM").trim();
+				languageRTL = Toolbox.cvtYNToBoolean(rs.getString("C1YRTL"), false);
+				limitOverride = rs.getString("OCLVA").trim();
+
+				// language id not specified, then set to default language
+				if (languageId.equals(""))
+				{
+					languageId = DEF_LANG;
+					languageRTL = false;
+				}
+
+				// user's class
+				if (!(rs.getString("WFAGXL") == null))
+				{
+					if (!rs.getString("WFAGXL").equals("00"))
+					{
+						supervisor = true;
+					}
+				}
+			}
+			else
+			{
+				userName = EqDataType.VOID;
+				inputBranch = EqDataType.VOID;
+				languageId = DEF_LANG;
+				languageRTL = false;
+				limitOverride = EqDataType.NO;
+				supervisor = true;
+			}
+
+			// retrieve all the units which the user is authorised to
+			String[] units = eqUnit.getEquationSystem().getAuthorisedUnits(userId);
+			validUnits = "";
+			for (String currUnit : units)
+			{
+				if (eqUnit.getEquationSystem().unitExists(currUnit))
+				{
+					PreparedStatement sqlStatement2 = null;
+					ResultSet rs2 = null;
+
+					// if any error accessing the unit, then don't crash the entire login process, simply ignore it
+					try
+					{
+						// FIXME: Refactor to use CH DAO
+						sqlString = "SELECT CHENM FROM " + "KFIL" + currUnit + "/CHPF WHERE CHENM ='K510'";
+						sqlStatement2 = connection.prepareStatement(sqlString, ResultSet.TYPE_FORWARD_ONLY,
+										ResultSet.CONCUR_READ_ONLY);
+						rs2 = sqlStatement2.executeQuery();
+						if (rs2.next())
+						{
+							validUnits += currUnit.trim() + "!_";
+						}
+					}
+					catch (Exception e)
+					{
+						if (LOG.isWarnEnabled())
+						{
+							LOG.warn(e.getMessage());
+						}
+					}
+					finally
+					{
+						SQLToolbox.close(rs2);
+						SQLToolbox.close(sqlStatement2);
+					}
+				}
+			}
+		}
+		catch (SQLException e)
+		{
+			LOG.error(e);
+			throw new EQException("EqUser: rtvUserInformation failed", e);
+		}
+		finally
+		{
+			SQLToolbox.close(rs);
+			SQLToolbox.close(sqlStatement);
+		}
+	}
+
+	/**
+	 * Retrieve further user information once a session has been establish
+	 * 
+	 * @param aSession
+	 *            - the Equation session
+	 */
+	private void rtvUserSessionInformation(EquationStandardSession aSession) throws EQException
+	{
+
+		// retrieve the data area dajobclte
+		dsjobctle = aSession.getDajobctle();
+
+		// retrieve default user branch number without using DAJOBCTLE
+		inputBranchNo = eqUnit.getRecords().getCARecord(inputBranch).getBranchNumber();
+		// inputBranchNo = dsjobctle.getFieldValue("$DBBN");
+		if (eqUnit.getUnitVersion().equals(EquationUnit.VERSION_EQ4))
+		{
+			// retrieve inter-branch authority
+			interBranchAllowed = true;
+			if (eqUnit.isEsfActive())
+			{
+				interBranchAllowed = aSession.isUserInterBranchAllowed(Toolbox.trim(userId, 4).trim(), inputBranchNo);
+			}
+		}
+	}
+
+	/**
+	 * Set the Equation unit of the user
+	 * 
+	 * @param unit
+	 *            - the Equation unit
+	 */
+	protected void setEquationUnit(EquationUnit unit)
+	{
+		this.eqUnit = unit;
+	}
+
+	/**
+	 * Return the Equation unit of the user
+	 * 
+	 * @return the Equation unit of the user
+	 */
+	public EquationUnit getEquationUnit()
+	{
+		return eqUnit;
+	}
+
+	/**
+	 * Return the user id
+	 * 
+	 * @return the user id
+	 */
+	public String getUserId()
+	{
+
+		return userId;
+
+	}
+	/**
+	 * Set the user id
+	 * 
+	 * @param userId
+	 *            - the user id
+	 */
+	public void setUserId(String userId)
+	{
+		this.userId = userId;
+	}
+
+	/**
+	 * Return the input branch
+	 * 
+	 * @return the input branch
+	 * @equation.external
+	 */
+	public String getInputBranch()
+	{
+		return inputBranch;
+	}
+
+	/**
+	 * Set the input branch
+	 * 
+	 * @param inputBranch
+	 *            - the input branch
+	 */
+	public void setInputBranch(String inputBranch)
+	{
+		this.inputBranch = inputBranch;
+	}
+
+	/**
+	 * Return the language id of the user
+	 * 
+	 * @return - the language id of the user
+	 * @equation.external
+	 */
+	public String getLanguageId()
+	{
+		return languageId;
+	}
+
+	/**
+	 * Return the language id of the user
+	 * 
+	 * @return - the language id of the user
+	 */
+	public String rtvLanguageId()
+	{
+		if (languageId.equals(DEF_LANG))
+		{
+			return "";
+		}
+
+		// return language
+		return languageId;
+	}
+
+	/**
+	 * Set the language id of the user
+	 * 
+	 * @param languageId
+	 *            - the language id of the user
+	 */
+	public void setLanguageId(String languageId)
+	{
+		this.languageId = languageId;
+	}
+
+	/**
+	 * Determine whether the language orientation is right-to-left
+	 * 
+	 * @return true if the language orientation is right-to-left
+	 * 
+	 */
+	public boolean isLanguageRTL()
+	{
+		return languageRTL;
+	}
+
+	/**
+	 * Set if the language orientation is right-to-left
+	 * 
+	 * @param languageRTL
+	 *            - true if the language orientation is right-to-left
+	 */
+	public void setLanguageRTL(boolean languageRTL)
+	{
+		this.languageRTL = languageRTL;
+	}
+	/**
+	 * Determine whether the user can override warnings
+	 * 
+	 * @return true if the user can override warnings
+	 * @equation.external
+	 */
+	public boolean isSupervisor()
+	{
+		return supervisor;
+	}
+
+	/**
+	 * Set whether the user can override warnings
+	 * 
+	 * @param supervisor
+	 *            - true if the user can override warnings
+	 */
+	public void setSupervisor(boolean supervisor)
+	{
+		this.supervisor = supervisor;
+	}
+
+	/**
+	 * Return the user name
+	 * 
+	 * @return the user name
+	 * @equation.external
+	 */
+	public String getUserName()
+	{
+		return userName;
+	}
+
+	/**
+	 * Set the user name
+	 * 
+	 * @param userName
+	 *            - the user name
+	 */
+	public void setUserName(String userName)
+	{
+		this.userName = userName;
+	}
+
+	/**
+	 * Return the list of units which the user is authorised to
+	 * 
+	 * @return the list of units which the user is authorised to
+	 */
+	public String getValidUnits()
+	{
+		return validUnits;
+	}
+
+	/**
+	 * Set the list of units which the user is authorised to
+	 * 
+	 * @param validUnits
+	 *            - the list of units which the user is authorised to
+	 */
+	public void setValidUnits(String validUnits)
+	{
+		this.validUnits = validUnits;
+	}
+
+	/**
+	 * Return the user's default branch number
+	 * 
+	 * @return the user's default branch number
+	 */
+	public String getInputBranchNo()
+	{
+		return inputBranchNo;
+	}
+
+	/**
+	 * Set the user's default branch number
+	 * 
+	 * @param inputBranchNo
+	 *            - the user's default branch number
+	 */
+	public void setInputBranchNo(String inputBranchNo)
+	{
+		this.inputBranchNo = inputBranchNo;
+	}
+
+	/**
+	 * Determine if user has inter-branch authority
+	 * 
+	 * @return true if user has inter-branch authority
+	 */
+	public boolean isInterBranchAllowed()
+	{
+		return interBranchAllowed;
+	}
+
+	/**
+	 * Set if user has inter-branch authority
+	 * 
+	 * @param interBranchAllowed
+	 *            - true if user has inter-branch authority
+	 */
+	public void setInterBranchAllowed(boolean interBranchAllowed)
+	{
+		this.interBranchAllowed = interBranchAllowed;
+	}
+
+	/**
+	 * Return the user's CRM limit authorisation level
+	 * 
+	 * @return the user's CRM limit authorisation level
+	 * @equation.external
+	 */
+	public String getLimitOverride()
+	{
+		return limitOverride;
+	}
+
+	/**
+	 * Set the user's CRM limit authorisation level
+	 * 
+	 * @param limitOverride
+	 *            - the user's CRM limit authorisation level
+	 */
+	public void setLimitOverride(String limitOverride)
+	{
+		this.limitOverride = limitOverride;
+	}
+
+	/**
+	 * Return the Equation session
+	 * 
+	 * @return the Equation session
+	 */
+	public EquationStandardSession getSession()
+	{
+		return session;
+	}
+
+	/**
+	 * Return the Equation standard session for non update (if no connection exists, then the default connection)
+	 * 
+	 * @return the Equation standard session for non update
+	 * @equation.external
+	 */
+	public EquationStandardSession getSessionForNonUpdate()
+	{
+		if (sessionForNonUpdate != null)
+		{
+			return sessionForNonUpdate;
+		}
+		else
+		{
+			return getSession();
+		}
+	}
+
+	/**
+	 * Log off the user from the session
+	 */
+	public void logOffUser()
+	{
+		LOG.info("Logging off Equation user " + userId);
+		if (session != null)
+		{
+			try
+			{
+				session.closeConnection();
+			}
+			catch (Exception e)
+			{
+				LOG.error(e);
+			}
+			session = null;
+		}
+
+		if (sessionForNonUpdate != null)
+		{
+			try
+			{
+				sessionForNonUpdate.closeConnection();
+			}
+			catch (Exception e)
+			{
+				LOG.error(e);
+			}
+			sessionForNonUpdate = null;
+		}
+	}
+
+	/**
+	 * Return the user's dajobctle
+	 * 
+	 * @return the user's dajobctle
+	 * @equation.external
+	 */
+	public EquationDataStructureData getDsjobctle()
+	{
+		return dsjobctle;
+	}
+
+	/**
+	 * Return the String representation
+	 * 
+	 * @return the String representation
+	 */
+	@Override
+	public String toString()
+	{
+		StringBuffer buffer = new StringBuffer();
+		if (session != null)
+		{
+			buffer.append("JobId = " + session.getConnectionWrapper().getJobId() + "\n");
+		}
+		buffer.append("User  = " + userId + "\n");
+		buffer.append("Unit  = " + eqUnit.getUnitId() + "\n");
+
+		// return the string
+		return buffer.toString();
+	}
+
+	/**
+	 * Return the text in the user's language
+	 * 
+	 * @param owner
+	 *            - the owner of the translation text
+	 * @param code
+	 *            - the key
+	 * @param textType
+	 *            - the type of text (any of types "LAB", "DSC", "MSK", "REG", "VLD")
+	 * @param returnCode
+	 *            - if true, the code (second parameter) will be returned if text is not found, otherwise, a blank will be returned
+	 * 
+	 * @return the text in the user's language
+	 */
+	public String getHBXText(String owner, String code, String textType, String serviceBaseLanguage, boolean returnCode)
+	{
+		try
+		{
+			HBXRecordDataModel hbxRecord = eqUnit.getRecords().getHBXRecord(owner, languageId, textType, code, serviceBaseLanguage);
+			if (hbxRecord == null)
+			{
+				if (returnCode)
+				{
+					return code;
+				}
+			}
+			else
+			{
+				// the text in the HBXPF record is already in UTF-8 so no conversion is needed here unlike code desc in HBPF
+				return hbxRecord.getText();
+			}
+
+		}
+		catch (EQException e)
+		{
+			LOG.error(e);
+		}
+
+		return "";
+	}
+
+	/**
+	 * Return the text in the user's language
+	 * 
+	 * @return the text in the user's language
+	 */
+	public String getSystemDictionary(String code)
+	{
+		try
+		{
+			HARecordDataModel haRecord = eqUnit.getRecords().getHARecord(languageId, code);
+			if (haRecord == null)
+			{
+				return code;
+			}
+			else
+			{
+				byte[] data = haRecord.getByteCodeDescription();
+				if (data == null)
+				{
+					return code;
+				}
+				return Toolbox.convertAS400TextIntoCCSID(data, data.length, session.getCcsid());
+			}
+		}
+		catch (EQException e)
+		{
+			LOG.error(e);
+			return "";
+		}
+	}
+
+	/**
+	 * Determine if user is authorised to an option
+	 * 
+	 * @param option
+	 *            - the option to be validated
+	 * @param isWebFacing
+	 *            - is WebFacing installed?
+	 * 
+	 * @return true if option is accessible by the user. Note: even if user is authorised to legacy functions, but if WebFacing is
+	 *         not installed, then the option will be marked as unauthorised
+	 */
+	public boolean checkAuthorisedOption(String option, boolean isWebFacing)
+	{
+		// option already known to be authorised
+		if (authorisedOptions.contains(option))
+		{
+			return true;
+		}
+
+		// option already known to be not authorised
+		else if (unauthorisedOptions.contains(option))
+		{
+			return false;
+		}
+
+		// not yet known, then validate it
+		else
+		{
+			boolean authorised = Toolbox.validateOption(this, option, isWebFacing);
+			if (authorised)
+			{
+				authorisedOptions.add(option);
+			}
+			else
+			{
+				unauthorisedOptions.add(option);
+			}
+			return authorised;
+		}
+	}
+
+	/**
+	 * Return true if the user is known to be already authorised to the specified option
+	 * 
+	 * @param option
+	 *            - the option id
+	 * 
+	 * @return true if the user is known to be already authorised to the specified option
+	 */
+	public boolean isAuthorised(String option)
+	{
+		return authorisedOptions.contains(option);
+	}
+
+	/**
+	 * Set whether user is authorised to the specified option
+	 * 
+	 * @param option
+	 *            - the option id
+	 * @param authorise
+	 *            - true if user is authorise to the option id
+	 */
+	public void toggleAuthorisedOption(String option, boolean authorise)
+	{
+		if (authorise)
+		{
+			authorisedOptions.add(option);
+			unauthorisedOptions.remove(option);
+		}
+		else
+		{
+			unauthorisedOptions.add(option);
+			authorisedOptions.remove(option);
+		}
+	}
+
+	/**
+	 * Get the description of the code with file prefix in the language
+	 * 
+	 * @param file
+	 *            File key to be used as prefix
+	 * @param code
+	 *            The file code
+	 * 
+	 * @return the HB record
+	 * 
+	 * @equation.external
+	 */
+	public String getCodeDescription(String file, String code)
+	{
+		try
+		{
+			HBRecordDataModel hbRecord = eqUnit.getRecords().getHBRecord(languageId, file, code);
+			if (hbRecord == null)
+			{
+				return "";
+			}
+			else
+			{
+				byte[] data = hbRecord.getByteCodeDescription();
+				if (data == null)
+				{
+					return "";
+				}
+				return Toolbox.convertAS400TextIntoCCSID(data, data.length, session.getCcsid());
+			}
+		}
+		catch (EQException e)
+		{
+			LOG.error(e);
+			return "";
+		}
+	}
+
+	/**
+	 * Returns the CAS User id for this EquationUser
+	 * 
+	 * @return A String containing the CAS User id
+	 * 
+	 * @throws EQException
+	 */
+	public String getCASUserId()
+	{
+		String result = null;
+
+		EquationStandardSession session = null;
+		try
+		{
+			session = eqUnit.getEquationSessionPool().getEquationStandardSession();
+			OCRecordDataModel ocRecord = new OCRecordDataModel(userId);
+			IOCRecordDao dao = new DaoFactory().getOCDao(session, ocRecord);
+			ocRecord = dao.getOCRecord();
+			if (ocRecord != null)
+			{
+				result = ocRecord.getBankFusionUserId();
+			}
+		}
+		catch (EQException e)
+		{
+			throw new EQRuntimeException(e);
+		}
+		finally
+		{
+			if (session != null)
+			{
+				try
+				{
+					eqUnit.getEquationSessionPool().returnEquationStandardSession(session);
+				}
+				catch (EQException e)
+				{
+					LOG.error(e);
+				}
+			}
+		}
+		return result;
+	}
+}

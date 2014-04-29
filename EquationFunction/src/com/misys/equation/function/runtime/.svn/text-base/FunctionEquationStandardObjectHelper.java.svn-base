@@ -1,0 +1,160 @@
+package com.misys.equation.function.runtime;
+
+import java.util.ArrayList;
+
+import com.misys.equation.common.access.EquationStandardObjectHelper;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.IEquationStandardObject;
+import com.misys.equation.common.files.JournalHeader;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.internal.eapi.core.EQMessage;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.function.journal.ParentTransactionDetail;
+import com.misys.equation.function.language.LanguageResources;
+
+public class FunctionEquationStandardObjectHelper
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/**
+	 * Create and return the Equation transaction of the specified type
+	 * 
+	 * @param session
+	 *            - the Equation standard session
+	 * @param fhd
+	 *            - the Function Handler Data
+	 * @param type
+	 *            - the transaction type
+	 * @param id
+	 *            - the transaction id
+	 * @param pgm
+	 *            - the program / label name
+	 * @param decode
+	 *            a <code>String</code> containing the PV Decode value (PV specific)
+	 * @param newField
+	 *            - determine whether key must exists or not<br>
+	 *            if Y, then the key must not be existing<Br>
+	 *            if N, then the key must be existing<Br>
+	 *            if blank, then either existing or not
+	 * 
+	 * @return the Equation transaction
+	 * 
+	 * @throws EQException
+	 */
+	public static IEquationStandardObject getTransaction(EquationStandardSession session, FunctionHandlerData fhd, String type,
+					String id, String pgm, String root, String keys, String decode, String newField, JournalHeader journalHeader)
+					throws EQException
+	{
+		IEquationStandardObject equationStandardObject = null;
+
+		// Equation service
+		if (type.equals(IEquationStandardObject.TYPE_SERVICE))
+		{
+			ParentTransactionDetail parentTransactionDetail = new ParentTransactionDetail(journalHeader);
+			equationStandardObject = new EquationStandardService(pgm, session, fhd.getEquationUser(), parentTransactionDetail, fhd
+							.getFunctionInfo());
+			equationStandardObject.setId(id);
+			return equationStandardObject;
+		}
+
+		// Standard process
+		return EquationStandardObjectHelper.getTransaction(session, type, id, pgm, root, keys, decode, newField);
+	}
+
+	/**
+	 * Execute the transaction
+	 * 
+	 * @param session
+	 *            - the Equation standard session
+	 * @param equationStandardObject
+	 *            - the transaction
+	 * @param limitBytes
+	 *            - the maximum bytes to be retrieved from a list API
+	 * 
+	 * @return the executed transaction
+	 * 
+	 * @throws EQException
+	 */
+	public static IEquationStandardObject applyTransaction(EquationStandardSession session,
+					IEquationStandardObject equationStandardObject, EquationLogger log, long limitBytes) throws EQException
+	{
+		// function mode
+		String fct = equationStandardObject.getMode();
+
+		// Equation standard service?
+		if (equationStandardObject instanceof EquationStandardService)
+		{
+			EquationStandardService transaction = (EquationStandardService) equationStandardObject;
+			FunctionHandler fh = transaction.getFh();
+			String dataBefore = transaction.toString();
+			if (fct.equals(IEquationStandardObject.FCT_VAL))
+			{
+				fh.applyValidateTransaction();
+			}
+			else if (fct.equals(IEquationStandardObject.FCT_RTV))
+			{
+				fh.applyRetrieveTransaction();
+			}
+			else if (fct.equals(IEquationStandardObject.FCT_DEL))
+			{
+				fh.applyTransactionDelete();
+			}
+			else
+			{
+				fh.applyTransaction();
+			}
+
+			chkTransactionValid(transaction);
+
+			// successful?
+			if (log != null && !transaction.getValid())
+			{
+				log.error(LanguageResources.getFormattedString("FunctionEquationStandardObjectHelper.ServiceFailureBefore",
+								new String[] { fh.getFhd().getScreenSetHandler().rtvScreenSetMain().getOptionId() })
+								+ "\n" + dataBefore + "\n");
+				log.error(LanguageResources.getFormattedString("FunctionEquationStandardObjectHelper.ServiceFailure",
+								new String[] { fh.getFhd().getScreenSetHandler().rtvScreenSetMain().getOptionId() })
+								+ "\n" + transaction + "\n" + fh.rtvFunctionMessages());
+
+			}
+			return equationStandardObject;
+		}
+
+		// Standard process
+		return EquationStandardObjectHelper.applyTransaction(session, equationStandardObject, limitBytes);
+	}
+
+	/**
+	 * Execute retrieve transaction
+	 * 
+	 * @param session
+	 *            - the Equation standard session
+	 * @param equationStandardObject
+	 *            - the transaction
+	 * 
+	 * @return the executed transaction
+	 * 
+	 * @throws EQException
+	 */
+	public static boolean chkTransactionValid(EquationStandardService transaction) throws EQException
+	{
+		FunctionHandler fh = transaction.getFh();
+
+		// message severity
+		transaction.setValid(fh.rtvMsgSev() < FunctionMessages.MSG_ERROR);
+
+		// list of messages if not valid
+		if (!transaction.getValid())
+		{
+			transaction.setMessages(fh.rtvFunctionMessages().rtvMessages());
+		}
+		else
+		{
+			transaction.setMessages(new ArrayList<EQMessage>());
+		}
+
+		return transaction.getValid();
+	}
+
+}

@@ -1,0 +1,1207 @@
+package com.misys.equation.common.utilities;
+
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
+import com.misys.equation.common.language.LanguageResources;
+
+/**
+ * This is a utility class of useful methods for manipulation of Equation data types.
+ */
+public class EqDataType
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EqDataType.java 17503 2013-11-04 12:59:00Z lima12 $";
+
+	public final static String TYPE_CHAR = "A";
+	public final static String TYPE_PACKED = "P";
+	public final static String TYPE_ZONED = "S";
+	public final static String TYPE_BOOLEAN = "B";
+	public final static String TYPE_DATE = "D";
+	public final static String TYPE_ISERIES_DATE = "L";
+	public final static String TYPE_TIMESTAMP = "Z";
+
+	public final static int LEN_ISERIES_DATE = 10;
+
+	public final static String DATE_DMY = "D";
+	public final static String DATE_MDY = "M";
+	public final static String DATE_YMD = "Y";
+
+	public final static String YES = "Y";
+	public final static String NO = "N";
+	public final static String VOID = "VOID";
+
+	public final static String ON = "1";
+	public final static String OFF = "0";
+
+	public final static String DECIMALSEP = ".";
+	public final static String INTEGERSEP = ",";
+	public final static String VALUESSEP = ":";
+	public final static String PROMPTCHAR = "*";
+	public final static String WILDCARD = "?";
+
+	public final static String GLOBAL_DELIMETER = "!:!";
+	public final static String GLOBAL_EQUALDELIMETER = "!=!";
+	public final static String CHARACTER_RETURN = "!N_L!";
+
+	public final static char MINUS_SIGNC = '-';
+	public final static String MINUS_SIGN = "-";
+
+	public final static String ZEROES = "0";
+
+	public final static String DATE_OPEN = "9999999";
+	public final static int DATE_OPENN = 9999999;
+
+	public static final String DATE_YYYYMMDD_OPEN = "99999999";
+	public static final int DATE_YYYYMMDD_OPENN = 99999999;
+
+	public static final String DATE_YYYY_MM_DD_OPEN = "9999-99-99";
+
+	public final static String MINIMUM_AMOUNT = "*LOVAL";
+	public final static String MAXIMUM_AMOUNT = "*HIVAL";
+
+	public final static int DEFAULT_DECIMAL = 2;
+
+	// this determines whether the system allow input in full year (e.g. 01012000 vs 010100)
+	// public final static boolean INPUT_DATE_FULL_YEAR = false;
+	public final static int INPUT_DATE_LEN = 6;
+	public final static int INPUT_DATE_LEN_FULLYEAR = 8;
+	public final static int DB_DATE_LEN = 7;
+
+	public final static String[] AMT_CED = new String[] { "#,##0", "#,##0.0", "#,##0.00", "#,##0.000", "#,##0.0000", "#,##0.00000",
+					"#,##0.000000", "#,##0.0000000", "#,##0.00000000", "#,##0.000000000" };
+
+	/** Editing code to format a date description into DD MM YYYY */
+	public static final String EDIT_DATE_DD_MM_YYYY = "1";
+	/** Editing code to format an Equation database amount */
+	public static final String EDIT_AMOUNT_DEFAULT = "1";
+	/** Editing code to format a rate - basically any number */
+	public static final String EDIT_RATE_DEFAULT = "2";
+	/** Editing code to format an Equation database amount with replacement */
+	public static final String EDIT_AMOUNT_WITH_REPLACE = "3";
+
+	/**
+	 * Convert a numeric (database format) into an input field
+	 * 
+	 * @param numeric
+	 *            numeric string in database format
+	 * @param foreignIntegerSep
+	 *            - the foreign integer separator
+	 * @param foreignDecimalSep
+	 *            - the foreign decimal separator
+	 * 
+	 * @return the English equivalent
+	 * @equation.external
+	 */
+	public static String cvtDbNumericToInput(String numeric, String foreignIntegerSep, String foreignDecimalSep)
+	{
+		StringBuilder str = new StringBuilder();
+		for (int i = 0; i < numeric.length(); i++)
+		{
+			String s = numeric.substring(i, i + 1);
+			if (s.equals(INTEGERSEP))
+			{
+				str.append(foreignIntegerSep);
+			}
+			else if (s.equals(DECIMALSEP))
+			{
+				str.append(foreignDecimalSep);
+			}
+			else
+			{
+				str.append(s);
+			}
+		}
+
+		// converted numeric
+		return str.toString();
+	}
+
+	/**
+	 * Convert a Y/N flag to the equivalent Y/N in multi-language
+	 * 
+	 * @param yno
+	 *            - the YNO field in DB format
+	 * @param yesValue
+	 *            - multi-language Y
+	 * @param noValue
+	 *            - multi-language N
+	 * @equation.external
+	 */
+	public static String cvtDbYNOToInput(String yno, String yesValue, String noValue)
+	{
+		if (yno.equals(YES))
+		{
+			return yesValue;
+		}
+		else
+		{
+			return noValue;
+		}
+	}
+
+	/**
+	 * Convert a multi-language Y/N flag to the equivalent Y/N
+	 * 
+	 * @param yno
+	 *            - the YNO field in multi-language
+	 * @param yesValue
+	 *            - multi-language Y
+	 * @param noValue
+	 *            - multi-language N
+	 * @equation.external
+	 */
+	public static String cvtInputYNOToDb(String yno, String yesValue, String noValue)
+	{
+		if (yno.equals(yesValue))
+		{
+			return YES;
+		}
+		else
+		{
+			return NO;
+		}
+	}
+
+	/**
+	 * Convert a database date into user input format in either 6 or 8-digit format
+	 * 
+	 * @param date
+	 *            - Date in dyymmdd
+	 * @param inputDate8
+	 *            - input date format 8-digit
+	 * @param dateFormat
+	 *            - the date format
+	 * @param openText
+	 *            - Open data abbreviation
+	 * 
+	 * @return equivalent date in user date format
+	 * @equation.external
+	 */
+	public static String cvtDbDateToInput(String date, boolean inputDate8, String dateFormat, String openText)
+	{
+		if (inputDate8)
+		{
+			return cvtDbDateToInput8D(date, dateFormat, openText);
+		}
+		else
+		{
+			return cvtDbDateToInput6D(date, dateFormat, openText);
+		}
+	}
+
+	/**
+	 * Convert a database date into user input format in 6-digit format
+	 * 
+	 * @param date
+	 *            - Date in dyymmdd
+	 * @param dateFormat
+	 *            - the date format
+	 * @param openText
+	 *            - Open data abbreviation
+	 * 
+	 * @return equivalent date in user date format
+	 * @equation.external
+	 */
+	public static String cvtDbDateToInput6D(String date, String dateFormat, String openText)
+	{
+		// length is 6, then append a 0 in front
+		if (date.length() == 6)
+		{
+			date = "0" + date;
+		}
+
+		// is this a valid date?
+		int dateNum = Toolbox.parseInt(date, 0);
+		if (dateNum == 0)
+		{
+			return "";
+		}
+		else if (dateNum == DATE_OPENN)
+		{
+			return openText;
+		}
+
+		// invalid length
+		if (date.length() != DB_DATE_LEN)
+		{
+			return date;
+		}
+
+		// dmy
+		if (dateFormat.equals(DATE_DMY))
+		{
+			return date.substring(5, 7) + date.substring(3, 5) + date.substring(1, 3);
+		}
+
+		// mdy
+		else if (dateFormat.equals(DATE_MDY))
+		{
+			return date.substring(3, 7) + date.substring(1, 3);
+		}
+
+		// ymd
+		else if (dateFormat.equals(DATE_YMD))
+		{
+			return date.substring(1, 7);
+		}
+
+		return date;
+	}
+
+	/**
+	 * Convert a database date into user input format in 8-digit format
+	 * 
+	 * @param date
+	 *            - Date in dyymmdd
+	 * @param dateFormat
+	 *            - the date format
+	 * @param openText
+	 *            - Open data abbreviation
+	 * 
+	 * @return equivalent date in user date format (e.g. 01012000)
+	 * @equation.external
+	 */
+	public static String cvtDbDateToInput8D(String date, String dateFormat, String openText)
+	{
+		// length is 6, then append a 0 in front
+		if (date.length() == 6)
+		{
+			date = "0" + date;
+		}
+
+		// is this a valid date?
+		int dateNum = Toolbox.parseInt(date, 0);
+		if (dateNum == 0)
+		{
+			return "";
+		}
+		else if (dateNum == DATE_OPENN)
+		{
+			return openText;
+		}
+
+		// invalid length
+		if (date.length() != DB_DATE_LEN)
+		{
+			return date;
+		}
+
+		// dmy
+		if (dateFormat.equals(DATE_DMY))
+		{
+			return date.substring(5, 7) + date.substring(3, 5) + cvtEquationYearToFullYear(date.substring(0, 3));
+		}
+
+		// mdy
+		else if (dateFormat.equals(DATE_MDY))
+		{
+			return date.substring(3, 7) + cvtEquationYearToFullYear(date.substring(0, 3));
+		}
+
+		// ymd
+		else if (dateFormat.equals(DATE_YMD))
+		{
+			return cvtEquationYearToFullYear(date.substring(0, 3)) + date.substring(3, 7);
+		}
+
+		return date;
+	}
+
+	/**
+	 * Convert input date format in 6-digit format into database format
+	 * 
+	 * @param date
+	 *            - Date in user input date format
+	 * @param dateFormat
+	 *            - the date format
+	 * @param openText
+	 *            - Open data abbreviation
+	 * @equation.external
+	 */
+	public static String cvtDate6DToDb(String date, String dateFormat, String openText)
+	{
+		// Open?
+		if (date.equals(openText))
+		{
+			return DATE_OPEN;
+		}
+
+		// length must be valid
+		if (date.length() != INPUT_DATE_LEN)
+		{
+			return date;
+		}
+
+		// is this a valid date?
+		int dateNum = Toolbox.parseInt(date, 0);
+		if (dateNum == 0)
+		{
+			return date;
+		}
+
+		// parse it
+		String part1 = date.substring(0, 2);
+		String part2 = date.substring(2, 4);
+		String part3 = date.substring(4, 6);
+
+		// dmy
+		if (dateFormat.equals(DATE_DMY))
+		{
+			return cvtToEquationYear(part3) + part2 + part1;
+		}
+
+		// mdy
+		else if (dateFormat.equals(DATE_MDY))
+		{
+			return cvtToEquationYear(part3) + part1 + part2;
+		}
+
+		// ymd
+		else if (dateFormat.equals(DATE_YMD))
+		{
+			return cvtToEquationYear(part1) + part2 + part3;
+		}
+
+		// return the date
+		return date;
+	}
+
+	/**
+	 * Convert input date format in 8-digit format into database format
+	 * 
+	 * @param date
+	 *            - Date in user input date format in full year
+	 * @param dateFormat
+	 *            - the date format
+	 * @param openText
+	 *            - Open data abbreviation
+	 * @equation.external
+	 */
+	public static String cvtDate8DToDb(String date, String dateFormat, String openText)
+	{
+		// Open?
+		if (date.equals(openText))
+		{
+			return DATE_OPEN;
+		}
+
+		// lenght is 6, then try the 6 digit, as it needs to support 6D input as well
+		if (date.length() == INPUT_DATE_LEN)
+		{
+			return cvtDate6DToDb(date, dateFormat, openText);
+		}
+
+		// length must be 8
+		if (date.length() != INPUT_DATE_LEN_FULLYEAR)
+		{
+			return date;
+		}
+
+		// is this a valid date?
+		int dateNum = Toolbox.parseInt(date, 0);
+		if (dateNum == 0)
+		{
+			return date;
+		}
+
+		// dmy
+		if (dateFormat.equals(DATE_DMY))
+		{
+			String part1 = date.substring(0, 2);
+			String part2 = date.substring(2, 4);
+			String part3 = date.substring(4, 8);
+			return cvtFullYearToEquationYear(part3) + part2 + part1;
+		}
+
+		// mdy
+		else if (dateFormat.equals(DATE_MDY))
+		{
+			String part1 = date.substring(0, 2);
+			String part2 = date.substring(2, 4);
+			String part3 = date.substring(4, 8);
+			return cvtFullYearToEquationYear(part3) + part1 + part2;
+		}
+
+		// ymd
+		else if (dateFormat.equals(DATE_YMD))
+		{
+			String part1 = date.substring(0, 4);
+			String part2 = date.substring(4, 6);
+			String part3 = date.substring(6, 8);
+			return cvtFullYearToEquationYear(part1) + part2 + part3;
+		}
+
+		// return the date
+		return date;
+	}
+
+	/**
+	 * Convert a numeric into a primitive value
+	 * 
+	 * @param numeric
+	 *            - numeric string in database format
+	 * @param foreignIntegerSep
+	 *            - the foreign integer separator
+	 * @param foreignDecimalSep
+	 *            - the foreign decimal separator
+	 * 
+	 * @return the English equivalent
+	 * @equation.external
+	 */
+	public static String cvtNumericToDb(String numeric, String foreignIntegerSep, String foreignDecimalSep)
+	{
+		// is last character negative sign, then put it in the front
+		int length = numeric.length();
+		if (length > 0 && numeric.charAt(length - 1) == MINUS_SIGNC)
+		{
+			numeric = MINUS_SIGN + numeric.substring(0, length - 1);
+		}
+
+		// comma grouping
+		boolean commaEnabled = false;
+		int commaGrouping = 0;
+
+		StringBuilder str = new StringBuilder();
+		for (int i = 0; i < numeric.length(); i++)
+		{
+			String s = numeric.substring(i, i + 1);
+			if (s.equals(foreignIntegerSep))
+			{
+				// str.append(INTEGERSEP);
+				commaEnabled = true;
+				if (commaGrouping != 0)
+				{
+					return numeric; // invalid numeric
+				}
+				commaGrouping = 3;
+			}
+			else if (s.equals(foreignDecimalSep))
+			{
+				str.append(DECIMALSEP);
+
+				if (commaEnabled && commaGrouping > 0)
+				{
+					return numeric; // invalid numeric
+				}
+
+				commaEnabled = false;
+			}
+			else
+			{
+				str.append(s);
+				if (commaEnabled)
+				{
+					if (commaGrouping > 0)
+					{
+						commaGrouping--;
+					}
+					else
+					{
+						return numeric; // invalid numeric
+					}
+				}
+			}
+		}
+
+		// converted numeric
+		return str.toString();
+	}
+
+	/**
+	 * Determine if the type is an Alphanumeric field
+	 * 
+	 * @param type
+	 *            - the type to be validated
+	 * 
+	 * @return true if the type is an Alphanumeric field
+	 * @equation.external
+	 */
+	public static boolean isAlpha(String type)
+	{
+		return type.equals(TYPE_CHAR);
+	}
+
+	/**
+	 * Determine if the type is a Packed or Zoned field
+	 * 
+	 * @param type
+	 *            - the type to be validated
+	 * 
+	 * @return true if the type is a Packed or Zoned field
+	 * @equation.external
+	 */
+	public static boolean isNumeric(String type)
+	{
+		return (type.equals(TYPE_PACKED) || type.equals(TYPE_ZONED));
+	}
+
+	/**
+	 * Determine if the type is a Date field
+	 * 
+	 * @param type
+	 *            - the type to be validated
+	 * 
+	 * @return true if the type is a Date field
+	 * @equation.external
+	 */
+	public static boolean isDate(String type)
+	{
+		return type.equals(TYPE_DATE);
+	}
+
+	/**
+	 * Determine if the underlying based type is numeric
+	 * 
+	 * @param type
+	 *            - the type to be validated
+	 * 
+	 * @return true if the underlying based type is numeric
+	 * @equation.external
+	 */
+	public static boolean isBasedNumeric(String type)
+	{
+		return isNumeric(type) || isDate(type);
+	}
+
+	/**
+	 * Returns the primitive data type of the field. This is a hard-coded list of 1 character Strings
+	 * <p>
+	 * Values are:
+	 * <ul>
+	 * <li>A - Character field</li>
+	 * <li>B - Boolean field</li>
+	 * <li>D - Date field</li>
+	 * <li>P - Packed decimal field (this may be depreciated)</li>
+	 * <li>S - Zoned decimal field</li>
+	 * </ul>
+	 * 
+	 * @return String[]
+	 * @equation.external
+	 */
+	public static String[] getDataTypesList()
+	{
+		String[] dataTypes = { EqDataType.TYPE_CHAR, EqDataType.TYPE_BOOLEAN, EqDataType.TYPE_DATE, EqDataType.TYPE_PACKED,
+						EqDataType.TYPE_ZONED };
+
+		return dataTypes;
+	}
+
+	/**
+	 * Return the Equation data year format for the given input year format
+	 * 
+	 * @param yearPart
+	 *            - year part of an input date format (e.g. 03 of 010203 in DMY format)
+	 * 
+	 * @return the equivalent data base format for the year part (e.g. year 2000 = 100, year 1999 = 099)#
+	 * @equation.external
+	 */
+	public static String cvtToEquationYear(String yearPart)
+	{
+		// Equation currently supports year 1950 - 2049
+		int year = Toolbox.parseInt(yearPart, 0);
+		if (year >= 50)
+		{
+			return "0" + yearPart;
+		}
+		else
+		{
+			return "1" + yearPart;
+		}
+	}
+
+	/**
+	 * Return the Equation data year format for the given input year format
+	 * 
+	 * @param yearPart
+	 *            - year part of an input date format (e.g. 2000)
+	 * 
+	 * @return the equivalent data base format for the year part (e.g. year 2000 = 100, year 1999 = 099)
+	 * @equation.external
+	 */
+	public static String cvtFullYearToEquationYear(String yearPart)
+	{
+		int year = Toolbox.parseInt(yearPart, 0);
+		int dbYear = year - 1900;
+
+		if (year >= 2000)
+		{
+			return String.valueOf(dbYear);
+		}
+		else
+		{
+			return "0" + String.valueOf(dbYear);
+		}
+	}
+
+	/**
+	 * Return the Equation data year format for the given input year format
+	 * 
+	 * @param yearPart
+	 *            - year part of an db date format (e.g. 100 of 2000, 099 of 1999)
+	 * 
+	 * @return the equivalent year
+	 * @equation.external
+	 */
+	public static String cvtEquationYearToFullYear(String yearPart)
+	{
+		int dbyear = Toolbox.parseInt(yearPart, 0);
+		int year = dbyear + 1900;
+		return String.valueOf(year);
+	}
+
+	/**
+	 * Format an Equation date
+	 * 
+	 * @param yyymmdd
+	 *            - the date in Equation database format
+	 * @param outputFormat
+	 *            - D (DD MM YYYY), M (MM DD YYYY), Y (YYYY MM DD)
+	 * @param openDateFull
+	 *            - the open date text
+	 * @param sdJan
+	 *            - the SDJAN parameter (JANFEBMAR...)
+	 * 
+	 * @return the formatted date
+	 * @equation.external
+	 */
+	public static String formatEquationDate(String yyymmdd, String outputFormat, String openDateFull, String sdJan)
+	{
+		// HIVAL?
+		if (yyymmdd.equals(DATE_OPEN))
+		{
+			return openDateFull;
+		}
+
+		// not 7 characters then ignore it as it is not a valid date
+		if (yyymmdd.length() != 7)
+		{
+			return "";
+		}
+
+		int year = Toolbox.parseInt(yyymmdd.substring(0, 3), 0);
+		int month = Toolbox.parseInt(yyymmdd.substring(3, 5), 0);
+		int day = Toolbox.parseInt(yyymmdd.substring(5, 7), 0);
+
+		String yearString = String.valueOf(year + 1900);
+		String monthString = sdJan.substring((month - 1) * 3, (month - 1) * 3 + 3);
+		String dayString = Toolbox.leftZeroPad(day, 2);
+
+		if (outputFormat.equals(DATE_YMD))
+		{
+			return yearString + " " + monthString + " " + dayString;
+		}
+		else if (outputFormat.equals(DATE_MDY))
+		{
+			return monthString + " " + dayString + " " + yearString;
+		}
+		else
+		{
+			return dayString + " " + monthString + " " + yearString;
+		}
+
+	}
+
+	/**
+	 * Format an Equation amount
+	 * 
+	 * @param eqAmount
+	 *            - the amount in Equation amount format
+	 * @param length
+	 *            - the field length
+	 * @param decimal
+	 *            - the number of decimal places
+	 * @param foreignIntegerSeparator
+	 *            - the integer separator in user language
+	 * @param foreignDecimalSeparator
+	 *            - the decimal separator in user language
+	 * 
+	 * @return the formatted amount
+	 * @equation.external
+	 */
+	public static String formatEquationAmount(String eqAmount, int length, int decimal, String foreignIntegerSeparator,
+					String foreignDecimalSeparator)
+	{
+		// insert a decimal point at the correct position
+		StringBuilder builder = new StringBuilder(Toolbox.leftPad(eqAmount, "0", decimal + 1));
+		if (decimal > 0 && eqAmount.indexOf(DECIMALSEP) == -1)
+		{
+			builder.insert(builder.length() - decimal, DECIMALSEP);
+		}
+
+		// construct pattern
+		String pattern = "";
+		if (decimal <= 9)
+		{
+			pattern = AMT_CED[decimal];
+		}
+		else
+		{
+			pattern = AMT_CED[9] + Toolbox.pad("0", decimal - 9);
+		}
+
+		// convert to number
+		double amount = Toolbox.parseDouble(builder.toString(), 0);
+
+		DecimalFormat myFormatter = new DecimalFormat(pattern);
+		String edited = myFormatter.format(amount);
+		return cvtDbNumericToInput(edited, foreignIntegerSeparator, foreignDecimalSeparator);
+	}
+
+	/**
+	 * Format a number
+	 * 
+	 * @param number
+	 *            - the number to be formatted
+	 * @param length
+	 *            - the field length
+	 * @param decimal
+	 *            - the number of decimal places
+	 * @param foreignIntegerSeparator
+	 *            - the integer separator in user language
+	 * @param foreignDecimalSeparator
+	 *            - the decimal separator in user language
+	 * 
+	 * @return the formatted number
+	 * @equation.external
+	 */
+	public static String formatNumber(String number, int length, int decimal, String foreignIntegerSeparator,
+					String foreignDecimalSeparator)
+	{
+		// construct pattern
+		String pattern = "";
+		if (decimal <= 9)
+		{
+			pattern = AMT_CED[decimal];
+		}
+		else
+		{
+			pattern = AMT_CED[9] + Toolbox.pad("0", decimal - 9);
+		}
+
+		// convert to number
+		double amount = Toolbox.parseDouble(number, 0);
+
+		DecimalFormat myFormatter = new DecimalFormat(pattern);
+		String edited = myFormatter.format(amount);
+		return cvtDbNumericToInput(edited, foreignIntegerSeparator, foreignDecimalSeparator);
+	}
+
+	/**
+	 * Convert a numeric into a iSeries numeric type (e.g. 1.25 to 000000001250000 - 15 length with 6 decimal places)
+	 * 
+	 * @param numeric
+	 *            - numeric number
+	 * @param length
+	 *            - length
+	 * @param decimal
+	 *            - number of decimal places
+	 * @equation.external
+	 */
+	public static String cvtDBNumericToISeriesNumeric(String numeric, int length, int decimal)
+	{
+		// index of decimal
+		int decimalIndex = numeric.indexOf(DECIMALSEP);
+
+		// retrieve the whole number part
+		String wholeNumberStr = "";
+		String decimalNumberStr = "";
+
+		// no decimal point
+		if (decimalIndex < 0)
+		{
+			wholeNumberStr = numeric;
+		}
+		// decimal point at the first character
+		else if (decimalIndex == 0)
+		{
+			decimalNumberStr = numeric.substring(1);
+		}
+		// decimal point in the middle
+		else if (decimalIndex > 0 && decimalIndex < numeric.length() - 1)
+		{
+			wholeNumberStr = numeric.substring(0, decimalIndex);
+			decimalNumberStr = numeric.substring(decimalIndex + 1);
+		}
+		// decimal point at the end
+		else
+		{
+			wholeNumberStr = numeric.substring(0, decimalIndex);
+		}
+
+		StringBuffer buffer = new StringBuffer();
+		int wholeNumber = length - decimal;
+		if (wholeNumber > 0)
+		{
+			buffer.append(Toolbox.padAtFront(wholeNumberStr, "0", wholeNumber));
+		}
+		if (decimal > 0)
+		{
+			buffer.append(Toolbox.pad(decimalNumberStr, "0", decimal));
+		}
+
+		return buffer.toString();
+	}
+
+	/**
+	 * Determine whether amount is HIVAL or not
+	 * 
+	 * @param eqAmount
+	 *            - the Equation amount in database format
+	 * @param length
+	 *            - the length
+	 * @equation.external
+	 */
+	public static boolean isHival(String eqAmount, int length)
+	{
+		// remove any dots
+		String str = eqAmount.replaceAll("\\" + DECIMALSEP, "");
+		String hivalStr = Toolbox.pad("9", "9", length);
+		return str.equals(hivalStr);
+	}
+
+	/**
+	 * Determine whether amount is LOVAL or not
+	 * 
+	 * @param eqAmount
+	 *            - the Equation amount in database format
+	 * @param length
+	 *            - the length
+	 * @equation.external
+	 */
+	public static boolean isLoval(String eqAmount, int length)
+	{
+		// remove any dots
+		String str = eqAmount.replaceAll("\\" + DECIMALSEP, "");
+		String hivalStr = "-" + Toolbox.pad("9", "9", length);
+		return str.equals(hivalStr);
+	}
+
+	/**
+	 * Validate whether a date in Equation database format is valid or not
+	 * 
+	 * @param nyymmdd
+	 *            - date in Equation database format
+	 * 
+	 * @return true if valid
+	 * @equation.external
+	 */
+	public static boolean isValidDate(String nyymmdd)
+	{
+		try
+		{
+			// if this is 6 (e.g. 991231), then try to append a leading 0 (e.g. 0991231)
+			if (nyymmdd.length() == 6)
+			{
+				nyymmdd = "0" + nyymmdd;
+			}
+
+			// must always be 7-character
+			if (nyymmdd.length() != DB_DATE_LEN)
+			{
+				return false;
+			}
+
+			// hival?
+			if (nyymmdd.equals(EqDataType.DATE_OPEN))
+			{
+				return true;
+			}
+
+			// now, convert it to this format so that it is not locale dependent
+			String yearPart = String.valueOf(1900 + Integer.parseInt(nyymmdd.substring(0, 3)));
+			String date = nyymmdd.substring(5, 7) + "/" + nyymmdd.substring(3, 5) + "/" + yearPart;
+
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			sdf.setLenient(false); // this is important!
+			sdf.parse(date);
+			return true;
+		}
+		catch (ParseException e)
+		{
+			return false;
+		}
+	}
+
+	/**
+	 * Convert input date format YYYYMMDD
+	 * 
+	 * @param yyyymmdd
+	 *            - the date
+	 * 
+	 * @return the date in Equation database format
+	 */
+	public static String cvtDateYYYYMMDDToDb(String yyyymmdd)
+	{
+		// blank?
+		if (yyyymmdd == null)
+		{
+			return "";
+		}
+		if (yyyymmdd.trim().length() == 0)
+		{
+			return "";
+		}
+		if (yyyymmdd.equals(DATE_YYYYMMDD_OPEN))
+		{
+			return DATE_OPEN;
+		}
+
+		try
+		{
+			int inputDate = Integer.parseInt(yyyymmdd);
+
+			int eqDate = inputDate - (19000000);
+			if (eqDate < -1)
+			{
+				throw new RuntimeException(LanguageResources.getFormattedString("EqDataType.DateInvalid", String.valueOf(yyyymmdd)));
+			}
+
+			String cyymmdd = Integer.toString(eqDate);
+			if (cyymmdd.length() == 6)
+			{
+				cyymmdd = "0" + cyymmdd;
+			}
+
+			// Check if valid date
+			if (isValidDate(cyymmdd))
+			{
+				return cyymmdd;
+			}
+			else
+			{
+				throw new RuntimeException(LanguageResources.getFormattedString("EqDataType.DateInvalid", String.valueOf(yyyymmdd)));
+			}
+		}
+		catch (NumberFormatException numFmtEx)
+		{
+			throw new RuntimeException(LanguageResources.getFormattedString("EqDataType.DateInvalid", String.valueOf(yyyymmdd)));
+		}
+	}
+
+	/**
+	 * Convert a date (cyymmdd) into yyyymmdd
+	 * 
+	 * @param scyymmdd
+	 *            - the date in Equation date format
+	 * 
+	 * @return the date in yyyymmdd
+	 */
+	public static String cvtDateDbToYYYYMMDD(String scyymmdd)
+	{
+		// blank?
+		if (scyymmdd == null)
+		{
+			return "";
+		}
+		if (scyymmdd.trim().length() == 0)
+		{
+			return "";
+		}
+		if (scyymmdd.equals(DATE_OPEN))
+		{
+			return DATE_YYYYMMDD_OPEN;
+		}
+		try
+		{
+			int cyymmdd = Integer.parseInt(scyymmdd);
+			if (cyymmdd == 0)
+			{
+				return "";
+			}
+			else if (cyymmdd == DATE_OPENN)
+			{
+				return DATE_YYYYMMDD_OPEN;
+			}
+			else
+			{
+				// not valid?
+				if (!isValidDate(scyymmdd))
+				{
+					throw new RuntimeException(LanguageResources.getFormattedString("EqDataType.DateInvalid", scyymmdd));
+				}
+
+				return String.valueOf(cyymmdd + 19000000);
+			}
+		}
+		catch (NumberFormatException numFmtEx)
+		{
+			throw new RuntimeException(LanguageResources.getFormattedString("EqDataType.DateInvalid", scyymmdd));
+		}
+	}
+
+	/**
+	 * Convert input date format yyyy-mm-dd
+	 * 
+	 * @param yyyy_mm_dd
+	 *            - the date
+	 * 
+	 * @return the date in Equation database format
+	 */
+	public static String cvtDateYYYY_MM_DDToDb(String yyyy_mm_dd)
+	{
+		// blank?
+		if (yyyy_mm_dd == null)
+		{
+			return "";
+		}
+		if (yyyy_mm_dd.trim().length() == 0)
+		{
+			return "";
+		}
+		if (yyyy_mm_dd.equals(DATE_YYYY_MM_DD_OPEN))
+		{
+			return DATE_OPEN;
+		}
+
+		if (yyyy_mm_dd.length() < 10)
+		{
+			throw new RuntimeException(LanguageResources.getFormattedString("EqDataType.DateInvalid", yyyy_mm_dd));
+		}
+
+		// make sure valid format
+		if (yyyy_mm_dd.charAt(4) != '-' || yyyy_mm_dd.charAt(7) != '-')
+		{
+			throw new RuntimeException(LanguageResources.getFormattedString("EqDataType.DateInvalid", yyyy_mm_dd));
+		}
+
+		String yyyymmdd = yyyy_mm_dd.substring(0, 4) + yyyy_mm_dd.substring(5, 7) + yyyy_mm_dd.substring(8);
+		try
+		{
+			return cvtDateYYYYMMDDToDb(yyyymmdd);
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(LanguageResources.getFormattedString("EqDataType.DateInvalid", yyyy_mm_dd));
+		}
+	}
+
+	/**
+	 * Convert a date (cyymmdd) into yyyy-mm-dd
+	 * 
+	 * @param scyymmdd
+	 *            - the date in Equation date format
+	 * 
+	 * @return the date in yyyymmdd
+	 */
+	public static String cvtDateDbToYYYY_MM_DD(String scyymmdd)
+	{
+		String yyyymmdd = cvtDateDbToYYYYMMDD(scyymmdd);
+		if (yyyymmdd.length() < 8)
+		{
+			return yyyymmdd;
+		}
+		return yyyymmdd.substring(0, 4) + "-" + yyyymmdd.subSequence(4, 6) + "-" + yyyymmdd.substring(6, 8);
+	}
+
+	/**
+	 * Convert an amount (in major currency) into minor currency
+	 * 
+	 * @param amount
+	 *            - the amount in major currency
+	 * @param decimal
+	 *            - the number of decimal places
+	 * 
+	 * @return the amount in minor currency
+	 */
+	public static String cvtMajorCcyAmountToMinorCcy(String amount, int decimal)
+	{
+		try
+		{
+			BigDecimal bd = new BigDecimal(amount.trim());
+
+			// too much decimal point?
+			if (bd.scale() > decimal)
+			{
+				throw new RuntimeException(LanguageResources.getFormattedString("EqDataType.AmountTooManyDecimal", amount));
+			}
+
+			// convert back to string
+			String minorCcy = bd.toPlainString();
+
+			// add the correct number of decimal points (if needed)
+			if (bd.scale() < decimal)
+			{
+				minorCcy = minorCcy + Toolbox.pad("", "0", decimal - bd.scale());
+			}
+
+			return minorCcy.replace(".", "");
+		}
+		catch (NumberFormatException numFmtEx)
+		{
+			throw new RuntimeException(LanguageResources.getFormattedString("EqDataType.AmountInvalid", amount));
+		}
+	}
+
+	/**
+	 * Convert an amount (in minor currency) into major currency
+	 * 
+	 * @param amount
+	 *            - the amount in minor currency
+	 * @param decimal
+	 *            - the number of decimal places
+	 * 
+	 * @return the amount in major currency
+	 */
+	public static String cvtMinorCcyAmountToMajorCcy(String amount, int decimal)
+	{
+		try
+		{
+			BigDecimal bd = new BigDecimal(amount.trim());
+
+			// with decimal point?
+			if (bd.scale() > 0)
+			{
+				throw new RuntimeException(LanguageResources.getFormattedString("EqDataType.AmountNotInMinorCcy", amount));
+			}
+
+			// zero?
+			if (bd.intValue() == 0)
+			{
+				return "0";
+			}
+
+			boolean negative = bd.doubleValue() < 0;
+
+			// convert back to string
+			String majorCcy = bd.abs().toPlainString();
+
+			if (decimal > 0)
+			{
+				int index = majorCcy.length() - decimal;
+				if (index > 0)
+				{
+					majorCcy = majorCcy.substring(0, index) + DECIMALSEP + majorCcy.substring(index);
+				}
+				else
+				{
+					majorCcy = DECIMALSEP + Toolbox.padAtFront("", "0", decimal - majorCcy.length()) + majorCcy;
+				}
+			}
+
+			// make sure starts with a number, not a dot
+			if (majorCcy.startsWith(DECIMALSEP))
+			{
+				majorCcy = "0" + majorCcy;
+			}
+
+			// remove leading zeroes
+			majorCcy = Toolbox.removeLeadingZeroes(majorCcy, false);
+
+			// negative?
+			if (negative)
+			{
+				majorCcy = "-" + majorCcy;
+			}
+
+			return majorCcy;
+		}
+		catch (NumberFormatException numFmtEx)
+		{
+			throw new RuntimeException(LanguageResources.getFormattedString("EqDataType.AmountInvalid", amount));
+		}
+	}
+
+}

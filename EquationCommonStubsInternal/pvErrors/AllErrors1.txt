@@ -1,0 +1,56 @@
+ 
+AASR10R $AASREF - External reference - length - 30 - over 14
+AMCR10R $AMCUII - UII number - length - 50 - over 14
+BDR01R $BDCITM - Item Name - length - 4 - name
+BHR01R $BHCIT - Item Name - length - 4 - name
+CCAR01R $CCACANO - Card number - length - 20 - over 14
+CCBR01R $CCBPRCD - Product code - length - 20 - over 14
+CKR22R $CKSNA - Short name - length - 3 - name
+DHR01R $DHSNA - Short name abbreviation - length - 3 - name
+
+GIR33R $I33EX - External account number - length - 20 - over 14
+GIR33R $I33EX - External account number - length - 20 - over 14
+GIR33R $I33EX - External account number - length - 20 - over 14
+GIR33R $I33EX - External account number - length - 20 - over 14
+GIR33R $I33EX - External account number - length - 20 - over 14
+
+HYR60R $HYCLR - Collateral reference - length - 35 - over 14
+JRR01R $JRPRD - Period code description - length - 13 - description
+JYR03R $JYSRL - Serial number - character - length - 16 - over 14
+JYR50R $JYSRL - Serial number - character - length - 16 - over 14
+JYR90R $JYSRL - Serial number - character - length - 16 - over 14
+L5R10R $L5REF - Internal reference - length - 16 - over 14
+L5R10R $L5ORF - DD originator s reference - length - 20 - over 14
+L6R10R $L6REF - Internal reference - length - 16 - over 14
+L6R10R $L6OREF - DD Originator s reference - length - 20 - over 14
+
+LCR01R $LCCUS - Customer name - length - 6 - name
+OSR33R $CUS - Customer name - length - 6 - name
+OSR34R $CUS - Customer name - length - 6 - name
+OSR37R $CUS - Customer name - length - 6 - name
+OSR38R $CUS - Customer name - length - 6 - name
+OSR38R $CUS - Customer name - length - 6 - name
+OSR40R $CUS - Customer name - length - 6 - name
+
+P3R01R $P3REF - Payment reference - length - 16 - over 14
+P3R01R $P3XREF - External payment reference - length - 16 - over 14
+P3R02R $P3XREF - External payment reference - length - 16 - over 14
+P3R03R $P3REF - Payment reference - length - 16 - over 14
+P3R04R $P3REF - Payment reference - length - 16 - over 14
+P3R04R $P3XREF - Exterenal payment reference - length - 16 - over 14
+Q1R01R $Q1REF - Settlement reference - length - 16 - over 14
+Q7R10R $Q7REF - Originators reference - length - 20 - over 14
+Q8R10R $Q8REFC - Originators reference - length - 20 - over 14
+QQR10R $QQREF - Notice withdrawal reference - length - 16 - over 14
+R4R01R $R4FSN - First serial number - length - 16 - over 14
+R4R01R $R4LSR - Last serial number - length - 16 - over 14
+R4R01R $R4SRL - Serial number - length - 16 - over 14
+R5R01R $R5REF - Diary note reference - length - 16 - over 14
+TAR52R $TAGRP - Group name - length - 6 - name
+WMR10R $WMRGN1 - Reporting group name - length - 6 - name
+
+X0R01R $X0TREF - Transfer reference - length - 16 - over 14
+
+ZZR01R $ZZCHQN - Cheque Number - length - 15 - over 14
+
+ZZR05R $SCEAN - External Account Number - length - 20 - over 14

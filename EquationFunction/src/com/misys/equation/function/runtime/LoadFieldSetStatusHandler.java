@@ -1,0 +1,190 @@
+package com.misys.equation.function.runtime;
+
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import com.misys.equation.function.beans.Function;
+import com.misys.equation.function.beans.InputFieldSet;
+import com.misys.equation.function.beans.LoadFieldSetStatus;
+
+public class LoadFieldSetStatusHandler
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: LoadFieldSetStatusHandler.java 10856 2011-04-26 10:45:41Z MACDONP1 $";
+
+	private Hashtable<String, LoadFieldSetStatus> loadFieldSetStatuses;
+
+	/**
+	 * Construct a new DisplayInputSetHandler
+	 * 
+	 * @param function
+	 *            - the function
+	 */
+	public LoadFieldSetStatusHandler(Function function)
+	{
+		loadFieldSetStatuses = new Hashtable<String, LoadFieldSetStatus>();
+		init(function);
+	}
+
+	/**
+	 * Return the load field set statuses
+	 * 
+	 * @return the load field set statuses
+	 */
+	public Hashtable<String, LoadFieldSetStatus> getLoadFieldSetStatuses()
+	{
+		return loadFieldSetStatuses;
+	}
+
+	/**
+	 * Set the load field set statuses
+	 * 
+	 * @param loadFieldSetStatuses
+	 *            - the load field set statuses
+	 */
+	public void setLoadFieldSetStatuses(Hashtable<String, LoadFieldSetStatus> loadFieldSetStatuses)
+	{
+		this.loadFieldSetStatuses = loadFieldSetStatuses;
+	}
+
+	/**
+	 * Initialise the list based on the function
+	 * 
+	 * @param function
+	 *            - the function
+	 */
+	public void init(Function function)
+	{
+		loadFieldSetStatuses.clear();
+
+		for (int i = 0; i < function.getInputFieldSets().size(); i++)
+		{
+			InputFieldSet fieldSet = function.getInputFieldSets().get(i);
+			addFieldSet(fieldSet, "root", 0);
+		}
+	}
+
+	/**
+	 * Process a field set
+	 * 
+	 * @param fieldSet
+	 *            - the field set
+	 * @param parent
+	 *            - the main parent
+	 * @param level
+	 *            - nth level from the parent
+	 */
+	private void addFieldSet(InputFieldSet fieldSet, String parent, int level)
+	{
+		LoadFieldSetStatus status = new LoadFieldSetStatus(fieldSet.getId(), parent, level, fieldSet.containsKeyFields());
+		loadFieldSetStatuses.put(fieldSet.getId(), status);
+	}
+
+	/**
+	 * Determine if a field set exists
+	 * 
+	 * @param fieldSet
+	 *            - the field set
+	 * 
+	 * @return true, if key field exists
+	 */
+	public LoadFieldSetStatus getFieldSetStatus(String fieldSet)
+	{
+		return loadFieldSetStatuses.get(fieldSet);
+	}
+
+	/**
+	 * Determine whether the key is open
+	 * 
+	 * @param fieldSet
+	 *            - the field set
+	 */
+	public boolean isKeyOpen(String fieldSet)
+	{
+		LoadFieldSetStatus loadFieldSetStatus = getFieldSetStatus(fieldSet);
+
+		if (loadFieldSetStatus != null)
+		{
+			return !loadFieldSetStatus.isDetailOpen();
+		}
+
+		return false;
+	}
+
+	/**
+	 * Set to display the key portion of the field set
+	 * 
+	 * @param fieldSet
+	 *            - the field set
+	 */
+	public void openKeyFieldSet(String fieldSet)
+	{
+		LoadFieldSetStatus loadFieldSetStatus = getFieldSetStatus(fieldSet);
+
+		if (loadFieldSetStatus != null)
+		{
+			if (loadFieldSetStatus.isKeyExist())
+			{
+				loadFieldSetStatus.setDetailOpen(false);
+			}
+		}
+	}
+
+	/**
+	 * Set to display the non-key fields of a fields set
+	 * 
+	 * @param fieldSet
+	 *            - the field set
+	 */
+	public void openDetailFieldSet(String fieldSet)
+	{
+		LoadFieldSetStatus loadFieldSetStatus = getFieldSetStatus(fieldSet);
+
+		if (loadFieldSetStatus != null)
+		{
+			if (loadFieldSetStatus.isKeyExist())
+			{
+				loadFieldSetStatus.setDetailOpen(true);
+			}
+		}
+	}
+
+	/**
+	 * Return the String representation
+	 * 
+	 * @param the
+	 *            String representation
+	 */
+	@Override
+	public String toString()
+	{
+		StringBuilder buffer = new StringBuilder();
+
+		Iterator<String> iterator = loadFieldSetStatuses.keySet().iterator();
+		while (iterator.hasNext())
+		{
+			String fieldSet = iterator.next();
+			buffer.append(loadFieldSetStatuses.get(fieldSet) + "\n");
+		}
+		return buffer.toString();
+	}
+
+	/**
+	 * Resync the load field set statuses with the given statuses
+	 * 
+	 * @param initLoadFieldSetStatuses
+	 *            - load field set statuses
+	 */
+	public void reSyncLoadFieldSetStatus(Map<String, LoadFieldSetStatus> initLoadFieldSetStatuses)
+	{
+		for (Entry<String, LoadFieldSetStatus> entry : initLoadFieldSetStatuses.entrySet())
+		{
+			if (loadFieldSetStatuses.containsKey(entry.getKey()))
+			{
+				loadFieldSetStatuses.put(entry.getKey(), entry.getValue());
+			}
+		}
+	}
+}

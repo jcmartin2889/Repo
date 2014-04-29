@@ -1,0 +1,78 @@
+package com.misys.equation.ui.helpers;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationPVData;
+import com.misys.equation.common.access.EquationPVFieldMetaData;
+import com.misys.equation.common.access.EquationPVMetaData;
+import com.misys.equation.common.access.EquationStandardValidation;
+import com.misys.equation.common.access.EquationUser;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EqDataType;
+
+public class EqHelpDetail
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/**
+	 * Return the help details
+	 * 
+	 * @return the help details
+	 */
+	public String getPromptHelpDetails(EquationUser eqUser, String prompt, String decode, String security, String dsccn)
+					throws EQException
+	{
+		// Generate the Equation PV Data
+		EquationPVData equationPVData = new EquationPVData(eqUser.getEquationUnit().getPVMetaData(prompt), eqUser.getSession()
+						.getCcsid());
+		equationPVData.setDataDsccn(dsccn);
+
+		// Retrieve the data
+		EquationStandardValidation equationStandardValidation = new EquationStandardValidation(decode, prompt, equationPVData, "N",
+						"N");
+		equationStandardValidation.setSecurity(security);
+		eqUser.getSession().executeValidate(equationStandardValidation);
+
+		// PV returns an error, then do not return any details
+		if (!equationStandardValidation.getValid())
+		{
+			return "";
+		}
+
+		try
+		{
+			StringBuffer helpDetail = new StringBuffer();
+
+			// Retrieve the meta data
+			EquationPVMetaData pvMetaData = equationPVData.getPvMetaData();
+
+			// Retrieve the column headings
+			for (int i = 0; i < pvMetaData.getHdrNames().size(); i++)
+			{
+				EquationPVFieldMetaData fieldMetaData = pvMetaData.rtvFieldMetaData(pvMetaData.getHdrNames().get(i));
+
+				// get the column header
+				helpDetail.append(fieldMetaData.rtvHeader(eqUser));
+				helpDetail.append(EqDataType.GLOBAL_DELIMETER);
+
+				// get the value
+				helpDetail.append(equationPVData.getFieldValue(fieldMetaData.getId()));
+				helpDetail.append(EqDataType.GLOBAL_DELIMETER);
+
+				// get the field description
+				helpDetail.append(fieldMetaData.rtvDescription(eqUser));
+				helpDetail.append(EqDataType.GLOBAL_DELIMETER);
+
+			}
+
+			return helpDetail.toString();
+		}
+		catch (Exception e)
+		{
+			EquationCommonContext.getContext().getLOG().error(e);
+			return "";
+		}
+
+	}
+}

@@ -1,0 +1,86 @@
+package com.misys.equation.function.testmain;
+
+import com.ibm.as400.access.AS400BidiTransform;
+import com.ibm.as400.access.AS400Text;
+import com.ibm.as400.access.BidiStringType;
+import com.misys.equation.common.utilities.Toolbox;
+
+public class TestArabicConvBytesToText
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: TestArabicConvBytesToText.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	public static void main(String[] inputParameters)
+	{
+		TestArabicConvBytesToText test = new TestArabicConvBytesToText();
+		test.test();
+	}
+
+	private void test(byte[] byteData)
+	{
+		String str1 = Toolbox.convertAS400TextIntoCCSID(byteData, byteData.length, 420);
+		String str2 = Toolbox.convertAS400TextIntoCCSIDOneAtATime(byteData, byteData.length, 420);
+
+		AS400Text text = new AS400Text(byteData.length, 420);
+		String cvtData = (String) text.toObject(byteData, 0, BidiStringType.DEFAULT);
+		String cvtData10 = (String) text.toObject(byteData, 0, BidiStringType.ST11);
+		String cvtData11 = (String) text.toObject(byteData, 0, BidiStringType.ST10);
+		String cvtData4 = (String) text.toObject(byteData, 0, BidiStringType.ST4);
+		String cvtData5 = (String) text.toObject(byteData, 0, BidiStringType.ST5);
+		String cvtData6 = (String) text.toObject(byteData, 0, BidiStringType.ST6);
+		String cvtData7 = (String) text.toObject(byteData, 0, BidiStringType.ST7);
+		String cvtData8 = (String) text.toObject(byteData, 0, BidiStringType.ST8);
+		String cvtData9 = (String) text.toObject(byteData, 0, BidiStringType.ST9);
+
+		System.out.println("     " + str1);
+		System.out.println("     " + str2);
+		System.out.println("DEF  " + cvtData);
+		System.out.println("ST11 " + cvtData10);
+		System.out.println("ST10  " + cvtData11);
+		System.out.println("ST4  " + cvtData4);
+		System.out.println("ST5  " + cvtData5);
+		System.out.println("ST6  " + cvtData6);
+		System.out.println("ST7  " + cvtData7);
+		System.out.println("ST8  " + cvtData8);
+		System.out.println("ST9  " + cvtData9);
+
+		AS400BidiTransform abt;
+		abt = new AS400BidiTransform(424);
+		abt.setAS400StringType(BidiStringType.ST4); // Via LTR //
+		String dst = abt.toAS400Layout(str1);
+		System.out.println("LTR1 " + dst);
+		dst = abt.toAS400Layout(str2);
+		System.out.println("LTR2 " + dst);
+
+	}
+
+	private void test()
+	{
+		// Have a bash...
+		try
+		{
+			byte[] byteData = { (byte) 0xF0, (byte) 0xF1, (byte) 0xF2, (byte) 0xf3, (byte) 0xf4, (byte) 0xf5, (byte) 0xf6,
+							(byte) 0xf7, (byte) 0xf8, (byte) 0xf9, (byte) 0x40, (byte) 0x46, (byte) 0x52, (byte) 0x40, (byte) 0xea,
+							(byte) 0xeb, (byte) 0xed, (byte) 0xee, (byte) 0xef, (byte) 0xfb, (byte) 0xfc, (byte) 0xfd, (byte) 0xfe,
+							(byte) 0xff, (byte) 0xdf };
+			test(byteData);
+
+			byte[] byteData2 = { (byte) 0x46, (byte) 0x52, (byte) 0x75, (byte) 0x46, (byte) 0x40, (byte) 0xad, (byte) 0x66,
+							(byte) 0x8c, (byte) 0x40, (byte) 0x58, (byte) 0x78, (byte) 0xde, (byte) 0x57, (byte) 0xde, (byte) 0x66,
+							(byte) 0x59, (byte) 0x40, (byte) 0x65, (byte) 0x45, (byte) 0x8b, (byte) 0x8e, (byte) 0xae, (byte) 0x66,
+							(byte) 0x45, (byte) 0x8d, (byte) 0x8c, (byte) 0xae, (byte) 0x8e, (byte) 0x40, (byte) 0x65, (byte) 0x8c,
+							(byte) 0xde, (byte) 0x59, (byte) 0x8a, (byte) 0x66 };
+			test(byteData2);
+
+			byte[] byteData3 = { 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, -63, -45, -28, 64, 64, 64, 64, 64, 64, 64,
+							64, 64, 64, 64, 64, 70, 82, 117, 70, 64, -83, 102, -116, 64, 88, 120, -34, 87, -34, 102, 89, 64, 101,
+							69, -117, -114, -82, 102, 69, -115, -116, -82, -114, 64, 101, -116, -34, 89, -118, 102, 13, 13, 37 };
+			test(byteData3);
+
+			System.out.println("done");
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+}

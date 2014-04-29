@@ -1,0 +1,97 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseAddMore;
+
+/**
+ * Equation test cases for Maintain function
+ */
+public class AddTest_ANC extends EquationTestCaseAddMore
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	String programName = "H15ARR";
+	String optionId = "ASI";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZBRNM", "LOND");
+		transaction.setFieldValue("GZPBR", "PBRR");
+		transaction.setFieldValue("GZAB", "3132");
+		transaction.setFieldValue("GZAN", "243333");
+		transaction.setFieldValue("GZAS", "333");
+		transaction.setFieldValue("GZTCD", "510");
+	}
+
+	/**
+	 * Setup an existing key fields
+	 */
+	@Override
+	public void setupExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZBRNM", "LOND");
+		transaction.setFieldValue("GZPBR", "PBRR");
+		transaction.setFieldValue("GZAB", "9132");
+		transaction.setFieldValue("GZAN", "234567");
+		transaction.setFieldValue("GZAS", "001");
+		transaction.setFieldValue("GZTCD", "510");
+	}
+
+	/**
+	 * Setup the mandatory fields
+	 */
+	@Override
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZCCY", "GBP");
+		transaction.setFieldValue("GZAMA", "100000");
+		transaction.setFieldValue("GZAMA", "100000");
+		transaction.setFieldValue("GZNPE", "1");
+		transaction.setFieldValue("GZVFR", "1000229");
+		transaction.setFieldValue("GZBRND", "LOND");
+		transaction.setFieldValue("GZDRF", "Test template");
+	}
+
+}

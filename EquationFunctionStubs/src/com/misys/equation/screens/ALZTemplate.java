@@ -1,0 +1,99 @@
+package com.misys.equation.screens;
+
+import com.misys.equation.function.adaptor.AbstractFieldAdaptor;
+import com.misys.equation.function.adaptor.AbstractFunctionAdaptor;
+import com.misys.equation.function.adaptor.AbstractValueAdaptor;
+import com.misys.equation.function.beans.FunctionData;
+import com.misys.equation.function.runtime.UserData;
+
+public class ALZTemplate extends AbstractFunctionAdaptor
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: ALZTemplate.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	public class XMandatory_FieldAdaptor extends AbstractFieldAdaptor
+	{
+		@Override
+		public boolean isMandatory(UserData userData)
+		{
+			return false;
+		}
+		public boolean isVisible(UserData userData)
+		{
+			return true;
+		}
+		public boolean isProtected(UserData userData)
+		{
+			return false;
+		}
+		@Override
+		public boolean isValid(UserData userData)
+		{
+
+			return true;
+		}
+		@Override
+		public String getOutputValue(UserData userData)
+		{
+			return null;
+		}
+
+		@Override
+		public String getInputValue(UserData userData)
+		{
+			return null;
+		}
+		@Override
+		public String getPrimitiveValue(UserData userData)
+		{
+			return null;
+		}
+	}
+
+	public class XAMT_$NDPAM_ValueAdaptor extends AbstractValueAdaptor
+	{
+		@Override
+		public String getValue(String curValue, UserData userData)
+		{
+			return null;
+		}
+
+	}
+
+	public class GZH151_GZNR4_UpdateValueAdaptor extends AbstractValueAdaptor
+	{
+		@Override
+		public String getValue(String curValue, UserData userData)
+		{
+			return null;
+		}
+	}
+
+	public class GZH151_GZNR4_LoadValueAdaptor extends AbstractValueAdaptor
+	{
+		@Override
+		public String getValue(String curValue, UserData userData)
+		{
+			return null;
+		}
+	}
+
+	public int prevScreen(int curScreen, UserData userData)
+	{
+		return curScreen;
+	}
+
+	public int nextScreen(int curScreen, UserData userData)
+	{
+		return curScreen;
+	}
+
+	public void defaultMode(int curScreen, FunctionData functionData)
+	{
+	}
+
+	public void validateMode(int curScreen, UserData userData)
+	{
+	}
+
+}

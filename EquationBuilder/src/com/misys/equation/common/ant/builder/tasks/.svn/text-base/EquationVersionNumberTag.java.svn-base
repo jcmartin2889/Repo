@@ -1,0 +1,471 @@
+package com.misys.equation.common.ant.builder.tasks;
+
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Task;
+
+import com.misys.equation.common.ant.builder.helpers.PropertiesFileHelper;
+import com.misys.equation.common.ant.builder.version.EquationVersionIncrementor;
+import com.misys.equation.common.ant.builder.version.JarVersionNumberModifier;
+import com.misys.equation.common.ant.builder.version.ManifestFileVersionUpdater;
+import com.misys.equation.common.ant.builder.version.SourceFileVersionUpdater;
+import com.misys.equation.common.ant.builder.version.UpdateEclipseClassPathVersionFile;
+import com.misys.equation.common.ant.builder.version.UpdatePluginEclipseXML;
+
+/**
+ * This task is going to replace the old version number for the new one.<br>
+ * This task will read the file  passed as argument and replace the old version number for the new one .<br>
+ * @author deroset.
+ * 
+ */
+public class EquationVersionNumberTag extends Task
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	
+	// This is a list that contains all files whose its attribute must be updated..
+	private String inputVersionNumberAttributeFiles;
+	
+	// This is a list that contains all files whose jars list names must be updated..
+	private String inputVersionNumberInJarNamesFiles;
+	
+	// This is a list that contains all eclipse .classpath files whose jars list names must be updated..
+	private String eclipseClassPathFiles;
+	
+	// #This is the property file which contains the the file location of the eclipse plugin.xml. This file have some hadcoded equation version numbers.
+	private String eclipsePluginPathFiles;
+
+	// This is a list of all MANIFEST.MF files that contain the plugin version number in the Bundle version and jar file names
+	private String versionNumberInManifest;
+	
+	// This is a list of all java source files that contain the plugin version number in a field PLUGIN_VERSION
+	private String versionNumberInJavaFiles;
+
+	private String[] eclipseClassPathFilesPaths;
+	private String[] versionAttributeFilesPaths;
+	private String[] versionNumberInJarFilesNames;
+	private String[] eclipsePluginFilesPaths;
+	private String[] manifestFilesPaths;
+	private String[] versionNumberInJavaFilesPaths;
+	
+	private PropertiesFileHelper propertiesFileHelper ;
+	private String previousEQVesionNumber;
+	private String newEQVersionNumber;
+	private String overwriteVersion;
+	
+
+	@Override
+	public void execute() throws BuildException
+	{
+		try {
+			
+			setNewEquationVersionNumber();
+			updateVersionAttributeInFiles();
+			updateVersionNumberInJarsNames();
+			updateEclipseClassPathFiles();
+			updateEclipsePluginFiles(); 
+			updateManifestFiles();
+			updateJavaSourceFiles();
+			
+		} catch (Exception exceptio) {
+			
+			exceptio.printStackTrace();
+		}
+	}
+
+	
+	
+	/**
+	 * This method will set the value to overwrite the EQ version number. 
+	 * @param overwriteVersion this is the value that will overwrite the calculated EQ version number.
+	 */
+	public void setOverwriteVersion(String overwriteVersion)
+	{
+		this.overwriteVersion = overwriteVersion.trim();
+		System.out.println(new StringBuilder("This is the value of the OVERWRITE_EQUATION_VERSION:  ").append(overwriteVersion));
+	}
+
+	/**
+	 * This method will set all eclipse plugin.xml files. 
+	 * @param eclipsePluginPathFiles This is an <code>String</code> representation of all eclipse files plugin.xml.
+	 */	
+	public void setEclipsePluginPathFiles(String eclipsePluginPathFiles)
+	{
+		this.eclipsePluginPathFiles = eclipsePluginPathFiles;
+	
+		System.out.println(new StringBuilder("eclipsePluginPathFiles : ").append(this.eclipsePluginPathFiles .toString()) );
+		
+		if(this.eclipsePluginPathFiles .contains(",")){
+			
+			eclipsePluginFilesPaths= this.eclipsePluginPathFiles .split(",");
+		}else{			
+			
+			eclipsePluginFilesPaths = new String[]{eclipsePluginPathFiles};
+		}	
+	}
+	
+	
+	/**
+	 * This method will set all eclipse .classpath files. 
+	 * @param eclipseClassPathFiles This is an <code>String</code> representation of all eclipse files class path (.classpath).
+	 */	
+	public void setEclipseClassPathFiles(String eclipseClassPathFiles)
+	{
+		this.eclipseClassPathFiles = eclipseClassPathFiles;
+	
+		System.out.println(new StringBuilder("eclipseClassPathFiles : ").append(this.eclipseClassPathFiles .toString()) );
+		
+		if(this.eclipseClassPathFiles .contains(",")){
+			
+			eclipseClassPathFilesPaths= this.eclipseClassPathFiles .split(",");
+		}else{			
+			
+			eclipseClassPathFilesPaths= new String[]{eclipseClassPathFiles};
+		}	
+	}
+	
+	/**
+	 * This method will set the properties inputs files. 
+	 * @param inputFiles This is an <code>String</code> representation of all properties file path.
+	 */
+	public void setInputVersionNumberAttributeFiles(String inputFiles)
+	{
+
+		this.inputVersionNumberAttributeFiles = inputFiles;
+		
+		System.out.println(new StringBuilder("inputVersionNumberAttributeFiles: ").append(this.inputVersionNumberAttributeFiles.toString()) );
+		
+		if(this.inputVersionNumberAttributeFiles.contains(",")){
+			
+			versionAttributeFilesPaths= this.inputVersionNumberAttributeFiles.split(",");				
+		}else{			
+			
+			versionAttributeFilesPaths= new String[]{inputFiles};
+		}
+		
+	}
+	
+	/**
+	 * This method will set the properties inputs files which have hardcoded EQ version number in the jar names.
+	 * @param inputVersionNumberInJarNamesFiles This is an <code>String</code> representation of all properties file path.
+	 */
+	public void setInputVersionNumberInJarNamesFiles(String inputVersionNumberInJarNamesFiles) {
+		
+		this.inputVersionNumberInJarNamesFiles = inputVersionNumberInJarNamesFiles;
+		
+		System.out.println(new StringBuilder("inputVersionNumberInJarNamesFiles: ").append(this.inputVersionNumberInJarNamesFiles.toString()) );
+		
+		if(this.inputVersionNumberInJarNamesFiles.contains(",")){
+			
+			versionNumberInJarFilesNames= this.inputVersionNumberInJarNamesFiles.split(",");
+			
+		}else{			
+			
+			versionNumberInJarFilesNames= new String[]{inputVersionNumberInJarNamesFiles};
+		}
+	
+	}
+	/**
+	 * This method will set the list of MANIFEST files to be updated with the new version
+	 * @param versionNumberInManifest
+	 */
+	public void setversionNumberInManifest(String versionNumberInManifest)
+	{
+		this.versionNumberInManifest = versionNumberInManifest;
+		
+		System.out.println(new StringBuilder("versionNumberInManifest: ").append(this.versionNumberInManifest
+						.toString()));
+
+		if (this.versionNumberInManifest.contains(","))
+		{
+
+			manifestFilesPaths = this.versionNumberInManifest.split(",");
+
+		}
+		else
+		{
+
+			manifestFilesPaths = new String[] { versionNumberInManifest };
+		}	
+		
+	}
+
+	/**
+	 * This method will set the list of java source files to be updated with the new version
+	 * @param versionNumberInJavaFiles
+	 */
+	public void setversionNumberInJavaFiles(String versionNumberInJavaFiles)
+	{
+		this.versionNumberInJavaFiles = versionNumberInJavaFiles;
+		
+		System.out.println(new StringBuilder("versionNumberInJavaFiles: ").append(this.versionNumberInJavaFiles
+						.toString()));
+
+		if (this.versionNumberInJavaFiles.contains(","))
+		{
+
+			versionNumberInJavaFilesPaths = this.versionNumberInJavaFiles.split(",");
+
+		}
+		else
+		{
+
+			versionNumberInJavaFilesPaths = new String[] { versionNumberInJavaFiles };
+		}	
+		
+	}
+
+	/**
+	 * This method will read the first equation configuration file, get the old version number and create a new one.
+	 * @throws Exception if there is any property with non valid values. 
+	 */
+	private void setNewEquationVersionNumber() throws Exception
+	{
+		String currentFile=null;
+		EquationVersionIncrementor versionIncrementor =null;
+		
+		
+		if (  versionAttributeFilesPaths.length!=0 ){
+			
+			currentFile=versionAttributeFilesPaths[0];
+			
+			System.out.println(new StringBuilder( "Setting new version number:").append(currentFile));
+			
+			propertiesFileHelper= PropertiesFileHelper.getInstance();
+			propertiesFileHelper.setFileName(currentFile);
+			propertiesFileHelper.printProperties();
+			previousEQVesionNumber=propertiesFileHelper.getPropertyValue("VERSION");			
+			
+			if (overwriteVersion.equals("") || overwriteVersion.equals(" ")){
+				throw new Exception("The OVERWRITE_EQUATION_VERSION cannor be null.");
+			}
+			
+			//if the overwriteVersion attribute is not AUTOMATIC", it will be used as EQ version number.
+			//if not the Eq version number will be calculated base on the previous EQ version number.
+			if(overwriteVersion.equalsIgnoreCase("AUTOMATIC")){
+				
+				versionIncrementor = new EquationVersionIncrementor(previousEQVesionNumber);
+				newEQVersionNumber=String.valueOf( versionIncrementor.getNewEquationVersionNumber());
+				System.out.println("The new EQ version number will be calculated.");
+				
+			}else{				
+				newEQVersionNumber=overwriteVersion;
+				System.out.println("The new EQ version number will not be calculated.");
+				
+				
+			}
+			
+			System.out.println(new StringBuilder("This is the new EQ version number: ").append(newEQVersionNumber).append("that will be used."));
+		}else{
+			
+			throw new Exception("The is not any equation input file to be process.");
+		}
+	}
+	
+	/**
+	 * This method will update all eclipse .classpath files.It will update the equation version number in the jar names.
+	 * @throws Exception if there is not any file set in the property EQUATION_VERSION_NUMBER_ECLIPSE_CLASSPATH.
+	 */
+	private void updateEclipseClassPathFiles() throws Exception{
+		
+		String currentFile=null;
+		UpdateEclipseClassPathVersionFile updateClassPathVersionFile=null;
+		
+		
+		
+		for (int index = 0; index < eclipseClassPathFilesPaths.length; index++) {
+			
+			if (  eclipseClassPathFilesPaths.length!=0 ){
+				
+				currentFile=eclipseClassPathFilesPaths[index];
+				
+				System.out.println(new StringBuilder( "Eclipse classPath file:").append(currentFile));
+
+				updateClassPathVersionFile= UpdateEclipseClassPathVersionFile.getInstance(newEQVersionNumber,previousEQVesionNumber);
+				updateClassPathVersionFile.setClassPathXmlFilePath(currentFile);
+				updateClassPathVersionFile.processXMLClassPath();
+				
+				System.out.println(new StringBuilder("Eclipse classPath file: ").append(currentFile.toString()).append(" processed") );
+							
+				
+			}else{
+				
+				throw new Exception("The is not any equation input file to be process. Please check EQUATION_VERSION_NUMBER_ECLIPSE_CLASSPATH attribute ");
+			}
+			
+		}
+	}
+	
+	/**
+	 * This method will update all eclipse plugin.xml files 
+	 * @throws Exception if there is not any file set in the property EQUATION_VERSION_NUMBER_IN_ECLIPSE_PLUGIN.
+	 */
+	private void updateEclipsePluginFiles() throws Exception{
+		
+		String currentFile=null;
+		UpdatePluginEclipseXML updatePluginEclipseXML=null;
+		
+		
+		
+		for (int index = 0; index < eclipsePluginFilesPaths.length; index++) {
+			
+			if (  eclipsePluginFilesPaths.length!=0 ){
+				
+				currentFile=eclipsePluginFilesPaths[index];
+				
+				System.out.println(new StringBuilder( "Eclipse plugin file:").append(currentFile));
+
+				updatePluginEclipseXML= UpdatePluginEclipseXML.getInstance(newEQVersionNumber,previousEQVesionNumber);
+				updatePluginEclipseXML.setPluginXmlFilePath(currentFile);
+				updatePluginEclipseXML.processEclipsePluginXML();				
+				System.out.println(new StringBuilder("Eclipse plugin file: ").append(currentFile.toString()).append(" processed") );
+							
+				
+			}else{
+				
+				throw new Exception("The is not any equation input file to be process. Please check EQUATION_VERSION_NUMBER_IN_ECLIPSE_PLUGIN attribute ");
+			}
+			
+		}
+	}
+	
+	
+	/**
+	 * This method will update all Equation version numbers in the jars names.
+	 * @throws Exception if there is not any equation file set.
+	 */
+	private void updateVersionNumberInJarsNames() throws Exception{
+		
+		String currentFile=null;
+		
+		for (int index = 0; index < versionNumberInJarFilesNames.length; index++) {
+			
+			if (  versionNumberInJarFilesNames.length!=0 ){
+				
+				currentFile=versionNumberInJarFilesNames[index];
+				System.out.println(new StringBuilder( "Version number in jars names  processing file:").append(currentFile));
+				
+				propertiesFileHelper= PropertiesFileHelper.getInstance();
+				propertiesFileHelper.setFileName(currentFile);
+				propertiesFileHelper.printProperties();
+				
+				if(currentFile.contains("ExternalJars")){
+					
+					//EQUATION_FUNCTION_WIZARD_JARS property
+					updateJarNamesInProperty("EQUATION_FUNCTION_WIZARD_JARS");				
+					//EQUATION_DESKTOP_JARS property
+					updateJarNamesInProperty("EQUATION_DESKTOP_JARS"); 					
+				}
+				
+				if(currentFile.contains("EquationEclipseCommon")){
+					
+					//bin.includes property
+					//updateJarNamesInProperty("bin.includes");				
+					
+					//jars.compile.order property
+					updateJarNamesInProperty("jars.compile.order");
+				}
+				
+				if(currentFile.contains("EquationFunctionWizard")){
+					
+					//bin.includes property
+					updateJarNamesInProperty("bin.includes");				
+					//jars.compile.order property
+					updateJarNamesInProperty("jars.compile.order");
+				}				
+				
+				propertiesFileHelper.printProperties();
+				
+				System.out.println(new StringBuilder("Version number in jars names file: ").append(currentFile.toString()).append(" processed") );
+							
+				
+			}else{
+				
+				throw new Exception("The is not any equation input file to be process. Please check EQUATION_VERSION_NUMBER_IN_JARS_NAMES attribute ");
+			}
+			
+		}
+	}
+	
+	
+	private void updateJarNamesInProperty(String propertyName){
+		
+		String jarList;
+		JarVersionNumberModifier jarVersionNumberModifier;
+		jarVersionNumberModifier=JarVersionNumberModifier.getInstance(newEQVersionNumber, previousEQVesionNumber);
+		 
+		jarList=propertiesFileHelper.getPropertyValue(propertyName);
+		jarVersionNumberModifier.updateEquationJarVersionNumber(jarList);				
+		propertiesFileHelper.modifyProperty(propertyName,jarVersionNumberModifier.getFormatedJarList());
+		
+	}
+	
+	/**
+	 * This method will process all equation configuration  files, iterate all files and update the equation version number.
+	 * @throws Exception if there is an non property file in the file list.
+	 */
+	private void updateVersionAttributeInFiles() throws Exception{
+		
+		String currentFile=null;
+				
+		
+		for (int index = 0; index < versionAttributeFilesPaths.length; index++) {
+			
+			currentFile=versionAttributeFilesPaths[index];			
+			
+			if(currentFile.contains(".properties")){
+				
+				System.out.println(new StringBuilder( "Version attribute processing file:").append(currentFile));
+				
+				propertiesFileHelper= PropertiesFileHelper.getInstance();
+				propertiesFileHelper.setFileName(currentFile);
+				
+				System.out.println(new StringBuilder( "Old version number:").append(currentFile));
+				propertiesFileHelper.printProperties();
+				
+				propertiesFileHelper.modifyProperty("VERSION",newEQVersionNumber);
+				System.out.println(new StringBuilder( "new version number:").append(currentFile));
+				propertiesFileHelper.printProperties();
+				
+				System.out.println(new StringBuilder("Version attribute file: ").append(currentFile.toString()).append(" processed") );
+				
+			}else{
+				
+				throw new Exception("The EQUATION_VERSION_NUMBER_ATTRIBUTE should only be used for *.properties files.");
+			}		
+			
+		}		
+		
+	}
+	
+	/**
+	 * This method will process all MANIFEST.MF files to update the version number
+	 * @throws Exception
+	 */
+	private void updateManifestFiles() throws Exception
+	{
+		for (String currentFile : manifestFilesPaths)
+		{
+			System.out.println(new StringBuilder("Version attribute processing file:").append(currentFile));
+
+			ManifestFileVersionUpdater.processFile(currentFile, previousEQVesionNumber, newEQVersionNumber);
+
+			System.out.println(new StringBuilder("Version attribute file: ").append(currentFile.toString()).append(" processed"));
+		}
+	}
+	
+	/**
+	 * This method will process all java sources files to update the version number
+	 * @throws Exception
+	 */
+	private void updateJavaSourceFiles() throws Exception
+	{
+		for (String currentFile : versionNumberInJavaFilesPaths)
+		{
+			System.out.println(new StringBuilder("Version attribute processing file:").append(currentFile));
+
+			SourceFileVersionUpdater.processFile(currentFile, previousEQVesionNumber, newEQVersionNumber);
+
+			System.out.println(new StringBuilder("Version attribute file: ").append(currentFile.toString()).append(" processed"));
+		}
+	}
+}

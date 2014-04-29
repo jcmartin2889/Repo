@@ -1,0 +1,82 @@
+package com.misys.equation.function.test.run;
+
+import com.misys.equation.function.beans.FunctionData;
+import com.misys.equation.function.beans.RepeatingDataManager;
+import com.misys.equation.function.runtime.FunctionHandler;
+
+/**
+ * FunctionHandler Stub 1
+ * 
+ * This is how to use the Function Handler with validate and update processing done separately
+ * 
+ */
+public class FunctionHandlerStub28ZY6 extends FunctionHandlerStubTestCase
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	public FunctionHandlerStub28ZY6()
+	{
+		try
+		{
+			setUp();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] inputParameters)
+	{
+		FunctionHandlerStub28ZY6 test = new FunctionHandlerStub28ZY6();
+		test.test();
+	}
+
+	public boolean test()
+	{
+		// Have a bash...
+		FunctionHandler functionHandler = null;
+		try
+		{
+			System.out.println("------------------------------- 1");
+			functionHandler = FunctionToolboxStub.getFunctionHandler(user, "SESSIONID", "");
+			functionHandler.doNewTransaction("ZY6", "");
+			FunctionData functionData = functionHandler.getFhd().getScreenSetHandler().rtvScrnSetCurrent().getFunctionData();
+			RepeatingDataManager dataManager1 = functionData.getRepeatingDataManagers().get(0);
+			functionHandler.applyRetrieveTransaction();
+
+			// check that we have enough rows
+			System.out.println("CONTENT OF FUNCTIONDATA");
+			System.out.println(functionData);
+			System.out.println("===========");
+			FunctionToolboxStub.printMessages(functionHandler.rtvFunctionMessages().getMessages());
+			assertTrue(functionHandler.rtvFunctionMessages().getMessages().size() == 0);
+			assertTrue(dataManager1.totalRows() > 5);
+
+			// apply the transaction
+			functionHandler.applyTransaction();
+			FunctionToolboxStub.printMessages(functionHandler.rtvFunctionMessages().getMessages());
+
+			return (functionHandler.getFhd().getJournalHeader() != null);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+		finally
+		{
+			cleanUp();
+		}
+	}
+
+	public void testStub28ZY4()
+	{
+		FunctionHandlerStub28ZY6 stub = new FunctionHandlerStub28ZY6();
+		boolean success = stub.test();
+		assertEquals(true, success);
+	}
+
+}

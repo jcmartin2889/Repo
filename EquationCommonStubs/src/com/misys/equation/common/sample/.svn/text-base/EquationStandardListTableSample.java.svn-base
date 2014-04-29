@@ -1,0 +1,90 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.sample;
+
+import java.net.UnknownHostException;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationStandardListTable;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationStandardTable;
+import com.misys.equation.common.internal.eapi.core.EQException;
+
+/**
+ * An query sample for illustration of basic query processing steps - list data is supported
+ */
+public class EquationStandardListTableSample
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	public static void main(String[] args) throws Exception
+	{
+		EquationStandardListTableSample tableSample = new EquationStandardListTableSample();
+		tableSample.process();
+	}
+	public boolean process()
+	{
+		boolean continueProcessing = true;
+		try
+		{
+			// Get a connection to the iSeries. A QZDASONIT job is created and a session identifier is returned.
+			EquationStandardSession session = EquationContextSample.getContext().getSampleSession();
+
+			// Get accounts using branch and basic number
+			getAccountsUsingBranchAndBasic(session);
+
+			// Log off the session
+			EquationCommonContext.getContext().logOffSession(session.getSessionIdentifier());
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return continueProcessing;
+	}
+	/**
+	 * Process an SQL Query for calculation of next account suffix
+	 * 
+	 * @param session
+	 * @throws UnknownHostException
+	 * @throws EQException
+	 */
+	private void getAccountsUsingBranchAndBasic(EquationStandardSession session) throws UnknownHostException, EQException
+	{
+		EquationStandardListTable listTable = new EquationStandardListTable("SCPF", "SC10LF", "SCAB:SCAN", session);
+		listTable.setMode(EquationStandardTable.FCT_RTV);
+		listTable.getTableData().addRow();
+		listTable.setFieldValue("SCAB", "9132");
+		listTable.setFieldValue("SCAN", "234567");
+		session.retrieveEquationListTable(listTable);
+
+		// Retrieve the number of records in the list
+		int numOfRecords = listTable.getRecordCount();
+
+		if (numOfRecords > 0)
+		{
+			// Step through the rows in the returned query list
+			listTable.moveFirst();
+			int i = 1;
+			while (listTable.next() != false)
+			{
+				// Display row output
+				System.out.println("Row = " + i++ + "\n");
+				System.out.println("SCAS = " + listTable.getFieldValue("SCAS") + "\n");
+				System.out.println("SCACT = " + listTable.getFieldValue("SCACT") + "\n");
+			}
+		}
+	}
+
+}

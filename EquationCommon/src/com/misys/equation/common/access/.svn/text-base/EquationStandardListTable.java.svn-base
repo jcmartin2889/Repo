@@ -1,0 +1,218 @@
+package com.misys.equation.common.access;
+
+import com.misys.equation.common.internal.eapi.core.EQException;
+
+/**
+ * This class provides methods for setting Equation table fields before the transaction is executed and for getting fields after the
+ * transaction is executed - only multiple row retrieval is supported.
+ */
+public class EquationStandardListTable extends EquationStandardTable implements IListTransaction
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	private static final long serialVersionUID = 1L;
+
+	private final EquationDataStructureRepeatingData tableData;
+	private byte[] beforeImage;
+	private boolean complete;
+
+	/**
+	 * Construct a standard transaction with default journal name
+	 * 
+	 * @param tableName
+	 *            - the table name
+	 * @param indexName
+	 *            - the index or logical file name
+	 * @param keys
+	 *            - list of keys delimited by colon
+	 * @param equationStandardSession
+	 *            - the Equation standard session
+	 * 
+	 * @throws EQException
+	 * @equation.external
+	 */
+	public EquationStandardListTable(String tableName, String indexName, String keys,
+					EquationStandardSession equationStandardSession) throws EQException
+	{
+		super(tableName, indexName, keys, equationStandardSession);
+		tableData = new EquationDataStructureRepeatingData(equationStandardSession.getEquationDataStructure(tableName), keys);
+	}
+
+	/**
+	 * Set the table field name
+	 * 
+	 * @param fieldName
+	 *            - field name
+	 * @param fieldValue
+	 *            - field value
+	 * @equation.external
+	 */
+	@Override
+	public void setFieldValue(String fieldName, String fieldValue)
+	{
+		tableData.setFieldValue(fieldName, fieldValue);
+	}
+
+	/**
+	 * Set the table fields
+	 * 
+	 * @param bytes
+	 *            - the table fields in bytes
+	 */
+	@Override
+	public void setBytes(byte[] bytes)
+	{
+		tableData.setBytes(bytes);
+	}
+
+	/**
+	 * Return the table fields in bytes
+	 * 
+	 * @return the table fields in bytes
+	 */
+	@Override
+	public byte[] getBytes()
+	{
+		return tableData.getBytes();
+	}
+
+	/**
+	 * Return the String representation
+	 * 
+	 * @return the String representation
+	 */
+	@Override
+	public String toString()
+	{
+		StringBuffer serialisation = new StringBuffer(tableData.toString());
+		return serialisation.toString();
+	}
+
+	/**
+	 * Return the field value of the GZ field
+	 * 
+	 * @param fieldName
+	 *            - field name in GZ file
+	 * @equation.external
+	 */
+	@Override
+	public String getFieldValue(String fieldName)
+	{
+		return tableData.getFieldValue(fieldName);
+	}
+
+	/**
+	 * Return the table data
+	 * 
+	 * @return the table data
+	 */
+	@Override
+	public EquationDataStructureRepeatingData getTableData()
+	{
+		return tableData;
+	}
+
+	/**
+	 * Return the the before image
+	 * 
+	 * @return the before image
+	 */
+	@Override
+	public byte[] getBeforeImage()
+	{
+		// if(beforeImage==null){
+		// beforeImage= this.getBytes();
+		// }
+		return beforeImage;
+	}
+
+	/**
+	 * Set the before image
+	 * 
+	 * @param beforeImage
+	 *            the before image
+	 */
+	@Override
+	public void setBeforeImage(byte[] beforeImage)
+	{
+
+		if (beforeImage == null)
+		{
+			this.beforeImage = null;
+		}
+		else
+		{
+			this.beforeImage = new byte[beforeImage.length];
+			System.arraycopy(beforeImage, 0, this.beforeImage, 0, beforeImage.length);
+		}
+
+	}
+
+	/**
+	 * Return the next record
+	 * 
+	 * @return true if record has been read
+	 * @equation.external
+	 */
+	public boolean next()
+	{
+		return tableData.next();
+	}
+
+	/**
+	 * Move to the first record
+	 * 
+	 * @equation.external
+	 */
+	public void moveFirst()
+	{
+		tableData.moveFirst();
+	}
+
+	/**
+	 * Set whether the all the records have been retrieved or not. There will be scenarios where this is FALSE when trying to
+	 * retrieve only the first n records to prevent memory error
+	 * 
+	 * @param listComplete
+	 *            - true if all records have been retrieved
+	 */
+	public void setComplete(boolean complete)
+	{
+		this.complete = complete;
+	}
+
+	/**
+	 * Determines whether all the records have been retrieved. There will be scenarios where this is FALSE when trying to retrieve
+	 * only the first n records to prevent memory error
+	 * 
+	 * @return true if all records have been retrieved.
+	 * @equation.external
+	 */
+	public boolean isComplete()
+	{
+		return complete;
+	}
+
+	/**
+	 * Return maximum record length
+	 * 
+	 * @return the maximum record length
+	 */
+	public int getRecordLength()
+	{
+		return tableData.rowSize();
+	}
+
+	/**
+	 * Return the number of records
+	 * 
+	 * @return the number of records
+	 * @equation.external
+	 */
+	public int getRecordCount()
+	{
+		return tableData.rows();
+	}
+
+}

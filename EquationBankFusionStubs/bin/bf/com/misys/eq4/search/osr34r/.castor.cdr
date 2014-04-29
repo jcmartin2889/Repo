@@ -1,0 +1,4 @@
+#Thu May 13 15:42:33 BST 2010
+bf.com.misys.eq4.search.osr34r.Row=bf.com.misys.eq4.search.osr34r.descriptors.RowDescriptor
+bf.com.misys.eq4.search.osr34r.PV_row=bf.com.misys.eq4.search.osr34r.descriptors.PV_rowDescriptor
+bf.com.misys.eq4.search.osr34r.OSR34R=bf.com.misys.eq4.search.osr34r.descriptors.OSR34RDescriptor

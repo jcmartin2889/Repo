@@ -1,0 +1,72 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import java.util.Calendar;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
+import com.misys.equation.common.test.AbstractTestSuite;
+import com.misys.equation.common.test.TestEnvironment;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.Toolbox;
+
+public class Cheque_Deposit_Post_Dated_Suite extends AbstractTestSuite
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: Cheque_Deposit_Post_Dated_Suite.java 9775 2010-11-10 11:49:15Z lima12 $";
+
+	/** Logger for this class */
+	private static final EquationLogger LOG = new EquationLogger(Cheque_Deposit_Post_Dated_Suite.class);
+
+	public static Test suite()
+	{
+		// test suite
+		TestSuite suite = new TestSuite("Test for Cheque Deposit Post Dated Suite");
+
+		try
+		{
+			Thread.sleep(1000);
+		}
+		catch (InterruptedException e)
+		{
+			LOG.error(e);
+		}
+
+		// Cheque Deposit
+		String reference = createDepositReference();
+		TestEnvironment.getTestEnvironment().putParameter("Cheque_Deposit_Post_Dated_Suite", reference);
+		addTests(suite, ACD_CreateChequeDepositPostDatedHeader.class); // Create a cheque deposit header
+		addTests(suite, ACI_Open_PostDated_ChequeDeposit.class); // Open deposit for processing
+		addTests(suite, ACH_AddMaintainCancelSingleChequePostDatedItem.class); // Add/maintain/cancel single cheque item (repeat
+		// for each item)
+		addTests(suite, MDC_ProcessSaveChequeDepositPostDatedPostings.class); // Process/save deposit, create postings
+
+		// CPD - needs End of Day!
+		// Cancellation cannot occur on same day as entry. CPD test fails.
+		// addTests(suite, CPD_Cancel_Post_Dated_Cheques.class); // Cancel Post Dated Cheque
+
+		return suite;
+	}
+	public static String createDepositReference()
+	{
+		// Create String of YYMMDDHHMMSS
+		Calendar cal = Calendar.getInstance();
+		int YYYY = cal.get(Calendar.YEAR);
+		int MM = cal.get(Calendar.MONTH) + 1;
+		int DD = cal.get(Calendar.DAY_OF_MONTH);
+		int YYYYMMDD = (YYYY * 10000) + (MM * 100) + DD;
+		String timeStamp = (new Integer(YYYYMMDD).toString().substring(2));
+		timeStamp = timeStamp + new Integer(Toolbox.getTimeDBFormat(cal)).toString();
+		return timeStamp;
+	}
+}

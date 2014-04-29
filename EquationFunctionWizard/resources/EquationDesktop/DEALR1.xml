@@ -1,0 +1,75 @@
+<EquationPVMetaData PFile="OS20LF" description="DEALR1" id="DEALR1" globalConsolidatedPrompt="true" globalLibraryPrompt="false"  label="DEALR1" packageName="com.misys.pvs">
+  <databaseXref/>
+  <decodeMetaData>
+    <decodeMetaData decode=" " description="Default Decode" index="0" length="0" pFile="OS20LF"
+		sqlSelect="SELECT OSBRNM, OSDLP, OSDLR, OSCUS, OSCLC, OSCCY, OSBDT 
+		 FROM 
+			(SELECT OSBRNM, OSDLP, OSDLR, OSCUS, OSCLC, OTCCY AS OSCCY, OSBDT  
+				FROM OS20LF 
+				INNER JOIN OT10LF ON OSBRNM = OTBRNM AND OSDLP = OTDLP AND OSDLR = OTDLR AND OSBDT = 'T'
+				UNION ALL 
+				SELECT OSBRNM, OSDLP, OSDLR, OSCUS, OSCLC, OXPCCY AS OSCCY, OSBDT
+				FROM OS20LF 
+				INNER JOIN OX10LF ON OSBRNM = OXBRNM AND OSDLP = OXDLP AND OSDLR = OXDLR  AND OSBDT = 'X' 
+			) TBL 
+		"
+		sqlFrom=" ">
+      <keyFields>
+        <keyField>OSBRNM</keyField>
+        <keyField>OSDLP</keyField>
+        <keyField>OSDLR</keyField>
+      </keyFields>
+      <pvFields>
+        <pvField>OSBRNM</pvField>
+        <pvField>OSDLP</pvField>
+        <pvField>OSDLR</pvField>
+        <pvField>OSCUS</pvField>
+        <pvField>OSCLC</pvField>
+        <pvField>OSCCY</pvField>
+        <pvField>OSBDT</pvField>
+      </pvFields>
+    </decodeMetaData>
+  </decodeMetaData>
+  <fieldMetaData>
+    <fieldMetaData alpha="false" composite="false" decimal="0" description="System" header="System" id="SYSTEM" index="0" key="false" length="8" numericField="false" packed="false" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" decimal="0" description="Unit" header="Unit" id="UNIT" index="8" key="false" label="UNIT" length="3" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" decimal="0" description="Unit Description" header="Unit Description" id="UNITDESC" index="11" key="false" label="UNITDESC" length="20" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="OSBRNM" decimal="0" description="Deal branch mnemonic" header="Deal branch mnemonic" id="OSBRNM" index="21" key="true" length="4" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="OSDLP" decimal="0" description="Deal type" header="Deal type" id="OSDLP" index="25" key="true" length="3" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="OSDLR" decimal="0" description="Deal reference" header="Deal reference" id="OSDLR" index="28" key="true" length="13" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="OSCUS" decimal="0" description="Customer mnemonic" header="Customer mnemonic" id="OSCUS" index="41" key="false" length="6" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="OSCLC" decimal="0" description="Customer location" header="Customer location" id="OSCLC" index="47" key="false" length="3" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="OSCCY" decimal="0" description="Broker fee currency" header="Broker fee currency" id="OSCCY" index="50" key="false" length="3" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+    <fieldMetaData alpha="true" composite="false" db="OSBDT" decimal="0" description="OSBDT" header="OSBDT" id="OSBDT" index="60" key="false" length="1" numericField="false" packed="false" type="A" usage="B" zoned="false"/>
+  </fieldMetaData>
+  <hdrNames>
+  	<hdrName>SERVER</hdrName>
+  	<hdrName>UNIT</hdrName>
+    <hdrName>UNITDESC</hdrName>    
+    <hdrName>OSBRNM</hdrName>
+    <hdrName>OSDLP</hdrName>
+    <hdrName>OSDLR</hdrName>
+    <hdrName>OSCUS</hdrName>
+    <hdrName>OSCLC</hdrName>
+    <hdrName>OSCCY</hdrName>
+	<hdrName>OSBDT</hdrName>
+  </hdrNames>
+  <hdrPositions>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+    <hdrPosition> </hdrPosition>
+  </hdrPositions>
+  <pvDvals>
+    <pvDval>OSBRNM</pvDval>
+  </pvDvals>
+  <pvOvals>
+    <pvOval>OSBRNM</pvOval>
+  </pvOvals>
+</EquationPVMetaData>

@@ -1,0 +1,254 @@
+package com.misys.equation.common.globalprocessing.mbeans;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Encapsulates configuration information for a command.
+ * 
+ * @author berzosa
+ */
+@SuppressWarnings("serial")
+public class V45Command implements Serializable
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: V45Command.java 11220 2011-06-16 09:48:41Z bterrado $";
+
+	private String identifier;
+	private String name;
+	private String description;
+	private String optionId;
+	private String availableForExternalInput;
+	private String availableForRecovery;
+	private String parameterPattern;
+	private List<V45Command.Parameter> parameters = new ArrayList<V45Command.Parameter>();
+	private List<String> releases = new ArrayList<String>();
+	private List<String> validPhases = new ArrayList<String>();
+	private List<String> validModes = new ArrayList<String>();
+	private String genericConditions;
+	private String category;
+
+	/** The listener class for this parameter, or blank if none */
+	private String listener;
+
+	public String getIdentifier()
+	{
+		return identifier;
+	}
+	public void setIdentifier(String identifier)
+	{
+		this.identifier = identifier;
+	}
+	public String getName()
+	{
+		return name;
+	}
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+	public String getDescription()
+	{
+		return description;
+	}
+	public void setDescription(String description)
+	{
+		this.description = description;
+	}
+	public String getOptionId()
+	{
+		return optionId;
+	}
+	public void setOptionId(String optionId)
+	{
+		this.optionId = optionId;
+	}
+	public String getAvailableForExternalInput()
+	{
+		return availableForExternalInput;
+	}
+	public void setAvailableForExternalInput(String availableForExternalInput)
+	{
+		this.availableForExternalInput = availableForExternalInput;
+	}
+	public String getAvailableForRecovery()
+	{
+		return availableForRecovery;
+	}
+	public void setAvailableForRecovery(String availableForRecovery)
+	{
+		this.availableForRecovery = availableForRecovery;
+	}
+	public String getParameterPattern()
+	{
+		return parameterPattern;
+	}
+	public void setParameterPattern(String parameterPattern)
+	{
+		this.parameterPattern = parameterPattern;
+	}
+	public List<String> getReleases()
+	{
+		return releases;
+	}
+	public void setReleases(List<String> releases)
+	{
+		this.releases = releases;
+	}
+	public void addRelease(String release)
+	{
+		this.releases.add(release);
+	}
+	public List<V45Command.Parameter> getParameters()
+	{
+		return parameters;
+	}
+	public void setParameters(List<V45Command.Parameter> parameters)
+	{
+		this.parameters = parameters;
+	}
+	public void addParameter(V45Command.Parameter parameter)
+	{
+		this.parameters.add(parameter);
+	}
+	public List<String> getValidPhases()
+	{
+		return validPhases;
+	}
+	public void setValidPhases(List<String> validPhases)
+	{
+		this.validPhases = validPhases;
+	}
+	public void addValidPhase(String validPhase)
+	{
+		this.validPhases.add(validPhase);
+	}
+	public List<String> getValidModes()
+	{
+		return validModes;
+	}
+	public void setValidModes(List<String> validModes)
+	{
+		this.validModes = validModes;
+	}
+	public void addValidMode(String validMode)
+	{
+		this.validModes.add(validMode);
+	}
+	public String getGenericConditions()
+	{
+		return genericConditions;
+	}
+	public void setGenericConditions(String genericConditions)
+	{
+		this.genericConditions = genericConditions;
+	}
+	public String getCategory()
+	{
+		return category;
+	}
+	public void setCategory(String category)
+	{
+		this.category = category;
+	}
+
+	public String getListener()
+	{
+		return listener;
+	}
+
+	public void setListener(String listener)
+	{
+		this.listener = listener;
+	}
+
+	@Override
+	public String toString()
+	{
+		return description + " " + identifier + " " + name + " " + optionId;
+	}
+
+	/**
+	 * Calculates the sum of all parameter lengths; defaults to 0 for any parsing exception encountered
+	 * @param command CMDRecordDataModel of command
+	 * @return calculated sum of parameter lengths 
+	 */
+	public static int calculateParamLength(V45Command command){
+		int len=0;
+		try{
+			for (V45Command.Parameter p : command.getParameters()){
+				len += Integer.parseInt(p.getMaxLength());
+			}	
+		} catch (NumberFormatException e){
+			return 0;
+		}
+
+		return len;	
+	}
+	
+	/**
+	 * Provides information about a command parameter including:
+	 * <ul>
+	 * <li>Description - used as a label for displaying the parameter to the user
+	 * <li>Content Assist - A fully-qualified class name for a class that provides content-assistance for this parameter (not yet
+	 * supported!)
+	 * </ul>
+	 * 
+	 * @author berzosa
+	 */
+	public static class Parameter implements Serializable
+	{
+		/** Description of this parameter */
+		private String description;
+
+		/** The content-assist class for this parameter, or blank if none */
+		private String contentAssist;
+		
+		/** The maximum length of this parameter, overriding the default parameter length 35 */
+		private String maxLength;
+
+		/** Indicates  whether the field a multi-line text field*/
+		private String multiLine;
+		
+		public String getMultiLine()
+		{
+			return multiLine;
+		}
+
+		public void setMultiLine(String multiLine)
+		{
+			this.multiLine = multiLine;
+		}
+
+		public String getMaxLength()
+		{
+			return maxLength;
+		}
+
+		public void setMaxLength(String maxLength)
+		{
+			this.maxLength = maxLength;
+		}
+
+		public String getDescription()
+		{
+			return description;
+		}
+
+		public void setDescription(String description)
+		{
+			this.description = description;
+		}
+
+		public String getContentAssist()
+		{
+			return contentAssist;
+		}
+
+		public void setContentAssist(String contentAssist)
+		{
+			this.contentAssist = contentAssist;
+		}
+	}
+}

@@ -1,0 +1,105 @@
+package com.misys.equation.common.access;
+
+/**
+ * Bean to contain DB2 Table and View Attributes. Library of Table/View is Unit KFIL.
+ */
+public class EquationDB2Table implements java.io.Serializable
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	private static final long serialVersionUID = 1L;
+
+	private String tableName;
+	private String tableDescription;
+	private String tableType;
+	private boolean unique;
+
+	/**
+	 * Constructor
+	 */
+	public EquationDB2Table()
+	{
+	}
+	/**
+	 * Return the table/view name
+	 * 
+	 * @return the table/view name
+	 */
+	public String getTableName()
+	{
+		return tableName;
+	}
+	/**
+	 * Set the table/view name
+	 * 
+	 * @param table
+	 *            /view name
+	 * 
+	 */
+	public void setTableName(String tableName)
+	{
+		this.tableName = tableName;
+	}
+	/**
+	 * Return the table/view description
+	 * 
+	 * @return the table/view description
+	 */
+	public String getTableDescription()
+	{
+		return tableDescription;
+	}
+	/**
+	 * Set the table/view description
+	 * 
+	 * @param table
+	 *            /view description
+	 * 
+	 */
+	public void setTableDescription(String tableDescription)
+	{
+		this.tableDescription = tableDescription;
+	}
+	/**
+	 * Return the table type (P-physical, L-logical)
+	 * 
+	 * @return the table type
+	 */
+	public String getTableType()
+	{
+		return tableType;
+	}
+	/**
+	 * Set the table type (P-physical, L-logical)
+	 * 
+	 * @param table
+	 *            type
+	 * 
+	 */
+	public void setTableType(String tableType)
+	{
+		this.tableType = tableType;
+	}
+	/**
+	 * Return whether the file has a unique key as specified by unique keyword
+	 * 
+	 * @return whether the file has a unique key as specified by unique keyword
+	 */
+	public boolean isUnique()
+	{
+		return unique;
+	}
+	/**
+	 * Set flag to true when file has a unique key as specified by a unique keyword
+	 * 
+	 * @param table
+	 *            /view is unique
+	 * 
+	 */
+	public void setUnique(boolean unique)
+	{
+		this.unique = unique;
+	}
+
+}

@@ -1,0 +1,208 @@
+package com.misys.equation.builder.javadoc;
+
+import com.sun.javadoc.ClassDoc;
+import com.sun.javadoc.PackageDoc;
+import com.sun.javadoc.RootDoc;
+import com.sun.javadoc.SeeTag;
+import com.sun.javadoc.SourcePosition;
+import com.sun.javadoc.Tag;
+
+/**
+ * This class encapsulates a RootDoc instance
+ * 
+ * It implements the interface RootDoc and use the RootDoc instance to execute each method
+ * 
+ */
+public class AbstractEquationRootDoc extends AbstractEquationDoc implements RootDoc
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: AbstractEquationRootDoc.java 11191 2011-06-14 10:22:56Z perkinj1 $";
+
+	// The root doc to encapsulates
+	protected RootDoc rootDoc;
+
+	public AbstractEquationRootDoc(RootDoc rootDoc)
+	{
+		this.rootDoc = rootDoc;
+	}
+
+	public ClassDoc classNamed(String s)
+	{
+		return rootDoc.classNamed(s);
+	}
+
+	public ClassDoc[] classes()
+	{
+		return rootDoc.classes();
+	}
+
+	public String[][] options()
+	{
+		return rootDoc.options();
+	}
+
+	public PackageDoc packageNamed(String s)
+	{
+		return rootDoc.packageNamed(s);
+	}
+
+	public ClassDoc[] specifiedClasses()
+	{
+		return rootDoc.specifiedClasses();
+	}
+
+	public PackageDoc[] specifiedPackages()
+	{
+		return rootDoc.specifiedPackages();
+	}
+
+	public String commentText()
+	{
+		return rootDoc.commentText();
+	}
+
+	public int compareTo(Object obj)
+	{
+		return rootDoc.compareTo(obj);
+	}
+	public Tag[] firstSentenceTags()
+	{
+		return rootDoc.firstSentenceTags();
+	}
+
+	public String getRawCommentText()
+	{
+		return rootDoc.getRawCommentText();
+	}
+
+	public Tag[] inlineTags()
+	{
+		return rootDoc.inlineTags();
+	}
+
+	public boolean isAnnotationType()
+	{
+		return rootDoc.isAnnotationType();
+	}
+
+	public boolean isAnnotationTypeElement()
+	{
+		return rootDoc.isAnnotationTypeElement();
+	}
+
+	public boolean isClass()
+	{
+		return rootDoc.isClass();
+	}
+
+	public boolean isConstructor()
+	{
+		return rootDoc.isConstructor();
+	}
+
+	public boolean isEnum()
+	{
+		return rootDoc.isEnum();
+	}
+
+	public boolean isEnumConstant()
+	{
+		return rootDoc.isEnumConstant();
+	}
+
+	public boolean isError()
+	{
+		return rootDoc.isError();
+	}
+
+	public boolean isException()
+	{
+		return rootDoc.isException();
+	}
+
+	public boolean isField()
+	{
+		return rootDoc.isField();
+	}
+
+	public boolean isIncluded()
+	{
+		return rootDoc.isIncluded();
+	}
+
+	public boolean isInterface()
+	{
+		return rootDoc.isInterface();
+	}
+
+	public boolean isMethod()
+	{
+		return rootDoc.isMethod();
+	}
+
+	public boolean isOrdinaryClass()
+	{
+		return rootDoc.isOrdinaryClass();
+	}
+
+	public String name()
+	{
+		return rootDoc.name();
+	}
+
+	public SourcePosition position()
+	{
+		return rootDoc.position();
+	}
+
+	public SeeTag[] seeTags()
+	{
+		return rootDoc.seeTags();
+	}
+
+	public void setRawCommentText(String s)
+	{
+		rootDoc.setRawCommentText(s);
+	}
+
+	public Tag[] tags()
+	{
+		return rootDoc.tags();
+	}
+
+	public Tag[] tags(String s)
+	{
+		return rootDoc.tags(s);
+	}
+
+	public void printError(String s)
+	{
+		rootDoc.printError(s);
+	}
+
+	public void printError(SourcePosition sourceposition, String s)
+	{
+		rootDoc.printError(sourceposition, s);
+	}
+
+	public void printNotice(String s)
+	{
+		rootDoc.printNotice(s);
+	}
+
+	public void printNotice(SourcePosition sourceposition, String s)
+	{
+		rootDoc.printError(sourceposition, s);
+	}
+
+	public void printWarning(String s)
+	{
+		rootDoc.printWarning(s);
+	}
+
+	public void printWarning(SourcePosition sourceposition, String s)
+	{
+		rootDoc.printWarning(sourceposition, s);
+	}
+
+}

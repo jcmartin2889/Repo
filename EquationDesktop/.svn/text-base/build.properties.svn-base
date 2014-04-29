@@ -1,0 +1,52 @@
+###########################################################
+# Copy this file under your project root folder and 
+# change its name to build.properties
+###########################################################
+
+# User-defined properties
+
+# NAME OF THE PROJECT
+PROJECT_NAME=Equation Desktop
+#This is the user name 
+USER_NAME=deroset
+
+# This is the name which will be used as a jar name.
+WAR_NAME=equation-desktop
+JAR_NAME=equation-desktop
+#jar version.
+VERSION=3.1.2
+# This is the directory that contains all compiled classes.
+CLASSES=build/classes
+# This is the source directory which contains all java source files and others. 
+SRC=src
+#This is the project that contains all jars to be included in the classpath.
+CLASSPATH=../ExternalJars
+#This is the resource directory which contains all property / confg files. +
+RESOURCES=resources
+#This is the docs directory which contains all documents such as readme and realise changes. 
+DOCS=docs
+# This is the target directory name. 
+TARGET=equation-desktop
+DIST=../EquationBuilder/dist
+
+# This property is to decide if the javadoc are going to be generated.
+CREATE_JAVA_DOCS=true
+# This is the name of the java doc directory.
+JAVA_DOCS_NAME=javadocs
+
+# Directory to which the packaged .jar file is to be copied.
+DEPLOY_DIR=../EquationFunctionWizard/lib
+
+# Projects
+EQUATION_BUILDER=../EquationBuilder
+BUILDER_TEMP=#temp
+EQUATION_COMMON=../EquationCommon
+EQUATION_FUNCTION=../EquationFunction
+EQUATION_FUNCTION_WIZARD=../EquationFunctionWizard
+EQUATION_DESKTOP=../EquationDesktop
+
+#This will mark the current project as tomcat project.
+IS_A_TOMCAT_PROJECT=NO
+
+#This is the server cahe directory. 
+SERVER_CACHE_WEBINF.LIB=

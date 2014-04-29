@@ -1,0 +1,81 @@
+package com.misys.equation.function.beans;
+
+import java.util.Arrays;
+
+public class APIField extends Field
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	/**
+	 * Constructs an instance of <code>APIField</code>
+	 */
+	public APIField()
+	{
+		super();
+	}
+
+	/**
+	 * Constructs an instance of <code>APIField</code>
+	 * 
+	 * @param id
+	 *            - A <code>String</code> ID for the <code>APIField</code>
+	 * @param label
+	 *            - A <code>String</code> label for the <code>APIField</code>
+	 * @param description
+	 *            - A <code>String</code> description for the <code>APIField</code>
+	 */
+	public APIField(String id, String label, String description)
+	{
+		super(id, label, description);
+	}
+
+	/**
+	 * Construct an <code>APIField</code> copied from an existing <code>APIField</code>
+	 * 
+	 * @param field
+	 *            - The <code>APIField</code> to copy
+	 */
+	public APIField(APIField field)
+	{
+		super(field);
+	}
+
+	/**
+	 * Construct an <code>APIField</code> copied from an existing <code>Field</code>
+	 * 
+	 * @param field
+	 *            - The <code>APIField</code> to copy
+	 */
+	public APIField(Field field)
+	{
+		super(field);
+	}
+
+	/**
+	 * @return a best attempt for whether the field is mandatory
+	 */
+	public boolean isRequired()
+	{
+		String[] mandatoryFields = ((APIFieldSet) rtvParentFieldSet()).rtvMandatoryFields();
+		if (mandatoryFields != null)
+		{
+			return Arrays.binarySearch(mandatoryFields, this.getId().trim()) > -1;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	/**
+	 * Determine whether standard bean validation should validate the field length
+	 * 
+	 * @return false, so that standard validation will not validate the field length
+	 */
+	@Override
+	protected boolean shouldValidateFieldLength()
+	{
+		return false;
+	}
+
+}

@@ -1,0 +1,53 @@
+package com.misys.equation.function.test.bf;
+
+import java.io.ByteArrayInputStream;
+
+import junit.framework.TestCase;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import com.misys.equation.function.tools.XMLToolbox;
+
+public class TestXMLParsing extends TestCase
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: TestXMLParsing.java 4735 2009-09-15 16:58:25Z lima12 $";
+
+	private static final String NAMESPACE = "http://www.misys.com/eq4/service/DDD";
+
+	private static final String schemaString = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+					+ "<xs:schema elementFormDefault=\"unqualified\""
+					+ " targetNamespace=\""
+					+ NAMESPACE
+					+ "\""
+					+ " xmlns:DDD=\"http://www.misys.com/eq4/service/DDD\" xmlns:eq4ref=\"http://www.misys.com/eq4/types\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">"
+					// Nothing actually defined in the schema...
+					+ "</xs:schema>";
+
+	/**
+	 * Tests that the deserialiseXML method has returned a valid Document object. This method also tests that it is possible to
+	 * extract the namespace schema from the Document object.
+	 */
+	public void test()
+	{
+		// Have a bash...
+		try
+		{
+			Document document = XMLToolbox.deserialiseXML(new ByteArrayInputStream(schemaString.getBytes()));
+			Element docElement = document.getDocumentElement();
+			assertEquals("xs:schema", docElement.getNodeName());
+			String namespaceAttribute = docElement.getAttribute("xmlns:DDD");
+			assertEquals(NAMESPACE, namespaceAttribute);
+
+			System.out.println(namespaceAttribute);
+
+		}
+		catch (Throwable e)
+		{
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+
+}

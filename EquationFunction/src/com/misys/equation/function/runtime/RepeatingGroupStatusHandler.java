@@ -1,0 +1,145 @@
+package com.misys.equation.function.runtime;
+
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import com.misys.equation.function.beans.RepeatingGroupStatus;
+import com.misys.equation.function.tools.HTMLToolbox;
+
+public class RepeatingGroupStatusHandler
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: RepeatingGroupStatusHandler.java 10856 2011-04-26 10:45:41Z MACDONP1 $";
+
+	// the list of repeating group status
+	private Map<String, RepeatingGroupStatus> repeatingGroupStatuses = new HashMap<String, RepeatingGroupStatus>();
+
+	/**
+	 * Return the repeating group statuses
+	 * 
+	 * @return the repeating group statuses
+	 */
+	public Map<String, RepeatingGroupStatus> getRepeatingGroupStatuses()
+	{
+		return repeatingGroupStatuses;
+	}
+
+	/**
+	 * Return the repeating group status
+	 * 
+	 * @param id
+	 *            - the repeating group id
+	 * 
+	 * @return the repeating group status
+	 */
+	public RepeatingGroupStatus getRepeatingGroupStatuses(String id)
+	{
+		return repeatingGroupStatuses.get(id);
+	}
+
+	/**
+	 * Set the repeating group statuses
+	 * 
+	 * @param repeatinGroupStatuses
+	 *            - the repeating group statuses
+	 */
+	public void setRepeatingGroupStatuses(Hashtable<String, RepeatingGroupStatus> repeatinGroupStatuses)
+	{
+		this.repeatingGroupStatuses = repeatinGroupStatuses;
+	}
+
+	/**
+	 * Add a repeating group
+	 * 
+	 * @param id
+	 *            - the repeating group id
+	 * @param repeatingGroupStatus
+	 *            - a repeating group status
+	 */
+	public void addRepeatingGroupStatus(String id, RepeatingGroupStatus repeatingGroupStatus)
+	{
+		repeatingGroupStatuses.put(id, repeatingGroupStatus);
+	}
+
+	/**
+	 * Loads the repeating group status from a Map. The map value is an array
+	 * 
+	 * @param map
+	 *            - table of field names and field values
+	 */
+	public void loadRepeatingGroupFromMap2(Map<String, String[]> map)
+	{
+		String fieldValue;
+		String[] fieldValuex;
+
+		Iterator<String> repeatingGroupStatusIter = repeatingGroupStatuses.keySet().iterator();
+
+		while (repeatingGroupStatusIter.hasNext())
+		{
+			// get the the repeating group status
+			RepeatingGroupStatus repeatingGroupStatus = repeatingGroupStatuses.get(repeatingGroupStatusIter.next());
+
+			// update only if it is not using paging up/down facility
+			if (repeatingGroupStatus.getPageSize() == 0)
+			{
+				// get the field sort order
+				fieldValuex = map.get(repeatingGroupStatus.getId() + HTMLToolbox.REPGROUP_FLDSORT);
+				if (fieldValuex != null)
+				{
+					fieldValue = fieldValuex[0];
+					if (fieldValue != null)
+					{
+						repeatingGroupStatus.setFieldOrder(fieldValue);
+					}
+				}
+
+				// get the order sort
+				fieldValuex = map.get(repeatingGroupStatus.getId() + HTMLToolbox.REPGROUP_ORDERSORT);
+				if (fieldValuex != null)
+				{
+					fieldValue = fieldValuex[0];
+					if (fieldValue != null)
+					{
+						repeatingGroupStatus.setSortAsAsc(fieldValue.equals("true"));
+					}
+				}
+
+				// get the break by
+				fieldValuex = map.get(repeatingGroupStatus.getId() + HTMLToolbox.REPGROUP_INPBREAKBY);
+				if (fieldValuex != null)
+				{
+					fieldValue = fieldValuex[0];
+					if (fieldValue != null)
+					{
+						repeatingGroupStatus.setBreakBy(fieldValue);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Resync the repeating group statuses with the given statuses
+	 * 
+	 * @param initRepeatingGroupStatuses
+	 *            - the repeating group statuses
+	 */
+	public void reSyncRepeatingGroupStatus(Map<String, RepeatingGroupStatus> initRepeatingGroupStatuses)
+	{
+		for (Entry<String, RepeatingGroupStatus> entry : initRepeatingGroupStatuses.entrySet())
+		{
+			initRepeatingGroupStatuses.put(entry.getKey(), entry.getValue());
+		}
+	}
+
+	/**
+	 * Clear the repeating group statuses
+	 */
+	public void clearRepeatingGroupStatus()
+	{
+		repeatingGroupStatuses.clear();
+	}
+}

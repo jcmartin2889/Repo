@@ -1,0 +1,60 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import java.util.Calendar;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
+import com.misys.equation.common.test.AbstractTestSuite;
+import com.misys.equation.common.test.TestEnvironment;
+import com.misys.equation.common.utilities.Toolbox;
+
+public class Cheque_Deposit_Suite extends AbstractTestSuite
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	public static Test suite()
+	{
+		// test suite
+		TestSuite suite = new TestSuite("Test for Cheque Deposit Suite");
+
+		// Cheque Deposit
+		String reference = createDepositReference();
+		TestEnvironment.getTestEnvironment().putParameter("Cheque_Deposit_Suite", reference);
+		addTests(suite, ACD_CreateChequeDepositHeader.class); // Create a cheque deposit header
+		addTests(suite, ACI_OpenChequeDeposit.class); // Open deposit for processing
+		addTests(suite, ACH_AddMaintainCancelSingleChequeItem.class); // Add/maintain/cancel single cheque item (repeat for each
+		// item)
+		addTests(suite, MDC_ProcessSaveChequeDepositPostings.class); // Process/save deposit, create postings
+		// TODO A condition that needs authorisation needs to be created in the earlier APIs. Duplicate Serial Numbers is not
+		// working in
+		// J49MVR.
+		// addTests(suite, ARS_Authorise_Return_Referred_Cheque.class); // Authorise Referred Cheque
+		// addTests(suite, ARC_Add_Returned_Cheque.class); // Add Returned Cheque
+		return suite;
+	}
+	public static String createDepositReference()
+	{
+		// Create String of YYMMDDHHMMSS
+
+		Calendar cal = Calendar.getInstance();
+		int YYYY = cal.get(Calendar.YEAR);
+		int MM = cal.get(Calendar.MONTH) + 1;
+		int DD = cal.get(Calendar.DAY_OF_MONTH);
+		int YYYYMMDD = (YYYY * 10000) + (MM * 100) + DD;
+		String timeStamp = (new Integer(YYYYMMDD).toString().substring(2));
+		timeStamp = timeStamp + new Integer(Toolbox.getTimeDBFormat(cal)).toString();
+		return timeStamp;
+	}
+}

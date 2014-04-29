@@ -1,0 +1,125 @@
+package com.misys.equation.common.globalcustomers;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * This is a bean model which will hold the balance per branch.
+ * 
+ * @author deroset
+ * 
+ */
+public class GlobalBalancePerCustomerBean
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: GlobalBalancePerCustomerBean.java 9659 2010-11-02 17:25:07Z MACDONP1 $";
+	private String globalUserId;
+	private final Map<String, CustomerBalancePerBranch> customerBalancePerBranchs;
+
+	public GlobalBalancePerCustomerBean()
+	{
+		customerBalancePerBranchs = new HashMap<String, CustomerBalancePerBranch>();
+	}
+
+	/**
+	 * This method will add the balances to the passed branch.
+	 * 
+	 * @param branch
+	 *            this is the branch number.
+	 * @param balance
+	 *            this is the branch balance.
+	 * @param equivalentBalance
+	 *            this is the equivalent branch.
+	 */
+	public void addBalances(String branch, String balance, String equivalentBalance)
+	{
+		CustomerBalancePerBranch customerBalancePerBranch = customerBalancePerBranchs.get(branch);
+
+		customerBalancePerBranch.setBalance(getBalance(balance));
+		customerBalancePerBranch.setEquivalentBalance(getBalance(equivalentBalance));
+	}
+
+	/**
+	 * This method will add a new the balance and its balances.
+	 * 
+	 * @param branch
+	 *            this is the branch number.
+	 * @param balance
+	 *            this is the branch balance.
+	 * @param equivalentBalance
+	 *            this is the equivalent branch.
+	 */
+	public void addNewbranch(String branch, String balance, String equivalentBalance)
+	{
+		CustomerBalancePerBranch customerBalancePerBranch = new CustomerBalancePerBranch();
+
+		customerBalancePerBranch.setBalance(getBalance(balance));
+		customerBalancePerBranch.setEquivalentBalance(getBalance(equivalentBalance));
+		customerBalancePerBranchs.put(branch, customerBalancePerBranch);
+	}
+
+	/**
+	 * this method will convert the balance in to a primitive numeric type.
+	 * 
+	 * @param balance
+	 *            this is the balance to be converted.
+	 * @return a numeric representation of the passed balance.
+	 */
+	private long getBalance(String balance)
+	{
+		long result = 0L;
+
+		if (!balance.equals("") && !balance.trim().equals("000000000000000"))
+		{
+			result = Long.parseLong(balance);
+		}
+		return result;
+	}
+
+	// ----getters and Setters ----//
+
+	public String getGlobalUserId()
+	{
+		return globalUserId;
+	}
+	public void setGlobalUserId(String globalUserId)
+	{
+		this.globalUserId = globalUserId;
+	}
+
+	public boolean doesItContainThisBranch(String branch)
+	{
+		return customerBalancePerBranchs.containsKey(branch);
+	}
+
+	public CustomerBalancePerBranch getCustomerBalancePerBranch(String branch)
+	{
+		return customerBalancePerBranchs.get(branch);
+	}
+
+	public static class CustomerBalancePerBranch
+	{
+		long balance = 0;
+		long equivalentBalance = 0;
+
+		public long getBalance()
+		{
+			return balance;
+		}
+
+		public void setBalance(long balance)
+		{
+			this.balance += balance;
+		}
+
+		public long getEquivalentBalance()
+		{
+			return equivalentBalance;
+		}
+
+		public void setEquivalentBalance(long equivalentBalance)
+		{
+			this.equivalentBalance += equivalentBalance;
+		}
+	}
+}

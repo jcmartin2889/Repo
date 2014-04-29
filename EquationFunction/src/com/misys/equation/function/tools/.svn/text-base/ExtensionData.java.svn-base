@@ -1,0 +1,252 @@
+package com.misys.equation.function.tools;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.dao.DaoFactory;
+import com.misys.equation.common.dao.IGYWRecordDao;
+import com.misys.equation.common.dao.beans.GYWRecordDataModel;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.Toolbox;
+
+public class ExtensionData
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	// Log
+	protected final static EquationLogger LOG = new EquationLogger(ExtensionData.class);
+
+	// User extension data object
+	Object userExtensionData = null;
+
+	// Misys extension data object
+	Object misysExtensionData = null;
+
+	/**
+	 * Return the user extension data
+	 * 
+	 * @return the user extension data
+	 */
+	public Object getUserExtensionData()
+	{
+		return userExtensionData;
+	}
+
+	/**
+	 * Set the user extension data
+	 * 
+	 * @param userExtensionData
+	 *            - the user extension data
+	 */
+	public void setUserExtensionData(Object userExtensionData)
+	{
+		this.userExtensionData = userExtensionData;
+	}
+
+	/**
+	 * Return the Misys extension data
+	 * 
+	 * @return the Misys extension data
+	 */
+	public Object getMisysExtensionData()
+	{
+		return misysExtensionData;
+	}
+
+	/**
+	 * Set the Misys extension data
+	 * 
+	 * @param misysExtensionData
+	 *            - the Misys extension data
+	 */
+	public void setMisysExtensionData(Object misysExtensionData)
+	{
+		this.misysExtensionData = misysExtensionData;
+	}
+
+	/**
+	 * Determine if there is any data being held
+	 * 
+	 * @return true if there is no data
+	 */
+	public boolean isEmpty()
+	{
+		return userExtensionData == null && misysExtensionData == null;
+	}
+
+	/**
+	 * Retrieve the extension data given the journal key
+	 * 
+	 * @param workStation
+	 *            - work station
+	 * @param jrnDay
+	 *            - journal day
+	 * @param jrnTime
+	 *            - journal time
+	 * @param jrnSequence
+	 *            - journal sequence
+	 * @param fct
+	 *            - function mode
+	 * @param library
+	 *            - library where the journal is located
+	 * 
+	 * @return true if data has been loaded
+	 * 
+	 * @throws EQException
+	 */
+	public boolean loadUserExtensionData(EquationStandardSession session, String workStation, int jrnDay, int jrnTime,
+					int jrnSequence, String fct, String library) throws EQException
+	{
+		// GYWPF exists in the unit?
+		if (!session.getUnit().isGYWPFInstalled())
+		{
+			return false;
+		}
+
+		// GYWPF exists in the library?
+		if (library.trim().length() > 0 && !session.getUnit().isFileExists(library, GYWRecordDataModel.RECORD_NAME))
+		{
+			return false;
+		}
+
+		// retrieve user extension if exist
+		DaoFactory daoFactory = new DaoFactory();
+		GYWRecordDataModel gywRecordDataModel = new GYWRecordDataModel(workStation, jrnDay, jrnTime, jrnSequence, fct,
+						EquationStandardTransaction.EDF_ROOT);
+		gywRecordDataModel.setLibrary(library);
+		IGYWRecordDao dao = daoFactory.getGYWDao(session, gywRecordDataModel);
+		gywRecordDataModel = dao.getGYWRecord();
+
+		// convert it to actual class
+		if (gywRecordDataModel != null)
+		{
+			// user data
+			if (gywRecordDataModel.getUserClassName().trim().length() > 0)
+			{
+				userExtensionData = loadUserExtensionData(gywRecordDataModel.getUserData());
+			}
+			else
+			{
+				userExtensionData = null;
+			}
+
+			// Misys data
+			if (gywRecordDataModel.getMisysClassName().trim().length() > 0)
+			{
+				misysExtensionData = loadUserExtensionData(gywRecordDataModel.getMisysData());
+			}
+			else
+			{
+				misysExtensionData = null;
+			}
+
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Load user extension data given the bytes
+	 * 
+	 * @param userExtensionDataBytes
+	 *            - the extension data in bytes
+	 * 
+	 * @return the user extension data object
+	 * 
+	 * @throws EQException
+	 */
+	public Object loadUserExtensionData(byte[] userExtensionDataBytes) throws EQException
+	{
+		ByteArrayInputStream bytesin = new ByteArrayInputStream(userExtensionDataBytes);
+		try
+		{
+			EquationObjectInputStream reader = new EquationObjectInputStream(bytesin);
+			Object userExtensionData = reader.readObject();
+			return userExtensionData;
+		}
+		catch (Exception e)
+		{
+			LOG.error(e);
+			throw new EQException("FunctionRuntimeToolbox: loadUserExtensionData() Failed: " + Toolbox.getExceptionMessage(e), e);
+		}
+	}
+
+	/**
+	 * Save the extension data
+	 * 
+	 * @param workStation
+	 *            - work station
+	 * @param jrnDay
+	 *            - journal day
+	 * @param jrnTime
+	 *            - journal time
+	 * @param jrnSequence
+	 *            - journal sequence
+	 * @param fct
+	 *            - function mode
+	 * 
+	 * @throws EQException
+	 */
+	public void saveUserExtensionData(EquationStandardSession session, String workStation, int jrnDay, int jrnTime,
+					int jrnSequence, String fct) throws EQException
+	{
+		// GYWPF exist?
+		if (!session.getUnit().isGYWPFInstalled())
+		{
+			return;
+		}
+
+		ByteArrayOutputStream userDataBytes = new ByteArrayOutputStream();
+		ByteArrayOutputStream misysDataBytes = new ByteArrayOutputStream();
+		ObjectOutputStream writer;
+		try
+		{
+			writer = new ObjectOutputStream(userDataBytes);
+			writer.writeObject(userExtensionData);
+			writer.close();
+
+			writer = new ObjectOutputStream(misysDataBytes);
+			writer.writeObject(misysExtensionData);
+			writer.close();
+		}
+		catch (Exception e)
+		{
+			LOG.error(e);
+			throw new EQException("FunctionRuntimeToolbox: saveUserExtensionData() Failed: " + Toolbox.getExceptionMessage(e), e);
+		}
+
+		GYWRecordDataModel gywRecordDataModel = new GYWRecordDataModel(workStation, jrnDay, jrnTime, jrnSequence, fct,
+						EquationStandardTransaction.EDF_ROOT);
+		if (userExtensionData != null)
+		{
+			gywRecordDataModel.setUserClassName(userExtensionData.getClass().getName());
+			gywRecordDataModel.setUserData(userDataBytes.toByteArray());
+		}
+		else
+		{
+			gywRecordDataModel.setUserClassName("");
+			gywRecordDataModel.setUserData(new byte[1]);
+		}
+
+		if (misysExtensionData != null)
+		{
+			gywRecordDataModel.setMisysClassName(misysExtensionData.getClass().getName());
+			gywRecordDataModel.setMisysData(misysDataBytes.toByteArray());
+		}
+		else
+		{
+			gywRecordDataModel.setMisysClassName("");
+			gywRecordDataModel.setMisysData(new byte[1]);
+		}
+
+		DaoFactory daoFactory = new DaoFactory();
+		IGYWRecordDao dao = daoFactory.getGYWDao(session, gywRecordDataModel);
+		dao.insertOrUpdateRecord(gywRecordDataModel);
+	}
+
+}

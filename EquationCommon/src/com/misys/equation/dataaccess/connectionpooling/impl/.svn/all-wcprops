@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/dataaccess/connectionpooling/impl
+END
+JndiConnectionPoolConfiguration.java
+K 25
+svn:wc:ra_dav:version-url
+V 168
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/dataaccess/connectionpooling/impl/JndiConnectionPoolConfiguration.java
+END
+JndiConnectionPool.java
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/dataaccess/connectionpooling/impl/JndiConnectionPool.java
+END

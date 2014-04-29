@@ -1,0 +1,97 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.sample;
+
+import java.net.UnknownHostException;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationStandardQueryList;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.internal.eapi.core.EQException;
+
+/**
+ * An query sample for illustration of basic query processing steps - list data is supported
+ */
+public class EquationStandardQueryListSample
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EquationStandardQueryListSample.java 15055 2012-12-18 15:04:53Z williae1 $";
+
+	public static void main(String[] args) throws Exception
+	{
+		EquationStandardQueryListSample querySample = new EquationStandardQueryListSample();
+		querySample.process();
+	}
+	public boolean process()
+	{
+		boolean continueProcessing = true;
+		try
+		{
+			// Get a connection to the iSeries. A QZDASONIT job is created and a session identifier is returned.
+			EquationStandardSession session = EquationContextSample.getContext().getSampleSession();
+
+			// Get accounts using branch and basic number
+			getAccountsUsingBranchAndBasic(session);
+
+			// Log off the session
+			EquationCommonContext.getContext().logOffSession(session.getSessionIdentifier());
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return continueProcessing;
+	}
+	/**
+	 * Process an SQL Query for calculation of next account suffix
+	 * 
+	 * @param session
+	 * @throws UnknownHostException
+	 * @throws EQException
+	 */
+	private void getAccountsUsingBranchAndBasic(EquationStandardSession session) throws UnknownHostException, EQException
+	{
+		String branch = "9132";
+		String basic = "234567";
+		// Run SQL query to get next available suffix
+
+		// Select records for the reference where Action is '02' and related currency is blank
+		// Only these type of records are shown on the AOP charges screen.
+		// CCSID for file GW047P must not be 65535
+		String sql = "select * from SCPF where SCAB='" + branch + "' and SCAN='" + basic + "'";
+
+		// Use 'EquationStandardQueryList' object for retrieving a list of records
+		EquationStandardQueryList queryList = new EquationStandardQueryList(sql, session);
+
+		// Execute the query
+		session.retrieveEquationQueryList(queryList);
+
+		// Retrieve the number of records in the list
+		int numOfRecords = queryList.getRecordCount();
+
+		if (numOfRecords > 0)
+		{
+			// Step through the rows in the returned query list
+			queryList.moveFirst();
+			int i = 1;
+			while (queryList.next() != false)
+			{
+				// Display row output
+				System.out.println("Row = " + i++ + "\n");
+				System.out.println("SCAS = " + queryList.getFieldValue("SCAS") + "\n");
+				System.out.println("SCACT = " + queryList.getFieldValue("SCACT") + "\n");
+			}
+		}
+	}
+
+}

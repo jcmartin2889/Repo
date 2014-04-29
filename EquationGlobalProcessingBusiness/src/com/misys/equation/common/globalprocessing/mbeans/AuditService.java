@@ -1,0 +1,191 @@
+package com.misys.equation.common.globalprocessing.mbeans;
+
+import java.util.Calendar;
+import java.util.List;
+
+import com.misys.equation.common.access.UnitNotAvailableException;
+import com.misys.equation.common.dao.beans.APVRecordDataModel;
+import com.misys.equation.common.dao.beans.GAARecordDataModel;
+import com.misys.equation.common.dao.beans.GAFRecordDataModel;
+import com.misys.equation.common.dao.beans.GALRecordDataModel;
+import com.misys.equation.common.dao.beans.GAURecordDataModel;
+import com.misys.equation.common.dao.beans.GAVRecordDataModel;
+import com.misys.equation.common.dao.beans.HeaderRecordDataModel;
+import com.misys.equation.common.internal.eapi.core.EQException;
+
+/**
+ * Contains service methods for auditing.
+ * 
+ * @author berzosa
+ */
+public interface AuditService
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: AuditService.java 9962 2010-11-18 17:31:39Z MACDONP1 $";
+
+	/**
+	 * Retrieves the Header record (HeaderRecordDataModel) for a given sequence ID
+	 * 
+	 * @param sessionIdentifier
+	 *            A valid session identifier
+	 * @param system
+	 *            The System ID
+	 * @param unit
+	 *            The Unit ID
+	 * @param sequenceId
+	 *            Sequence Id
+	 * @return The Header record corresponding to the sequence ID
+	 * @throws EQException
+	 *             If an error occurs retrieving the records
+	 * @throws UnitNotAvailableException
+	 */
+	@MBeanOperation("Retrieves the Header record (HeaderRecordDataModel)  for a given sequence ID")
+	public HeaderRecordDataModel getHeaderRecord(@Meta(name = "sessionId", desc = "The Session identifier") String sessionId,
+					@Meta(name = "systemId", desc = "The System ID") String systemId,
+					@Meta(name = "unitId", desc = "The Unit ID") String unitId,
+					@Meta(name = "sequenceId", desc = "Sequence Id") long sequenceId) throws EQException, UnitNotAvailableException;
+
+	/**
+	 * Inserts apply data into the database.
+	 * 
+	 * @param sessionIdentifier
+	 *            A valid session identifier
+	 * @param record
+	 *            The Apply Data record to insert;
+	 */
+	@MBeanOperation("Inserts apply data into the database.")
+	public void insertApplyData(@Meta(name = "sessionId", desc = "The Session identifier") String sessionId,
+					@Meta(name = "record", desc = "The Apply Data record to insert") GAARecordDataModel applyData)
+					throws EQException;
+
+	/**
+	 * Returns the largest RRN value from the audit header header file.
+	 * 
+	 * @param sessionIdentifier
+	 *            A valid session identifier
+	 * @return The largest RRN (Relative Record Number) value from the audit header file
+	 */
+	@MBeanOperation("Returns the largest RRN value from the audit header header file.")
+	public int getLastApplyDataRRN(@Meta(name = "sessionId", desc = "The Session identifier") String sessionId) throws EQException;
+
+	/**
+	 * Returns all records from the audit apply data table with RRN (Relative Record Number) values larger than the given value.
+	 * 
+	 * @param sessionIdentifier
+	 *            A valid session identifier
+	 * @param rrn
+	 *            The Relative Record Number to start retrieving records after
+	 * @return All records from the audit apply data table with RRN (Relative Record Number) values larger than the given value.
+	 */
+	@MBeanOperation("Returns all records from the audit apply data table with RRN (Relative Record Number) values larger than the given value.")
+	public List<GAARecordDataModel> getApplyDataByRRN(@Meta(name = "sessionId", desc = "The Session identifier") String sessionId,
+					@Meta(name = "rrn", desc = "The Relative Record Number to start retrieving records from") int rrn)
+					throws EQException;
+
+	/**
+	 * Returns the QDATETIME system value on the iseries converted to milliseconds precision (local time).
+	 * 
+	 * @return The QDATETIME value returned by the iseries converted to millisecond precision.
+	 * @throws EQException
+	 *             If any error occurs retrieving the QDATETIME
+	 */
+	@MBeanOperation("Returns the QDATETIME system value on the iseries converted to milliseconds precision (local time).")
+	public Calendar getQDateTime(@Meta(name = "sessionId", desc = "The Session identifier") String sessionId,
+					@Meta(name = "systemId", desc = "The System ID") String systemId) throws EQException;
+
+	/**
+	 * Returns audit records from the audit record table with optional date filtering criteria.
+	 * 
+	 * @param fromDate
+	 *            If specified, return records on or after this date only.
+	 * @param uptoDate
+	 *            If specified, return records on or before this date only
+	 * @param maxRecords
+	 *            If greater than 0, return no more than this number of records.
+	 * @return The audit header records loaded from the GAUPF file according to the date filtering criteria.
+	 */
+	@MBeanOperation("Returns audit records from the audit record table with optional date filtering criteria.")
+	public List<HeaderRecordDataModel> getAuditRecords(@Meta(name = "sessionId", desc = "The Session identifier") String sessionId,
+					@Meta(name = "whereClause", desc = "SQL Condition") String whereClause) throws EQException;
+
+	/**
+	 * Returns the propagation data that are keyed by the given data sequence numbers.
+	 * 
+	 * @param sequenceIDs
+	 *            A list of data sequence numbers that identifies the propagation data records to load.
+	 * @return The propagation record from the database with the matching sequence ID
+	 */
+	@MBeanOperation("Returns the propagation data that is keyed by the given unique primary key sequence number.")
+	public List<GAVRecordDataModel> getPropData(@Meta(name = "sessionId", desc = "The Session identifier") String sessionId,
+					@Meta(name = "sequenceIDs", desc = "Sequence Id ") List<Long> sequenceIds) throws EQException;
+
+	/**
+	 * Returns all Apply Data records that correspond to the given set of header sequence numbers.
+	 * 
+	 * @param headerSequenceNumber
+	 *            A list of header sequence numbers to get associated apply data for
+	 * @return A List of apply data records associated with the given header sequence number
+	 */
+	@MBeanOperation("Returns all Apply Data records that correspond to the given set of header sequence numbers.")
+	public List<GAARecordDataModel> getApplyData(@Meta(name = "sessionId", desc = "The Session identifier") String sessionId,
+					@Meta(name = "headerSequenceId", desc = "Header Sequence Ids") List<Long> headerSequenceIds) throws EQException;
+
+	/**
+	 * This method retrieves a distinct list of unique APIs found in the prop data table.
+	 * 
+	 * @return list of unique APIs found in the prop data table.
+	 * @throws EQException
+	 */
+	@MBeanOperation("This method retrieves a distinct list of unique APIs found in the prop data table.")
+	public List<String> loadDistinctAuditAPIs(@Meta(name = "sessionId", desc = "The Session identifier") String sessionId)
+					throws EQException;
+
+	/**
+	 * Executes Audit Viewer Action.
+	 * 
+	 * @param sessionId
+	 * @param gauRecord
+	 * @param gaaRecord
+	 * @throws EQException
+	 */
+	@MBeanOperation("Executes Audit Viewer Action.")
+	public void executeAuditViewerAction(@Meta(name = "sessionId", desc = "The Session identifier") String sessionId,
+					@Meta(name = "gauRecord", desc = "GAUPF record") GAURecordDataModel gauRecord,
+					@Meta(name = "gaaRecord", desc = "GAAPF record") GAARecordDataModel gaaRecord) throws EQException;
+
+	/**
+	 * Retrieves APVPF records
+	 * 
+	 * @param sessionId
+	 * @return
+	 * @throws EQException
+	 */
+	@MBeanOperation("Retrieves APVPF Records.")
+	public List<APVRecordDataModel> getAPVRecords(@Meta(name = "sessionId", desc = "The Session identifier") String sessionId)
+					throws EQException;
+
+	/**
+	 * Retrieves GAFPF records
+	 * 
+	 * @param sessionId
+	 * @param whereClause
+	 * @return
+	 * @throws EQException
+	 */
+	@MBeanOperation("Retrieves GAFPF records")
+	public List<GAFRecordDataModel> getGAFRecords(@Meta(name = "sessionId", desc = "The Session identifier") String sessionId,
+					@Meta(name = "whereClause", desc = "SQL Condition") String whereClause) throws EQException;
+
+	/**
+	 * Retrieves GALPF records
+	 * 
+	 * @param sessionId
+	 * @param whereClause
+	 * @return
+	 * @throws EQException
+	 */
+	@MBeanOperation("Retrieves GALPF records")
+	public List<GALRecordDataModel> getGALRecords(@Meta(name = "sessionId", desc = "The Session identifier") String sessionId,
+					@Meta(name = "whereClause", desc = "SQL Condition") String whereClause) throws EQException;
+
+}

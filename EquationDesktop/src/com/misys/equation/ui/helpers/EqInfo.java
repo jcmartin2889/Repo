@@ -1,0 +1,902 @@
+package com.misys.equation.ui.helpers;
+
+import java.io.Serializable;
+import java.sql.Connection;
+import java.util.Calendar;
+import java.util.Enumeration;
+import java.util.List;
+
+import com.ibm.as400.access.AS400;
+import com.ibm.as400.access.MessageFile;
+import com.ibm.as400.access.ObjectDescription;
+import com.ibm.as400.access.ObjectList;
+import com.misys.equation.bankfusion.lrp.bean.TaskComment;
+import com.misys.equation.bankfusion.lrp.bean.TaskComments;
+import com.misys.equation.bankfusion.lrp.engine.ITaskEngine;
+import com.misys.equation.common.access.AbstractEquationSessionPool;
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationLogin;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationSystem;
+import com.misys.equation.common.access.EquationUnit;
+import com.misys.equation.common.access.EquationUser;
+import com.misys.equation.common.utilities.EqDataType;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.Toolbox;
+import com.misys.equation.ui.tools.EqDesktopToolBox;
+
+public class EqInfo implements Serializable
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EqInfo.java 17628 2013-11-27 02:57:49Z williae1 $";
+
+	/** Logger for this class */
+	private static final EquationLogger LOG = new EquationLogger(EqInfo.class);
+
+	private EquationUser user;
+	private EquationUnit unit;
+	private boolean isUXP;
+	private transient EquationSystem system;
+	private transient final EquationCommonContext context = EquationCommonContext.getContext();
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Construct an empty Equation Info
+	 */
+	public EqInfo()
+	{
+	}
+
+	/**
+	 * Construct an Equation info with Equation user
+	 * 
+	 * @param user
+	 */
+	public EqInfo(EquationUser user)
+	{
+		this.user = user;
+		String sessionId = user.getSession().getSessionIdentifier();
+		EquationLogin equationLogin = EquationCommonContext.getContext().getEquationLogin(sessionId);
+		isUXP = equationLogin.chkUXPUserInterface();
+		unit = user.getEquationUnit();
+		system = unit.getEquationSystem();
+	}
+
+	/**
+	 * Return the job log entries for a given job
+	 * 
+	 * @param jobName
+	 *            - job name
+	 * @param jobUser
+	 *            - job user
+	 * @param jobNumber
+	 *            - job number
+	 * 
+	 * @return the job log entries in HTML format
+	 */
+	public String getJobLogHTML(String jobName, String jobUser, String jobNumber)
+	{
+		return getJobLogHTML(jobName, jobUser, jobNumber, EqMsgList.RETRIEVE_FROM_START, EqMsgList.RETRIEVE_DOWN);
+	}
+
+	/**
+	 * Return the job log entries for a given job starting form the specified position
+	 * 
+	 * @param jobName
+	 *            - job name
+	 * @param jobUser
+	 *            - job user
+	 * @param jobNumber
+	 *            - job number
+	 * @param msgPos
+	 *            - message position
+	 * @param direction
+	 *            - backward or forward
+	 * 
+	 * @return the job log entries in HTML format starting from the specified position
+	 */
+	public String getJobLogHTML(String jobName, String jobUser, String jobNumber, int msgPos, int direction)
+	{
+		String htmlFormat;
+
+		AS400 eqAS400 = null;
+		try
+		{
+			eqAS400 = system.getAS400();
+			int pos;
+			if (msgPos == EqMsgList.RETRIEVE_FROM_START)
+			{
+				pos = msgPos;
+			}
+			else if (direction == EqMsgList.RETRIEVE_UP)
+			{
+				pos = msgPos + EqMsgList.MAX_MSG;
+				// Can't be negative
+				if (pos < 0)
+				{
+					pos = 0;
+				}
+			}
+			else
+			{
+				pos = msgPos - EqMsgList.MAX_MSG;
+				// Can't be negative
+				if (pos < 0)
+				{
+					pos = 0;
+				}
+			}
+
+			// get job log
+			EqJobLog joblog = new EqJobLog(eqAS400, jobName, jobUser, jobNumber, pos, EqMsgList.MAX_MSG);
+
+			// add the control status
+			htmlFormat = EqMsgList.addStatus(joblog.getTotalMessages(), joblog.getQueuePosition());
+
+			// convert job log into HTML
+			htmlFormat += joblog.toHTML(context.getEquationDesktopLanguageResources(), user);
+		}
+		catch (Exception e)
+		{
+			LOG.error(e);
+			htmlFormat = Toolbox.getExceptionMessage(e);
+		}
+		finally
+		{
+			if (eqAS400 != null && system != null)
+			{
+				// return the AS400
+				system.returnAS400(eqAS400);
+			}
+		}
+		return (htmlFormat);
+	}
+
+	/**
+	 * Return the task comments
+	 * 
+	 * @param taskEngine
+	 *            - - the task Engine
+	 * @param processId
+	 *            - the process Id
+	 * 
+	 * @return the task comments
+	 */
+	public String getTaskCommentHTML(ITaskEngine taskEngine, String processId)
+	{
+		StringBuffer strHTML = new StringBuffer();
+		try
+		{
+			TaskComments taskComments = taskEngine.getComments(processId);
+			List<TaskComment> taskLists = taskComments.getComments();
+			boolean rtl = user.isLanguageRTL();
+
+			String infoIcon = EqDesktopToolBox.formatIntoImageHTML("../images/EqMsgInfo.gif", EquationCommonContext.getContext()
+							.getLanguageResource(user, "GBLINFOL"), "");
+
+			strHTML.append("<table>");
+			for (int x = 0; x < taskLists.size(); x++)
+			{
+				strHTML.append("<tr>");
+
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(taskLists.get(x).getTimestamp());
+
+				String date = EqDesktopToolBox.formatDate(cal);
+				String time = EqDesktopToolBox.formatTime(cal);
+				String dateTime = "";
+				if (isUXP)
+				{
+					// Date & time shown as single column for UXP as this compresses better
+					dateTime = addCell(rtl ? time + " " + date : date + " " + time, "25%");
+				}
+				else
+				{
+					// Keep date & time as separate columns for Equation Desktop
+					if (rtl)
+					{
+						dateTime = addCell(EqDesktopToolBox.formatTime(cal), "10%");
+						dateTime += addCell(EqDesktopToolBox.formatDate(cal), "15%");
+					}
+					else
+					{
+						dateTime = addCell(EqDesktopToolBox.formatDate(cal), "15%");
+						dateTime += addCell(EqDesktopToolBox.formatTime(cal), "10%");
+					}
+				}
+
+				if (rtl)
+				{
+					strHTML.append(addCell(taskLists.get(x).getComment(), "65%"));
+					strHTML.append(addCell(taskLists.get(x).getUser(), "7%"));
+					strHTML.append(dateTime);
+					strHTML.append(addCell(infoIcon, "3%"));
+				}
+				else
+				{
+					strHTML.append(addCell(infoIcon, "3%"));
+					strHTML.append(dateTime);
+					strHTML.append(addCell(taskLists.get(x).getUser(), "7%"));
+					strHTML.append(addCell(taskLists.get(x).getComment(), "65%"));
+				}
+				strHTML.append("</tr>");
+			}
+
+			// no comments exist
+			if (taskLists.size() == 0)
+			{
+				String noComments = EquationCommonContext.getContext().getLanguageResource(user, "GBL900075");
+				strHTML.append("<tr>");
+				if (rtl)
+				{
+					strHTML.append(addCell(noComments, null));
+					strHTML.append(addCell(infoIcon, "3%"));
+				}
+				else
+				{
+					strHTML.append(addCell(infoIcon, "3%"));
+					strHTML.append(addCell(noComments, null));
+				}
+				strHTML.append("</tr>");
+			}
+
+			strHTML.append("</table>");
+		}
+		catch (Exception e)
+		{
+			LOG.error(e);
+			strHTML = new StringBuffer();
+			strHTML.append(EquationCommonContext.getContext().getLanguageResource(user, "GBL900077") + " " + e.getMessage());
+		}
+
+		return strHTML.toString();
+	}
+
+	/**
+	 * Helper method to create the HTML for a table cell.
+	 * 
+	 * For UXP, the width attribute is not added as this did not result in a better layout than automatic layout
+	 * 
+	 * @param comment
+	 * @param width
+	 * @return HTML String
+	 */
+	private String addCell(String comment, String width)
+	{
+		StringBuilder result = new StringBuilder("<td");
+		if (!isUXP && width != null)
+		{
+			result.append(" width=\"");
+			result.append(width);
+			result.append("\"");
+		}
+		result.append(">");
+		result.append(comment);
+		result.append("</td>");
+		return result.toString();
+	}
+
+	/**
+	 * Return the details of a particular job log entry
+	 * 
+	 * @param jobName
+	 *            - job name
+	 * @param jobUser
+	 *            - job user
+	 * @param jobNumber
+	 *            - job number
+	 * @param msgPos
+	 *            - message position
+	 * @param msgDate
+	 *            - message date
+	 * @param msgTime
+	 *            - message time
+	 * @param msgType
+	 *            - message type
+	 * 
+	 * @return the details of a particular job log entry in HTML format
+	 */
+	public String getJobLogEntryHTML(String jobName, String jobUser, String jobNumber, int msgPos, String msgDate, String msgTime,
+					String msgType)
+	{
+		String htmlFormat = "";
+		AS400 eqAS400 = null;
+		try
+		{
+			eqAS400 = system.getAS400();
+
+			// get job log entry
+			EqJobLog joblog = new EqJobLog(eqAS400, jobName, jobUser, jobNumber, msgPos, 1);
+
+			// get the message
+			if (joblog.getMessage(0))
+			{
+				// verify this is the same message via comparing the date/time/msg type
+				boolean rtl = user.isLanguageRTL();
+				if (msgDate.equals(EqDesktopToolBox.formatDate(joblog.getDate()))
+								&& msgTime.equals(EqDesktopToolBox.formatTime(joblog.getDate()))
+								&& Integer.valueOf(msgType).intValue() == joblog.getType())
+				{
+					String help = joblog.getHelp();
+					if (help.indexOf("&N") == 0)
+					{
+						help = help.replaceFirst("&N", " ");
+					}
+					help = help.replaceAll("&N", "<br>");
+					if (rtl)
+					{
+						htmlFormat += EqDesktopToolBox.formatTR(jobUser, context.getLanguageResource(user, "GBL000048"),
+										"fieldValue", "labelText");
+						htmlFormat += EqDesktopToolBox.formatTR(joblog.getId(), context.getLanguageResource(user, "GBL000061"),
+										"fieldValue", "labelText");
+						htmlFormat += EqDesktopToolBox.formatTR(String.valueOf(joblog.getSeverity()), context.getLanguageResource(
+										user, "GBL000049"), "fieldValue", "labelText");
+						htmlFormat += EqDesktopToolBox.formatTR(EqMsgList.cvtMsgTypeToStr(joblog.getType(), context
+										.getEquationDesktopLanguageResources(), user), context.getLanguageResource(user,
+										"GBL000050"), "fieldValue", "labelText");
+						htmlFormat += EqDesktopToolBox.formatTR(EqDesktopToolBox.formatDate(joblog.getDate()), context
+										.getLanguageResource(user, "GBL000051"), "fieldValue", "labelText");
+						htmlFormat += EqDesktopToolBox.formatTR(EqDesktopToolBox.formatTime(joblog.getDate()), context
+										.getLanguageResource(user, "GBL000052"), "fieldValue", "labelText");
+						htmlFormat += EqDesktopToolBox.formatTR(EqDesktopToolBox.stripCtrlChar(joblog.getText()), context
+										.getLanguageResource(user, "GBLMSG"), "fieldValue", "labelText");
+						htmlFormat += EqDesktopToolBox.formatTR(help, "", "fieldValue", "labelField");
+					}
+					else
+					{
+						htmlFormat += EqDesktopToolBox.formatTR(context.getLanguageResource(user, "GBL000048"), jobUser);
+						htmlFormat += EqDesktopToolBox.formatTR(context.getLanguageResource(user, "GBL000061"), joblog.getId());
+						htmlFormat += EqDesktopToolBox.formatTR(context.getLanguageResource(user, "GBL000049"), String
+										.valueOf(joblog.getSeverity()));
+						htmlFormat += EqDesktopToolBox.formatTR(context.getLanguageResource(user, "GBL000050"), EqMsgList
+										.cvtMsgTypeToStr(joblog.getType(), context.getEquationDesktopLanguageResources(), user));
+						htmlFormat += EqDesktopToolBox.formatTR(context.getLanguageResource(user, "GBL000051"), EqDesktopToolBox
+										.formatDate(joblog.getDate()));
+						htmlFormat += EqDesktopToolBox.formatTR(context.getLanguageResource(user, "GBL000052"), EqDesktopToolBox
+										.formatTime(joblog.getDate()));
+						htmlFormat += EqDesktopToolBox.formatTR(context.getLanguageResource(user, "GBLMSG"), EqDesktopToolBox
+										.stripCtrlChar(joblog.getText()));
+						htmlFormat += EqDesktopToolBox.formatTR("", help);
+					}
+				}
+				else
+				{
+					htmlFormat += EqDesktopToolBox.formatTR(context.getLanguageResource(user, "GBL900025"), "");
+					htmlFormat += EqDesktopToolBox.formatTR(context.getLanguageResource(user, "GBL900026"), "");
+				}
+				if (rtl)
+				{
+					htmlFormat = "<table class=\"wf_LTOR wf_RIGHT_ALIGN\">" + htmlFormat + "</table>";
+				}
+				else
+				{
+					htmlFormat = "<table>" + htmlFormat + "</table>";
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			LOG.error(e);
+			htmlFormat = Toolbox.getExceptionMessage(e);
+		}
+		finally
+		{
+			if (eqAS400 != null)
+			{
+				system.returnAS400(eqAS400);
+			}
+		}
+		return (htmlFormat);
+	}
+
+	/**
+	 * Return the message queue entries
+	 * 
+	 * @param queue
+	 *            - message queue
+	 * 
+	 * @return the message queue entries in HTML format
+	 */
+	public String getMsgQueueHTML(String queue)
+	{
+		return getMsgQueueHTML(queue, EqMsgList.RETRIEVE_FROM_START, EqMsgList.RETRIEVE_DOWN);
+	}
+
+	/**
+	 * Return the message queue entries relative to the specified message position
+	 * 
+	 * @param queue
+	 *            - message queue
+	 * @param msgPos
+	 *            - message position
+	 * @param direction
+	 *            - direction
+	 * 
+	 * @return the message queue entries relative to the message position in HTML format
+	 */
+	public String getMsgQueueHTML(String queue, int msgPos, int direction)
+	{
+		String htmlFormat;
+		AS400 eqAS400 = null;
+		try
+		{
+			eqAS400 = system.getAS400();
+			int pos;
+			if (msgPos == EqMsgList.RETRIEVE_FROM_START)
+			{
+				pos = msgPos;
+			}
+			else if (direction == EqMsgList.RETRIEVE_UP)
+			{
+				pos = msgPos + EqMsgList.MAX_MSG;
+				// Can't be negative
+				if (pos < 0)
+				{
+					pos = 0;
+				}
+			}
+			else
+			{
+				pos = msgPos - EqMsgList.MAX_MSG;
+				// Can't be negative
+				if (pos < 0)
+				{
+					pos = 0;
+				}
+			}
+
+			// get message queue
+			EqMsgQueue msgq = new EqMsgQueue(eqAS400, queue, pos, EqMsgList.MAX_MSG);
+
+			// add the control status
+			htmlFormat = EqMsgList.addStatus(msgq.getTotalMessages(), msgq.getQueuePosition());
+
+			// convert job log into HTML
+			htmlFormat += msgq.toHTML(context.getEquationDesktopLanguageResources(), user);
+		}
+		catch (Exception e)
+		{
+			LOG.error(e);
+			htmlFormat = Toolbox.getExceptionMessage(e);
+		}
+		finally
+		{
+			if (eqAS400 != null)
+			{
+				system.returnAS400(eqAS400);
+			}
+		}
+		return htmlFormat;
+	}
+
+	/**
+	 * Return the details of a particular message queue entry
+	 * 
+	 * @param queue
+	 *            - message queue
+	 * @param msgPos
+	 *            - message position
+	 * @param msgDate
+	 *            - message date
+	 * @param msgTime
+	 *            - message time
+	 * @param msgType
+	 *            - message type
+	 * 
+	 * @return the details of a particular message queue entry in HTML format
+	 */
+	public String getMsgQueueEntryHTML(String queue, int msgPos, String msgDate, String msgTime, String msgType)
+	{
+		String htmlFormat = "";
+		AS400 eqAS400 = null;
+		try
+		{
+			eqAS400 = system.getAS400();
+
+			// get message queue entry
+			EqMsgQueue eqMsgQueue = new EqMsgQueue(eqAS400, queue, msgPos, 1);
+
+			// get the message
+			if (eqMsgQueue.getMessage(0))
+			{
+				// verify this is the same message via comparing the date/time/msg type
+				boolean rtl = user.isLanguageRTL();
+				if (msgDate.equals(EqDesktopToolBox.formatDate(eqMsgQueue.getDate()))
+								&& msgTime.equals(EqDesktopToolBox.formatTime(eqMsgQueue.getDate()))
+								&& Integer.valueOf(msgType).intValue() == eqMsgQueue.getType())
+				{
+					String help = eqMsgQueue.getHelp();
+					if (help.indexOf("&N") == 0)
+					{
+						help = help.replaceFirst("&N", " ");
+					}
+					help = help.replaceAll("&N", "<br>");
+					if (rtl)
+					{
+						htmlFormat += EqDesktopToolBox.formatTR(eqMsgQueue.getUser(), context
+										.getLanguageResource(user, "GBL000048"), "fieldValue", "labelText");
+						htmlFormat += EqDesktopToolBox.formatTR(String.valueOf(eqMsgQueue.getSeverity()), context
+										.getLanguageResource(user, "GBL000049"), "fieldValue", "labelText");
+						htmlFormat += EqDesktopToolBox.formatTR(EqMsgList.cvtMsgTypeToStr(eqMsgQueue.getType(), context
+										.getEquationDesktopLanguageResources(), user), context.getLanguageResource(user,
+										"GBL000050"), "fieldValue", "labelText");
+						htmlFormat += EqDesktopToolBox.formatTR(EqDesktopToolBox.formatDate(eqMsgQueue.getDate()), context
+										.getLanguageResource(user, "GBL000051"), "fieldValue", "labelText");
+						htmlFormat += EqDesktopToolBox.formatTR(EqDesktopToolBox.formatTime(eqMsgQueue.getDate()), context
+										.getLanguageResource(user, "GBL000052"), "fieldValue", "labelText");
+						htmlFormat += EqDesktopToolBox.formatTR(eqMsgQueue.getText(), context.getLanguageResource(user, "GBLMSG"),
+										"fieldValue", "labelText");
+						if (!eqMsgQueue.getText().equals(help))
+						{
+							htmlFormat += EqDesktopToolBox.formatTR(help, "", "fieldValue", "labelText");
+						}
+					}
+					else
+					{
+						htmlFormat += EqDesktopToolBox.formatTR(context.getLanguageResource(user, "GBL000048"), eqMsgQueue
+										.getUser());
+						htmlFormat += EqDesktopToolBox.formatTR(context.getLanguageResource(user, "GBL000049"), String
+										.valueOf(eqMsgQueue.getSeverity()));
+						htmlFormat += EqDesktopToolBox
+										.formatTR(context.getLanguageResource(user, "GBL000050"), EqMsgList.cvtMsgTypeToStr(
+														eqMsgQueue.getType(), context.getEquationDesktopLanguageResources(), user));
+						htmlFormat += EqDesktopToolBox.formatTR(context.getLanguageResource(user, "GBL000051"), EqDesktopToolBox
+										.formatDate(eqMsgQueue.getDate()));
+						htmlFormat += EqDesktopToolBox.formatTR(context.getLanguageResource(user, "GBL000052"), EqDesktopToolBox
+										.formatTime(eqMsgQueue.getDate()));
+						htmlFormat += EqDesktopToolBox.formatTR(context.getLanguageResource(user, "GBLMSG"), eqMsgQueue.getText());
+						if (!eqMsgQueue.getText().equals(help))
+						{
+							htmlFormat += EqDesktopToolBox.formatTR("", help);
+						}
+						htmlFormat = "<table>" + htmlFormat + "</table>";
+					}
+				}
+				else
+				{
+					htmlFormat += EqDesktopToolBox.formatTR(context.getLanguageResource(user, "GBL900027"), "");
+					htmlFormat += EqDesktopToolBox.formatTR(context.getLanguageResource(user, "GBL900028"), "");
+				}
+				if (rtl)
+				{
+					htmlFormat = "<table class=\"wf_LTOR wf_RIGHT_ALIGN\">" + htmlFormat + "</table>";
+				}
+				else
+				{
+					htmlFormat = "<table>" + htmlFormat + "</table>";
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			LOG.error(e);
+			htmlFormat = Toolbox.getExceptionMessage(e);
+		}
+		finally
+		{
+			if (eqAS400 != null)
+			{
+				system.returnAS400(eqAS400);
+			}
+		}
+		return (htmlFormat);
+	}
+
+	/**
+	 * Return the message file entry in KSMMSGF
+	 * 
+	 * @param msgd
+	 *            - message
+	 * 
+	 * @return the message file entry in HTML format
+	 */
+	public String getMsgFileEntryHTML(String msgd, String secondLevel, String sessionIdentifier)
+	{
+		String htmlFormat = "";
+		AS400 eqAS400 = null;
+		try
+		{
+			eqAS400 = system.getAS400();
+			// retrieve the message file from the session
+			EquationStandardSession session = EquationCommonContext.getContext().getEquationUser(sessionIdentifier).getSession();
+			MessageFile messageFile = new MessageFile(eqAS400, session.getKsmmsgfPath());
+			EqMsgFile msgf = new EqMsgFile(messageFile);
+
+			// retrieve the message description via standard Equation
+			boolean rtl = user.isLanguageRTL();
+			msgf.getEqMsgD(msgd, rtl);
+
+			// convert message file into HTML
+			String help = msgf.getHelp();
+			if (help.indexOf("&N") == 0)
+			{
+				help = help.replaceFirst("&N", " ");
+			}
+			help = help.replaceAll("&N", "<br>");
+
+			// the table should always be in left-to-right, this is because the KSM message
+			// is already being translated, hence, the system should display it as is
+			if (rtl)
+			{
+				htmlFormat += EqDesktopToolBox.formatTR(msgf.getId(), context.getLanguageResource(user, "GBL000061"), "fieldValue",
+								"labelText");
+				htmlFormat += EqDesktopToolBox.formatTR(String.valueOf(msgf.getSeverity()), context.getLanguageResource(user,
+								"GBL000049"), "fieldValue", "labelText");
+				htmlFormat += EqDesktopToolBox.formatTR(msgf.getEqMsgStr(), context.getLanguageResource(user, "GBLMSG"),
+								"fieldValue", "labelText");
+				htmlFormat += EqDesktopToolBox.formatTR(help, "", "fieldValue", "labelText");
+				htmlFormat += EqDesktopToolBox.formatTR(secondLevel, "", "fieldValue", "labelText");
+				htmlFormat = "<table class=\"wf_LTOR wf_RIGHT_ALIGN\">" + htmlFormat + "</table>";
+			}
+			else
+			{
+				htmlFormat += EqDesktopToolBox.formatTR(context.getLanguageResource(user, "GBL000061"), msgf.getId());
+				htmlFormat += EqDesktopToolBox.formatTR(context.getLanguageResource(user, "GBL000049"), String.valueOf(msgf
+								.getSeverity()));
+				htmlFormat += EqDesktopToolBox.formatTR(context.getLanguageResource(user, "GBLMSG"), msgf.getEqMsgStr());
+				htmlFormat += EqDesktopToolBox.formatTR("", help);
+				htmlFormat += EqDesktopToolBox.formatTR("", secondLevel);
+				htmlFormat = "<table>" + htmlFormat + "</table>";
+			}
+		}
+		catch (Exception e)
+		{
+			// Try and get as much detail as possible to the user
+			if (secondLevel.trim().equals(""))
+			{
+				if (msgd.trim().equals(""))
+				{
+					LOG.error(e);
+					htmlFormat = Toolbox.getExceptionMessage(e);
+				}
+				else
+				{
+					// If there is an exception getting the message just put out second level help text
+					htmlFormat += EqDesktopToolBox.formatTR(context.getLanguageResource(user, "GBL000061"), "");
+					htmlFormat += EqDesktopToolBox.formatTR(context.getLanguageResource(user, "GBL000049"), "");
+					htmlFormat += EqDesktopToolBox.formatTR(context.getLanguageResource(user, "GBLMSG"), "");
+					htmlFormat += EqDesktopToolBox.formatTR("", "");
+					htmlFormat += EqDesktopToolBox.formatTR("", msgd);
+					htmlFormat = "<table>" + htmlFormat + "</table>";
+				}
+			}
+			else
+			{
+				// If there is an exception getting the message just put out second level help text
+				htmlFormat += EqDesktopToolBox.formatTR(context.getLanguageResource(user, "GBL000061"), "");
+				htmlFormat += EqDesktopToolBox.formatTR(context.getLanguageResource(user, "GBL000049"), "");
+				htmlFormat += EqDesktopToolBox.formatTR(context.getLanguageResource(user, "GBLMSG"), "");
+				htmlFormat += EqDesktopToolBox.formatTR("", "");
+				htmlFormat += EqDesktopToolBox.formatTR("", secondLevel);
+				htmlFormat = "<table>" + htmlFormat + "</table>";
+			}
+		}
+		finally
+		{
+			if (eqAS400 != null)
+			{
+				system.returnAS400(eqAS400);
+			}
+		}
+		return (htmlFormat);
+	}
+
+	/**
+	 * Return the user's spooled files
+	 * 
+	 * @return the user's spooled files in HTML format
+	 */
+	public String getUserSpoolFilesHTML()
+	{
+		String htmlFormat;
+		AS400 eqAS400 = null;
+		try
+		{
+			LOG.info("EqInfo.getUserSpoolFilesHTML() - Getting user spooled files");
+			eqAS400 = system.getAS400();
+			EqSpooledFileList userSFiles = new EqSpooledFileList(eqAS400, "userSpool");
+			userSFiles.getSpooledFiles(user.getUserId(), null);
+			userSFiles.setAttributesToRetrieve();
+			LOG.info("EqInfo.getUserSpoolFilesHTML() - Opening spooled file");
+			userSFiles.open();
+			LOG.info("EqInfo.getUserSpoolFilesHTML() - Sorting spooled files");
+			userSFiles.sort();
+			LOG.info("EqInfo.getUserSpoolFilesHTML() - Generating HTML");
+			htmlFormat = userSFiles.toHTML(context.getEquationDesktopLanguageResources(), user);
+			LOG.info("EqInfo.getUserSpoolFilesHTML() - Clearing");
+			userSFiles.close();
+			LOG.info("EqInfo.getUserSpoolFilesHTML() - Finish");
+		}
+		catch (Exception e)
+		{
+			LOG.error(e);
+			htmlFormat = Toolbox.getExceptionMessage(e);
+		}
+		finally
+		{
+			if (eqAS400 != null)
+			{
+				// Return the AS400 to the pool
+				system.returnAS400(eqAS400);
+			}
+		}
+		return htmlFormat;
+	}
+
+	/**
+	 * Return the unit's spooled files
+	 * 
+	 * @return the unit's spooled files
+	 */
+	public String getUnitSpoolFilesHTML()
+	{
+		String htmlFormat;
+		AS400 eqAS400 = null;
+		try
+		{
+			LOG.info("EqInfo.getUnitSpoolFilesHTML() - Getting user spooled files");
+			eqAS400 = system.getAS400();
+			EqSpooledFileList userSFiles = new EqSpooledFileList(eqAS400, "unitSpool");
+			userSFiles.getSpooledFiles("*ALL", "/QSYS.LIB/QGPL.LIB/QPRINT" + unit.getUnitId() + ".OUTQ");
+			userSFiles.setAttributesToRetrieve();
+			LOG.info("EqInfo.getUnitSpoolFilesHTML() - Opening spooled file");
+			userSFiles.open();
+			LOG.info("EqInfo.getUnitSpoolFilesHTML() - Sorting spooled files");
+			userSFiles.sort();
+			LOG.info("EqInfo.getUnitSpoolFilesHTML() - Generating HTML");
+			htmlFormat = userSFiles.toHTML(context.getEquationDesktopLanguageResources(), user);
+			LOG.info("EqInfo.getUnitSpoolFilesHTML() - Clearing");
+			userSFiles.close();
+			LOG.info("EqInfo.getUnitSpoolFilesHTML() - Finish");
+		}
+		catch (Exception e)
+		{
+			LOG.error(e);
+			htmlFormat = Toolbox.getExceptionMessage(e);
+		}
+		finally
+		{
+			// Return the AS400 to the pool
+			system.returnAS400(eqAS400);
+		}
+		return htmlFormat;
+	}
+
+	/**
+	 * Return the outq's spooled files
+	 * 
+	 * @param library
+	 *            - the library where the output queue is located
+	 * @param outq
+	 *            - the output queue
+	 * 
+	 * @return the outq's spooled files
+	 */
+	public String getAnySpoolFilesHTML(String library, String outq)
+	{
+		String htmlFormat;
+		AS400 eqAS400 = null;
+		try
+		{
+			LOG.info("EqInfo.getAnySpoolFilesHTML() - Getting user spooled files");
+			eqAS400 = system.getAS400();
+			EqSpooledFileList userSFiles = new EqSpooledFileList(eqAS400, "anySpool");
+			userSFiles.getSpooledFiles("*ALL", "/QSYS.LIB/" + library + ".LIB/" + outq + ".OUTQ");
+			userSFiles.setAttributesToRetrieve();
+			LOG.info("EqInfo.getAnySpoolFilesHTML() - Opening spooled files");
+			userSFiles.open();
+			LOG.info("EqInfo.getAnySpoolFilesHTML() - Sorting spooled files");
+			userSFiles.sort();
+			LOG.info("EqInfo.getAnySpoolFilesHTML() - Generating HTML");
+			htmlFormat = userSFiles.toHTML(context.getEquationDesktopLanguageResources(), user);
+			LOG.info("EqInfo.getAnySpoolFilesHTML() - Clearing");
+			userSFiles.close();
+			LOG.info("EqInfo.getAnySpoolFilesHTML() - Finish");
+		}
+		catch (Exception e)
+		{
+			LOG.error(e);
+			htmlFormat = Toolbox.getExceptionMessage(e);
+		}
+		finally
+		{
+			// Return the AS400 to the pool
+			system.returnAS400(eqAS400);
+		}
+		return htmlFormat;
+	}
+
+	/**
+	 * Return the user's workload
+	 * 
+	 * @return the user's workload in HTML format
+	 */
+	public String getWorkLoadHTML()
+	{
+		String htmlFormat = "";
+		AbstractEquationSessionPool eqSessionPool = null;
+		Connection equationConnection = null;
+		try
+		{
+			LOG.info("EqInfo.getWorkLoadHTML() - Getting workload items");
+			eqSessionPool = unit.getEquationSessionPool();
+			equationConnection = eqSessionPool.getConnection(user.getUserId());
+			LOG.info("EqInfo.getWorkLoadHTML() - Loading items");
+			EqWorkLoadList eqWorkLoadList = new EqWorkLoadList(user.getUserId());
+			LOG.info("EqInfo.getWorkLoadHTML() - Generating HTML");
+			htmlFormat = eqWorkLoadList.toHTML(equationConnection, context.getEquationDesktopLanguageResources(), user);
+			LOG.info("EqInfo.getWorkLoadHTML() - Finish");
+		}
+		catch (Exception e)
+		{
+			LOG.error(e);
+			htmlFormat = Toolbox.getExceptionMessage(e);
+		}
+		finally
+		{
+			try
+			{
+				eqSessionPool.returnConnnection(equationConnection);
+			}
+			catch (Exception e)
+			{
+				LOG.error(e);
+			}
+		}
+		return htmlFormat;
+	}
+	/**
+	 * Retrieve the list of output queues from the specified library
+	 * 
+	 * @param library
+	 *            - the library
+	 * 
+	 * @return the list of output queues from the specified library
+	 */
+	public String getOutputQueues(String library)
+	{
+		StringBuilder builder = new StringBuilder();
+		AS400 eqAS400 = null;
+		try
+		{
+			LOG.info("EqInfo.getOutputQueues() - Getting output queues");
+			eqAS400 = system.getAS400();
+			ObjectList libs = new ObjectList(eqAS400, library, ObjectList.ALL, "*OUTQ");
+			LOG.info("EqInfo.getOutputQueues() - Loading output queues");
+			libs.load();
+			LOG.info("EqInfo.getOutputQueues() - Generate HTML");
+
+			Enumeration<ObjectDescription> en = libs.getObjects();
+			while (en.hasMoreElements())
+			{
+				ObjectDescription obj = en.nextElement();
+				builder.append(obj.getName());
+				builder.append(EqDataType.GLOBAL_DELIMETER);
+			}
+			LOG.info("EqInfo.getOutputQueues() - Finish");
+		}
+		catch (Exception e)
+		{
+			LOG.error(e);
+			builder.setLength(0);
+			builder.append("20");
+			builder.append(Toolbox.getExceptionMessage(e));
+		}
+		finally
+		{
+			// Return the AS400 to the pool
+			system.returnAS400(eqAS400);
+		}
+		return builder.toString();
+	}
+	/**
+	 * return if UXP is being used
+	 * 
+	 * @return if UXP is being used
+	 */
+	public boolean rtvUxpUsed()
+	{
+		return isUXP;
+	}
+
+}

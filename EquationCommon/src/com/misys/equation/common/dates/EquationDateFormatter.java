@@ -1,0 +1,66 @@
+package com.misys.equation.common.dates;
+
+import java.security.InvalidParameterException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * This is the equation implementation of the ICustomDateFormatter. It is where the conversion process is implemented.
+ * 
+ * @author camillen
+ * 
+ */
+public class EquationDateFormatter implements ICustomDateFormatter
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EquationDateFormatter.java 7206 2010-05-10 12:13:44Z weddelc1 $";
+	public Date converFromCustomDate(final String customDate)
+	{
+		return Toolbox.parseEqDate(customDate).getTime();
+	}
+
+	public String converToCustomDate(final Date javaDate)
+	{
+		StringBuffer sDate = new StringBuffer();
+		GregorianCalendar dateInstance = new GregorianCalendar();
+		dateInstance.setTime(javaDate);
+		String year = Integer.valueOf(dateInstance.get(Calendar.YEAR)).toString();
+		String century = year.substring(0, 2);
+		if (century.equals("19"))
+		{
+			sDate.append("");
+		}
+		else if (century.equals("20"))
+		{
+			sDate.append("1");
+		}
+		else
+		{
+			throw new InvalidParameterException("Century [" + century + "] is invalid");
+		}
+		sDate.append(year.substring(2, 4));
+
+		int month = dateInstance.get(Calendar.MONTH) + 1;
+		sDate.append(month > 9 ? "" + month : "0" + month);
+
+		int day = dateInstance.get(Calendar.DAY_OF_MONTH);
+		sDate.append(day > 9 ? "" + day : "0" + day);
+
+		return sDate.toString();
+	}
+
+	public Date converFromCustomDateTime(final String customDate, final String customTime)
+	{
+		return Toolbox.parseEqDate(customDate).getTime();
+	}
+
+	public static void getZeroTimeInMilliseconds()
+	{
+
+	}
+
+}

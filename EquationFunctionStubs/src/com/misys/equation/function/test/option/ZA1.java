@@ -1,0 +1,348 @@
+package com.misys.equation.function.test.option;
+
+import com.misys.equation.common.access.IEquationStandardObject;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.function.beans.APIFieldSet;
+import com.misys.equation.function.beans.DisplayAttributes;
+import com.misys.equation.function.beans.DisplayAttributesSet;
+import com.misys.equation.function.beans.DisplayGroup;
+import com.misys.equation.function.beans.Field;
+import com.misys.equation.function.beans.Function;
+import com.misys.equation.function.beans.InputField;
+import com.misys.equation.function.beans.InputFieldSet;
+import com.misys.equation.function.beans.LinkedFunction;
+import com.misys.equation.function.test.helper.DisplayFieldSetWrapper;
+import com.misys.equation.function.test.helper.FunctionGenerator;
+import com.misys.equation.function.test.run.FunctionToolboxStub;
+import com.misys.equation.function.tools.FunctionToolbox;
+import com.misys.equation.function.tools.LinkedFunctionsToolbox;
+import com.misys.equation.function.tools.MappingToolbox;
+
+// One repeating group
+
+public class ZA1 extends TestOptionStub
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: ZA1.java 8739 2010-08-19 10:59:04Z lima12 $";
+	String fldId1 = "A_";
+	String repId1 = "RS1";
+	String apiId1 = "AS1";
+
+	public ZA1()
+	{
+		try
+		{
+			setUp();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] inputParameters)
+	{
+		ZA1 test = new ZA1();
+		test.test("ZA1", "Account summary", IEquationStandardObject.FCT_FUL, true);
+	}
+
+	private DisplayFieldSetWrapper addRecord1(FunctionGenerator fg) throws EQException
+	{
+		// add the record
+		DisplayFieldSetWrapper fieldSetWrapper = fg.addFieldSet("PRIMARY", "Record 1 of ZA1", "Description 1 of ZA1");
+		InputFieldSet inputFieldSet = fieldSetWrapper.getInputFieldSet();
+		DisplayAttributesSet attributeSet = fieldSetWrapper.getDisplayAttributesSet();
+
+		// input field
+		InputField inputField;
+		DisplayAttributes displayAttributes;
+
+		// add all the fields in this section ---------------------------------------
+
+		// Customer mnemonic
+		inputField = FunctionToolbox.getInputField("CUS", "Customer", "Customer", "A", "6", "");
+		inputField.setInitialValue("ATLANT");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		inputField.setKey(true);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Customer location
+		inputField = FunctionToolbox.getInputField("CLC", "Customer", "Customer", "A", "3", "");
+		inputField.setKey(true);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setKeepWithPrevious(true);
+		// displayAttributes.setPrompt("GFR70R");
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+		// FunctionToolbox.addPVFieldSet(inputField, FunctionToolbox.getPVFieldSet(session, "GFR70R", "", true, ""));
+
+		// Dummy date
+		inputField = FunctionToolbox.getInputField("DTEKEY", "Dummy date", "Dummy date", "D", "7", "");
+		inputField.setKey(true);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+		// FunctionToolbox.addPVFieldSet(inputField, FunctionToolbox.getPVFieldSet(session, "GWV94R", "", true, ""));
+
+		return fieldSetWrapper;
+	}
+
+	private void accountSummary(InputFieldSet inputFieldSet, DisplayAttributesSet attributeSet, String prefix, String repeatingGroup)
+					throws EQException
+	{
+		// input field
+		InputField inputField;
+		DisplayAttributes displayAttributes;
+
+		// Account number
+		inputField = FunctionToolbox.getInputField(prefix + "HZAN", "Customer", "Customer", "A", "6", "");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Customer full name
+		inputField = FunctionToolbox.getInputField(prefix + "HZCUN", "Customer full name", "Customer full name", "A", "35", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Customer type
+		inputField = FunctionToolbox.getInputField(prefix + "HZCTP", "Customer type", "Customer type", "A", "2", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		// displayAttributes.setPrompt("C4R54R");
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+		// FunctionToolbox.addPVFieldSet(inputField, FunctionToolbox.getPVFieldSet(session, "C4R54R", "", true, ""));
+
+		// Start of repeating fields
+		DisplayGroup repeatGroup = new DisplayGroup("ASG", "Account summary", "Account summary group");
+		repeatGroup.setRepeatingGroup(repeatingGroup);
+		repeatGroup.setEditMode(DisplayGroup.EDIT_MODE_IN_PLACE);
+		repeatGroup.addLinkedFunction(new LinkedFunction("1", "ALZ", "Desc of ALZ", "A_HZAB:A_HZAN:A_HZAS"));
+		repeatGroup.addLinkedFunction(new LinkedFunction("2", "HCX", "Desc of HCX", "A_HZAB:A_HZAN:A_HZAS"));
+		repeatGroup.addLinkedFunction(new LinkedFunction("3", "ALY", "Desc of ALY", "'XX1':A_HZAB:A_HZAN:A_HZAS"));
+		repeatGroup.addLinkedFunction(new LinkedFunction("4", "ASI", "Desc of ASI", "A_HZAB:A_HZAN:A_HZAS"));
+		repeatGroup.addLinkedFunction(new LinkedFunction("5", LinkedFunctionsToolbox.LINKED_EDIT, ""));
+		repeatGroup.addLinkedFunction(new LinkedFunction("6", LinkedFunctionsToolbox.LINKED_DEL, ""));
+		repeatGroup.addLinkedFunction(new LinkedFunction("7", LinkedFunctionsToolbox.LINKED_DSP, ""));
+		repeatGroup.addLinkedFunction(new LinkedFunction("8", LinkedFunctionsToolbox.LINKED_ADD, ""));
+		repeatGroup.addLinkedFunction(new LinkedFunction("9", LinkedFunctionsToolbox.LINKED_INS, ""));
+		repeatGroup.addLinkedFunction(new LinkedFunction("J", "ZP4", "Desc of ZP4", "'0000'"));
+		repeatGroup.setKeys("A_HZAB:A_HZAS");
+		attributeSet.addItem(repeatGroup);
+
+		// Account branch
+		inputField = FunctionToolbox.getInputField(prefix + "HZAB", "Account branch", "Account branch", "A", "4", "");
+		inputField.setRepeatingGroup(repeatingGroup);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		repeatGroup.addItem(displayAttributes);
+
+		// Dummy field
+		inputField = FunctionToolbox.getInputField(prefix + "HZXXX", "Dummy", "Dummy", "A", "1", "");
+		inputField.setRepeatingGroup(repeatingGroup);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setKeepWithPrevious(true);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		repeatGroup.addItem(displayAttributes);
+
+		// Account suffix
+		inputField = FunctionToolbox.getInputField(prefix + "HZAS", "Account suffix", "Account suffix", "A", "3", "");
+		inputField.setRepeatingGroup(repeatingGroup);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setKeepWithPrevious(true);
+		// displayAttributes.setPrompt("GWR76R");
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		repeatGroup.addItem(displayAttributes);
+		// FunctionToolbox.addPVFieldSet(inputField, FunctionToolbox.getPVFieldSet(session, "GWR76R", "", true, ""));
+
+		// Account short name
+		inputField = FunctionToolbox.getInputField(prefix + "HZSHN", "Account short name", "Account short name", "A", "35", "");
+		inputField.setRepeatingGroup(repeatingGroup);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setWidget("IDB");
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		repeatGroup.addItem(displayAttributes);
+
+		// Account type
+		inputField = FunctionToolbox.getInputField(prefix + "HZACT", "Account type with a very long description", "Account type",
+						"A", "2", "");
+		inputField.setRepeatingGroup(repeatingGroup);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		// displayAttributes.setPrompt("C5R55R");
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		repeatGroup.addItem(displayAttributes);
+		// FunctionToolbox.addPVFieldSet(inputField, FunctionToolbox.getPVFieldSet(session, "C5R55R", "", true, ""));
+
+		// Account currency
+		inputField = FunctionToolbox.getInputField(prefix + "HZCCY", "Account currency and this is a very long ",
+						"Account currency", "A", "3", "");
+		inputField.setRepeatingGroup(repeatingGroup);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		// displayAttributes.setPrompt("C8R01R");
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		repeatGroup.addItem(displayAttributes);
+		// FunctionToolbox.addPVFieldSet(inputField, FunctionToolbox.getPVFieldSet(session, "C8R01R", "", true, ""));
+
+		// Account status - blocked
+		inputField = FunctionToolbox.getInputField(prefix + "HZAI17", "Account_status__blocked?", "Account status - blocked?", "A",
+						"1", "");
+		inputField.setRepeatingGroup(repeatingGroup);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		repeatGroup.addItem(displayAttributes);
+
+		// Dummy date
+		inputField = FunctionToolbox.getInputField(prefix + "HZ_DTE", "Dummy !N_L! date !N_L! force !N_L!wrap", "Dummy date", "D",
+						"7", "");
+		inputField.setRepeatingGroup(repeatingGroup);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		repeatGroup.addItem(displayAttributes);
+		FunctionToolbox.addPVFieldSet(inputField, FunctionToolbox.getPVFieldSet(session, "GWV94R", "", true, ""));
+	}
+
+	private DisplayFieldSetWrapper addRecord2(FunctionGenerator fg) throws EQException
+	{
+		// add the record
+		DisplayFieldSetWrapper fieldSetWrapper = fg.addFieldSet("REC2", "Record 2 of ZA1", "Description 2 of ZA1");
+		InputFieldSet inputFieldSet = fieldSetWrapper.getInputFieldSet();
+		DisplayAttributesSet attributeSet = fieldSetWrapper.getDisplayAttributesSet();
+
+		// input field
+		InputField inputField;
+		DisplayAttributes displayAttributes;
+
+		// Dummy date
+		inputField = FunctionToolbox.getInputField("DTE", "Dummy date", "Dummy date", "D", "7", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+		FunctionToolbox.addPVFieldSet(inputField, FunctionToolbox.getPVFieldSet(session, "GWV94R", "", true, ""));
+
+		// Add account summary fields ===============================================================
+		accountSummary(inputFieldSet, attributeSet, fldId1, repId1);
+
+		return fieldSetWrapper;
+	}
+
+	private void addLoadAPI(FunctionGenerator fg) throws EQException
+	{
+		APIFieldSet apiFieldSet = FunctionToolbox.getAPIFieldSet(session, apiId1, "AS", "H70D", "Account summary", "");
+		fg.addLoadAPIFieldSet("PRIMARY", apiFieldSet);
+		apiFieldSet.setRepeatingGroup(repId1);
+	}
+
+	private void addUpdateAPI(FunctionGenerator fg) throws EQException
+	{
+		APIFieldSet apiFieldSet = fg.getFunction().addReservedFieldSet(Function.CRM_FIELDSET, "Description of CRM");
+		apiFieldSet.getAPIField("HHAB").setUpdateAssignment(Field.ASSIGNMENT_SCRIPT);
+		apiFieldSet.getAPIField("HHAB").setUpdateScript("'9132'");
+		apiFieldSet.getAPIField("HHAN").setUpdateAssignment(Field.ASSIGNMENT_SCRIPT);
+		apiFieldSet.getAPIField("HHAN").setUpdateScript("'234567'");
+		apiFieldSet.getAPIField("HHAS").setUpdateAssignment(Field.ASSIGNMENT_SCRIPT);
+		apiFieldSet.getAPIField("HHAS").setUpdateScript("'001'");
+		apiFieldSet.getAPIField("HHCY1").setUpdateAssignment(Field.ASSIGNMENT_SCRIPT);
+		apiFieldSet.getAPIField("HHCY1").setUpdateScript("'GBP'");
+		apiFieldSet.getAPIField("HHAMC").setUpdateAssignment(Field.ASSIGNMENT_SCRIPT);
+		apiFieldSet.getAPIField("HHAMC").setUpdateScript("'1000000'");
+		apiFieldSet.getAPIField("HHFCT").setUpdateAssignment(Field.ASSIGNMENT_SCRIPT);
+		apiFieldSet.getAPIField("HHFCT").setUpdateScript("'A'");
+
+		apiFieldSet = fg.getFunction().addReservedFieldSet(Function.EFC_FIELDSET, "Description of EFC");
+		apiFieldSet.getAPIField("EDAB").setUpdateAssignment(Field.ASSIGNMENT_SCRIPT);
+		apiFieldSet.getAPIField("EDAB").setUpdateScript("'9132'");
+		apiFieldSet.getAPIField("EDAN").setUpdateAssignment(Field.ASSIGNMENT_SCRIPT);
+		apiFieldSet.getAPIField("EDAN").setUpdateScript("'234567'");
+		apiFieldSet.getAPIField("EDAS").setUpdateAssignment(Field.ASSIGNMENT_SCRIPT);
+		apiFieldSet.getAPIField("EDAS").setUpdateScript("'001'");
+		apiFieldSet.getAPIField("EDAMT").setUpdateAssignment(Field.ASSIGNMENT_SCRIPT);
+		apiFieldSet.getAPIField("EDAMT").setUpdateScript("'1000000'");
+		apiFieldSet.getAPIField("EDCCY").setUpdateAssignment(Field.ASSIGNMENT_SCRIPT);
+		apiFieldSet.getAPIField("EDCCY").setUpdateScript("'GBP'");
+		apiFieldSet.getAPIField("ETREF").setUpdateAssignment(Field.ASSIGNMENT_SCRIPT);
+		apiFieldSet.getAPIField("ETREF").setUpdateScript("'TRANREF'");
+		apiFieldSet.getAPIField("ETDTE").setUpdateAssignment(Field.ASSIGNMENT_SCRIPT);
+		apiFieldSet.getAPIField("ETDTE").setUpdateScript("HZ_DTE");
+
+		fg.getFunction().addReservedFieldSet(Function.GY_FIELDSET, "Description of GY");
+
+	}
+
+	private void addMappings(FunctionGenerator fg) throws EQException
+	{
+		// Customer validate mapping
+		fg.addValidateMappingToPV("PRIMARY", "CUS", "PRIMARY", "CLC", "GFR70R", "$GFCUS");
+		fg.addValidateMappingToPV("PRIMARY", "CLC", "PRIMARY", "CLC", "GFR70R", "$GFCLC");
+		fg.addValidateMappingFromPV("PRIMARY", "CLC", "GFR70R", "$GFCUS", "PRIMARY", "CUS", MappingToolbox.TYPE_PRIMITIVE);
+		fg.addValidateMappingFromPV("PRIMARY", "CLC", "GFR70R", "$GFCLC", "PRIMARY", "CLC", MappingToolbox.TYPE_PRIMITIVE);
+		fg.addValidateMappingFromPV("PRIMARY", "CLC", "GFR70R", "$GFCUN", "PRIMARY", "CLC", MappingToolbox.TYPE_OUTPUT);
+
+		// Account validation
+		fg.addValidateMappingToPV("REC2", fldId1 + "HZAB", "REC2", fldId1 + "HZAS", "GWR76R", "$R76AB");
+		fg.addValidateMappingToPV("REC", fldId1 + "HZAN", "REC2", fldId1 + "HZAS", "GWR76R", "$R76AN");
+		fg.addValidateMappingToPV("REC2", fldId1 + "HZAS", "REC2", fldId1 + "HZAS", "GWR76R", "$R76AS");
+		fg.addValidateMappingFromPV("REC2", fldId1 + "HZAS", "GWR76R", "$R76AB", "REC2", fldId1 + "HZAB",
+						MappingToolbox.TYPE_PRIMITIVE);
+		fg.addValidateMappingFromPV("REC2", fldId1 + "HZAS", "GWR76R", "$R76AS", "REC2", fldId1 + "HZAS",
+						MappingToolbox.TYPE_PRIMITIVE);
+		fg.addValidateMappingFromPV("REC2", fldId1 + "HZAS", "GWR76R", "$R76SN", "REC2", fldId1 + "HZAS",
+						MappingToolbox.TYPE_OUTPUT);
+
+		// load mapping
+		fg.addLoadMappingToLoad("PRIMARY", "CUS", "PRIMARY", apiId1, "HZCUS");
+		fg.addLoadMappingToLoad("PRIMARY", "CLC", "PRIMARY", apiId1, "HZCLC");
+		fg.addLoadMappingFromLoad("PRIMARY", apiId1, "HZAN", "REC2", fldId1 + "HZAN", MappingToolbox.TYPE_PRIMITIVE);
+		fg.addLoadMappingFromLoad("PRIMARY", apiId1, "HZCUN", "REC2", fldId1 + "HZCUN", MappingToolbox.TYPE_PRIMITIVE);
+		fg.addLoadMappingFromLoad("PRIMARY", apiId1, "HZCTP", "REC2", fldId1 + "HZCTP", MappingToolbox.TYPE_PRIMITIVE);
+		fg.addLoadMappingFromLoad("PRIMARY", apiId1, "HZAB", "REC2", fldId1 + "HZAB", MappingToolbox.TYPE_PRIMITIVE);
+		fg.addLoadMappingFromLoad("PRIMARY", apiId1, "HZAS", "REC2", fldId1 + "HZAS", MappingToolbox.TYPE_PRIMITIVE);
+		fg.addLoadMappingFromLoad("PRIMARY", apiId1, "HZSHN", "REC2", fldId1 + "HZSHN", MappingToolbox.TYPE_PRIMITIVE);
+		fg.addLoadMappingFromLoad("PRIMARY", apiId1, "HZACT", "REC2", fldId1 + "HZACT", MappingToolbox.TYPE_PRIMITIVE);
+		fg.addLoadMappingFromLoad("PRIMARY", apiId1, "HZCCY", "REC2", fldId1 + "HZCCY", MappingToolbox.TYPE_PRIMITIVE);
+		fg.addLoadMappingFromLoad("PRIMARY", apiId1, "HZAI17", "REC2", fldId1 + "HZAI17", MappingToolbox.TYPE_PRIMITIVE);
+
+		// context mapping
+		fg.addContextMapping("HLD", "$GRP");
+	}
+
+	public FunctionGenerator test(String id, String desc, String mode, boolean print)
+	{
+		// Have a bash...
+		try
+		{
+			printStartStatus(this.getClass().getSimpleName());
+			FunctionGenerator fg = new FunctionGenerator(id, desc, "This is the description of " + desc,
+							"com.misys.equation.screens", "com.misys.equation.screens.layout");
+			fg.getFunction().setAllowedAdd(true);
+			fg.getFunction().setAllowedMaint(true);
+			fg.getFunction().setAllowedDel(true);
+			addRecord1(fg);
+			addRecord2(fg);
+			addLoadAPI(fg);
+			addUpdateAPI(fg);
+			addMappings(fg);
+
+			// print the serialise version
+			if (print)
+			{
+				// Write to DB
+				FunctionToolboxStub.writeToDB(unit, fg.getFunctionBean(), fg.getLayoutBean(), null, null);
+
+				// print
+				printCompleteStatus(fg, this.getClass().getSimpleName(), printXML);
+			}
+
+			return fg;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+}

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN" "http://struts.apache.org/dtds/struts-config_1_3.dtd">
+<struts-config>
+
+	<!-- Data Sources -->
+
+	<!-- Form Beans -->
+	<form-beans >
+		<form-bean name="login" type="com.misys.equation.ui.forms.LoginForm" />
+		<form-bean name="switchUnitLoginForm" type="com.misys.equation.ui.forms.LoginForm" />
+		<form-bean name="chgpwd" type="com.misys.equation.ui.forms.ChgPwdForm"/>		
+		<form-bean name="function" type="com.misys.equation.ui.forms.FunctionForm" />
+		<form-bean name="redisplayFH" type="com.misys.equation.ui.forms.RedisplayFHForm" />
+		<form-bean name="getpwd" type="com.misys.equation.ui.forms.GetPwdForm"/>
+	</form-beans>
+
+	<!-- Global Exceptions -->
+	<global-exceptions>
+	</global-exceptions>
+
+	<!-- Global Forwards -->
+   <global-forwards>
+      <forward name="eqEntry" path="/default.do" redirect="true" />
+   </global-forwards>
+
+	<!-- Action Mappings -->
+   <action-mappings>
+      <action forward="/equation/jsp/login.jsp" path="/default" unknown="true" />
+	    <action 
+	    	path="/login"
+	    	type="com.misys.equation.ui.actions.LoginAction"
+	    	name="login"
+	    	scope="request"
+	    	input="/equation/jsp/login.jsp"
+	    	validate="true">
+		    <forward name="valid" path="/equation/jsp/container.jsp" />
+		    <forward name="invalid" path="/equation/jsp/login.jsp" />
+		    <forward name="classic" path="/equation/jsp/classic.jsp"/>
+		    <forward name="directtran" path="/equation/jsp/input.jsp"/>
+		    <forward name="password_expired" path="/equation/jsp/passwordChange.jsp"/>
+		</action>		
+	    <action 
+	    	path="/switchtohome"
+	    	type="com.misys.equation.ui.actions.SwitchToHomeUnitAction"
+	    	name="switchUnitLoginForm"
+	    	scope="request"
+	    	validate="false">
+		    <forward name="valid" path="/equation/jsp/container.jsp" />
+		    <forward name="invalid" path="/equation/jsp/login.jsp" />
+		    <forward name="classic" path="/equation/jsp/classic.jsp"/>
+		    <forward name="directtran" path="/equation/jsp/input.jsp"/>
+		    <forward name="error" path="/equation/jsp/container.jsp" />
+		</action>
+	    <action 
+	    	path="/logout"
+	    	type="com.misys.equation.ui.actions.LogoutAction"
+	    	scope="request">
+		    <forward name="login" path="/equation/jsp/login.jsp" />
+		    <forward name="container" path="/equation/jsp/container.jsp" />
+		</action>
+	    <action
+	    	path="/chgpwd"
+	    	type="com.misys.equation.ui.actions.ChgPwdAction"
+	    	name="chgpwd"
+	    	scope="request"
+	    	validate="true"
+	    	input="/equation/jsp/passwordChange.jsp">
+	    	<forward name="classic" path="/equation/jsp/classic.jsp"/>
+		    <forward name="directtran" path="/equation/jsp/input.jsp"/>
+		    <forward name="login" path="/equation/jsp/login.jsp" />
+	    	<forward name="valid" path="/equation/jsp/container.jsp" />
+	    	<forward name="invalid" path="/equation/jsp/passwordChange.jsp"></forward>
+	    	<forward name="welcome" path="/equation/jsp/welcome.jsp" />
+	    </action>
+	    <action
+	    	path="/getpwd"
+	    	type="com.misys.equation.ui.actions.GetPwdAction"
+	    	name="getpwd"
+	    	scope="request"
+	    	validate="true"
+	    	cancellable="true"
+	    	input="/equation/jsp/getPassword.jsp">
+	    	<forward name="valid" path="/equation/jsp/function.jsp" />
+	    	<forward name="invalid" path="/equation/jsp/getPassword.jsp" />
+	    	<forward name="welcome" path="/equation/jsp/welcome.jsp" />
+	    </action>
+	    <action
+	    	path="/function"
+	    	type="com.misys.equation.ui.actions.FunctionAction"
+	    	name="function"
+	    	scope="request"
+	    	input="/equation/jsp/function.jsp"
+	    	validate="true">
+		    <forward name="welcome" path="/equation/jsp/welcome.jsp" />
+		    <forward name="function" path="/equation/jsp/function.jsp" />
+		    <forward name="exitdesktop" path="/equation/jsp/welcome.jsp?logoff=true" />
+		</action>
+	    <action
+	    	path="/redisplayFH"
+	    	type="com.misys.equation.ui.actions.RedisplayFHAction"
+	    	name="redisplayFH"
+	    	scope="request"
+	    	validate="true"
+	    	input="/equation/jsp/webfacing.jsp">
+		    <forward name="function" path="/equation/jsp/function.jsp" />
+	    </action>
+   </action-mappings>
+
+	<!-- Message Resources -->
+	<message-resources key="equation" parameter="com.misys.equation.ui.resources.ApplicationResources" null="false"/>
+
+</struts-config>

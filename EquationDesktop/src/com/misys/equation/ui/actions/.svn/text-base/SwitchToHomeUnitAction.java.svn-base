@@ -1,0 +1,235 @@
+package com.misys.equation.ui.actions;
+
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.struts.action.Action;
+import org.apache.struts.action.ActionForm;
+import org.apache.struts.action.ActionForward;
+import org.apache.struts.action.ActionMapping;
+
+import com.misys.equation.common.access.EquationLogin;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationUnit;
+import com.misys.equation.common.access.EquationUser;
+import com.misys.equation.common.globalprocessing.GPSearch;
+import com.misys.equation.common.globalprocessing.audit.AuditType;
+import com.misys.equation.common.globalprocessing.audit.GlobalAuditingManager;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.function.context.EquationFunctionContext;
+import com.misys.equation.function.runtime.FunctionContextHandler;
+import com.misys.equation.function.runtime.FunctionHandler;
+import com.misys.equation.function.runtime.FunctionHandlerData;
+import com.misys.equation.ui.context.EquationDesktopContext;
+import com.misys.equation.ui.forms.LoginForm;
+
+public class SwitchToHomeUnitAction extends Action
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	public static final String DATAAREA_KEY = "DATAAREA_KEY";
+	public static final String DATAAREA_KEY2 = "DATAAREA_KEY2";
+
+	private static final String FORWARDNAME_INVALID = "invalid";
+
+	public static final String SESSION_HOMEUNIT = "autologout";
+	public static final String SESSION_HOMESYSTEM = "autologoutSystem";
+
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(SwitchToHomeUnitAction.class);
+
+	/**
+	 * 
+	 */
+	public SwitchToHomeUnitAction()
+	{
+		LOG.debug("SwitchToHomeUnitAction created");
+	}
+	@Override
+	public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
+	{
+		try
+		{
+			// Read the optionInput parameter. This is passed from the switch unit call ...
+			final String optionInput = request.getParameter("optionInput");
+			String dimensions = request.getParameter("mainFrameset");
+			if (dimensions != null)
+			{
+				dimensions = dimensions.replace("PERCENTAGE", "%");
+			}
+
+			EquationLogin eqLogin = (EquationLogin) request.getSession().getAttribute(EquationDesktopContext.SESSION_LOGIN);
+			EquationUser equationUser = (EquationUser) request.getSession().getAttribute("equationUser");
+			EquationUnit equationUnit = (EquationUnit) request.getSession().getAttribute("equationUnit");
+
+			// If none is present the session expired so forward to invalid, i.e. login!
+			if (equationUser == null || eqLogin == null || equationUnit == null || equationUser.getSession() == null)
+			{
+				return mapping.findForward(FORWARDNAME_INVALID);
+			}
+
+			EquationStandardSession equationStandardSession = equationUnit.getEquationSessionPool().getEquationStandardSession();
+			// Before we logoff we need to save the session id ...
+			final String oldSessionId = EquationDesktopContext.getSessionId(request);
+			equationStandardSession.setSessionIdentifier(oldSessionId);
+
+			// If we have a unit to forward to we forward to this unit (not to home)
+			String unitToForwardTo;
+			String systemToForwardTo = null;
+			String unitParameter = request.getParameter("alternateUnit");
+			String system = request.getParameter("system");
+
+			if (system == null || system.equals(""))
+			{
+				system = eqLogin.getSystem();
+			}
+
+			if (unitParameter != null && unitParameter.equals("*"))
+			{
+				return mapping.findForward(FORWARDNAME_INVALID);
+			}
+
+			String homeUnit = eqLogin.getHomeUnit();
+			String homeSystem = eqLogin.getHomeSystem();
+
+			boolean saveContext = false;
+
+			if (unitParameter != null && !unitParameter.equals(""))
+			{
+				unitToForwardTo = unitParameter;
+				saveContext = true;
+			}
+			else
+			{
+				unitToForwardTo = (String) request.getSession().getAttribute(SESSION_HOMEUNIT);
+				systemToForwardTo = (String) request.getSession().getAttribute(SESSION_HOMESYSTEM);
+
+				if (unitToForwardTo == null)
+				{
+					unitToForwardTo = eqLogin.getHomeUnit();
+				}
+				if (systemToForwardTo == null)
+				{
+					systemToForwardTo = eqLogin.getHomeSystem();
+				}
+			}
+
+			// Populate the login form with the required details ...
+			final LoginForm loginForm = (LoginForm) request.getAttribute("switchUnitLoginForm");
+			loginForm.setUserId(eqLogin.getUserId());
+			loginForm.setPassWord(eqLogin.getPassword());
+			loginForm.setUnitName(unitToForwardTo);
+
+			// systemToForwardTo is not null it will switch to the session home unit.
+			if (systemToForwardTo == null)
+			{
+				loginForm.setSystemName(system);
+			}
+			else
+			{
+				loginForm.setSystemName(systemToForwardTo);
+			}
+
+			loginForm.setOptId(""); // TODO - Need to double check if this should be set it empty string. Most probably we need
+			// to
+			// read it from somewhere!
+
+			// We also need to save the data area contents to reload when we switch the unit:
+			FunctionHandler functionHandler = EquationFunctionContext.getContext().getFunctionHandler(oldSessionId);
+			FunctionHandlerData functionHandlerData = functionHandler.getFhd();
+			FunctionContextHandler functionContextHandler = functionHandlerData.getContextHandler();
+
+			// logout ...
+			EquationDesktopContext.getContext().logOffDesktop(oldSessionId, "", true);
+			request.getSession().invalidate();
+
+			// Sleep and get the new session ...
+			final String sessionId = EquationDesktopContext.getSessionId(request);
+
+			// Return the context data area 1 in string format and save it on the session
+			// TODO Encrypt this before saving it on the session
+			if (saveContext)
+			{
+				request.getSession().setAttribute(DATAAREA_KEY, functionContextHandler.getDswsid1Str());
+				request.getSession().setAttribute(DATAAREA_KEY2, functionContextHandler.getDswsid2Str());
+			}
+
+			request.setAttribute("login", loginForm);
+
+			globalAudit(equationStandardSession, loginForm, homeSystem, homeUnit);
+
+			// Finally use the LoginAction we do not want to replicate all the logic in the LoginAction
+			LoginAction loginAction = new LoginAction();
+			loginAction.setServlet(getServlet());
+			ActionForward af = loginAction.execute(mapping, loginForm, request, response);
+
+			equationUser = (EquationUser) request.getSession().getAttribute("equationUser");
+			eqLogin = (EquationLogin) request.getSession().getAttribute(EquationDesktopContext.SESSION_LOGIN);
+			equationUnit = (EquationUnit) request.getSession().getAttribute("equationUnit");
+
+			// If none is present the session expired so forward to invalid, i.e. login!
+			if (equationUser == null || eqLogin == null || equationUnit == null || equationUser.getSession() == null)
+			{
+				return mapping.findForward(FORWARDNAME_INVALID);
+			}
+
+			eqLogin.setHomeUnit(homeUnit);
+			eqLogin.setHomeSystem(homeSystem);
+
+			request.getSession().setAttribute(SESSION_HOMEUNIT, homeUnit);
+			LOG.info("SwitchToHomeUnitAction.execute(): Setting home unit to " + homeUnit);
+
+			request.getSession().setAttribute(SESSION_HOMESYSTEM, homeSystem);
+			LOG.info("SwitchToHomeUnitAction.execute(): Setting the home system to " + homeSystem);
+
+			GPSearch gpSearch = new GPSearch();
+			// Now we need to re-map the data context history mapping to use the new session id ...
+			final List<String> oldList = gpSearch.removeDataContextHistory(oldSessionId);
+			gpSearch.setDataContextHistory(sessionId, oldList);
+
+			// If we have an optionInput value we set it on the request. This is read by the navigatorView.jsp and if present
+			// the user is re-directed accordingly to this option ...
+			if (optionInput != null)
+			{
+				request.getSession().setAttribute("optionInput", optionInput);
+			}
+
+			if (dimensions != null)
+			{
+				request.getSession().setAttribute("mainFrameset", dimensions);
+			}
+
+			return af;
+		}
+		catch (Exception e)
+		{
+			LOG.error(e);
+			return mapping.findForward(FORWARDNAME_INVALID);
+		}
+	}
+
+	/**
+	 * This method will audit the current action in the audit table.
+	 * 
+	 * @param equationStandardSession
+	 *            this is the current session.
+	 * @param loginForm
+	 *            this is the current login-from instance.
+	 * @param homeSystem
+	 *            this is home system name.
+	 * @param homeUnit
+	 *            this is the home unit name.
+	 */
+	private void globalAudit(EquationStandardSession equationStandardSession, LoginForm loginForm, String homeSystem,
+					String homeUnit)
+	{
+		GlobalAuditingManager globalAuditingManager = new GlobalAuditingManager(equationStandardSession);
+		globalAuditingManager.getGlobalAuditEnquiryData().setToUnit(loginForm.getUnitName());
+		globalAuditingManager.getGlobalAuditEnquiryData().setToServer(loginForm.getSystemName());
+		globalAuditingManager.getGlobalAuditEnquiryData().setSourceServer(homeSystem);
+		globalAuditingManager.getGlobalAuditEnquiryData().setSourceUnit(homeUnit);
+		globalAuditingManager.auditOption("GOU", AuditType.DESKTOPINPUT);
+	}
+}

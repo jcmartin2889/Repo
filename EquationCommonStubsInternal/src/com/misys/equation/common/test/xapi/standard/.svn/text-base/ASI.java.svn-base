@@ -1,0 +1,142 @@
+/*
+ * This sample code is provided by Misys for illustrative purposes only.
+ * 
+ * These examples have not been thoroughly tested under all conditions.
+ * 
+ * Misys, therefore, cannot guarantee or imply reliability, serviceability, or function of these programs.
+ * 
+ * All programs contained herein are provided to you "AS IS" without any warranties of any kind. The implied warranties of
+ * non-infringement, merchantability and fitness for a particular purpose are expressly disclaimed.
+ */
+package com.misys.equation.common.test.xapi.standard;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.TestEnvironment;
+import com.misys.equation.common.utilities.Toolbox;
+
+// *************************************************************************************************
+/**
+ * 
+ * 
+ */
+// *************************************************************************************************
+public class ASI
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	String inputBrnmStr = "LOND";
+	// fields required for ASI (debit), change according to your environment
+	String debitAccountBranch = "0543";
+	String debitAccountBasicNumber = "012826";
+	String debitAccountSuffix = "002";
+	String debitCurrency = "GBP";
+	String debitTransactionCode = "010";
+	// fields required for ASI (credit), change according to your environment
+	String creditAccountBranch = "0543";
+	String creditAccountBasicNumber = "012826";
+	String creditAccountSuffix = "001";
+	String creditCurrency = "GBP";
+	String creditTransactionCode = "510";
+
+	String amount = "10000";
+	String valueDate = "1000601";
+	String reference = "MISSLI";
+	EquationStandardSession session;
+	// *********************************************************************************************
+	/**
+	 * 
+	 */
+	// *********************************************************************************************
+	private ASI()
+	{
+		try
+		{
+			session = TestEnvironment.getTestEnvironment().getStandardSession();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+	public static void main(String[] inputParameters)
+	{
+		ASI test = new ASI();
+		test.test();
+	}
+	// *********************************************************************************************
+	/**
+	 * 
+	 */
+	// *********************************************************************************************
+	public void test()
+	{
+		// Have a bash...
+		try
+		{
+			/*
+			 * OK, as we enter this routine we should have a job on the as400. Put a breakpoint on the next available line of code
+			 * Find the job and have a look at its Commitment Control status I usually do this by doing...
+			 * 
+			 * WRKOBJLCK <user profile you specified in TestEnvironment> *USRPRF or WRKJOB and enter the details that should have
+			 * been displayed in the log
+			 * 
+			 * Take option 16, then option 5 on the EQUATION activation group, then press F6 to see the resource under commitment
+			 * control, then take option 1 on the records and then press F5 at each of the suggested breakpoints in the code below.
+			 */
+			// Get a new transaction for a sundry item (ASI)
+			EquationStandardTransaction debitAddSundryItem = new EquationStandardTransaction("H15ARRASI", session);
+			// Set the transaction type
+			debitAddSundryItem.setMode("A");
+			// Set the fields required for the sundry item
+			debitAddSundryItem.setFieldValue("GZBRNM", inputBrnmStr);
+			debitAddSundryItem.setFieldValue("GZAB", debitAccountBranch);
+			debitAddSundryItem.setFieldValue("GZAN", debitAccountBasicNumber);
+			debitAddSundryItem.setFieldValue("GZAS", debitAccountSuffix);
+			debitAddSundryItem.setFieldValue("GZCCY", debitCurrency);
+			debitAddSundryItem.setFieldValue("GZAMA", amount);
+			debitAddSundryItem.setFieldValue("GZTCD", debitTransactionCode);
+			debitAddSundryItem.setFieldValue("GZNPE", "1");
+			debitAddSundryItem.setFieldValue("GZVFR", valueDate);
+			debitAddSundryItem.setFieldValue("GZPBR", "SM@T");
+			debitAddSundryItem.setFieldValue("GZDRF", reference);
+			// add the transaction into the session, this won't do anything on the as400
+			session.addEquationTransaction(debitAddSundryItem);
+			// Get a new transaction for a credit sundry item
+			EquationStandardTransaction creditAddSundryItem = new EquationStandardTransaction("H15ARRASI", session);
+			// Set the transaction type
+			creditAddSundryItem.setMode("A");
+			// Set the fields required for the sundry item
+			creditAddSundryItem.setFieldValue("GZBRNM", inputBrnmStr);
+			creditAddSundryItem.setFieldValue("GZAB", creditAccountBranch);
+			creditAddSundryItem.setFieldValue("GZAN", creditAccountBasicNumber);
+			creditAddSundryItem.setFieldValue("GZAS", creditAccountSuffix);
+			creditAddSundryItem.setFieldValue("GZCCY", creditCurrency);
+			creditAddSundryItem.setFieldValue("GZAMA", amount);
+			creditAddSundryItem.setFieldValue("GZTCD", creditTransactionCode);
+			creditAddSundryItem.setFieldValue("GZNPE", "1");
+			creditAddSundryItem.setFieldValue("GZVFR", valueDate);
+			creditAddSundryItem.setFieldValue("GZPBR", "SM@T");
+			creditAddSundryItem.setFieldValue("GZDRF", reference);
+			session.addEquationTransaction(creditAddSundryItem);
+			// Apply the transaction
+			session.applyTransactions();
+			// OK, so now we should have entered the sundry items. Perhaps pop a break point
+			// on the next line and have a look at the iSeries job and see the commitment status. You should see the sudry item
+			// records pending.
+			session.commitTransactions();
+			// note you could have issued session.rollbacktransactions to roll back the updates as oppose to committing them.
+			Toolbox.printMessages(debitAddSundryItem.getErrorList());
+			Toolbox.printMessages(debitAddSundryItem.getWarningList());
+			Toolbox.printMessages(creditAddSundryItem.getErrorList());
+			Toolbox.printMessages(creditAddSundryItem.getWarningList());
+			System.out.println("finished!");
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.toString());
+			// Rollback any transactions for the unit
+		}
+	}
+}

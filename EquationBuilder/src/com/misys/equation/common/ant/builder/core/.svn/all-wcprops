@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/core
+END
+EquationDataStructure.java
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/core/EquationDataStructure.java
+END
+EqDataType.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/core/EqDataType.java
+END
+EqDS_DSPFFD.java
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/core/EqDS_DSPFFD.java
+END
+EquationFieldDefinition.java
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/core/EquationFieldDefinition.java
+END
+EquationLogger.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/core/EquationLogger.java
+END
+EquationControl.java
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/core/EquationControl.java
+END
+IEquationStandardObject.java
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/core/IEquationStandardObject.java
+END
+EquationDataStructureData.java
+K 25
+svn:wc:ra_dav:version-url
+V 153
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/core/EquationDataStructureData.java
+END
+EquationStandardSession.java
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/core/EquationStandardSession.java
+END
+EquationStandardTable.java
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/core/EquationStandardTable.java
+END

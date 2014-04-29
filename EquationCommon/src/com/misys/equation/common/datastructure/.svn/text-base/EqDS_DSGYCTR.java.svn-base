@@ -1,0 +1,29 @@
+package com.misys.equation.common.datastructure;
+
+import com.misys.equation.common.access.EquationDataStructure;
+import com.misys.equation.common.utilities.Toolbox;
+
+public class EqDS_DSGYCTR extends EquationDataStructure
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	private static final long serialVersionUID = 1L;
+
+	// Field names
+	public final static String XGYOVR = "@XGYOVR";
+
+	/**
+	 * Constructor to create the DSGYCTR data structure
+	 */
+	public EqDS_DSGYCTR()
+	{
+		super("DSGYCTR", Toolbox.DEF_CCSID);
+
+		// create the DS
+		createCharacterField(XGYOVR, "Override GY?", 1 - 1, 1);
+
+		// final setup
+		initialDefaultValue();
+	}
+}

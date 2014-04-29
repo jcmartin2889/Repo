@@ -1,0 +1,163 @@
+package com.misys.equation.common.dao.beans;
+
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * HPRecord data-model.
+ * 
+ * @author deroset
+ * 
+ */
+public class HPRecordDataModel extends AbsRecord
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: HPRecordDataModel.java 4546 2009-08-27 23:01:54Z esther.williams $";
+	private static final long serialVersionUID = 1L;
+
+	private final static String RECORD_NAME = "HPPF";
+	private String countryCode = ""; // HPCNA
+	private String groupName = ""; // HPGRP
+	private String cusMnem = ""; // HPCUS
+	private String cusLoc = ""; // HPCLC
+	private String inThousand = ""; // HPYRIT
+
+	/**
+	 * Construct an empty file
+	 * 
+	 */
+	public HPRecordDataModel()
+	{
+		super();
+	}
+
+	/**
+	 * Construct a HP record key
+	 * 
+	 * @param countryCode
+	 *            - the country code
+	 * @param groupName
+	 *            - group name
+	 * @param cusMnem
+	 *            - customer mnemonic
+	 * @param cusLoc
+	 *            - customer location
+	 */
+	public HPRecordDataModel(String countryCode, String groupName, String cusMnem, String cusLoc)
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+
+		setCountryCode(countryCode);
+		setGroupName(groupName);
+		setCusMnem(cusMnem);
+		setCusLoc(cusLoc);
+	}
+
+	// ---getters and setters----//
+
+	/**
+	 * Return the country code
+	 * 
+	 * @return the country code
+	 */
+	public String getCountryCode()
+	{
+		return countryCode;
+	}
+
+	/**
+	 * Set the country code
+	 * 
+	 * @param countryCode
+	 *            - the country code
+	 */
+	public void setCountryCode(String countryCode)
+	{
+		this.countryCode = Toolbox.trim(countryCode, 2);
+	}
+
+	/**
+	 * Return the group name
+	 * 
+	 * @return the group name
+	 */
+	public String getGroupName()
+	{
+		return groupName;
+	}
+
+	/**
+	 * Set the group name
+	 * 
+	 * @param groupName
+	 *            - the group name
+	 */
+	public void setGroupName(String groupName)
+	{
+		this.groupName = Toolbox.trim(groupName, 6);
+	}
+
+	/**
+	 * Return the customer mnemonic
+	 * 
+	 * @return the customer mnemonic
+	 */
+	public String getCusMnem()
+	{
+		return cusMnem;
+	}
+
+	/**
+	 * Set the customer mnemonic
+	 * 
+	 * @param cusMnem
+	 *            - the customer mnemonic
+	 */
+	public void setCusMnem(String cusMnem)
+	{
+		this.cusMnem = Toolbox.trim(cusMnem, 6);
+	}
+
+	/**
+	 * Return the customer location
+	 * 
+	 * @return the customer location
+	 */
+	public String getCusLoc()
+	{
+		return cusLoc;
+	}
+
+	/**
+	 * Set the customer location
+	 * 
+	 * @param cusLoc
+	 *            - the customer location
+	 */
+	public void setCusLoc(String cusLoc)
+	{
+		this.cusLoc = Toolbox.trim(cusLoc, 3);
+	}
+
+	/**
+	 * Return the report in thousands of major currency units flag
+	 * 
+	 * @return the report in thousands of major currency units flag
+	 */
+	public String getInThousand()
+	{
+		return inThousand;
+	}
+
+	/**
+	 * Set the report in thousands of major currency units flag
+	 * 
+	 * @param inThousand
+	 *            - the report in thousands of major currency units flag
+	 */
+	public void setInThousand(String inThousand)
+	{
+		this.inThousand = inThousand;
+	}
+
+}

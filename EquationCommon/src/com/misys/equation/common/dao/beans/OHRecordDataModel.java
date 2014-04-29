@@ -1,0 +1,414 @@
+package com.misys.equation.common.dao.beans;
+
+import com.misys.equation.common.utilities.Toolbox;
+
+public class OHRecordDataModel extends AbsRecord
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: OHRecordDataModel.java 4546 2009-08-27 23:01:54Z esther.williams $";
+	private static final long serialVersionUID = 1L;
+	private final static String RECORD_NAME = "OHPF";
+	private int dateMaintained; // OHDLM
+	private String journalFile = ""; // OHJFL
+	private String fileName = ""; // OHPHY
+	private String crossUnit = ""; // OHURS
+	private String libraryType = ""; // OHLIB
+	private String fileType = ""; // OHOBT
+	private String marketSec = ""; // OHMSF
+	private String offlineProc = ""; // OHYOFF
+	private String logicalFile = ""; // OHLGL
+	private String parameterFile = ""; // OHPRM
+	private String fileSharing = ""; // OHSHR
+	private String businesHourJourn = ""; // OHRPB
+	private String eodJourn = ""; // OHRPE
+	private String commitControl = ""; // OHCC
+	private String fileBlocking = ""; // OHBLK
+
+	/**
+	 * Default constructor
+	 */
+	public OHRecordDataModel()
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+
+	}
+
+	/**
+	 * Construct a GA record key
+	 * 
+	 * @param pfFile
+	 *            file name
+	 */
+	public OHRecordDataModel(String fileName)
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+		setFileName(fileName);
+	}
+
+	/**
+	 * Create a default OH record for a database file
+	 * 
+	 * @param fileName
+	 *            file name
+	 * @param libraryName
+	 *            library
+	 * @param fileType
+	 *            file type
+	 */
+	public OHRecordDataModel(String fileName, String libraryType, String fileType)
+	{
+		super();
+		setEqFileName("OHPF");
+
+		setFileName(fileName);
+		setLibraryType(libraryType);
+		setFileType(fileType);
+
+		this.dateMaintained = 0;
+		this.journalFile = "N";
+		this.crossUnit = "N";
+		this.marketSec = "N";
+		this.offlineProc = "N";
+		this.logicalFile = "";
+		this.parameterFile = "N";
+		this.fileSharing = "N";
+		this.businesHourJourn = "N";
+		this.eodJourn = "N";
+		this.fileBlocking = "N";
+		this.commitControl = "N";
+
+		// commitment control
+		if (this.libraryType.equals("LIB") || this.libraryType.equals("INP"))
+		{
+			this.commitControl = "Y";
+		}
+
+		// journal file flag
+		if (this.libraryType.equals("LIB") || this.libraryType.equals("INP"))
+		{
+			this.journalFile = "X";
+		}
+
+	}
+
+	// ---getters and setters----//
+
+	/**
+	 * Return the date last maintained
+	 * 
+	 * @return the date last maintained
+	 */
+	public int getDateMaintained()
+	{
+		return dateMaintained;
+	}
+
+	/**
+	 * Set the date last maintained
+	 * 
+	 * @param dateMaintained
+	 *            - the date last maintained
+	 */
+	public void setDateMaintained(int dateMaintained)
+	{
+		this.dateMaintained = dateMaintained;
+	}
+
+	/**
+	 * Return the journal file flag
+	 * 
+	 * @return the journal file flag
+	 */
+	public String getJournalFile()
+	{
+		return journalFile;
+	}
+
+	/**
+	 * Set the journal file flag
+	 * 
+	 * @param journalFile
+	 *            - the journal file flag
+	 */
+	public void setJournalFile(String journalFile)
+	{
+		this.journalFile = Toolbox.trim(journalFile, 1);
+	}
+
+	/**
+	 * Return the file name
+	 * 
+	 * @return the file name
+	 */
+	public String getFileName()
+	{
+		return fileName;
+	}
+
+	/**
+	 * Set the file name
+	 * 
+	 * @param fileName
+	 *            - the file name
+	 */
+	public void setFileName(String fileName)
+	{
+		this.fileName = Toolbox.trim(fileName, 10);
+	}
+
+	/**
+	 * Return the cross unit restore flag
+	 * 
+	 * @return the cross unit restore flag
+	 */
+	public String getCrossUnit()
+	{
+		return crossUnit;
+	}
+
+	/**
+	 * Set the cross unit restore flag
+	 * 
+	 * @param crossUnit
+	 *            - the cross unit restore flag
+	 */
+	public void setCrossUnit(String crossUnit)
+	{
+		this.crossUnit = Toolbox.trim(crossUnit, 1);
+	}
+
+	/**
+	 * Return the library type
+	 * 
+	 * @return the library type
+	 */
+	public String getLibraryType()
+	{
+		return libraryType;
+	}
+
+	/**
+	 * Set the library type
+	 * 
+	 * @param libraryType
+	 *            - the library type
+	 */
+	public void setLibraryType(String libraryType)
+	{
+		this.libraryType = Toolbox.trim(libraryType, 3);
+	}
+
+	/**
+	 * Return the file type
+	 * 
+	 * @return the file type
+	 */
+	public String getFileType()
+	{
+		return fileType;
+	}
+
+	/**
+	 * Set the file type
+	 * 
+	 * @param fileType
+	 *            - the file type
+	 */
+	public void setFileType(String fileType)
+	{
+		this.fileType = Toolbox.trim(fileType, 10);
+	}
+
+	/**
+	 * Return the marketable security flag
+	 * 
+	 * @return the marketable security flag
+	 */
+	public String getMarketSec()
+	{
+		return marketSec;
+	}
+
+	/**
+	 * Set the marketable security flag
+	 * 
+	 * @param marketSec
+	 *            - the marketable security flag
+	 */
+	public void setMarketSec(String marketSec)
+	{
+		this.marketSec = Toolbox.trim(marketSec, 1);
+	}
+
+	/**
+	 * Return the offline processing flag
+	 * 
+	 * @return the offline processing flag
+	 */
+	public String getOfflineProc()
+	{
+		return offlineProc;
+	}
+
+	/**
+	 * Set the offline processing flag
+	 * 
+	 * @param offlineProc
+	 *            - the offline processing flag
+	 */
+	public void setOfflineProc(String offlineProc)
+	{
+		this.offlineProc = Toolbox.trim(offlineProc, 1);
+	}
+
+	/**
+	 * Return the logical file name
+	 * 
+	 * @return the logical file name
+	 */
+	public String getLogicalFile()
+	{
+		return logicalFile;
+	}
+
+	/**
+	 * Set the logical file name
+	 * 
+	 * @param logicalFile
+	 *            - the logical file name
+	 */
+	public void setLogicalFile(String logicalFile)
+	{
+		this.logicalFile = Toolbox.trim(logicalFile, 10);
+	}
+
+	/**
+	 * Return the parameter file flag
+	 * 
+	 * @return the parameter file flag
+	 */
+	public String getParameterFile()
+	{
+		return parameterFile;
+	}
+
+	/**
+	 * Set the parameter file flag
+	 * 
+	 * @param parameterFile
+	 *            - the parameter file flag
+	 */
+	public void setParameterFile(String parameterFile)
+	{
+		this.parameterFile = Toolbox.trim(parameterFile, 1);
+	}
+
+	/**
+	 * Return the file sharing flag
+	 * 
+	 * @return the file sharing flag
+	 */
+	public String getFileSharing()
+	{
+		return fileSharing;
+	}
+
+	/**
+	 * Set the file sharing flag
+	 * 
+	 * @param fileSharing
+	 *            - the file sharing flag
+	 */
+	public void setFileSharing(String fileSharing)
+	{
+		this.fileSharing = Toolbox.trim(fileSharing, 1);
+	}
+
+	/**
+	 * Return the business hour journal flag
+	 * 
+	 * @return the business hour journal flag
+	 */
+	public String getBusinesHourJourn()
+	{
+		return businesHourJourn;
+	}
+
+	/**
+	 * Set the business hour journal flag
+	 * 
+	 * @param businesHourJourn
+	 *            - the business hour journal flag
+	 */
+	public void setBusinesHourJourn(String businesHourJourn)
+	{
+		this.businesHourJourn = Toolbox.trim(businesHourJourn, 1);
+	}
+
+	/**
+	 * Return the end of day journal flag
+	 * 
+	 * @return the end of day journal flag
+	 */
+	public String getEodJourn()
+	{
+		return eodJourn;
+	}
+
+	/**
+	 * Set the end of day journal flag
+	 * 
+	 * @param eodJourn
+	 *            - the end of day journal flag
+	 */
+	public void setEodJourn(String eodJourn)
+	{
+		this.eodJourn = Toolbox.trim(eodJourn, 1);
+	}
+
+	/**
+	 * Return the commitment control flag
+	 * 
+	 * @return the commitment control flag
+	 */
+	public String getCommitControl()
+	{
+		return commitControl;
+	}
+
+	/**
+	 * Set the commitment control flag
+	 * 
+	 * @param commitControl
+	 *            - the commitment control flag
+	 */
+	public void setCommitControl(String commitControl)
+	{
+		this.commitControl = Toolbox.trim(commitControl, 1);
+	}
+
+	/**
+	 * Return the file blocking flag
+	 * 
+	 * @return the file blocking flag
+	 */
+	public String getFileBlocking()
+	{
+		return fileBlocking;
+	}
+
+	/**
+	 * Set the file blocking flag
+	 * 
+	 * @param fileBlocking
+	 *            - the file blocking flag
+	 */
+	public void setFileBlocking(String fileBlocking)
+	{
+		this.fileBlocking = Toolbox.trim(fileBlocking, 1);
+	}
+
+}

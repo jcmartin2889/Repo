@@ -1,0 +1,526 @@
+package com.misys.equation.common.access;
+
+import java.io.Serializable;
+
+import com.misys.equation.common.utilities.EquationPVMetaDataHelper;
+
+@SuppressWarnings("serial")
+public class EquationPVFieldMetaData implements Serializable
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	public static final String USAGE_INPUT = "I";
+	public static final String USAGE_OUTPUT = "O";
+	public static final String USAGE_BOTH = "B";
+
+	private String pvId;
+	private String id;
+	private String description;
+	private String label;
+	private String type;
+	private String usage;
+	private String header;
+	private String db;
+	private int index;
+	private int length;
+	private int decimal;
+	private boolean composite;
+	private boolean key;
+	private String descriptionType;
+
+	/**
+	 * Construct an empty PV Field Meta Data
+	 * 
+	 */
+	public EquationPVFieldMetaData()
+	{
+		setData("", "", "", "", 0, 0, 0, "", "", Boolean.FALSE, "", false);
+	}
+
+	/**
+	 * Construct a PV Field Meta Data
+	 * 
+	 * @param pvname
+	 *            - pv name
+	 * @param id
+	 *            - field name
+	 * @param desc
+	 *            - field description
+	 * @param type
+	 *            - field type
+	 * @param usage
+	 *            - field usage
+	 * @param length
+	 *            - field length
+	 * @param index
+	 *            - field position
+	 * @param decimal
+	 *            - number of decimal places
+	 * @param header
+	 *            - column header
+	 * @param db
+	 *            - matching DB field
+	 * @param composite
+	 *            - composite field
+	 */
+	public EquationPVFieldMetaData(String pvId, String id, String desc, String type, String usage, int length, int index,
+					int decimal, String header, String db, Boolean composite)
+	{
+		this.pvId = pvId;
+		setData(id, desc, type, usage, length, index, decimal, header, db, composite, "", false);
+	}
+
+	/**
+	 * Set the data
+	 * 
+	 * @param id
+	 *            - field name
+	 * @param description
+	 *            - field description
+	 * @param type
+	 *            - field type
+	 * @param usage
+	 *            - field usage
+	 * @param length
+	 *            - field length
+	 * @param index
+	 *            - field position
+	 * @param decimal
+	 *            - number of decimal places
+	 * @param header
+	 *            - column header
+	 * @param db
+	 *            - matching DB field
+	 */
+	public void setData(String id, String description, String type, String usage, int length, int index, int decimal,
+					String header, String db, boolean composite, String label, boolean key)
+	{
+		this.id = id;
+		this.description = description;
+		this.type = type;
+		this.usage = usage;
+		this.length = length;
+		this.index = index;
+		this.decimal = decimal;
+		this.header = header;
+		this.db = db;
+		this.composite = composite;
+		this.label = label;
+		this.key = key;
+		this.descriptionType = "";
+	}
+
+	/**
+	 * Return the id
+	 * 
+	 * @return the id
+	 */
+	public String getId()
+	{
+		return id;
+	}
+
+	/**
+	 * Set the id
+	 * 
+	 * @param id
+	 *            - field id
+	 */
+	public void setId(String id)
+	{
+		this.id = id;
+	}
+
+	/**
+	 * Return the field description
+	 * 
+	 * @return the field description
+	 */
+	public String getDescription()
+	{
+		return description;
+	}
+
+	/**
+	 * Set the field description
+	 * 
+	 * @param desc
+	 *            - field description
+	 */
+	public void setDescription(String description)
+	{
+		this.description = description;
+	}
+
+	/**
+	 * Return the field type
+	 * 
+	 * @return the field type
+	 */
+	public String getType()
+	{
+		return type;
+	}
+
+	/**
+	 * Set the field type
+	 * 
+	 * @param type
+	 *            - field type
+	 */
+	public void setType(String type)
+	{
+		this.type = type;
+	}
+
+	/**
+	 * Return the field usage
+	 * 
+	 * @return the field usage
+	 */
+	public String getUsage()
+	{
+		return usage;
+	}
+
+	/**
+	 * Set the field usage
+	 * 
+	 * @param usage
+	 *            - field usage
+	 */
+	public void setUsage(String usage)
+	{
+		this.usage = usage;
+	}
+
+	/**
+	 * Return the field length
+	 * 
+	 * @return the field length
+	 */
+	public int getLength()
+	{
+		return length;
+	}
+	/**
+	 * Return the packed field length in bytes
+	 * 
+	 * @return the packed field length in bytes
+	 */
+	public int getPackedLength()
+	{
+		return (length / 2) + 1;
+	}
+
+	/**
+	 * Set the field length
+	 * 
+	 * @param length
+	 *            - field length
+	 */
+	public void setLength(int length)
+	{
+		this.length = length;
+	}
+
+	/**
+	 * Return the field position
+	 * 
+	 * @return the field position
+	 */
+	public int getIndex()
+	{
+		return index;
+	}
+
+	/**
+	 * Set the field position
+	 * 
+	 * @param index
+	 *            - field position
+	 */
+	public void setIndex(int index)
+	{
+		this.index = index;
+	}
+
+	/**
+	 * Return the number of decimal places
+	 * 
+	 * @return the number of decimal places
+	 */
+	public int getDecimal()
+	{
+		return decimal;
+	}
+
+	/**
+	 * Set the number of decimal places
+	 * 
+	 * @param decimal
+	 *            - number of decimal places
+	 */
+	public void setDecimal(int decimal)
+	{
+		this.decimal = decimal;
+	}
+
+	/**
+	 * Return the field header
+	 * 
+	 * @return the field header
+	 */
+	public String getHeader()
+	{
+		return header;
+	}
+
+	/**
+	 * Set the field header
+	 * 
+	 * @param header
+	 *            - field header
+	 */
+	public void setHeader(String header)
+	{
+		this.header = header;
+	}
+
+	/**
+	 * Return the equivalent DB field
+	 * 
+	 * @return the equivalent DB field
+	 */
+	public String getDb()
+	{
+		return db;
+	}
+
+	/**
+	 * Set the DB field
+	 * 
+	 * @param db
+	 *            - DB field
+	 */
+	public void setDb(String db)
+	{
+		this.db = db;
+	}
+
+	/**
+	 * Return the equivalent composite field
+	 * 
+	 * @return the equivalent composite field
+	 */
+	public boolean getComposite()
+	{
+		return composite;
+	}
+
+	/**
+	 * Set the field composite
+	 * 
+	 * @param composite
+	 *            - composite flag
+	 */
+	public void setComposite(boolean composite)
+	{
+		this.composite = composite;
+	}
+
+	/**
+	 * Return the String representation
+	 * 
+	 * @return the String representation
+	 */
+	@Override
+	public String toString()
+	{
+		StringBuffer string = new StringBuffer("");
+
+		string.append("ID = " + getId());
+		string.append("\n");
+		string.append("Desc = " + getDescription());
+		string.append("\n");
+		string.append("Type = " + getType());
+		string.append("\n");
+		string.append("Use = " + getUsage());
+		string.append("\n");
+		string.append("Length = " + getLength());
+		string.append("\n");
+		string.append("Index = " + getIndex());
+		string.append("\n");
+		string.append("Decimal = " + getDecimal());
+		string.append("\n");
+		string.append("Header = " + getHeader());
+		string.append("\n");
+		string.append("DB = " + getDb());
+		string.append("\n");
+		string.append("Composite = " + getComposite());
+		string.append("\n");
+		string.append("\n");
+
+		return string.toString();
+	}
+
+	/**
+	 * Return whether this is a numeric field
+	 * 
+	 * @return true if numeric field
+	 */
+	public boolean isNumericField()
+	{
+		return (isZoned() || isPacked());
+	}
+
+	/**
+	 * Return whether this is an alphanumeric field
+	 * 
+	 * @return true if numeric field
+	 */
+	public boolean isAlpha()
+	{
+		if (type.equals(EquationPVMetaDataHelper.TYPE_ALPHA) || type.equals(EquationPVMetaDataHelper.TYPE_HIDALPHA))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	/**
+	 * Return whether this is a zoned field
+	 * 
+	 * @return true if numeric field
+	 */
+	public boolean isZoned()
+	{
+		if (type.equals(EquationPVMetaDataHelper.TYPE_ZONED) || type.equals(EquationPVMetaDataHelper.TYPE_HIDZONED))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	/**
+	 * Return whether this is a packed field
+	 * 
+	 * @return true if packed field
+	 */
+	public boolean isPacked()
+	{
+		if (type.equals(EquationPVMetaDataHelper.TYPE_PACKED))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	/**
+	 * @return the label of this PV field
+	 */
+	public String getLabel()
+	{
+		return label;
+	}
+
+	/**
+	 * Set the label of this PV field
+	 * 
+	 * @param label
+	 */
+	public void setLabel(String label)
+	{
+		this.label = label;
+	}
+
+	/**
+	 * @return whether this field is key
+	 */
+	public boolean isKey()
+	{
+		return key;
+	}
+
+	/**
+	 * Set whether this field is a key field
+	 * 
+	 * @param key
+	 */
+	public void setKey(boolean key)
+	{
+		this.key = key;
+	}
+
+	/**
+	 * @return - the pv id
+	 */
+	public String getPvId()
+	{
+		return pvId;
+	}
+
+	/**
+	 * @param pvId
+	 */
+	public void setPvId(String pvId)
+	{
+		this.pvId = pvId;
+	}
+	/**
+	 * Return the field description in user's language
+	 * 
+	 * @return the field description in user's language
+	 */
+	public String rtvDescription(EquationUser eqUser)
+	{
+		String description = EquationCommonContext.getContext().getLanguageResource(eqUser, getPvId() + "." + getId() + ".DESC");
+		if (description == null)
+		{
+			description = getDescription();
+		}
+		return description;
+	}
+
+	/**
+	 * Return the field header in user's language
+	 * 
+	 * @return the field header in user's language
+	 */
+	public String rtvHeader(EquationUser eqUser)
+	{
+		String header = EquationCommonContext.getContext().getLanguageResource(eqUser, getPvId() + "." + getId() + ".HDR");
+		if (header == null)
+		{
+			header = getHeader();
+		}
+		return header;
+	}
+
+	/**
+	 * Indicates whether the description is text, reference or reusable reference
+	 * 
+	 */
+	public String getDescriptionType()
+	{
+		return descriptionType;
+	}
+
+	/**
+	 * Sets whether the description is text, reference or reusable reference
+	 * 
+	 */
+	public void setDescriptionType(String descriptionType)
+	{
+		this.descriptionType = descriptionType;
+	}
+}

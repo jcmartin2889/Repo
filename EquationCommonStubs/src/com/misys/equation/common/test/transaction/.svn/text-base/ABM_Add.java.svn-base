@@ -1,0 +1,122 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseAddMore;
+
+/**
+ * Equation test cases for Maintain function
+ */
+public class ABM_Add extends EquationTestCaseAddMore
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	String programName = "C30FRR";
+	String optionId = "ABM";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZAB", "0132"); // Account branch (4A)
+		transaction.setFieldValue("GZAN", "012008"); // Account basic number (6A)
+		transaction.setFieldValue("GZAS", "020"); // Account suffix (3A)
+		transaction.setFieldValue("GZCATP", "ERRR"); // Card type (4A)
+	}
+
+	/**
+	 * Setup an existing key fields
+	 */
+	@Override
+	public void setupExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZAB", "0132"); // Account branch (4A)
+		transaction.setFieldValue("GZAN", "012008"); // Account basic number (6A)
+		transaction.setFieldValue("GZAS", "020"); // Account suffix (3A)
+		transaction.setFieldValue("GZCATP", "CC1"); // Card type (4A)
+
+	}
+
+	/**
+	 * Setup the mandatory fields
+	 */
+	@Override
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZCNM1", "MR A SMITH"); // Card name 1 (23A)
+		transaction.setFieldValue("GZCNM2", ""); // Card name 2 (23A)
+		transaction.setFieldValue("GZSTDT", "1000106"); // Start date (7S,0)
+		transaction.setFieldValue("GZEXDT", "1020131"); // Expiry date (7S,0)
+		transaction.setFieldValue("GZADVR", "Y"); // Card advice? (1A)
+		transaction.setFieldValue("GZCDEL", "1"); // Card delivery (1A)
+		transaction.setFieldValue("GZORDT", "1000105"); // Order date (7S,0)
+		transaction.setFieldValue("GZPINR", "Y"); // PIN required? (1A)
+		transaction.setFieldValue("GZPIND", "1"); // PIN delivery? (1A)
+		transaction.setFieldValue("GZPSN", ""); // PIN letter serial number (10A)
+		transaction.setFieldValue("GZCLCD", "1"); // Card limit code (1A)
+		transaction.setFieldValue("GZATMS", "Y"); // Authorised for ATM statements (1A)
+		transaction.setFieldValue("GZPOS", "Y"); // Authorised for POS? (1A)
+		transaction.setFieldValue("GZCASH", "Y"); // Authorised for cash? (1A)
+		transaction.setFieldValue("GZMTAM", ""); // Maximum transaction amount (15P,0)
+		transaction.setFieldValue("GZAPLT", ""); // ATM/POS limit (15P,0)
+		transaction.setFieldValue("GZADLT", ""); // ATM daily limit (15P,0)
+		transaction.setFieldValue("GZOBAL", ""); // Other bank ATM limit (15P,0)
+		transaction.setFieldValue("GZOCAL", ""); // Other country ATM limit (15P,0)
+		transaction.setFieldValue("GZMCAC", ""); // Maximum cash amount on Chip (15P,0)
+		transaction.setFieldValue("GZOFLC", ""); // Offline limit on Chip (15P,0)
+		transaction.setFieldValue("GZOFPD", ""); // Offline period (2S,0)
+		transaction.setFieldValue("GZLLRD", "1000106"); // Last limit review date (7S,0)
+		transaction.setFieldValue("GZNLRD", "1000801"); // Next limit review date (7S,0)
+		transaction.setFieldValue("GZCAN1", ""); // Orig card number (20A)
+		transaction.setFieldValue("GZCAS1", ""); // Orig card sequence (1S,0)
+		transaction.setFieldValue("GZCNEW", "Y"); // Generate new card? (1A)
+		transaction.setFieldValue("GZCMOD", ""); // Mode (1A)
+		transaction.setFieldValue("GZBFID", ""); // Caller Function ID (3A)
+		transaction.setFieldValue("GZCSTS", ""); // Card status (1A)
+		transaction.setFieldValue("GZCRNW", ""); // Card renewed? (1A)
+		transaction.setFieldValue("GZF17", "N"); // External A/C? (1A)
+		transaction.setFieldValue("GZBCGC", "Y"); // Generate card numbers (1A)
+		transaction.setFieldValue("GZCEXD", "Y"); // Calculate expiry date (1A)
+
+	}
+
+}

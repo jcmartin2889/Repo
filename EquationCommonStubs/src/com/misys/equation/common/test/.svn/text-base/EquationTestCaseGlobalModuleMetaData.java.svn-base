@@ -1,0 +1,102 @@
+package com.misys.equation.common.test;
+
+import com.misys.equation.common.access.EquationData;
+import com.misys.equation.common.access.EquationPVMetaData;
+import com.misys.equation.common.utilities.EqBeanFactory;
+
+/**
+ * Test cases for Global Modules
+ */
+abstract public class EquationTestCaseGlobalModuleMetaData extends EquationTestCase
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	protected String pvName;
+	protected String validCCN;
+	protected String invalidCCN;
+	protected String decode;
+	protected boolean largeCCN;
+
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		String className = this.getClass().getSimpleName();
+		int _position = className.indexOf('_');
+		if (_position == -1)
+		{
+			pvName = className;
+		}
+		else
+		{
+			pvName = className.substring(0, _position);
+		}
+		System.out.println("");
+		System.out.print("Testing: " + pvName);
+
+		decode = "";
+		largeCCN = false;
+
+	}
+
+	public void test00100PV_Metadata() throws Exception
+	{
+		System.out.println("");
+		System.out.println("test00100PV_Metadata");
+		EquationPVMetaData pvmetadata = unit.getPVMetaData(pvName);
+		EqBeanFactory eqBeanFactory = EqBeanFactory.getEqBeanFactory();
+		String xml = eqBeanFactory.serialiseBeanAsXML(pvmetadata);
+		System.out.println(xml);
+		// Test metadata and bean serialisation
+		// System.out.println(pvmetadata);
+		assertEquals(false, (pvmetadata == null || xml.equals("")));
+	}
+
+	/**
+	 * Test: retrieve mode<br>
+	 * Expected result: Pass<br>
+	 * 
+	 * @throws Exception
+	 */
+	public void test00200PV_GetDataCall() throws Exception
+	{
+		System.out.println("");
+		System.out.println("test00200PV_GetDataList");
+		System.out.println("...skipped for Global Module type");
+		assertEquals(true, true);
+	}
+
+	/**
+	 * Test: validate mode: existing record<br>
+	 * Expected result: Fail<br>
+	 * 
+	 * @throws Exception
+	 */
+	public void test00300PV_ValidateCall() throws Exception
+	{
+		System.out.println("");
+		System.out.println("test00300PV_ValidateCall");
+		EquationData data = getEQData(pvName, validCCN, decode, "N");
+		System.out.println(data.getData());
+		String error = data.getErrorMessage().trim();
+		System.out.println(error);
+		assertEquals(true, error.equals(""));
+	}
+
+	/**
+	 * Test: validate mode: Non-existing record<br>
+	 * Expected result: Pass<br>
+	 * 
+	 * @throws Exception
+	 */
+	public void test00400PV_ValidateNonExistingCall() throws Exception
+	{
+		System.out.println("");
+		System.out.println("test00400PV_ValidateNonExistingCall");
+		EquationData data = getEQData(pvName, invalidCCN, decode, "N");
+		System.out.println(data.getData());
+		String error = data.getErrorMessage().trim();
+		System.out.println(error);
+		assertEquals(false, error.equals(""));
+	}
+}

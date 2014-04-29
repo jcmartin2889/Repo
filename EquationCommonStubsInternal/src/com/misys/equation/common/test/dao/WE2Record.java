@@ -1,0 +1,150 @@
+package com.misys.equation.common.test.dao;
+
+import com.misys.equation.common.dao.IWE2RecordDao;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.dao.beans.WE2RecordDataModel;
+import com.misys.equation.common.test.EquationTestCaseDao;
+
+/**
+ * This is a unit-test which will test IWERecordDao services.
+ * 
+ * @author deroset
+ * 
+ */
+public class WE2Record extends EquationTestCaseDao
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: WE2Record.java 11959 2011-09-30 09:29:54Z rpatrici $";
+	public WE2Record()
+	{
+
+	}
+
+	/**
+	 * This method is going to retrieve the Dao from the bean repository and set it as local attribute.
+	 */
+	@Override
+	protected void setDao()
+	{
+		dao = daoFactory.getWE2Dao(session, dataModel);
+	}
+
+	/**
+	 * This method will test if the record has been already inserted in the dataBase.
+	 */
+	@Override
+	public void isRecord(boolean assertValue)
+	{
+		boolean result;
+
+		result = checkIfThisRecordIsInTheDB();
+		if (assertValue)
+		{
+			assertTrue(result);
+		}
+		else
+		{
+			assertFalse(result);
+		}
+
+	}
+
+	/**
+	 * This method is going to check the getRecord dao's service.<br>
+	 * The obtained result should be the same than the preset in the dao data-model.
+	 * 
+	 */
+	@Override
+	public WE2RecordDataModel getRecord()
+	{
+		WE2RecordDataModel WE2Record = null;
+		WE2Record = ((IWE2RecordDao) dao).getWE2Record();
+		assertDataModel(WE2Record);
+		return WE2Record;
+	}
+
+	/**
+	 * This method will test the update dao's service.
+	 */
+	@Override
+	public void updateRecord()
+	{
+		WE2RecordDataModel WE2Record = null;
+		getMyModel().setLinkedSessionId("updated session id");
+		getMyModel().setLinkedTransactionId("updated transaciton id");
+		dao.updateRecord();
+		WE2Record = getRecord();
+		assertEquals(getMyModel().getLinkedOptionId(), WE2Record.getLinkedOptionId());
+		assertEquals(getMyModel().getLinkedSessionId(), WE2Record.getLinkedSessionId());
+		assertEquals(getMyModel().getLinkedTaskId(), WE2Record.getLinkedTaskId());
+		assertEquals(getMyModel().getLinkedTransactionId(), WE2Record.getLinkedTransactionId());
+		assertEquals(getMyModel().getLinkedUserId(), WE2Record.getLinkedUserId());
+		assertEquals(getMyModel().getOptionId(), WE2Record.getOptionId());
+		assertEquals(getMyModel().getSessionId(), WE2Record.getSessionId());
+		assertEquals(getMyModel().getTaskId(), WE2Record.getTaskId());
+		assertEquals(getMyModel().getTransactionId(), WE2Record.getTransactionId());
+		assertEquals(getMyModel().getUserId(), WE2Record.getUserId());
+	}
+
+	@Override
+	protected void assertDataModel(AbsRecord dataModel)
+	{
+		WE2RecordDataModel record = (WE2RecordDataModel) dataModel;
+		assertEquals(getMyModel().getLinkedOptionId(), record.getLinkedOptionId());
+		assertEquals(getMyModel().getLinkedSessionId(), record.getLinkedSessionId());
+		assertEquals(getMyModel().getLinkedTaskId(), record.getLinkedTaskId());
+		assertEquals(getMyModel().getLinkedTransactionId(), record.getLinkedTransactionId());
+		assertEquals(getMyModel().getLinkedUserId(), record.getLinkedUserId());
+		assertEquals(getMyModel().getOptionId(), record.getOptionId());
+		assertEquals(getMyModel().getSessionId(), record.getSessionId());
+		assertEquals(getMyModel().getTaskId(), record.getTaskId());
+		assertEquals(getMyModel().getTransactionId(), record.getTransactionId());
+		assertEquals(getMyModel().getUserId(), record.getUserId());
+	}
+
+	@Override
+	protected boolean checkIfThisRecordIsInTheDB()
+	{
+		boolean result;
+		result = ((IWE2RecordDao) dao).checkIfThisWE2RecordIsInTheDB();
+		return result;
+	}
+
+	@Override
+	protected void setDataModel()
+	{
+		WE2RecordDataModel record = new WE2RecordDataModel("Task Id");
+		record.setLinkedSessionId("Linked session id");
+		record.setLinkedTransactionId("linkedTransactionId");
+		record.setLinkedOptionId("LOD");
+		record.setLinkedUserId("Luser id");
+		record.setSessionId("session id");
+		record.setTransactionId("TransactionId");
+		record.setOptionId("OID");
+		record.setUserId("user id");
+		record.setLibrary(kFilLibName);
+		this.dataModel = record;
+	}
+
+	/**
+	 * This method is going to return a casted data model.
+	 * 
+	 * @return a casted data model
+	 */
+	public WE2RecordDataModel getMyModel()
+	{
+		WE2RecordDataModel WE2RecordDataModel = null;
+
+		if (dataModel instanceof WE2RecordDataModel)
+		{
+			WE2RecordDataModel = (WE2RecordDataModel) dataModel;
+		}
+		else
+		{
+			throw new IllegalArgumentException("The set data-model does not correspond to the expected one.");
+		}
+
+		return WE2RecordDataModel;
+	}
+}

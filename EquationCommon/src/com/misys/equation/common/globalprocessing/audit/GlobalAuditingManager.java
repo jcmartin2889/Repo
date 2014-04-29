@@ -1,0 +1,781 @@
+package com.misys.equation.common.globalprocessing.audit;
+
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
+
+import com.ibm.as400.access.AS400;
+import com.misys.equation.common.access.EquationConfigurationPropertiesBean;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationSystem;
+import com.misys.equation.common.access.EquationUnit;
+import com.misys.equation.common.dao.DaoFactory;
+import com.misys.equation.common.dao.IGALRecordDao;
+import com.misys.equation.common.dao.IGAURecordDao;
+import com.misys.equation.common.dao.IGAVRecordDao;
+import com.misys.equation.common.dao.IGPRRecordDao;
+import com.misys.equation.common.dao.beans.APJRecordDataModel;
+import com.misys.equation.common.dao.beans.APVRecordDataModel;
+import com.misys.equation.common.dao.beans.GAFRecordDataModel;
+import com.misys.equation.common.dao.beans.GALRecordDataModel;
+import com.misys.equation.common.dao.beans.GAURecordDataModel;
+import com.misys.equation.common.dao.beans.GAVRecordDataModel;
+import com.misys.equation.common.dao.beans.GPRRecordDataModel;
+import com.misys.equation.common.dao.beans.GYRecordDataModel;
+import com.misys.equation.common.globalprocessing.SystemStatus;
+import com.misys.equation.common.globalprocessing.SystemStatusManager;
+import com.misys.equation.common.globalprocessing.UnitStatus;
+import com.misys.equation.common.internal.dao.GAFRecordDao;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EquationLogger;
+
+public class GlobalAuditingManager implements IGlobalAuditingManager
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: GlobalAuditingManager.java 10420 2011-02-03 12:22:26Z MACDONP1 $";
+
+	/** CCSID of GZ / GS data on Global audit tables */
+	public static final int GLOBAL_CCSID = 65535;
+
+	private IGAURecordDao gauDao = null;
+	private final EquationStandardSession session;
+	private GlobalAuditEnquiryData globalAuditEnquiryData;
+	private final EquationLogger LOG = new EquationLogger(this.getClass());
+	private boolean gpInstalled = false;
+
+	/** The last error message encountered; blanks if no error in last operation */
+	private String lastError;
+
+	private SystemStatusManager sysStatus;
+
+	/**
+	 * Creates an instance of the GlobalAuditingManager by passing the sessionId as a parameter. We try to create the
+	 * 
+	 * @param session
+	 */
+	public GlobalAuditingManager(EquationStandardSession session)
+	{
+		// Set the session
+		this.session = session;
+		initialization();
+	}
+
+	/**
+	 * This method will initialise the resources.
+	 */
+	private void initialization()
+	{
+		this.sysStatus = SystemStatusManager.getInstance();
+		DaoFactory daoFactory = new DaoFactory();
+		checkIfGPisInstalled();
+		globalAuditEnquiryData = new GlobalAuditEnquiryData(session);
+		// if the GP is installed; the global audit functionality will take place.
+		if (gpInstalled)
+		{
+			gauDao = daoFactory.getGAUDao(session, globalAuditEnquiryData);
+		}
+	}
+	/**
+	 * This method will check if the current session is GP and if the server has the GP pool set.
+	 */
+	private void checkIfGPisInstalled()
+	{
+		try
+		{
+			gpInstalled = EquationConfigurationPropertiesBean.getInstance().isGlobalProcessingGoodToGo();
+
+			// The following line doesn't work if logged-in as CLASSIC_DESKTOP, but propagation jobs must be logged-in with
+			// CLASSIC_DESKTOP to avoid creating GH record locks
+			// gpInstalled = EquationCommonContext.getContext().checkIfGPIsInstalled(session.getSessionIdentifier());
+		}
+		catch (NullPointerException nullPointerException)
+		{
+			gpInstalled = false;
+
+			if (LOG.isInfoEnabled())
+			{
+				LOG.error("There was a problem checkIfGPisInstalled.", nullPointerException);
+			}
+		}
+		catch (Exception exception)
+		{
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error("There was a problem checkIfGPisInstalled.", exception);
+			}
+		}
+	}
+
+	/**
+	 * This method will audit the login action.
+	 */
+	public void auditLogin()
+	{
+		if (gpInstalled)
+		{
+			Long sequence = null;
+			sequence = GlobalAuditUtils.generateNextSequence(gauDao, GlobalAuditUtils.GAU_SEQ);
+			globalAuditEnquiryData.setValues(AuditType.LOGON);
+			globalAuditEnquiryData.setSequenceId(Long.valueOf(sequence));
+			gauDao.insertOrUpdateRecord(globalAuditEnquiryData);
+		}
+	}
+
+	/**
+	 * This method will audit the logoff action.
+	 */
+	public void auditLogoff()
+	{
+		if (gpInstalled)
+		{
+			Long sequence = null;
+			sequence = GlobalAuditUtils.generateNextSequence(gauDao, GlobalAuditUtils.GAU_SEQ);
+			globalAuditEnquiryData.setValues(AuditType.LOGOFF);
+			globalAuditEnquiryData.setSequenceId(Long.valueOf(sequence));
+			gauDao.insertOrUpdateRecord(globalAuditEnquiryData);
+		}
+	}
+
+	/**
+	 * This method will audit the current option.
+	 */
+	public void auditOption(String option, AuditType auditType)
+	{
+		if (gpInstalled)
+		{
+			Long sequence = null;
+			sequence = GlobalAuditUtils.generateNextSequence(gauDao, GlobalAuditUtils.GAU_SEQ);
+			globalAuditEnquiryData.setValues(auditType);
+			globalAuditEnquiryData.setSequenceId(Long.valueOf(sequence));
+			globalAuditEnquiryData.setOptionId(option);
+			gauDao.insertOrUpdateRecord(globalAuditEnquiryData);
+		}
+	}
+
+	/**
+	 * This method will audit the current option including the key data field
+	 */
+	public void auditOption(String option, AuditType auditType, String refType, String refKeyData)
+	{
+		if (gpInstalled)
+		{
+			Long sequence = null;
+			sequence = GlobalAuditUtils.generateNextSequence(gauDao, GlobalAuditUtils.GAU_SEQ);
+			globalAuditEnquiryData.setValues(auditType);
+			globalAuditEnquiryData.setSequenceId(Long.valueOf(sequence));
+			globalAuditEnquiryData.setOptionId(option);
+			globalAuditEnquiryData.setReferenceDetailsType(refType);
+			globalAuditEnquiryData.setReferenceDetails(refKeyData);
+			gauDao.insertOrUpdateRecord(globalAuditEnquiryData);
+		}
+	}
+
+	public GlobalAuditEnquiryData getGlobalAuditEnquiryData()
+	{
+		return globalAuditEnquiryData;
+	}
+
+	public void setGlobalAuditEnquiryData(GlobalAuditEnquiryData globalAuditEnquiryData)
+	{
+		this.globalAuditEnquiryData = globalAuditEnquiryData;
+	}
+
+	public boolean isGpInstalled()
+	{
+		return gpInstalled;
+	}
+
+	public void setGpInstalled(boolean gpInstalled)
+	{
+		this.gpInstalled = gpInstalled;
+	}
+
+	public boolean updateAuditPropagationStatus(long recordId, String status)
+	{
+		String updateSQL = "UPDATE GAUPF SET GAUSTS = '" + status + "' WHERE GAUSEQ = " + recordId;
+		boolean success = false;
+
+		try
+		{
+			success = GlobalAuditUtils.updateGlobalGeneric(session, updateSQL);
+		}
+		catch (EQException e)
+		{
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error("Error executing " + this.getClass(), e);
+			}
+		}
+
+		return success;
+	}
+
+	public boolean updateAuditPropagationAckStatus(long recordId, String flag)
+	{
+		String updateSQL = "UPDATE GAUPF SET GAUACK = '" + flag + "' WHERE GAUSEQ = " + recordId;
+		boolean success = false;
+
+		try
+		{
+			success = GlobalAuditUtils.updateGlobalGeneric(session, updateSQL);
+		}
+		catch (EQException e)
+		{
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error("Error executing " + this.getClass(), e);
+			}
+		}
+		return success;
+	}
+
+	public boolean createAuditPropagationRecord(List<GlobalAuditPropagationHeader> gaPropHeader,
+					GlobalAuditPropagationData gaPropData) throws EQException
+	{
+		// prepare DAO
+		boolean recordCreated = false;
+		final IGAVRecordDao gavDao = new DaoFactory().getGAVDao(session, new GAVRecordDataModel());
+		try
+		{
+			// create prop data record
+			gavDao.insertRecord(gaPropData);
+
+			for (GlobalAuditPropagationHeader header : gaPropHeader)
+			{
+				header.setSession(session);
+
+				// link header to prop data
+				insertAuditPropHeader(header, gaPropData.getSequenceId());
+			}
+
+			recordCreated = true;
+		}
+		catch (Exception e)
+		{
+			LOG.error("Error in creating audit propagation record", e);
+			throw new EQException("Error in creating audit propagation record", e);
+		}
+
+		return recordCreated;
+	}
+
+	public boolean copyAuditPropagation(String fromSystemId, String fromUnitId, GAURecordDataModel unitHeader,
+					APVRecordDataModel apv, List<APJRecordDataModel> apjRecords, String subChar)
+	{
+		boolean created = false;
+
+		try
+		{
+			List<GlobalAuditPropagationHeader> gaPropHeader = new ArrayList<GlobalAuditPropagationHeader>();
+
+			String gauCountQry = "SELECT COUNT(*) FROM GAUPF WHERE GAUUNSO = '" + fromUnitId + "' AND GAUSVSO = '" + fromSystemId
+							+ "' AND GAUUSEQ = " + unitHeader.getSequenceId();
+
+			int gauRecordCount = GlobalAuditUtils.getSQLCountValue(session, gauCountQry);
+			if (gauRecordCount > 0)
+			{
+				created = true;
+			}
+			else
+			{
+				if (isSystemAvailable(fromSystemId, fromUnitId))
+				{
+					// prepare audit header for global library tables
+					final GlobalAuditPropagationHeader globalHeader = new GlobalAuditPropagationHeader(session);
+					BeanUtils.copyProperties(globalHeader, unitHeader);
+
+					// prepare audit data for global library tables
+					final GlobalAuditPropagationData globalPropData = new GlobalAuditPropagationData(session);
+					final long dataSeqId = unitHeader.getPropDataSequenceNumber();
+					final GAVRecordDataModel unitPropData = UnitAuditUtils.getUnitPropData(session, dataSeqId);
+					BeanUtils.copyProperties(globalPropData, unitPropData);
+
+					globalHeader.setUnitDataSequenceNumber(unitHeader.getSequenceId());
+
+					final DSAIMUtil dsaimUtil = new DSAIMUtil(subChar);
+
+					// NOTE: after testing with DSAIMUtilTest, we should not actually be converting to target CCSID of 65535;
+					// instead, a field CCSID of 65535 allows us to store data in any CCSID to the field; conversion is important
+					// when creating the target image: Text should be converted directly from source CCSID to target CCSID (i.e,
+					// never transitions to / from 65535!)
+					final byte[] gzImage = unitPropData.getSourceGzImage();
+
+					// perform parameter mapping from 'unit' to 'master'
+					dsaimUtil.mapGZParameters(gzImage, session, apv, apjRecords, unitPropData.getSourceUnitCcsid(), true);
+
+					// store in prop data
+					globalPropData.setSourceGzImage(gzImage);
+
+					// prepare GS image
+					if (unitPropData.getSourceGsImage() != null && unitPropData.getSourceGsImage().length > 0)
+					{
+						// store GS image into prop data
+						globalPropData.setSourceGsImage(unitPropData.getSourceGsImage());
+					}
+					else
+					{
+						// GS should be empty
+						globalPropData.setSourceGsImage(new byte[0]);
+					}
+
+					if (unitPropData != null)
+					{
+						Set<SystemUnit> su = new HashSet<SystemUnit>();
+
+						if (!(unitPropData.getApiFormat().equals("GZH181")))
+						{
+							String propRuleId = unitPropData.getPropagationRuleId();
+							GPRRecordDataModel gprRecordData = getRules(propRuleId);
+
+							su = retrieveSystemUnit(propRuleId, gprRecordData.getPropagateToAllUnits(), fromSystemId, fromUnitId);
+						}
+						else
+						{
+							SystemUnit systemUnitITA = new SystemUnit(globalHeader.getToServer(), globalHeader.getToUnit());
+							su.add(systemUnitITA);
+						}
+						for (SystemUnit value : su)
+						{
+							GlobalAuditPropagationHeader cGlobalHeader = (GlobalAuditPropagationHeader) globalHeader.clone();
+
+							cGlobalHeader.setToServer(value.getSystem());
+							cGlobalHeader.setToUnit(value.getUnit());
+
+							gaPropHeader.add(cGlobalHeader);
+						}
+					}
+
+					// GAVDSEQ
+					long propDataSeqId = GlobalAuditUtils.generateNextSequence(gauDao, GlobalAuditUtils.GAV_SEQ);
+					globalPropData.setSequenceId(propDataSeqId);
+
+					// write to global GAUPF / GAUPV
+					created = createAuditPropagationRecord(gaPropHeader, globalPropData);
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			LOG.error("Could not copy audit propagation", e);
+		}
+
+		return created;
+	}
+
+	public boolean createAuditPropagation(Collection<PropData> propData, GYRecordDataModel gyRecord, SAPJ10RDS sourceImage,
+					String fromSystemId, String fromUnitId, APVRecordDataModel apv, List<APJRecordDataModel> apjRecords,
+					AuditStatus initialStatus, String keyType, String subChar, String excludeString, boolean isLinkedCustomerRule,
+					AuditType type) throws EQException
+	{
+		boolean isCreated = false;
+
+		// List for GAUPF
+		List<GlobalAuditPropagationHeader> globalPropHeader = new ArrayList<GlobalAuditPropagationHeader>();
+
+		// Audit propagation data for GAVPF
+		GlobalAuditPropagationData globalPropData = new GlobalAuditPropagationData(session);
+
+		// List for GAFPF
+		List<GAFRecordDataModel> gafRecordList = new ArrayList<GAFRecordDataModel>();
+
+		// save excludeString for pickup by applicator
+		globalPropData.setExcludedFields(excludeString);
+
+		try
+		{
+			// Sequence number for GAVPF.GAVDSEQ and GAFPF.GAFDSEQ
+			final long propDataSeqId = GlobalAuditUtils.generateNextSequence(gauDao, GlobalAuditUtils.GAV_SEQ);
+
+			EquationUnit eqUnit = session.getUnit();
+
+			// NOTE: set fields only once into GAF!
+			boolean gafFieldsSet = false;
+
+			// get data from propData for GAUPF
+			for (PropData pd : propData)
+			{
+				final GlobalAuditPropagationHeader header = new GlobalAuditPropagationHeader();
+
+				// store this record that will be used to create the GAURecordDataModel into the 'propData' bean for reference
+				// purposes
+				pd.setRecord(header);
+
+				// for GAUPF
+				header.setSessionId(session.getSessionIdentifier());
+				header.setUser(gyRecord.getUserId());
+
+				header.setSourceServer(fromSystemId);
+				header.setSourceUnit(fromUnitId);
+				header.setSource(type.getValue());
+
+				header.setOptionId(apv.getApiReference());
+
+				// SET key type for reference details and details type
+				header.setReferenceDetailsType(keyType);
+
+				// NOTE: MAB is a linked customer rule but DOES NOT USE customer number as key (it uses account number), so the
+				// reference details should remain as is for it.
+				header.setReferenceDetails(isLinkedCustomerRule && !"MAB".equals(apv.getApiReference()) ? pd.getCustomerNumber()
+								: sourceImage.getKeyIn());
+
+				// set target server/unit
+				header.setToServer(pd.getTargetSystem());
+				header.setToUnit(pd.getTargetUnit());
+
+				// set audit timestamp
+				header.setAuditTimestamp(getTimeStamp());
+
+				// set processing time
+				header.setProcessingDate(eqUnit.getProcessingDateCYYMMDD());
+
+				// set audit header type
+				header.setStatus(initialStatus.getValue());
+
+				// add to header hashmap
+				globalPropHeader.add(header);
+
+				// for GAVPF (NOTE: the rule ID and conditions are assumed to be the SAME for all prop data!
+				globalPropData.setPropagationRuleId(pd.getRuleId());
+				globalPropData.setConditions(pd.getCondition());
+
+				// for GAFPF
+				if (!gafFieldsSet)
+				{
+					String includeAll = pd.getIncludeAllFields();
+					Set<String> includeAllFields = includeAll.equals("Y") ? pd.getExcludeFields() : pd.getIncludeFields();
+					for (String val : includeAllFields)
+					{
+						GAFRecordDataModel gafRecord = new GAFRecordDataModel();
+						gafRecord.setSequenceId(propDataSeqId);
+						gafRecord.setFieldName(val);
+						gafRecord.setIncludeAllFields(includeAll);
+						gafRecordList.add(gafRecord);
+					}
+
+					// since we've now set the fields, don't set them again for the other prop data headers because first, they'll
+					// all be the same anyway, and second, it will result in Integrity Constraint violations on GAFPF!
+					gafFieldsSet = true;
+				}
+			}
+
+			// store GAV data
+			globalPropData.setSequenceId(propDataSeqId);
+
+			int sourceCCSID = eqUnit.getCcsid();
+			globalPropData.setSourceUnitCcsid(sourceCCSID);
+			globalPropData.setSourceUnit(fromUnitId);
+			globalPropData.setSourceServerId(fromSystemId);
+			globalPropData.setUserId(gyRecord.getUserId());
+			globalPropData.setWorkstationId(gyRecord.getWorkstationId());
+			globalPropData.setDayInMonth(gyRecord.getDayInMonth());
+			globalPropData.setTimeHhmmss(gyRecord.getTimeHhmmss());
+			globalPropData.setSequenceNumber(gyRecord.getSequenceNumber());
+			globalPropData.setType(gyRecord.getJournalTransType());
+
+			// initialise DSAIMUtil
+			final DSAIMUtil dsaimUtil = new DSAIMUtil(subChar);
+			HashMap<String, byte[]> images = dsaimUtil.splitImages(session.getUnit(), sourceImage.getApiData(),
+							sourceImage.getDsaimLength(), apv, apjRecords);
+
+			// NOTE: after testing with DSAIMUtilTest, we should not actually be converting to target CCSID of 65535; instead, a
+			// field CCSID of 65535 allows us to store data in any CCSID to the field; conversion is important when creating the
+			// target image: Text should be converted directly from source CCSID to target CCSID (i.e, never transitions to / from
+			// 65535!)
+			final byte[] gzImage = images.get("GZImage");
+			byte[] gsImage = images.get("GSImage");
+
+			// perform parameter mapping from 'unit' to 'master'
+			dsaimUtil.mapGZParameters(gzImage, session, apv, apjRecords, sourceCCSID, true);
+
+			// store GS (if present)
+			final boolean hasGSFields = dsaimUtil.hasGSFields(apjRecords);
+			if (!hasGSFields || gsImage == null)
+			{
+				// empty GS image!
+				gsImage = new byte[0];
+			}
+
+			globalPropData.setSourceGzImage(gzImage);
+			globalPropData.setSourceGsImage(gsImage);
+			globalPropData.setApiFormat(apv.getApiFileName());
+
+			// write unit GAUPF and GAVPF into global library
+			isCreated = createAuditPropagationRecord(globalPropHeader, globalPropData);
+
+			// write unit GAFPF into global library
+			isCreated = insertPropFields(gafRecordList);
+		}
+		catch (Exception e)
+		{
+			LOG.error("Could not create audit propagation", e);
+			throw new EQException("Could not create audit propagation", e);
+		}
+		return isCreated;
+	}
+
+	public boolean createAuditApplyStatus(long auditHeaderId, AuditStatus status, ApplyType applyType, String errorMessages)
+	{
+		boolean applied = false;
+		try
+		{
+			GlobalAuditUtils.insertPropData(session, auditHeaderId, status, applyType, errorMessages);
+
+			applied = true;
+		}
+		catch (Exception e)
+		{
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error("Unable to create audit apply status.", e);
+			}
+		}
+
+		return applied;
+	}
+
+	public boolean createAuditApplyLink(long auditHeaderId, String toSystemId, String toUnitId, String gyusid, String gywsid,
+					int gydim, int gytim, int gyseq)
+	{
+		boolean applied = false;
+		try
+		{
+			int sequence = GlobalAuditUtils.getGALActionSequence(session, auditHeaderId);
+
+			GALRecordDataModel galRecord = new GALRecordDataModel();
+			galRecord.setSequenceId(auditHeaderId);
+			galRecord.setActionSequence(sequence);
+			galRecord.setToServer(toSystemId);
+			galRecord.setToUnit(toUnitId);
+			galRecord.setUserId(StringUtils.substring(gyusid, 0, 4));
+			galRecord.setWorkstationId(gywsid);
+			galRecord.setDayInMonth(gydim);
+			galRecord.setTimeHhmmss(gytim);
+			galRecord.setSequenceNumber(gyseq);
+
+			IGALRecordDao galDao = new DaoFactory().getGALDao(session, new GALRecordDataModel());
+			galDao.insertRecord(galRecord);
+			applied = true;
+		}
+		catch (Exception e)
+		{
+			LOG.error("Could not write a propagation audit link record", e);
+		}
+
+		return applied;
+	}
+
+	public boolean applyPropagationImage(long auditHeaderId, String autoManualApplyType, String subChar, long propId)
+					throws EQException
+	{
+		boolean applied = false;
+		String query = "SELECT COUNT(*) FROM GAAPF WHERE GAASEQ = " + auditHeaderId + " AND GAASTS IN ('A','C')";
+
+		try
+		{
+			int results = GlobalAuditUtils.getSQLCountValue(session, query);
+
+			if (results > 0)
+			{
+				applied = true;
+
+				// already applied! why is GAUSTS == ' '? force to 'A'
+				updateAuditPropagationStatus(auditHeaderId, "A");
+			}
+			else
+			{
+				if ("A".equalsIgnoreCase(autoManualApplyType))
+				{
+					// select from gaapf table where sequence id = auditHeaderId and type = retry
+					// and status is failed and retry sequence = gaarseqCount
+					StringBuilder sbQuery = new StringBuilder();
+					sbQuery.append("SELECT COUNT(*) FROM GAAPF");
+					sbQuery.append(" WHERE GAASEQ = " + auditHeaderId);
+					sbQuery.append(" AND GAATYP = '" + ApplyType.RETRY.getValue() + "'");
+					sbQuery.append(" AND GAASTS = '" + AuditStatus.FAILED.getValue() + "'");
+
+					// NOTE: We should only be checking the last action value!
+					sbQuery.append(" AND GAARSEQ = (SELECT COALESCE(MAX(GAARSEQ),0) FROM GAAPF WHERE GAASEQ = " + auditHeaderId
+									+ ")");
+
+					results = GlobalAuditUtils.getSQLCountValue(session, sbQuery.toString());
+
+					if (results > 0)
+					{
+						applied = false;
+					}
+					else
+					{
+						GlobalAuditingApplicator gaApplicator = new GlobalAuditingApplicator(session);
+						applied = gaApplicator.applyImage(auditHeaderId, subChar);
+						lastError = gaApplicator.getErrorMessage();
+
+						if (applied)
+						{
+							AuditStatus auditStatus = gaApplicator.isWithCCSIDErrors() ? AuditStatus.CCSID_ERRORS
+											: AuditStatus.APPLIED;
+							// update status of header record to be processed
+							updateAuditPropagationStatus(auditHeaderId, auditStatus.getValue());
+
+							// Create a link record (with the GY details) GALPF
+							GAVRecordDataModel gavRecord = GlobalAuditUtils.getGlobalPropData(session, propId);
+							createAuditApplyLink(auditHeaderId, session.getSystemId(), session.getUnitId(), session.getUserId(),
+											gavRecord.getWorkstationId(), gavRecord.getDayInMonth(), gavRecord.getTimeHhmmss(),
+											gavRecord.getSequenceNumber());
+
+							// SUCCESS
+							createAuditApplyStatus(auditHeaderId, auditStatus, ApplyType.AUTO, lastError);
+						}
+						else
+						{
+							// update status of header record to be processed
+							updateAuditPropagationStatus(auditHeaderId, AuditStatus.FAILED.getValue());
+
+							// FAIL
+							createAuditApplyStatus(auditHeaderId, AuditStatus.FAILED, ApplyType.RETRY, lastError);
+						}
+					}
+				}
+			}
+		}
+		catch (EQException e)
+		{
+			LOG.error("Unable to apply propagation image.", e);
+
+			// don't wrap EQException
+			throw e;
+		}
+		catch (Exception e)
+		{
+			LOG.error("Unable to apply propagation image.", e);
+
+			throw new EQException("Unable to apply propagation image.", e);
+		}
+
+		return applied;
+	}
+
+	/**
+	 * Returns the last error message encountered, blanks if none.
+	 * 
+	 * @return The last error message encountered, blanks if none.
+	 */
+	public String getLastError()
+	{
+		return lastError;
+	}
+
+	private boolean isSystemAvailable(String system, String unit)
+	{
+		boolean available = false;
+
+		sysStatus.refreshAllSystemStatus();
+		SystemStatus systemStatus = sysStatus.getSystemStatus(system);
+
+		if (systemStatus != null && systemStatus.isAvailable())
+		{
+			UnitStatus unitStatus = systemStatus.getUnitStatus(unit);
+
+			if (unitStatus != null)
+			{
+				available = unitStatus.isAvailable();
+			}
+		}
+		return available;
+	}
+
+	private void insertAuditPropHeader(GlobalAuditPropagationHeader header, long parentId) throws EQException
+	{
+		// generate a new sequence number for the header table
+		long auditHeaderSeqId = GlobalAuditUtils.generateNextSequence(gauDao, GlobalAuditUtils.GAU_SEQ);
+
+		// GAUSEQ
+		header.setSequenceId(auditHeaderSeqId);
+
+		// GAUDSEQ
+		header.setPropDataSequenceNumber(parentId);
+
+		final IGAURecordDao dao = new DaoFactory().getGAUDao(session, new GAURecordDataModel());
+		dao.insertRecord(header);
+	}
+
+	private boolean insertPropFields(List<GAFRecordDataModel> gafRecordList) throws EQException
+	{
+		boolean recordInserted = false;
+		try
+		{
+			GAFRecordDao gafDao = (GAFRecordDao) new DaoFactory().getGAFDao(session, new GAFRecordDataModel());
+
+			gafDao.insertRecords(gafRecordList);
+
+			recordInserted = true;
+		}
+		catch (Exception e)
+		{
+			throw new EQException("Error inserting propagation fields", e);
+		}
+
+		return recordInserted;
+	}
+
+	private GPRRecordDataModel getRules(String ruleId) throws EQException
+	{
+		final IGPRRecordDao dao = new DaoFactory().getGPRDao(session, new GPRRecordDataModel());
+		final List<GPRRecordDataModel> data = GlobalAuditUtils.coerce(dao.getRecordBy("GPRRID = '" + ruleId + "'"));
+		if (data.size() >= 1)
+		{
+			return data.get(0);
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	private Set<SystemUnit> retrieveSystemUnit(String ruleId, String propagateFlag, String fromSystem, String fromUnit)
+	{
+		// Create a hashmap of all systems/units (excluding the from system/unit) from the GPXPF table.
+		Set<SystemUnit> systemUnits = GlobalAuditUtils.getNonOriginatingSystemUnits(session, ruleId, fromSystem, fromUnit);
+
+		// Set of all terminating system-units from GPUPF
+		Set<SystemUnit> gpuUnits = GlobalAuditUtils.getGPUPFUnits(session, ruleId, "T");
+
+		Set<SystemUnit> terminatingSystemUnits = new HashSet<SystemUnit>();
+		if (propagateFlag.equalsIgnoreCase("Y"))
+		{
+			// terminating units == systemUnits - gpuUnits
+			terminatingSystemUnits.addAll(systemUnits);
+			terminatingSystemUnits.removeAll(gpuUnits);
+		}
+		else
+		{
+			terminatingSystemUnits.addAll(gpuUnits);
+		}
+
+		return terminatingSystemUnits;
+	}
+
+	private Timestamp getTimeStamp() throws EQException
+	{
+		EquationSystem eqSystem = session.getUnit().getEquationSystem();
+		final AS400 as400 = eqSystem.getAS400();
+
+		Timestamp timeStamp;
+
+		try
+		{
+			timeStamp = new Timestamp(GlobalAuditUtils.getQDateTime(as400).getTimeInMillis());
+		}
+		finally
+		{
+			eqSystem.returnAS400(as400);
+		}
+		return timeStamp;
+	}
+}

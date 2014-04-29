@@ -1,0 +1,189 @@
+package com.misys.equation.function.test.option;
+
+import com.misys.equation.common.access.IEquationStandardObject;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.function.beans.APIFieldSet;
+import com.misys.equation.function.beans.DisplayAttributes;
+import com.misys.equation.function.beans.DisplayAttributesSet;
+import com.misys.equation.function.beans.DisplayGroup;
+import com.misys.equation.function.beans.DisplayLabel;
+import com.misys.equation.function.beans.InputField;
+import com.misys.equation.function.beans.InputFieldSet;
+import com.misys.equation.function.beans.PVFieldSet;
+import com.misys.equation.function.test.helper.DisplayFieldSetWrapper;
+import com.misys.equation.function.test.helper.FunctionGenerator;
+import com.misys.equation.function.test.run.FunctionToolboxStub;
+import com.misys.equation.function.tools.FunctionToolbox;
+import com.misys.equation.function.tools.MappingToolbox;
+
+public class HCX2 extends TestOptionStub
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	private String id;
+	private String mode;
+	private String newCode;
+
+	public HCX2()
+	{
+		try
+		{
+			setUp();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] inputParameters)
+	{
+		HCX2 test = new HCX2();
+		test.test("HCX", "Add/Maintain Hold Code", IEquationStandardObject.FCT_FUL, true);
+	}
+
+	private DisplayFieldSetWrapper addRecord1(FunctionGenerator fg) throws EQException
+	{
+		// add the record
+		DisplayFieldSetWrapper fieldSetWrapper = fg.addFieldSet("PRIMARY", "Record 1 of HCX2", "Description 1 of HCX2");
+		InputFieldSet inputFieldSet = fieldSetWrapper.getInputFieldSet();
+		DisplayAttributesSet attributeSet = fieldSetWrapper.getDisplayAttributesSet();
+
+		// input field
+		InputField inputField;
+		DisplayAttributes displayAttributes;
+		PVFieldSet pvFieldSet;
+
+		// Key group
+		DisplayGroup keygroup = new DisplayGroup("+KEYS", "Key", "Key description");
+		attributeSet.addItem(keygroup);
+
+		// add all the fields in this section ---------------------------------------
+
+		// Hold code
+		inputField = FunctionToolbox.getInputField("HLD", "Hold code", "This is the hold code", "A", "3", "");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		inputField.setKey(true);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setAllowPredictivePrompt(true);
+		displayAttributes.setPrompt("JVR01R");
+		displayAttributes.setLinkedFuncId("RLA");
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		keygroup.addItem(displayAttributes);
+		pvFieldSet = FunctionToolbox.addPVFieldSet(inputField, FunctionToolbox.getPVFieldSet(session, "JVR01R", "", true, ""));
+
+		// Hold code description
+		inputField = FunctionToolbox.getInputField("DSC", "Hold code description", "This is the hold code description", "A", "35",
+						"");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		if (id.equals("HC3"))
+		{
+			displayAttributes.setRtl(true);
+		}
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+		FunctionToolbox.addPVFieldSet(inputField, FunctionToolbox.getPVFieldSet(session, "GWV59R", "", true, ""));
+
+		// Display label
+		DisplayLabel displayLabel = FunctionToolbox.getDisplayLabel("", "Display Label", "Display label description");
+		FunctionToolbox.addDisplayLabel(attributeSet, displayLabel);
+
+		return fieldSetWrapper;
+	}
+
+	private void addLoadAPI(FunctionGenerator fg) throws EQException
+	{
+		APIFieldSet apiFieldSet = FunctionToolbox.getLoadAPIFieldSet(session, "LID", "HCI", "J46F", "GZJ461",
+						"Add/Maintain/Delete Hold Code", mode, true);
+		fg.addLoadAPIFieldSet("PRIMARY", apiFieldSet);
+
+		if (id.equals("HC6"))
+		{
+			apiFieldSet.setNewField("");
+		}
+
+		// PVFieldSet pvFieldSet = FunctionToolbox.getPVFieldSet(session, "JVR01R", "", false, newCode, MappingToolbox
+		// .getFullLoadFieldSetPath("PRIMARY", "LID"));
+		// fg.setLoadPVFieldSet("PRIMARY", pvFieldSet);
+	}
+
+	private void addUpdateAPI(FunctionGenerator fg) throws EQException
+	{
+		APIFieldSet apiFieldSet = FunctionToolbox.getAPIFieldSet(session, "LID", "HCI", "J46F", "Add/Maintain/Delete Hold Code",
+						mode);
+		fg.addUpdateAPIFieldSet(apiFieldSet);
+	}
+
+	private void addMappings(FunctionGenerator fg) throws EQException
+	{
+		// add validate mapping
+		fg.addValidateMappingFromPV("PRIMARY", "HLD", "JVR01R", "$JVHRC", "PRIMARY", "HLD", MappingToolbox.TYPE_PRIMITIVE);
+		fg.addValidateMappingFromPV("PRIMARY", "HLD", "JVR01R", "$JVDSCS", "PRIMARY", "HLD", MappingToolbox.TYPE_OUTPUT);
+
+		// add update mapping
+		fg.addUpdateMapping("PRIMARY", "HLD", "LID", "GZHRC");
+		fg.addUpdateMapping("PRIMARY", "DSC", "LID", "GZHRD");
+
+		// load PV field set
+		fg.addLoadMappingToPVLoad("PRIMARY", "HLD", "PRIMARY", "JVR01R", "$JVHRC");
+
+		// add load mapping
+		fg.addLoadMappingToLoad("PRIMARY", "HLD", "PRIMARY", "LID", "GZHRC");
+		fg.addLoadMappingFromLoad("PRIMARY", "LID", "GZHRD", "PRIMARY", "DSC", MappingToolbox.TYPE_PRIMITIVE);
+		fg.addLoadMappingFromLoad("PRIMARY", "LID", "GZHRD", "PRIMARY", "DSC", MappingToolbox.TYPE_OUTPUT);
+
+		// context mapping
+		fg.addContextMapping("HLD", "$GRP");
+	}
+
+	public FunctionGenerator test(String id, String desc, String mode, boolean print)
+	{
+		// Have a bash...
+		try
+		{
+			this.id = id;
+			this.mode = mode;
+			this.newCode = "";
+			if (mode.equals("A"))
+			{
+				newCode = "Y";
+			}
+			else if (mode.equals("M") || mode.equals("D"))
+			{
+				newCode = "N";
+			}
+
+			printStartStatus(this.getClass().getSimpleName());
+			FunctionGenerator fg = new FunctionGenerator(id, desc, "This is the description of " + desc,
+							"com.misys.equation.screens", "com.misys.equation.screens.layout");
+			fg.getFunction().setAllowedAdd(true);
+			fg.getFunction().setAllowedMaint(true);
+			fg.getFunction().setAllowedDel(true);
+			addRecord1(fg);
+			addLoadAPI(fg);
+			addUpdateAPI(fg);
+			addMappings(fg);
+
+			// print the serialise version
+			if (print)
+			{
+				// Write to DB
+				FunctionToolboxStub.writeToDB(unit, fg.getFunctionBean(), fg.getLayoutBean(), null, null);
+				// FunctionToolboxStub.writeToDB(unit, fg, true);
+
+				// print
+				printCompleteStatus(fg, this.getClass().getSimpleName(), printXML);
+			}
+
+			return fg;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+}

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="EquationCommon">
+        <wb-resource deploy-path="/" source-path="/src"/>
+        <wb-resource deploy-path="/" source-path="/resources"/>
+        <wb-resource deploy-path="/" source-path="/test"/>
+        <wb-resource deploy-path="/" source-path="/src_test"/>
+        <wb-resource deploy-path="/" source-path="/src_gen/com.misys.equation.common.dao"/>
+        <wb-resource deploy-path="/" source-path="/src_gen/com.misys.equation.common.dao.beans"/>
+        <wb-resource deploy-path="/" source-path="/src_gen/com.misys.equation.common.internal.dao"/>
+        <wb-resource deploy-path="/" source-path="/src_gen/com.misys.equation.common.internal.dao.mappers"/>
+        <wb-resource deploy-path="/" source-path="/src_gen"/>
+    </wb-module>
+</project-modules>

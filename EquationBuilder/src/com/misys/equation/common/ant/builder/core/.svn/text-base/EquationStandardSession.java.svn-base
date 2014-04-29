@@ -1,0 +1,84 @@
+package com.misys.equation.common.ant.builder.core;
+
+import java.sql.Connection;
+import java.util.Hashtable;
+
+import com.misys.equation.common.ant.builder.helpText.helpers.Toolbox;
+
+/**
+ * @author weddelc1
+ * 
+ */
+public class EquationStandardSession
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	// This is the connection related to the current session.
+	private Connection connection;
+
+	private final Hashtable<String, EquationDataStructure> equationDataStructures = new Hashtable<String, EquationDataStructure>();
+
+	private String userId;
+	private int ccsid;
+
+	// end from EQSessionImpl
+
+	/**
+	 * Construct an Equation Standard Session using the connection from the user
+	 * 
+	 * @param eqUser
+	 *            - the Equation user
+	 */
+	public EquationStandardSession(Connection connection)
+	{
+		this.connection = connection;
+	}
+
+	/**
+	 * Return the AS400 connection
+	 */
+	public Connection getConnection()
+	{
+		return connection;
+	}
+
+	public EquationDataStructure getEquationDataStructure(String formatName)
+	{
+		if (equationDataStructures.containsKey(formatName))
+		{
+			return equationDataStructures.get(formatName);
+		}
+		else
+		{
+			EquationDataStructure equationDataStructure = new EquationDataStructure(formatName, this);
+			equationDataStructures.put(formatName, equationDataStructure);
+			return equationDataStructure;
+		}
+	}
+
+	public String getUserId()
+	{
+		return userId;
+	}
+	public int getCcsid()
+	{
+		return ccsid;
+	}
+
+	/**
+	 * Return the String representation
+	 * 
+	 * @return the String representation
+	 */
+	@Override
+	public String toString()
+	{
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("JobId = " + Toolbox.getJobId(getConnection()) + "\n");
+		buffer.append("User  = " + userId + "\n");
+		buffer.append("Ccsid = " + ccsid + "\n");
+
+		return buffer.toString();
+	}
+}

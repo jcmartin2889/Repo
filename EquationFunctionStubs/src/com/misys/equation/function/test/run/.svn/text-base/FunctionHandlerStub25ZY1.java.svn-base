@@ -1,0 +1,114 @@
+package com.misys.equation.function.test.run;
+
+import com.misys.equation.common.dao.beans.WERecordDataModel;
+import com.misys.equation.function.beans.Function;
+import com.misys.equation.function.beans.FunctionData;
+import com.misys.equation.function.beans.RepeatingDataManager;
+import com.misys.equation.function.runtime.FunctionHandler;
+import com.misys.equation.function.runtime.FunctionSession;
+import com.misys.equation.function.runtime.ScreenSetHandler;
+import com.misys.equation.function.tools.SupervisorToolbox;
+
+/**
+ * FunctionHandler Stub 1
+ * 
+ * This is how to use the Function Handler with validate and update processing done separately
+ * 
+ */
+public class FunctionHandlerStub25ZY1 extends FunctionHandlerStubTestCase
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	public FunctionHandlerStub25ZY1()
+	{
+		try
+		{
+			setUp();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] inputParameters)
+	{
+		FunctionHandlerStub25ZY1 test = new FunctionHandlerStub25ZY1();
+		test.test();
+	}
+
+	public boolean test()
+	{
+		// Have a bash...
+		FunctionHandler functionHandler = null;
+		try
+		{
+			// Add XX4
+			System.out.println("------------------------------- 1");
+			functionHandler = FunctionToolboxStub.getFunctionHandler(user, "SESSIONID", "");
+			functionHandler.doNewTransaction("ZY1", "");
+			Function function = functionHandler.getFhd().getScreenSetHandler().rtvScrnSetCurrent().getFunction();
+			FunctionData functionData = functionHandler.getFhd().getScreenSetHandler().rtvScrnSetCurrent().getFunctionData();
+			RepeatingDataManager dataManager = functionData.getRepeatingDataManagers().get(0);
+			functionHandler.applyRetrieveTransaction();
+
+			// check that we have enough rows
+			System.out.println("CONTENT OF FUNCTIONDATA");
+			System.out.println(functionData);
+			System.out.println("===========");
+			FunctionToolboxStub.printMessages(functionHandler.rtvFunctionMessages().getMessages());
+			assertTrue(functionHandler.rtvFunctionMessages().getMessages().size() == 0);
+			assertTrue(dataManager.totalRows() >= 5);
+
+			// save it
+			functionHandler.save(WERecordDataModel.STAT_WIP, "STUB25ZY1");
+
+			// NOW RESTORE IT
+			System.out.println("RESTORE TIME");
+			FunctionHandler fh = FunctionToolboxStub.getFunctionHandler(user, "SESSIONID", "");
+			FunctionSession fs = functionHandler.getFhd().getFunctionSession();
+			fh.restore(fs.getOptionId(), fs.getSessionId(), fs.getUserId(), fs.getTransactionId(), null,
+							ScreenSetHandler.SCREENSET_DEFAULT);
+			FunctionData copyFunctionData = fh.getFhd().getScreenSetHandler().rtvScrnSetCurrent().getFunctionData();
+			RepeatingDataManager copyManager = copyFunctionData.getRepeatingDataManagers().get(0);
+
+			System.out.println("CONTENT OF FUNCTIONDATA AFTER RESTORE");
+			System.out.println(copyFunctionData);
+			System.out.println("===========");
+			assertTrue(copyManager.totalRows() == dataManager.totalRows());
+			FunctionToolboxStub.printMessages(fh.rtvFunctionMessages().getMessages());
+
+			String fieldName = functionData.equalFd(function, copyFunctionData);
+			assertTrue(fieldName.equals(""));
+			System.out.println("field name = " + fieldName);
+
+			return (fieldName.equals(""));
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+		finally
+		{
+			if (functionHandler != null)
+			{
+				if (functionHandler.getFhd().getFunctionSession() != null)
+				{
+					SupervisorToolbox.removeSession(functionHandler.getFhd().getFunctionSession(), functionHandler.getFhd()
+									.getEquationUser().getEquationUnit());
+				}
+			}
+			cleanUp();
+		}
+	}
+	public void testStub25ZY1()
+	{
+		FunctionHandlerStub25ZY1 stub = new FunctionHandlerStub25ZY1();
+		boolean success = stub.test();
+		assertEquals(true, success);
+	}
+
+}

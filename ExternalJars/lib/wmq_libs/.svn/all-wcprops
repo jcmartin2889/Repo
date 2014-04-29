@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/repos/bfeq_src/!svn/ver/17755/branches/BFEQ_Branch_3-1/ExternalJars/lib/wmq_libs
+END
+dhbcore.jar
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/repos/bfeq_src/!svn/ver/17755/branches/BFEQ_Branch_3-1/ExternalJars/lib/wmq_libs/dhbcore.jar
+END
+com.ibm.mqjms.jar
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/repos/bfeq_src/!svn/ver/17755/branches/BFEQ_Branch_3-1/ExternalJars/lib/wmq_libs/com.ibm.mqjms.jar
+END
+com.ibm.mq.jmqi.jar
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/repos/bfeq_src/!svn/ver/17755/branches/BFEQ_Branch_3-1/ExternalJars/lib/wmq_libs/com.ibm.mq.jmqi.jar
+END

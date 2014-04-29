@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/helpText/backEnd
+END
+AbsEquationDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/helpText/backEnd/AbsEquationDao.java
+END
+GAERecordDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/helpText/backEnd/GAERecordDao.java
+END
+GAERecordResultSetExtractor.java
+K 25
+svn:wc:ra_dav:version-url
+V 167
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/helpText/backEnd/GAERecordResultSetExtractor.java
+END
+SQLToolbox.java
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/helpText/backEnd/SQLToolbox.java
+END
+GAERecordRowMapper.java
+K 25
+svn:wc:ra_dav:version-url
+V 158
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/helpText/backEnd/GAERecordRowMapper.java
+END
+DaoFactory.java
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/helpText/backEnd/DaoFactory.java
+END
+IDao.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationBuilder/src/com/misys/equation/common/ant/builder/helpText/backEnd/IDao.java
+END

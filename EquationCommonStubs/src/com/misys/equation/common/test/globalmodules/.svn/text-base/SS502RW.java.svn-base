@@ -1,0 +1,17 @@
+package com.misys.equation.common.test.globalmodules;
+
+import com.misys.equation.common.test.EquationTestCaseGlobalModuleMetaData;
+
+public class SS502RW extends EquationTestCaseGlobalModuleMetaData
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		validCCN = "D0000000001001";
+		invalidCCN = "DX000000001001";
+	}
+
+}

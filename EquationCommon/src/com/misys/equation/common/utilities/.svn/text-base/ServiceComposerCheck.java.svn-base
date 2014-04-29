@@ -1,0 +1,47 @@
+package com.misys.equation.common.utilities;
+
+public class ServiceComposerCheck
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(ServiceComposerCheck.class);
+
+	/**
+	 * Indicates whether Service Composer is installed. Do not use this method directly! Use EquationCommonContext
+	 * isServiceComposerInstalled() method instead as indirection is needed. Catch here may not occur as load of
+	 * ServiceComposerCheck class itself will fail if EquationFunctionWizardPlugin is not installed.
+	 * 
+	 * @return boolean
+	 */
+	public static boolean isServiceComposerInstalled()
+	{
+		boolean result = false;
+		try
+		{
+			Class scClass = Class.forName("com.misys.equation.fb.plugin.EquationFunctionWizardPlugin");
+			if (scClass != null)
+			{
+				result = true;
+			}
+		}
+		catch (ClassNotFoundException e)
+		{
+			// This situation is expected when Service Composer application is not installed,
+			// so no error handling is required.
+		}
+		catch (Throwable t)
+		{
+			// This situation is expected when Service Composer application is not installed,
+			// so no error handling is required.
+		}
+
+		if (LOG.isInfoEnabled())
+		{
+			LOG.info("isServiceComposerInstalled - returning " + result);
+		}
+		return result;
+	}
+}

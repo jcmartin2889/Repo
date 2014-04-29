@@ -1,0 +1,60 @@
+package com.misys.equation.common.dao.beans;
+
+import java.util.Map;
+
+public class GPETotalPerDateDataModel extends AbsRecord
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	/**
+	 * Serial UID
+	 */
+	private static final long serialVersionUID = -5372958223809553063L;
+
+	private String currency;
+	private Map<String, Long> dailyPositions;
+	private long startingBalance;
+
+	public GPETotalPerDateDataModel(String currency, Map<String, Long> days)
+	{
+		this.currency = currency;
+		this.dailyPositions = days;
+	}
+
+	public GPETotalPerDateDataModel(String currency, long[] dailyPositions, long startingBalance)
+	{
+		super();
+		this.currency = currency;
+		this.startingBalance = startingBalance;
+	}
+
+	public String getCurrency()
+	{
+		return currency;
+	}
+
+	public void setCurrency(String currency)
+	{
+		this.currency = currency;
+	}
+
+	public Map<String, Long> getDailyPositions()
+	{
+		return dailyPositions;
+	}
+
+	public void setDailyPositions(Map<String, Long> dailyPositions)
+	{
+		this.dailyPositions = dailyPositions;
+	}
+
+	public long getStartingBalance()
+	{
+		return startingBalance;
+	}
+
+	public void setStartingBalance(long startingBalance)
+	{
+		this.startingBalance = startingBalance;
+	}
+}

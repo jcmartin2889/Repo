@@ -1,0 +1,94 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseAddMore;
+
+/**
+ * Equation test cases for Special Sundry Item function
+ */
+public class SSI extends EquationTestCaseAddMore
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: SSI.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	String programName = "H15ARR";
+	String optionId = "SSI";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZAB", "9999"); // Account branch (4A)
+		transaction.setFieldValue("GZAN", "999999"); // Basic part of account number (6A)
+		transaction.setFieldValue("GZAS", "999"); // Account suffix (3A)
+		transaction.setFieldValue("GZTCD", "XXX"); // Transaction code (3A)
+	}
+
+	/**
+	 * Setup an existing key fields
+	 */
+	@Override
+	public void setupExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZAB", "0543"); // Account branch (4A)
+		transaction.setFieldValue("GZAN", "123107"); // Basic part of account number (6A)
+		transaction.setFieldValue("GZAS", "001"); // Account suffix (3A)
+		transaction.setFieldValue("GZTCD", "510"); // Transaction code (3A)
+	}
+
+	/**
+	 * Setup the mandatory fields
+	 */
+	@Override
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZCCY", "GBP"); // Currency mnemonic (3A)
+		transaction.setFieldValue("GZAMA", "543200"); // Ordinary amount in minor currency units (15P,0)
+		transaction.setFieldValue("GZVFR", "1000106"); // Value from date (7S,0)
+		transaction.setFieldValue("GZDRF", "Java test"); // Users own reference for deals, reconciliation etc (16A)
+		transaction.setFieldValue("GZNPE", "1"); // Number of posting entries (5P,0)
+		transaction.setFieldValue("GZPBR", "JUNT"); // Posting group id or user id, and group level (5A)
+		transaction.setFieldValue("GZBRNM", "LOND"); // Branch mnemonic (4A)
+		transaction.setFieldValue("GZSSI", "Y"); // Special item? (1A)
+	}
+
+}

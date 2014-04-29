@@ -1,0 +1,163 @@
+package com.misys.equation.common.access;
+
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+/**
+ * 
+ * This class will search for the keys that has eq.user.sessionlimit in the equationConfiguration properties then stores it in a
+ * Collection for future retrieval.
+ * 
+ */
+public class SessionLimitConfiguration
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private static SessionLimitConfiguration _this;
+	private static Map<String, Integer> userExtensionLimit = new HashMap<String, Integer>();
+	private static final String EQ_USER_SESSION_LIMIT = "eq.user.sessionlimit";
+	private static final String SESSION_LIMIT = "sessionlimit";
+	// Flag to store if users should be converted lower case (for non-CAS mode)
+	private boolean useLowerCaseUsers;
+	/**
+	 * private Constructor
+	 */
+	private SessionLimitConfiguration()
+	{
+	}
+	/**
+	 * Singleton
+	 * 
+	 * @return instance of SessionLimitConfiguration
+	 */
+	public static SessionLimitConfiguration getContext()
+	{
+		if (_this == null)
+		{
+			_this = new SessionLimitConfiguration();
+		}
+		return _this;
+	}
+	/**
+	 * loop through all the keys defined in the equationConfiguration.
+	 * 
+	 */
+	public void initialiseSessionLimit()
+	{
+		Properties p = EquationCommonContext.getConfigProperties();
+		Enumeration<Object> e = p.keys();
+		while (e.hasMoreElements())
+		{
+			String key = (String) e.nextElement();
+			if (key.indexOf(EQ_USER_SESSION_LIMIT) > -1)
+			{
+				setUserLimit(key);
+			}
+		}
+		setDefaultValue();
+		// For non-CAS mode user IDs are defined in lower case, for CAS mode they can be mixed case
+		useLowerCaseUsers = Boolean.valueOf("EQ".equals(EquationCommonContext.getConfigProperty("eq.credentials", "EQ")));
+	}
+	/**
+	 * Sets the key and value of the user id in the hashmap
+	 * 
+	 * @param key
+	 *            or userId from the login form
+	 */
+	private void setUserLimit(String key)
+	{
+
+		if (key.indexOf(EQ_USER_SESSION_LIMIT) > -1)
+		{
+			String user;
+			if (key.endsWith(SESSION_LIMIT))
+			{
+				// The default session limit for all users
+				user = SESSION_LIMIT;
+			}
+			else
+			{
+				// For CAS compatibility the user id is everything after "sessionlimit."
+				user = key.substring(key.indexOf(".", key.indexOf(SESSION_LIMIT)) + 1, key.length());
+			}
+			userExtensionLimit.put(user, getValue(user));
+		}
+
+	}
+	/**
+	 * Gets the value of session limit in the equationConfiguration.properties for each user
+	 * 
+	 * @param userId
+	 *            - from the login form
+	 * @return int - session limit defined in the equationConfiguration.properties
+	 */
+	private int getValue(String key)
+	{
+		String value = "";
+		int i = 0;
+		// Retrieve the system wide property
+		if (key.equals(SESSION_LIMIT))
+		{
+			value = EquationCommonContext.getConfigProperty(EQ_USER_SESSION_LIMIT);
+		}
+		// Retrieve the property defined for the user
+		else
+		{
+			value = EquationCommonContext.getConfigProperty(EQ_USER_SESSION_LIMIT + "." + key);
+		}
+		// Retrieve and validate the value
+		try
+		{
+			if (!value.trim().equals(""))
+			{
+				i = Integer.parseInt(value.trim());
+			}
+			// If value is blank, make the value unlimited
+			else
+			{
+				i = -1;
+			}
+		}
+		catch (NumberFormatException ex)
+		{
+			// If value is not numeric assign a value of -2
+			i = -2;
+		}
+		return i;
+	}
+	/**
+	 * Sets the default value to -1 if no (eq.user.sessionlimit) was defined in equationConfiguration.properties
+	 */
+	private void setDefaultValue()
+	{
+		if (userExtensionLimit.size() == 0)
+		{
+			userExtensionLimit.put(SESSION_LIMIT, -1);
+		}
+	}
+	/**
+	 * Get user's Limit using user id as key to the Hashmap
+	 * 
+	 * @param userId
+	 * @return int - value of the user's limit defined in the equationConfiguration.properties
+	 */
+	public int getSessionLimit(String userId)
+	{
+		// Only make user id lower case if in non-CAS mode
+		if (useLowerCaseUsers == true)
+		{
+			userId = userId.toLowerCase();
+		}
+		Integer i = userExtensionLimit.get(userId);
+		if (i == null)
+		{
+			return userExtensionLimit.get(SESSION_LIMIT);
+		}
+		else
+		{
+			return i;
+		}
+	}
+}

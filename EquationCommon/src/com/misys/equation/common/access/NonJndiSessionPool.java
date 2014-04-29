@@ -1,0 +1,666 @@
+package com.misys.equation.common.access;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+
+import org.springframework.jdbc.support.nativejdbc.WebSphereNativeJdbcExtractor;
+
+import com.ibm.as400.access.AS400;
+import com.ibm.as400.access.AS400JDBCConnection;
+import com.ibm.as400.access.AS400JDBCConnectionHandle;
+import com.ibm.as400.access.AS400JDBCConnectionPool;
+import com.ibm.as400.access.AS400JDBCConnectionPoolDataSource;
+import com.ibm.as400.access.AS400JDBCDataSource;
+import com.ibm.as400.access.ConnectionPoolException;
+import com.ibm.as400.security.auth.ProfileTokenCredential;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.internal.eapi.core.EQSessionProperties;
+import com.misys.equation.common.utilities.AS400Toolbox;
+import com.misys.equation.common.utilities.EqJobWatcher;
+import com.misys.equation.common.utilities.EquationControl;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.ThreadData;
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * This class is an connection pool implementation. The class implements all data source methods in order to provide database
+ * connection facilities.
+ * 
+ */
+public class NonJndiSessionPool extends AbstractEquationSessionPool
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: NonJndiSessionPool.java 16593 2013-06-24 15:32:19Z perkinj1 $";
+
+	// Session Pool keys
+	public static final String SESSIONPOOL_SINGLEJOB = "SingleJob";
+	public static final String SESSIONPOOL_POOLEDJOB = "PooledJob";
+	private AS400JDBCConnectionPool connectionPool;
+	private EquationUnit unit;
+
+	private String systemId;
+	private String unitId;
+	private String userId;
+	private String password;
+
+	private static final EquationLogger LOG = new EquationLogger(EquationSessionPool.class);
+
+	/**
+	 * Construct an empty Equation Session pool
+	 */
+	public NonJndiSessionPool()
+	{
+		if (LOG.isDebugEnabled())
+		{
+			LOG.debug("The database pool is going to be created");
+		}
+	}
+
+	/**
+	 * Initialise the Equation Session pool using the specified user and password
+	 * 
+	 * @param userId
+	 *            this is the current user id.
+	 * @param password
+	 *            this is the current user password.
+	 * 
+	 * @throws EQException
+	 *             if there is any error that one will be logged in the output and an exception will be thrown.
+	 */
+	@Override
+	public void initialisePool(String userId, String password) throws EQException
+	{
+		systemId = unit.getEquationSystem().getSystemId();
+		unitId = unit.getUnitId();
+		this.userId = userId;
+		this.password = password;
+
+		ExecutorService service = Executors.newFixedThreadPool(2);
+
+		service.execute(new Runnable()
+		{
+
+			public void run()
+			{
+				connectionPool = createJDBCConnectionPool(connectionPool);
+			}
+		});
+
+		service.shutdown();
+
+		try
+		{
+			service.awaitTermination(Integer.MAX_VALUE, TimeUnit.SECONDS);
+		}
+		catch (InterruptedException e)
+		{
+			throw new RuntimeException(e);
+		}
+
+		// initialise the base attributes (number users etc.)
+		setBaseAttributes();
+	}
+	/**
+	 * Initialise the base attributes of the session pool
+	 * 
+	 * @throws EQException
+	 */
+	private void setBaseAttributes() throws EQException
+	{
+		// Establish a connection to the Equation iSeries
+		Connection connection = null;
+		try
+		{
+			// get an AS400 job - we don't need it connected to the unit
+			connection = getConnection(userId);
+
+			// make sure the unit has all the required SQL functions and procedures
+			EquationControl.createUnitSQLObjects(connection, unitId);
+
+			// Close the JDBC connections as they are worthless now
+			connection.commit();
+		}
+		catch (SQLException sQLException)
+		{
+			LOG.error("setBaseAttributes: failed.", sQLException);
+		}
+		finally
+		{
+			returnConnectionToPool(connection);
+
+			try
+			{
+				if (connection != null)
+				{
+					returnConnnection(connection);
+				}
+			}
+			catch (Exception exception)
+			{
+				LOG.error("setBaseAttributes: failed.", exception);
+			}
+		}
+	}
+
+	/**
+	 * Initialise the AS400 data source
+	 */
+	private void createPoolDataSource()
+	{
+		try
+		{
+			// Create a data source for making the connection.
+			AS400JDBCDataSource ds = new AS400JDBCConnectionPoolDataSource(systemId);
+			ds.setUser(userId);
+			ds.setPassword(password);
+
+			ds.setPrompt(isPrompt());
+			ds.setTranslateBinary(isTranslateBinary());
+			ds.setNaming(getNaming());
+			ds.setLibraries(getLibraries());
+			ds.setTrace(isTrace());
+			ds.setSecure(AS400Toolbox.isSecure());
+
+			aS400dataSource = ds;
+		}
+		catch (Exception exception)
+		{
+			LOG.error("There was a problem when the datasource was requested.", exception);
+		}
+	}
+
+	/**
+	 * Initialise the <code>AS400JDBCConnectionPool</code>
+	 */
+	private AS400JDBCConnectionPool createJDBCConnectionPool(AS400JDBCConnectionPool pool)
+	{
+		try
+		{
+			// Create a data source for making the connection.
+			createPoolDataSource();
+
+			pool = new AS400JDBCConnectionPool((AS400JDBCConnectionPoolDataSource) aS400dataSource);
+			// Set a maximum of "no max" connections to this pool.
+			pool.setMaxConnections(getMaxConnections());
+			// Set a maximum lifetime for 24 hours for connections (ms*s*m*h).
+			pool.setMaxLifetime(getMaxLifetime());
+			// Fill'em up (half the number of users is an accepted "best guess" (in my book anyway))
+			pool.fill(getFill());
+		}
+		catch (ConnectionPoolException cpe)
+		{
+			LOG.error("There was problem creating AS400JDBCConnectionPool.");
+			closeAS400JDBCConnectionPools();
+		}
+		return pool;
+	}
+
+	public Connection getGlobalConnection() throws EQException
+	{
+		// Obtain our environment naming context
+		Context envCtx;
+		try
+		{
+			envCtx = (Context) new InitialContext().lookup("java:comp/env");
+		}
+		catch (NamingException e)
+		{
+			LOG.error(e);
+			throw new EQException("");
+		}
+
+		DataSource datasource = null;
+		// Look up our data source
+		try
+		{
+			datasource = (DataSource) envCtx.lookup("jdbc/GlobalDB");
+			return datasource.getConnection();
+		}
+		catch (NamingException e)
+		{
+			LOG.error(e);
+			throw new EQException("");
+		}
+		catch (SQLException e)
+		{
+			LOG.error(e);
+			throw new EQException("");
+		}
+	}
+	/**
+	 * This method will return an AS400 connection from the connection pool.
+	 * 
+	 * @return AS400 connection from the connection pool.
+	 */
+	@Override
+	public Connection getConnection(String userId) throws EQException
+	{
+		Connection connection = null;
+
+		try
+		{
+			connection = connectionPool.getConnection();
+
+			connection.setAutoCommit(isAutoCommit());
+			connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+
+			// Check that non_desktop_mode behaves as expected - i.e. no GH etc.
+			EquationControl.logIntoEquation(connection, systemId, unitId, EquationControl.NONDESKTOP_MODE, null);
+
+			if (connection instanceof AS400JDBCConnectionHandle && LOG.isDebugEnabled())
+			{
+				AS400JDBCConnectionHandle as400JDBCConnectionHandle = (AS400JDBCConnectionHandle) connection;
+				StringBuilder message = new StringBuilder(" Has got a handle to the following job from the pool: ");
+				message.append(as400JDBCConnectionHandle.getServerJobIdentifier());
+				if (LOG.isDebugEnabled())
+				{
+					LOG.debug(message.toString());
+				}
+				// Pop the session identifier onto the thread
+				ThreadData.set(SESSIONPOOL_POOLEDJOB, EqJobWatcher.formatServerJobId(as400JDBCConnectionHandle
+								.getServerJobIdentifier()));
+			}
+		}
+		catch (Exception e)
+		{
+			if (e instanceof EQException)
+			{
+				throw (EQException) e;
+			}
+			else
+			{
+				throw new EQException(e);
+			}
+		}
+		return connection;
+	}
+
+	/**
+	 * This method will return a standalone AS400 connection using the user id and password (NOT from the Equation session pool)
+	 * 
+	 * @param userId
+	 *            - the user to initialise the pool with
+	 * @param password
+	 *            - not required for JNDI connections
+	 * @param equationIseriesProfile
+	 *            - the iSeries/Equation user profile
+	 * 
+	 * @return a wrapped standalone AS400 connection
+	 */
+	@Override
+	public EquationConnectionWrapper getSingleConnection(String userId, String password, String equationIseriesProfile)
+	{
+		AS400JDBCDataSource as400dataSource = null;
+		AS400 as400 = null;
+		Connection connection = null;
+
+		try
+		{
+			if (password.length() > 10)
+			{
+				as400 = AS400Toolbox.getAS400(systemId);
+				byte[] tokenBytes = Toolbox.cvtHexStringToBytes(password);
+				if (tokenBytes.length != ProfileTokenCredential.TOKEN_LENGTH)
+				{
+					// Might be base64 token (from BankFusion)
+					tokenBytes = Toolbox.base64StringToByteArray(password);
+				}
+				ProfileTokenCredential token = new ProfileTokenCredential(as400, tokenBytes,
+								ProfileTokenCredential.TYPE_SINGLE_USE, 3600);
+				// Add the profile token to the AS400 and cross our fingers
+				as400.setProfileToken(token);
+				as400dataSource = new AS400JDBCDataSource(as400);
+			}
+			else
+			{
+				as400dataSource = new AS400JDBCDataSource(systemId);
+				as400dataSource.setUser(userId);
+				as400dataSource.setPassword(password);
+			}
+			as400dataSource.setSecure(AS400Toolbox.isSecure());
+			as400dataSource.setPrompt(isPrompt());
+			as400dataSource.setTranslateBinary(isTranslateBinary());
+			as400dataSource.setNaming(getNaming());
+			as400dataSource.setLibraries(getLibraries());
+			as400dataSource.setTrace(isTrace());
+
+			connection = as400dataSource.getConnection();
+			connection.setAutoCommit(isAutoCommit());
+			connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+			EquationControl.logIntoEquation(connection, systemId, unitId, EquationControl.DESKTOP_MODE, equationIseriesProfile);
+
+			// Pop the session identifier onto the thread
+			ThreadData.set(SESSIONPOOL_SINGLEJOB, EqJobWatcher.formatServerJobId(((AS400JDBCConnection) connection)
+							.getServerJobIdentifier()));
+
+			// print the AS400 job attribute
+			try
+			{
+				if (LOG.isInfoEnabled())
+				{
+					String jobId = ((AS400JDBCConnection) connection).getServerJobIdentifier();
+					LOG.info("Getting a standalone iSeries job: " + jobId);
+				}
+			}
+			catch (Exception e)
+			{
+				LOG.error(e);
+			}
+		}
+		catch (Exception e)
+		{
+			LOG.error(e);
+		}
+
+		// return the connection
+		return new EquationConnectionWrapper(connection, this, false, false);
+	}
+
+	/**
+	 * This method will return an XA connection that is initialised
+	 * 
+	 * @return a wrapped XA connection that is initialised
+	 */
+	@Override
+	public EquationConnectionWrapper getXAConnection(String userId, String password, boolean equationManagedXA,
+					boolean transactionConnection, String equationIseriesProfile) throws EQException
+	{
+		Connection connection = null;
+		String jobId = null;
+
+		try
+		{
+			// If we have a profile token then get a connection without password and switch user of job in login process.
+			if (password.length() > 10)
+			{
+				connection = unit.getXaDataSource().getConnection();
+			}
+			else
+			{
+				connection = unit.getXaDataSource().getConnection(userId, password);
+			}
+
+			WebSphereNativeJdbcExtractor jdbcExtractor = new WebSphereNativeJdbcExtractor();
+			AS400JDBCConnectionHandle nativeconnection = (AS400JDBCConnectionHandle) jdbcExtractor.getNativeConnection(connection);
+			jobId = nativeconnection.getServerJobIdentifier();
+			ThreadData.set(EquationSessionPool.SESSIONPOOL_SINGLEJOB, EqJobWatcher.formatServerJobId(jobId));
+
+			// TODO Try without auto commit setting
+			connection.setAutoCommit(false);
+			connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+
+			// Change the user of the job with the profile token
+			if (password.length() > 10)
+			{
+				byte[] tokenBytes = Toolbox.cvtHexStringToBytes(password);
+				if (tokenBytes.length != ProfileTokenCredential.TOKEN_LENGTH)
+				{
+					// Might be base64 token (from BankFusion)
+					tokenBytes = Toolbox.base64StringToByteArray(password);
+				}
+				EquationControl.logIntoEquation(connection, systemId, unitId, EquationControl.XA_MODE, userId, null, tokenBytes);
+			}
+			else
+			{
+				EquationControl.logIntoEquation(connection, systemId, unitId, EquationControl.XA_MODE, equationIseriesProfile);
+			}
+
+			// print the AS400 job attribute
+			if (LOG.isInfoEnabled())
+			{
+				LOG.info("Getting a standalone XA iSeries job: " + jobId);
+			}
+
+		}
+		catch (Exception e)
+		{
+			LOG.info("Error getting a standalone XA iSeries job: " + jobId, e);
+			if (e instanceof EQException)
+			{
+				throw (EQException) e;
+			}
+			else
+			{
+				throw new EQException(e);
+			}
+		}
+		// return the connection
+		return new EquationConnectionWrapper(connection, this, true, transactionConnection);
+	}
+
+	/**
+	 * Return the Equation session pool properties
+	 * 
+	 * @return the Equation session pool properties
+	 */
+	@Override
+	public EQSessionProperties getSessionProperties() throws EQException
+	{
+		EQSessionProperties sessionProperties = new EQSessionProperties(systemId, unitId);
+		sessionProperties.setAutoEQCommit(isAutoCommit());
+		sessionProperties.setTimeOut(getLoginTimeout());
+		sessionProperties.setTransactionIsolationLevel(EQSessionProperties.TRANSACTION_ISOLATION_EQUATION_ONLY);
+		return sessionProperties;
+	}
+
+	/**
+	 * Return an <code>EquationStandardSession</code> with connection from the unit's Equation session pool
+	 * 
+	 * @return the Equation Standard Session
+	 * 
+	 * @throws EQException
+	 *             if there is any error an exception will be thrown.
+	 */
+	@Override
+	public EquationStandardSession getEquationStandardSession() throws EQException
+	{
+		EquationStandardSession session = null;
+		if (unit.getUnitVersion().equals(EquationUnit.VERSION_EQ4))
+		{
+			session = new Equation4Session(unit);
+		}
+		else if (unit.getUnitVersion().equals(EquationUnit.VERSION_EQ38))
+		{
+			session = new Equation38Session(unit);
+			// throw new UnsupportedOperationException("Invalid unit level");
+		}
+		return session;
+	}
+
+	/**
+	 * Return the AS400 connection back to Equation session pool
+	 * 
+	 * @param connection
+	 *            this is the connection to be returned.
+	 * @throws SQLException
+	 * 
+	 * @throws EQException
+	 *             if there is any error an exception will be thrown.
+	 */
+	@Override
+	public void returnConnnection(Connection connection) throws EQException
+	{
+		try
+		{
+			if (connection instanceof AS400JDBCConnectionHandle && LOG.isDebugEnabled())
+			{
+				AS400JDBCConnectionHandle as400JDBCConnectionHandle = (AS400JDBCConnectionHandle) connection;
+				if (!as400JDBCConnectionHandle.isClosed())
+				{
+					StringBuilder message = new StringBuilder("Is kindly returning the following job to the pool: ");
+					message.append(as400JDBCConnectionHandle.getServerJobIdentifier());
+					LOG.debug(message.toString());
+				}
+			}
+
+			if (connection instanceof AS400JDBCConnection && LOG.isDebugEnabled())
+			{
+				AS400JDBCConnection as400JDBCConnectionHandle = (AS400JDBCConnection) connection;
+				StringBuilder message = new StringBuilder("Is closing the job: ");
+				message.append(as400JDBCConnectionHandle.getServerJobIdentifier());
+				LOG.debug(message.toString());
+			}
+		}
+		catch (SQLException e)
+		{
+			throw new EQException(e);
+		}
+		finally
+		{
+			try
+			{
+				connection.close();
+			}
+			catch (SQLException e)
+			{
+				throw new EQException(e);
+			}
+		}
+	}
+
+	/**
+	 * Return the AS400 connection back to Equation session pool
+	 * 
+	 * @param connectionWrapper
+	 *            this is the wrapper of the connection to be returned.
+	 * @throws SQLException
+	 * 
+	 * @throws EQException
+	 *             if there is any error an exception will be thrown.
+	 */
+	@Override
+	public void returnConnnection(EquationConnectionWrapper connectionWrapper) throws EQException
+	{
+		if (LOG.isDebugEnabled())
+		{
+			StringBuilder message = new StringBuilder("Is kindly returning the following job to the pool: ");
+			message.append(connectionWrapper.getJobId());
+			LOG.debug(message.toString());
+		}
+
+		try
+		{
+			connectionWrapper.getConnection().close();
+		}
+		catch (SQLException e)
+		{
+			throw new EQException(e);
+		}
+	}
+
+	/**
+	 * This method will logOff the session which is passed as a parameter.<br>
+	 * <ul>
+	 * <li>1)The current connection will be returned to the pool</li>
+	 * </ul>
+	 * 
+	 * @param session
+	 *            this is the current session to be closed.
+	 * 
+	 * @throws EQException
+	 *             if there is any error an exception will be thrown.
+	 */
+	@Override
+	public void returnEquationStandardSession(EquationStandardSession session) throws EQException
+	{
+		session.closeStatements();
+		returnConnnection(session.getConnection());
+	}
+
+	/**
+	 * This method will be executed by the VM and will check if the current instance still holds resources.<br>
+	 * Given that the current instance is no longer used all resources have to be closed.<br>
+	 * 
+	 * Before an object is garbage collected, the runtime system calls its finalize() method. The intent is for finalize() to
+	 * release system resources such as open files or open sockets before getting collected.
+	 */
+	@Override
+	protected void finalize() throws Throwable
+	{
+		try
+		{
+			// close resources.
+			close();
+		}
+		finally
+		{
+			super.finalize();
+		}
+	}
+
+	/**
+	 * This method will close all resources <code>EquationSessionPool</code>.<br>
+	 * <ul>
+	 * <li>1)<code>AS400JDBCConnectionPool</code> will be closed</li>
+	 * <li>2)<code>AS400ConnectionPool</code> will be closed</li>
+	 * </ul>
+	 */
+	@Override
+	public void close()
+	{
+		closeAS400JDBCConnectionPools();
+	}
+
+	/**
+	 * This method will close <code>AS400JDBCConnectionPool</code> resource.
+	 */
+	private void closeAS400JDBCConnectionPools()
+	{
+		if (connectionPool != null)
+		{
+			connectionPool.close();
+		}
+	}
+
+	/**
+	 * Return the unit
+	 * 
+	 * @return the unit
+	 */
+	@Override
+	public EquationUnit getUnit()
+	{
+		return unit;
+	}
+
+	/**
+	 * Set the unit
+	 * 
+	 * @param - the unit
+	 */
+	@Override
+	public void setUnit(EquationUnit unit)
+	{
+		this.unit = unit;
+	}
+
+	/**
+	 * Return the user id
+	 * 
+	 * @return the user id
+	 */
+	@Override
+	public String getUserId()
+	{
+		return userId;
+	}
+
+	/**
+	 * Set the user id
+	 * 
+	 * @param userId
+	 *            - the user id to set
+	 */
+	public void setUserId(String userId)
+	{
+		this.userId = userId;
+	}
+}

@@ -1,0 +1,69 @@
+package com.misys.equation.common.internal.dao.mappers;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.springframework.jdbc.core.ResultSetExtractor;
+
+import com.misys.equation.common.dao.beans.GAERecordDataModel;
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * This is a helper class used by Sp framework to populate the data model.<br>
+ * This class will extract data from the <code>ResultSet</code> and create a data model.
+ * 
+ * @author deroset
+ * 
+ */
+public class GAERecordResultSetExtractor implements ResultSetExtractor
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	/**
+	 * This class will extract data from the <code>ResultSet</code> and create a data model.
+	 * 
+	 * @param the
+	 *            passed <code>ResultSet</code> which contains the data.
+	 * @return a <code>GAERecordDataModel</code> data model.
+	 */
+	public Object extractData(ResultSet resultSet) throws SQLException
+	{
+		GAERecordDataModel gAERecord = new GAERecordDataModel();
+
+		gAERecord.setFunctionId(resultSet.getString(1).trim());
+		gAERecord.setProgramName(resultSet.getString(2).trim());
+		gAERecord.setDescription(resultSet.getString(3).trim());
+		gAERecord.setUserDefinedKeysAllowed(resultSet.getString(4).trim());
+		gAERecord.setUserDefinedAndPromptable(resultSet.getString(5).trim());
+		gAERecord.setPcProgramName(resultSet.getString(6).trim());
+		gAERecord.setExtendedInputAllowed(resultSet.getString(7).equals(Toolbox.DB_YES) ? true : false);
+		gAERecord.setEnhancement(resultSet.getString(8).trim());
+		gAERecord.setApiId(resultSet.getString(9).trim());
+		gAERecord.setProgramRoot(resultSet.getString(10).trim());
+		gAERecord.setDisplayFile(resultSet.getString(11).trim());
+		gAERecord.setScreenHandler(resultSet.getString(12).trim());
+		gAERecord.setType(resultSet.getString(13).trim());
+		gAERecord.setScreenHandlerDescription(resultSet.getString(14).trim());
+		gAERecord.setSupportsAdd(resultSet.getString(15).equals(Toolbox.DB_YES) ? true : false);
+		gAERecord.setSupportsMaintain(resultSet.getString(16).equals(Toolbox.DB_YES) ? true : false);
+		gAERecord.setSupportsDelete(resultSet.getString(17).equals(Toolbox.DB_YES) ? true : false);
+		gAERecord.setListSizeFixed(resultSet.getString(18).trim());
+		gAERecord.setListRetrievalRequired(resultSet.getString(19).trim());
+		gAERecord.setStandardAPIEnhanced(resultSet.getString(20).trim());
+		gAERecord.setEnabledFor24x7(resultSet.getString(21).trim());
+		gAERecord.setEnhancedAPIEnhanced(resultSet.getString(22).trim());
+		gAERecord.setKeys(resultSet.getString(23).trim());
+		gAERecord.setCopysourceName(resultSet.getString(24).trim());
+		gAERecord.setDatastructureName(resultSet.getString(25).trim());
+		gAERecord.setPromptable(resultSet.getString(26).trim());
+		gAERecord.setPrimaryPVModule(resultSet.getString(27).trim());
+		gAERecord.setMapperOnly(resultSet.getString(28).equals(Toolbox.DB_YES) ? true : false);
+		gAERecord.setHeaderJournalFileName(resultSet.getString(29).trim());
+		gAERecord.setDetailJournalFileName(resultSet.getString(30).trim());
+		gAERecord.setRepeatingDataOffset(resultSet.getInt(31));
+		gAERecord.setRepeatingDataLength(resultSet.getInt(32));
+
+		return gAERecord;
+	}
+}

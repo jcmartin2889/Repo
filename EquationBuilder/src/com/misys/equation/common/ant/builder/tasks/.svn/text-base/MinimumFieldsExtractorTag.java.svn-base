@@ -1,0 +1,48 @@
+package com.misys.equation.common.ant.builder.tasks;
+
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Task;
+
+import com.misys.equation.common.ant.builder.fieldextractor.MinimumFieldsExtractor;
+
+/**
+ * This task is going to extract the fields that are used to test an API in the common stubs project.<br>
+ * 
+ * @author deroset.
+ * 
+ */
+public class MinimumFieldsExtractorTag extends Task
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	// This is the directory which contains all input files.
+	private String inputDirectory;
+	private String targetFileLocation;
+
+	@Override
+	public void execute() throws BuildException
+	{
+		MinimumFieldsExtractor minimumFieldsExtractor = new MinimumFieldsExtractor(inputDirectory, targetFileLocation);
+		minimumFieldsExtractor.processFiles();
+	}
+
+	public void setInputDirectory(String inputDirectory)
+	{
+		this.inputDirectory = inputDirectory;
+	}
+
+	public String getTargetFileLocation()
+	{
+		return targetFileLocation;
+	}
+
+	public void setTargetFileLocation(String targetFileLocation)
+	{
+		this.targetFileLocation = targetFileLocation;
+	}
+
+	public String getInputDirectory()
+	{
+		return inputDirectory;
+	}
+}

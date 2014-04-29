@@ -1,0 +1,84 @@
+package com.misys.equation.function.test.run;
+
+import com.misys.equation.common.files.JournalHeader;
+import com.misys.equation.common.utilities.Toolbox;
+import com.misys.equation.function.beans.FunctionData;
+import com.misys.equation.function.runtime.FunctionHandler;
+
+// Via API
+public class FunctionHandlerStubXA9 extends FunctionHandlerStubTestCase
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: FunctionHandlerStubXA9.java 6793 2010-03-31 12:10:20Z deroset $";
+
+	public FunctionHandlerStubXA9()
+	{
+		try
+		{
+			setUp();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] inputParameters)
+	{
+		FunctionHandlerStubXA9 test = new FunctionHandlerStubXA9();
+		test.test();
+	}
+
+	public boolean test()
+	{
+		// Have a bash...
+		FunctionHandler functionHandler = null;
+		try
+		{
+			// Add XX4
+			System.out.println("--------------------------- 1");
+			functionHandler = FunctionToolboxStub.getFunctionHandler(user, "SESSIONID", "");
+			functionHandler.doNewTransaction("XA9", "");
+			FunctionData functionData = functionHandler.getFhd().getScreenSetHandler().rtvScrnSetCurrent().getFunctionData();
+
+			functionHandler.applyRetrieveTransaction();
+			functionData.chgFieldInputValue("RDS_DLA", "10T");
+			functionData.chgFieldInputValue("RDS_ABF", "0543");
+			functionData.chgFieldInputValue("RDS_ASF", "001");
+			functionHandler.applyTransaction();
+			Toolbox.printList(functionHandler.print());
+			FunctionToolboxStub.printMessages(functionHandler.rtvFunctionMessages().getMessages());
+
+			// retrieve journal header
+			JournalHeader journalHeader = functionHandler.getFhd().getJournalHeader();
+			if (journalHeader != null)
+			{
+				System.out.println("Journal 1=" + journalHeader);
+			}
+			else
+			{
+				System.out.println("Journal 1=" + "ERROR");
+			}
+
+			return (journalHeader != null);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+		finally
+		{
+			cleanUp();
+		}
+	}
+
+	public void testStubXA9()
+	{
+		FunctionHandlerStubXA9 stub = new FunctionHandlerStubXA9();
+		boolean success = stub.test();
+		assertEquals(true, success);
+	}
+
+}

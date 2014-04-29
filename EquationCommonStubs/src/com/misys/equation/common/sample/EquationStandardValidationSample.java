@@ -1,0 +1,121 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.sample;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationPVData;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationStandardValidation;
+import com.misys.equation.common.internal.eapi.core.EQException;
+
+/**
+ * An validation sample for illustration of basic validation processing steps - list data is not supported
+ */
+public class EquationStandardValidationSample
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EquationStandardValidationSample.java 15055 2012-12-18 15:04:53Z williae1 $";
+
+	public static void main(String[] args) throws Exception
+	{
+		EquationStandardValidationSample validationSample = new EquationStandardValidationSample();
+		validationSample.process();
+	}
+	public boolean process()
+	{
+		boolean continueProcessing = true;
+		try
+		{
+			// Get a connection to the iSeries. A QZDASONIT job is created and a session identifier is returned.
+			EquationStandardSession session = EquationContextSample.getContext().getSampleSession();
+
+			// First validation
+			continueProcessing = processC8R01RValidation(session);
+
+			// Check validation status.
+			if (!continueProcessing)
+			{
+				return continueProcessing;
+			}
+
+			continueProcessing = processGWV96RValidation(session);
+
+			// Do more validations here
+
+			// / Log off the session
+			EquationCommonContext.getContext().logOffSession(session.getSessionIdentifier());
+		}
+		catch (EQException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return continueProcessing;
+	}
+	/**
+	 * Process an C8R01R currency validation with hardcoded values
+	 * 
+	 * @param session
+	 * @throws EQException
+	 */
+	private boolean processC8R01RValidation(EquationStandardSession session) throws EQException
+	{
+		// Validation variables
+		String decode = " ";
+		String pvModule = "C8R01R";
+		String blanksAllowed = "N";
+		String newCode = "N";
+
+		// Get a validation
+		EquationStandardValidation validation;
+
+		EquationPVData equationPVData = new EquationPVData(session.getUnit().getPVMetaData(pvModule), session.getCcsid());
+		equationPVData.setFieldValue("C8@CCY", "GBP");
+		validation = new EquationStandardValidation(decode, pvModule, equationPVData, blanksAllowed, newCode);
+		// Execute the Equation validation
+		validation = session.executeValidate(validation);
+		System.out.println("PVDATA: " + validation.getDataOutput());
+
+		return validation.getValid();
+
+	}
+	/**
+	 * Process an GWR96R date format validation with hardcoded values
+	 * 
+	 * @param session
+	 * @throws EQException
+	 */
+	private boolean processGWV96RValidation(EquationStandardSession session) throws EQException
+	{
+		// Validation variables
+		String decode = " ";
+		String pvModule = "GWV96R";
+		String blanksAllowed = "N";
+		String newCode = "N";
+
+		// Get a validation
+		EquationStandardValidation validation;
+
+		// Convert the date
+		EquationPVData equationPVData = new EquationPVData(session.getUnit().getPVMetaData(pvModule), session.getCcsid());
+		equationPVData.setFieldValue("$V96DB", "1120229");
+		validation = new EquationStandardValidation(decode, pvModule, equationPVData, blanksAllowed, newCode);
+		validation = session.executeValidate(validation);
+		System.out.println("User format " + validation.getFieldValue("$V96UD"));
+		System.out.println("Date cYMD " + validation.getFieldValue("$V96DB"));
+		System.out.println("Screen format date " + validation.getFieldValue("$V96ED"));
+
+		return validation.getValid();
+
+	}
+
+}

@@ -1,0 +1,161 @@
+package com.misys.equation.common.test.dao;
+
+import com.misys.equation.common.dao.IWERecordDao;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.dao.beans.WERecordDataModel;
+import com.misys.equation.common.test.EquationTestCaseDao;
+
+/**
+ * This is a unit-test which will test IWERecordDao services.
+ * 
+ * @author deroset
+ * 
+ */
+public class WERecord extends EquationTestCaseDao
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	public WERecord()
+	{
+
+	}
+
+	/**
+	 * This method is going to retrieve the Dao from the bean repository and set it as local attribute.
+	 */
+	@Override
+	protected void setDao()
+	{
+		dao = daoFactory.getWEDao(session, dataModel);
+	}
+
+	/**
+	 * This method will test if the record has been already inserted in the dataBase.
+	 */
+	@Override
+	public void isRecord(boolean assertValue)
+	{
+		boolean result;
+
+		result = checkIfThisRecordIsInTheDB();
+		if (assertValue)
+		{
+			assertTrue(result);
+		}
+		else
+		{
+			assertFalse(result);
+		}
+
+	}
+
+	/**
+	 * This method is going to check the getRecord dao's service.<br>
+	 * The obtained result should be the same than the preset in the dao data-model.
+	 * 
+	 */
+	@Override
+	public WERecordDataModel getRecord()
+	{
+
+		WERecordDataModel WERecord = null;
+		WERecord = ((IWERecordDao) dao).getWERecord();
+		assertDataModel(WERecord);
+		return WERecord;
+	}
+
+	/**
+	 * This method will test the update dao's service.
+	 */
+	@Override
+	public void updateRecord()
+	{
+
+		WERecordDataModel WERecord = null;
+
+		getMyModel().setOptionTitle("Updated");
+		dao.updateRecord();
+		WERecord = getRecord();
+		assertEquals(getMyModel().getOptionTitle(), WERecord.getOptionTitle());
+	}
+
+	@Override
+	protected void assertDataModel(AbsRecord dataModel)
+	{
+		WERecordDataModel record = (WERecordDataModel) dataModel;
+		assertEquals(getMyModel().getJobDesc(), record.getJobDesc());
+		assertEquals(getMyModel().getJobNum(), record.getJobNum());
+		assertEquals(getMyModel().getAuthorisor(), record.getAuthorisor());
+		assertEquals(getMyModel().getAuthStat(), record.getAuthStat());
+		assertEquals(getMyModel().getAuthLevel(), record.getAuthLevel());
+		assertEquals(getMyModel().getOptionId(), record.getOptionId());
+		assertEquals(getMyModel().getOptionTitle(), record.getOptionTitle());
+		assertEquals(getMyModel().getAppCode(), record.getAppCode());
+		assertEquals(getMyModel().getAuthAppCode(), record.getAuthAppCode());
+		assertEquals(getMyModel().getDefEntryData(), record.getDefEntryData());
+		assertEquals(getMyModel().getScrnNo(), record.getScrnNo());
+		assertEquals(getMyModel().getVeriStat(), record.getVeriStat());
+		assertEquals(getMyModel().getOneOrMany(), record.getOneOrMany());
+		assertEquals(getMyModel().getInputAuth(), record.getInputAuth());
+		assertEquals(getMyModel().getMaintAuth(), record.getMaintAuth());
+		assertEquals(getMyModel().getCancelAuth(), record.getCancelAuth());
+		assertEquals(getMyModel().getCommandKey(), record.getCommandKey());
+		assertEquals(getMyModel().getUserId(), record.getUserId());
+		assertEquals(getMyModel().getSessionId(), record.getSessionId());
+		assertEquals(getMyModel().getTransactionId(), record.getTransactionId());
+		assertEquals(getMyModel().getTranDate(), record.getTranDate());
+		assertEquals(getMyModel().getTranTime(), record.getTranTime());
+		assertEquals(getMyModel().getUserAlerted(), record.getUserAlerted());
+		assertEquals(getMyModel().getScreenSetId(), record.getScreenSetId());
+		assertEquals(getMyModel().getLastScrnSetId(), record.getLastScrnSetId());
+		assertEquals(getMyModel().getOfflineRequest(), record.getOfflineRequest());
+		assertEquals(getMyModel().getReasonRejection(), record.getReasonRejection());
+		assertEquals(getMyModel().getMessages()[0], record.getMessages()[0]);
+		assertEquals(getMyModel().getMessageAmounts(), record.getMessageAmounts());
+		assertEquals(getMyModel().getMessageBranches(), record.getMessageBranches());
+	}
+
+	@Override
+	protected boolean checkIfThisRecordIsInTheDB()
+	{
+		boolean result;
+		result = ((IWERecordDao) dao).checkIfThisWERecordIsInTheDB();
+		return result;
+	}
+
+	@Override
+	protected void setDataModel()
+	{
+		WERecordDataModel record = new WERecordDataModel("ALZ", "SessionId", "TranId", "EQUIADMIN", "LIMA1", "Title", 2, 4, 5);
+		record.setMessageBranches("XXX");
+		record.setMessageAmounts("YYY");
+		record.setLibrary(kFilLibName);
+		this.dataModel = record;
+
+	}
+
+	/**
+	 * This method is going to return a casted data model.
+	 * 
+	 * @return a casted data model
+	 */
+	public WERecordDataModel getMyModel()
+	{
+
+		WERecordDataModel WERecordDataModel = null;
+
+		if (dataModel instanceof WERecordDataModel)
+		{
+
+			WERecordDataModel = (WERecordDataModel) dataModel;
+
+		}
+		else
+		{
+			throw new IllegalArgumentException("The set data-model does not correspond to the expected one.");
+		}
+
+		return WERecordDataModel;
+	}
+}

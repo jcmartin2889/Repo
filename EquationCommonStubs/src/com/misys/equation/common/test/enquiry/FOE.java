@@ -1,0 +1,40 @@
+package com.misys.equation.common.test.enquiry;
+
+import com.misys.equation.common.access.EquationStandardEnquiry;
+import com.misys.equation.common.test.EquationTestCase;
+
+/**
+ * @author weddelc1
+ */
+public class FOE extends EquationTestCase // Account Overdraft Status Enquiry
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: FOE.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	private EquationStandardEnquiry enquiry;
+
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+
+		/*
+		 * Get the enquiry class - you'll need to enter the name of the enquiry program e.g. H68EER
+		 */
+		enquiry = getEquationStandardEnquiry("X15EER");
+	}
+
+	public void testRetrieve() throws Exception
+	{
+		/*
+		 * Set up the key fields required for the enquiry
+		 */
+		enquiry.setFieldValue("HZAB", "0132"); // Account branch (4A)
+		enquiry.setFieldValue("HZAN", "012008"); // Account no (6A)
+		enquiry.setFieldValue("HZAS", "050"); // Account sfx (3A)
+
+		/*
+		 * See if it works
+		 */
+		assertTestStandardEnquiry(enquiry, true);
+	}
+}

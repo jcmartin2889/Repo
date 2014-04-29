@@ -1,0 +1,204 @@
+package com.misys.equation.function.adaptor;
+
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.dao.beans.GAZRecordDataModel;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.internal.eapi.core.EQRuntimeException;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.FunctionClassLoader;
+import com.misys.equation.function.beans.DisplayAttributesSet;
+import com.misys.equation.function.el.ELRuntime;
+
+/**
+ * This class manages the runtime interaction with the user exit code for DisplayAttributesSet
+ * <p>
+ * The class encapsulates the enable state checking, and will call the appropriate user exit class method implementation if
+ * appropriate.
+ */
+public class AttributesSetAdaptor extends Adaptor
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: AttributesSetAdaptor.java 14797 2012-11-05 11:53:28Z williae1 $";
+
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(AttributesSetAdaptor.class);
+
+	private ILayoutAdaptor layoutAdaptorImpl;
+	private Class<IAttributesSetAdaptor> attributesSetAdaptorClass;
+	private IAttributesSetAdaptor attributesSetAdaptorImpl;
+	private List<AttributesSetAdaptor> secondaryAttributesSetAdaptors;
+
+	/**
+	 * Construct an AttributesSet Adaptor
+	 * 
+	 * @param layoutAdaptorImpl
+	 *            - an instance of the outer class
+	 * @param fieldId
+	 *            - the field name
+	 */
+	@SuppressWarnings("unchecked")
+	public AttributesSetAdaptor(EquationStandardSession session, FunctionClassLoader classLoader, ILayoutAdaptor layoutAdaptorImpl,
+					String optionId, String fieldId, LayoutAdaptor layoutAdaptor) throws EQException
+	{
+		this.userData = null;
+		this.layoutAdaptorImpl = layoutAdaptorImpl;
+
+		if (layoutAdaptorImpl != null)
+		{
+			this.attributesSetAdaptorClass = layoutAdaptor.getClass(session, classLoader, optionId, fieldId, "",
+							GAZRecordDataModel.TYP_ATTRIBUTESSET_ATTRIBUTES);
+		}
+
+		if (this.attributesSetAdaptorClass != null)
+		{
+			this.attributesSetAdaptorImpl = getInstance(layoutAdaptorImpl, attributesSetAdaptorClass);
+		}
+	}
+
+	/**
+	 * Return the layout adaptor implementation
+	 * 
+	 * @return the layout adaptor implementation
+	 */
+	public ILayoutAdaptor getLayoutAdaptorImpl()
+	{
+		return layoutAdaptorImpl;
+	}
+
+	/**
+	 * Return the display attributes set adaptor class
+	 * 
+	 * @return the display attributes set adaptor class
+	 */
+	public Class<IAttributesSetAdaptor> getAttributesSetAdaptorClass()
+	{
+		return attributesSetAdaptorClass;
+	}
+
+	/**
+	 * Return the display attributes set adaptor implementation
+	 * 
+	 * @return the display attributes set adaptor implementation
+	 */
+	public IAttributesSetAdaptor getAttributesSetAdaptorImpl()
+	{
+		return attributesSetAdaptorImpl;
+	}
+
+	/**
+	 * Return an instance of the specified inner class of an outer class
+	 * 
+	 * @param layoutAdaptor
+	 *            - the outer class instance
+	 * @param innerClass
+	 *            - the class definition of the inner class
+	 * 
+	 * @return an instance of the inner class
+	 */
+	private IAttributesSetAdaptor getInstance(ILayoutAdaptor layoutAdaptor, Class<IAttributesSetAdaptor> innerClass)
+	{
+		try
+		{
+			if (LOG.isDebugEnabled())
+			{
+				LOG.debug("getInstance - creating a new instance of inner class [" + innerClass.getName() + "]");
+			}
+			Constructor<IAttributesSetAdaptor> constructor = innerClass.getConstructor(layoutAdaptor.getClass());
+			IAttributesSetAdaptor instance = constructor.newInstance(layoutAdaptor);
+			return instance;
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Determine whether the finish button is enabled or not
+	 * 
+	 * @param attributes
+	 *            - DisplayAttributesSet for the field. These specify whether the finish button is definitely enabled or not, or
+	 *            whether this should be determined by calling the isFinishButtonEnabled method on the Java user exit
+	 * 
+	 * @return true if enabled
+	 */
+	public boolean isFinishButtonEnabled(DisplayAttributesSet displayAttributesSet)
+	{
+		if (DisplayAttributesSet.FINISH_BUTTON_ENABLED_NO.equals(displayAttributesSet.getFinishButtonEnabled()))
+		{
+			LOG.debug("isFinishButtonEnabled for DisplayAttributesSet [" + displayAttributesSet.getId() + "] returning false (NO)");
+			return false;
+		}
+		else if (DisplayAttributesSet.FINISH_BUTTON_ENABLED_YES.equals(displayAttributesSet.getFinishButtonEnabled()))
+		{
+			LOG.debug("isFinishButtonEnabled for DisplayAttributesSet [" + displayAttributesSet.getId() + "] returning true (YES)");
+			return true;
+		}
+		else if (DisplayAttributesSet.FINISH_BUTTON_ENABLED_SCRIPT.equals(displayAttributesSet.getFinishButtonEnabled()))
+		{
+			boolean scriptResult = ELRuntime.runBooleanScript(displayAttributesSet.getFinishButtonEnabledExpression(),
+							functionData, displayAttributesSet.getId(), "finishButtonEnabled", true, ELRuntime.REALTYPE_VALUE);
+			LOG.debug("isFinishButtonEnabled for DisplayAttributesSet [" + displayAttributesSet.getId() + "] returning returning ["
+							+ scriptResult + "] (SCRIPT)");
+			return scriptResult;
+		}
+		else if (DisplayAttributesSet.FINISH_BUTTON_ENABLED_CODE.equals(displayAttributesSet.getFinishButtonEnabled()))
+		{
+			if (attributesSetAdaptorImpl == null)
+			{
+				LOG.error("isFinishButtonEnabled for DisplayAttributesSet [" + displayAttributesSet.getId()
+								+ "] returning false(because CODE class not loaded)");
+				return false;
+			}
+			else
+			{
+				boolean codeResult = attributesSetAdaptorImpl.isFinishButtonEnabled(userData);
+				LOG.debug("isFinishButtonEnabled for DisplayAttributesSet [" + displayAttributesSet.getId() + "] returning ["
+								+ codeResult + "] (SCRIPT)");
+				return codeResult;
+			}
+		}
+
+		else
+		{
+			throw new EQRuntimeException("DisplayLabel [" + displayAttributesSet.getId()
+							+ "] finishEnabledStatus contains invalid value [" + displayAttributesSet.getFinishButtonEnabled()
+							+ "]");
+		}
+	}
+
+	/**
+	 * Set the secondary id
+	 * 
+	 * @param session
+	 *            - the Equation session
+	 * @param secondaryFunctionAdaptors
+	 *            - the secondary function adaptors
+	 * @param inputFieldSet
+	 *            - the input field set
+	 */
+	public void setSecondaryFunctionIds(EquationStandardSession session, List<LayoutAdaptor> secondaryLayoutAdaptors, String fieldId)
+					throws EQException
+	{
+		secondaryAttributesSetAdaptors = new ArrayList<AttributesSetAdaptor>();
+		for (LayoutAdaptor secondaryLayoutAdaptor : secondaryLayoutAdaptors)
+		{
+			AttributesSetAdaptor attributesSetAdaptor = secondaryLayoutAdaptor.getAttributesSetAdaptor(session, fieldId);
+			secondaryAttributesSetAdaptors.add(attributesSetAdaptor);
+		}
+
+		// if the main service has not implemention, then create a dummy one
+		if (attributesSetAdaptorImpl == null)
+		{
+			// instantiate an abstract class
+			attributesSetAdaptorImpl = new AbstractAttributesSetAdaptor()
+			{
+			};
+		}
+	}
+
+}

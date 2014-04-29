@@ -1,0 +1,671 @@
+package com.misys.equation.common.globalprocessing;
+
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationUser;
+import com.misys.equation.common.dao.DaoFactory;
+import com.misys.equation.common.dao.IDao;
+import com.misys.equation.common.dao.IGSPRecordDao;
+import com.misys.equation.common.dao.IGSRRecordDao;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.dao.beans.GSPRecordDataModel;
+import com.misys.equation.common.dao.beans.GSRRecordDataModel;
+import com.misys.equation.common.dao.beans.SearchResultDataModel;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.search.criteria.ISearchCriteria;
+import com.misys.equation.common.search.results.AccountSearchResult;
+import com.misys.equation.common.search.results.BranchSearchResult;
+import com.misys.equation.common.search.results.CustomerSearchResult;
+import com.misys.equation.common.search.results.DealSearchResult;
+import com.misys.equation.common.search.results.ISearchResult;
+import com.misys.equation.common.search.results.ISelectedSearchResult;
+import com.misys.equation.common.search.results.OptionSearchResult;
+import com.misys.equation.common.search.results.PropertyType;
+import com.misys.equation.common.search.results.SearchType;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * This interface provides all the functionality related to searching of options, branches, customers, etc. It also provide
+ * functionality to update and access the recent search records.
+ */
+public class GPSearch
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	// Create a DAO factory class ...
+	private final DaoFactory daoFactory = new DaoFactory();
+	// Get the logger class ...
+	private static final EquationLogger LOG = new EquationLogger(GPSearch.class);
+	// Just in case, a default static days to live ...
+	private static int DEFAULT_DAYSTOLIVE_ONERROR = 2;
+	private static int DEFAULT_MAXIMUMROWSTOKEEP_ONERROR = 20;
+
+	// Properties file static variables ...
+	private static final String PROPERTY_NAME_DAYSTOLIVE = "eq.gp.daystolive";
+
+	private final Map<String, List<String>> contextDataAreaHistory = new HashMap<String, List<String>>();
+
+	// Instance variable for days to live ...
+	private int daysToLive = DEFAULT_DAYSTOLIVE_ONERROR;
+	private int numberOfRowsToKeep = DEFAULT_MAXIMUMROWSTOKEEP_ONERROR;
+
+	// This map records the searches being made to delete expired recent searches.
+	protected final Map<String, Date> recentSearchDeleteRecord = new HashMap<String, Date>();
+
+	/**
+	 * SearchImpl Constructor
+	 */
+	public GPSearch()
+	{
+		// Load the properties once on construction ...
+		LOG.info("Constructing & Initialising SearchImpl");
+
+		// Read the days to live property. This will determine how long a recent search lives in the cache ...
+		try
+		{
+			// Define the days to live, i.e. the time we will allow the recent search to reside in the database before it is deleted
+			daysToLive = Integer.parseInt(EquationCommonContext.getConfigProperty(PROPERTY_NAME_DAYSTOLIVE));
+			LOG.info("Days to live set to '" + daysToLive + "'");
+		}
+		catch (Exception e)
+		{
+			LOG.error("Error while reading property " + PROPERTY_NAME_DAYSTOLIVE);
+			LOG.info("Defaulting property " + PROPERTY_NAME_DAYSTOLIVE + " to '" + DEFAULT_DAYSTOLIVE_ONERROR + "'", e);
+			daysToLive = DEFAULT_DAYSTOLIVE_ONERROR;
+		}
+	}
+
+	public int getNumberOfRowsToKeep()
+	{
+		return this.numberOfRowsToKeep;
+	}
+
+	public void setNumberOfRowsToKeep(int numberOfRowsToKeep)
+	{
+		this.numberOfRowsToKeep = numberOfRowsToKeep;
+	}
+
+	public Collection<ISearchResult> searchInUnit(EquationStandardSession session, ISearchCriteria searchCriteria)
+					throws EQException
+	{
+		// Check the sessionId
+		if (session == null)
+		{
+			throw new EQException("NonGPSearchImpl: search() Failed: Invalid Equation Session: ");
+		}
+
+		// Check the searchCriteria
+		if (searchCriteria == null)
+		{
+			throw new EQException("NonGPSearchImpl: search() Failed: Invalid searchCriteria null");
+		}
+
+		// polymorphic call to return data model ...
+		final AbsRecord dataModel = searchCriteria.getDataModel();
+		// Create a DAO and get the record data using the conditional ...
+		IDao dao = searchCriteria.getRecordDao(session, daoFactory, dataModel);
+
+		// Get the records from the database ...
+		List<? extends AbsRecord> list = dao.getRecordBy(searchCriteria.getSearchString());
+		final List<ISearchResult> results = new ArrayList<ISearchResult>();
+		// Loop trough the result set ...
+		for (AbsRecord rec : list)
+		{
+			SearchResultDataModel dm = (SearchResultDataModel) rec;
+			results.add(dm.populateFromDataModel(dataModel, session.getUnitId(), session.getSystemId()));
+		}
+
+		// Finally return the result ...
+		return results;
+	}
+
+	public void setDataContextHistory(final String sessionId, List<String> valueToSet)
+	{
+		contextDataAreaHistory.put(sessionId, valueToSet);
+	}
+
+	public List<String> getDataContextHistory(final String sessionId)
+	{
+		return contextDataAreaHistory.get(sessionId);
+	}
+
+	public List<String> removeDataContextHistory(final String sessionId)
+	{
+		return contextDataAreaHistory.remove(sessionId);
+	}
+
+	public long recordSelectedSearch(final String sessionId, final Map<PropertyType, String> properties) throws EQException
+	{
+		// Build the appropriate object from the map and invoke the recordSelectedSearch method ..
+		ISelectedSearchResult selectedSearchResult = null;
+		if (properties.containsKey(PropertyType.ACCNT_NO))
+		{ // Accounts Key
+			selectedSearchResult = new AccountSearchResult(properties);
+		}
+		else if (properties.containsKey(PropertyType.CUST_MNEM) || properties.containsKey(PropertyType.CUST_NO))
+		{ // Customer Key
+			selectedSearchResult = new CustomerSearchResult(properties);
+		}
+		else if (properties.containsKey(PropertyType.DEAL_REF))
+		{ // Deal Key
+			selectedSearchResult = new DealSearchResult(properties);
+		}
+		else if (properties.containsKey(PropertyType.BRANCH_NO) || properties.containsKey(PropertyType.B_MNEM))
+		{ // Branch Key
+			selectedSearchResult = new BranchSearchResult(properties);
+		}
+		else
+		{
+			return 0;
+		}
+		return recordSelectedSearch(sessionId, selectedSearchResult);
+	}
+
+	public long recordSelectedSearch(final String sessionId, final ISelectedSearchResult selectedSearchResult) throws EQException
+	{
+		if (sessionId == null || sessionId.equals(""))
+		{
+			throw new EQException("SearchImpl: search() Failed: The sessionId parameter is null");
+		}
+
+		// Get the EquationStandardSession from the Session Id and EQ User ...
+		final EquationUser eqUser = getEqUser(sessionId);
+		final EquationStandardSession session = getEquationStandardSession(eqUser);
+
+		if (selectedSearchResult == null)
+		{
+			String message = EquationCommonContext.getContext().getLanguageResource(eqUser, "search.errors.empty.searchcriteria");
+			throw new EQException(message);
+		}
+
+		// At this point we need to validate that the search item actually exists in the unit prior to adding it
+		// to the recent searches.
+		// So the trick is to get all sessions available and use the session which matches the unitId of the search criteria ...
+		final List<EquationStandardSession> sessions = EquationCommonContext.getContext()
+						.getGlobalProcessingEquationStandardSessions(sessionId);
+		for (EquationStandardSession currentSession : sessions)
+		{
+			if (selectedSearchResult.getUnit().equals(currentSession.getUnitId()))
+			{
+				final Collection<ISearchResult> result = searchInUnit(currentSession, selectedSearchResult);
+				if (result == null || result.isEmpty())
+				{
+					String message = EquationCommonContext.getContext().getLanguageResource(eqUser,
+									"search.errors.invalid.searchcriteria");
+					message += " " + selectedSearchResult.getSearchType().toString();
+					throw new EQException(message);
+				}
+				break;
+			}
+		}
+
+		try
+		{
+			// Create the GSRRecordDataModel ...
+			final long searchId = generateId();
+			final GSRRecordDataModel gsrDm = new GSRRecordDataModel(searchId, eqUser.getUserId(), selectedSearchResult.getSystem(),
+							selectedSearchResult.getUnit(), new Timestamp(System.currentTimeMillis()), selectedSearchResult
+											.getSearchType().toString());
+
+			// Create the GSR DAO ...
+			final IGSRRecordDao gsrDao = daoFactory.getGSRDao(session, gsrDm);
+
+			// Insert the record into the GSR table ...
+			gsrDao.insertRecord();
+
+			final Iterator<String> iSearchPropertyNames = selectedSearchResult.getKeyDataToBeRecorded().keySet().iterator();
+			// Insert one or more records in the Search Details table (GSPPF)
+			while (iSearchPropertyNames.hasNext())
+			{
+				final String propertyName = iSearchPropertyNames.next();
+				final String propertyValue = selectedSearchResult.getKeyDataToBeRecorded().get(propertyName);
+
+				// Create the GSRRecordDataModel ...
+				final GSPRecordDataModel gspDm = new GSPRecordDataModel(gsrDm.getSearchIdentifier(), propertyName,
+								propertyValue.equals("") ? "*" : propertyValue);
+
+				// Create the DAO ...
+				IGSPRecordDao gspDao = daoFactory.getGSPRecordDao(session, gspDm);
+
+				// Insert the record into the database ...
+				gspDao.insertRecord();
+
+			}
+
+			// Finally Commit the changes & return the searchId PK ...
+			session.connectionCommit();
+
+			deleteExcessRecentSearchEntries(sessionId);
+
+			return searchId;
+		}
+		catch (Exception e)
+		{
+			LOG.error("SearchImpl: search() Failed: ", e);
+			try
+			{
+				session.connectionRollback();
+			}
+			catch (Exception e2)
+			{
+				throw new EQException("SearchImpl: search() Failed: " + Toolbox.getExceptionMessage(e2), e2);
+			}
+			throw new EQException("SearchImpl: search() Failed: " + Toolbox.getExceptionMessage(e), e);
+		}
+	}
+
+	/**
+	 * This method is called when a search item is repeated. It accepts a searchId as a parameter
+	 * 
+	 * @param String
+	 *            - sessionId
+	 * @param selectedSearchId
+	 *            String - Session ID
+	 */
+	public void updateSearchItem(final String sessionId, final long selectedSearchId) throws EQException
+	{
+		// Get the EquationStandardSession from the Session Id and EQ User ...
+		final EquationStandardSession session = getEquationStandardSession(getEqUser(sessionId));
+
+		try
+		{
+			// Create the GSR DAO ...
+			GSRRecordDataModel gsrDm = new GSRRecordDataModel();
+			gsrDm.setSearchIdentifier(selectedSearchId);
+			final IGSRRecordDao gsrDao = daoFactory.getGSRDao(session, gsrDm);
+			List<AbsRecord> listGsrDaoList = gsrDao.getRecordBy("GSRSID = " + selectedSearchId);
+
+			if (listGsrDaoList.size() == 1)
+			{
+				gsrDm = (GSRRecordDataModel) listGsrDaoList.get(0);
+				final Date now = new Date();
+				gsrDm.setTimestamp(new Timestamp(now.getTime()));
+				gsrDao.updateRecord(gsrDm);
+			}
+			else if (listGsrDaoList.size() > 1)
+			{
+				throw new EQException("SearchImpl: recordSearchItem() Failed: Duplicate records for the same primary key.");
+			}
+			else
+			{
+				throw new EQException(
+								"SearchImpl: recordSearchItem() Failed: There are no records to update. Record with primary key "
+												+ selectedSearchId + " does not exist.");
+			}
+
+			// Finally Commit the changes ...
+			session.connectionCommit();
+		}
+		catch (Exception e)
+		{
+			LOG.error("SearchImpl: recordSearchItem() Failed: ", e);
+			try
+			{
+				session.connectionRollback();
+			}
+			catch (Exception e2)
+			{
+				throw new EQException("SearchImpl: recordSearchItem() Failed: " + Toolbox.getExceptionMessage(e2), e2);
+			}
+			throw new EQException("SearchImpl: recordSearchItem() Failed: " + Toolbox.getExceptionMessage(e), e);
+		}
+	}
+
+	public void deleteExcessRecentSearchEntries(final String sessionId) throws EQException
+	{
+		// Get the EquationStandardSession from the Session Id and EQ User ...
+		final EquationUser eqUser = getEqUser(sessionId);
+		final EquationStandardSession session = getEquationStandardSession(eqUser);
+
+		try
+		{
+			// Create the GSR DAO ...
+			GSRRecordDataModel gsrDm = new GSRRecordDataModel();
+			final IGSRRecordDao gsrDao = daoFactory.getGSRDao(session, gsrDm);
+
+			// Create the GSRRecordDataModel ...
+			GSPRecordDataModel gspDm = new GSPRecordDataModel();
+
+			// Delete the corresponding records in the GSPPF table
+			// Create the DAO ...
+			IGSPRecordDao gspDao = daoFactory.getGSPRecordDao(session, gspDm);
+			List<AbsRecord> gspDaoList = gspDao.getRecordBy("GSPSID NOT IN (SELECT GSRSID FROM GSRPF AS A WHERE "
+							+ numberOfRowsToKeep
+							+ " > (SELECT COUNT(*) FROM GSRPF AS B WHERE A.GSRTSTP < B.GSRTSTP AND B.GSRTSTP IS NOT NULL))");
+			for (AbsRecord dm : gspDaoList)
+			{
+				gspDm = (GSPRecordDataModel) dm;
+				gspDao.deleteRecord(gspDm);
+			}
+
+			// Delete the items from the Search Details Table (GSPPF)
+			// Note that there could be many for each record in the Search History Table (GSRPF) ...
+			List<AbsRecord> list = gsrDao.getRecordBy("GSRSID NOT IN (SELECT GSRSID FROM GSRPF AS A WHERE " + numberOfRowsToKeep
+							+ " > (SELECT COUNT(*) FROM GSRPF AS B WHERE A.GSRTSTP < B.GSRTSTP AND B.GSRTSTP IS NOT NULL))");
+			for (AbsRecord dm : list)
+			{
+				gsrDm = (GSRRecordDataModel) dm;
+				gsrDao.deleteRecord(gsrDm);
+			}
+
+			session.connectionCommit();
+		}
+		catch (Exception e)
+		{
+			LOG.error("SearchImpl: deleteRecentSearches() Failed: ", e);
+			try
+			{
+				session.connectionRollback();
+			}
+			catch (Exception e2)
+			{
+				throw new EQException("SearchImpl: deleteRecentSearches() Failed: " + Toolbox.getExceptionMessage(e2), e2);
+			}
+			throw new EQException("SearchImpl: deleteRecentSearches() Failed: " + Toolbox.getExceptionMessage(e), e);
+		}
+	}
+
+	/**
+	 * Whenever a recent search is performed for a user we need to ensure that there are no old searches in the recent search table.
+	 * This is achieved by comparing the time stamp of each of the search records to a predefined TTL property. This property is
+	 * defined in the properties file and will be used to determine if a particular recent search record is deleted or not.
+	 * 
+	 * @param String
+	 *            sessionId
+	 * @return
+	 */
+	public void deleteRecentSelectedSearches(final String sessionId) throws EQException
+	{
+		// Get the EquationStandardSession from the Session Id and EQ User ...
+		final EquationUser eqUser = getEqUser(sessionId);
+		final EquationStandardSession session = getEquationStandardSession(eqUser);
+
+		// Build a date object based on the days to live, i.e. today - days to live and round it to the beginning if the day.
+		final Date startToday = generateDayDate(0);
+		final Date thresholdDate = generateDayDate(daysToLive);
+
+		// First of all we check if we need to go to the database. It might be that we already performed the delete for today.
+		// or it could be that we never performed the delete for this user today or any other day ...
+		final Date date = recentSearchDeleteRecord.get(eqUser.getUserId());
+
+		// Check if we already did the delete for today ... Normally if we delete once we don't need to delete again given that
+		// the setting is specified in days ...
+		if (date == null || date.before(startToday))
+		{
+			try
+			{
+				// Create the GSR DAO ...
+				GSRRecordDataModel gsrDm = new GSRRecordDataModel();
+				final IGSRRecordDao gsrDao = daoFactory.getGSRDao(session, gsrDm);
+
+				// First we delete the items from the Search Details Table (GSPPF)
+				// Note that there could be many for each record in the Search History Table (GSRPF) ...
+				final String whereClause = "GSRTSTP < '" + new java.sql.Timestamp(thresholdDate.getTime()) + "' OR GSRTSTP IS NULL";
+				List<AbsRecord> list = gsrDao.getRecordBy(whereClause);
+				for (AbsRecord dm : list)
+				{
+					gsrDm = (GSRRecordDataModel) dm;
+					gsrDao.deleteRecord(gsrDm);
+				}
+
+				// Create the GSRRecordDataModel ...
+				GSPRecordDataModel gspDm = new GSPRecordDataModel();
+
+				// Delete the corresponding records in the GSPPF table
+				// Create the DAO ...
+				IGSPRecordDao gspDao = daoFactory.getGSPRecordDao(session, gspDm);
+				List<AbsRecord> gspDaoList = gspDao.getRecordBy("GSPSID IN (SELECT GSRSID FROM GSRPF WHERE " + whereClause + ")");
+				for (AbsRecord dm : gspDaoList)
+				{
+					gspDm = (GSPRecordDataModel) dm;
+					gspDao.deleteRecord(gspDm);
+				}
+
+				session.connectionCommit();
+			}
+			catch (Exception e)
+			{
+				LOG.error("SearchImpl: deleteRecentSearches() Failed: ", e);
+				try
+				{
+					session.connectionRollback();
+				}
+				catch (Exception e2)
+				{
+					throw new EQException("SearchImpl: deleteRecentSearches() Failed: " + Toolbox.getExceptionMessage(e2), e2);
+				}
+				throw new EQException("SearchImpl: deleteRecentSearches() Failed: " + Toolbox.getExceptionMessage(e), e);
+			}
+		}
+	}
+
+	/**
+	 * Whenever a recent search is performed for a user we need to ensure that there are no old searches in the recent search table.
+	 * This is achieved by comparing the time stamp of each of the search records to a predefined TTL property. This property is
+	 * defined in the properties file and will be used to determine if a particular recent search record is deleted or not.
+	 * 
+	 * @param String
+	 *            sessionId
+	 * @param String
+	 *            sessionId
+	 * @return
+	 */
+	public void deleteSelectedSearch(final String sessionId, final long searchId) throws EQException
+	{
+		// Get the EquationStandardSession from the Session Id and EQ User ...
+		final EquationUser eqUser = getEqUser(sessionId);
+		final EquationStandardSession session = getEquationStandardSession(eqUser);
+
+		try
+		{
+			/* *****************************************************************************************
+			 * First we delete the items from the Search Details Table (GSPPF) Note that there could be many for each record in the
+			 * Search History Table (GSRPF).
+			 * ****************************************************************************************
+			 */
+			// Create the GSR DAO ...
+			final IGSRRecordDao gsrDao = daoFactory.getGSRDao(session, new GSRRecordDataModel());
+			// Get the records to be deleted ...
+			List<AbsRecord> gsrDaoList = gsrDao.getRecordBy("GSRSID = " + searchId);
+			// Loop through each of the records returned by the where clause (should be only one given that searchId is PK) ...
+			int updates = 0;
+			for (AbsRecord gsrDm : gsrDaoList)
+			{
+				// Delete !
+				gsrDao.deleteRecord(gsrDm);
+				updates++;
+			}
+
+			// Safety check, this condition should never be true unless there is a problem with the database ...
+			if (updates > 1)
+			{
+				throw new EQException(
+								"SearchImpl: deleteSelectedSearch() Failed: More than 1 record was deleted for a given searchId PK ["
+												+ searchId + "]");
+			}
+
+			// Then we delete the items from the Search Criteria Table (GSRPF)
+
+			// Create the GSRRecordDataModel ...
+			IGSPRecordDao gspDao = daoFactory.getGSPRecordDao(session, new GSPRecordDataModel());
+			// Get the records to be deleted ...
+			List<AbsRecord> gspDaoList = gspDao.getRecordBy("GSPSID = " + searchId);
+			// Loop through each of the records returned by the where clause (should be only one given that searchId is PK) ...
+			for (AbsRecord gspDm : gspDaoList)
+			{
+				// Delete !
+				gspDao.deleteRecord(gspDm);
+			}
+
+			// Finally Commit the changes ...
+			session.connectionCommit();
+		}
+		catch (SQLException e)
+		{
+			LOG.error("SearchImpl: deleteSelectedSearch() Failed: ", e);
+			try
+			{
+				session.connectionRollback();
+			}
+			catch (Exception e2)
+			{
+				throw new EQException("SearchImpl: deleteSelectedSearch() Failed: " + Toolbox.getExceptionMessage(e), e2);
+			}
+			throw new EQException("SearchImpl: deleteSelectedSearch() Failed: " + Toolbox.getExceptionMessage(e), e);
+		}
+	}
+
+	public Collection<ISelectedSearchResult> retrieveRecentSelectedSearches(final String sessionId) throws EQException
+	{
+		final List<ISelectedSearchResult> selectedSearchResults = new ArrayList<ISelectedSearchResult>();
+		// We start by deleting any expired recent searches ...
+		deleteExcessRecentSearchEntries(sessionId);
+
+		// Get the EquationStandardSession from the Session Id and EQ User ...
+		final EquationUser eqUser = getEqUser(sessionId);
+		final EquationStandardSession session = getEquationStandardSession(eqUser);
+
+		// Loop through the recent searches ...
+		GSRRecordDataModel gsrDm = new GSRRecordDataModel();
+		final IGSRRecordDao gsrDao = daoFactory.getGSRDao(session, gsrDm);
+		List<AbsRecord> gsrList = gsrDao.getRecordBy("GSRUSR = '" + eqUser.getUserId() + "'");
+
+		Map<Long, Map<PropertyType, String>> mapOfMaps = new HashMap<Long, Map<PropertyType, String>>();
+		for (AbsRecord dm : gsrList)
+		{
+			gsrDm = (GSRRecordDataModel) dm;
+			Map<PropertyType, String> map = new HashMap<PropertyType, String>();
+			map.put(PropertyType.ID, "" + gsrDm.getSearchIdentifier());
+			map.put(PropertyType.SYSTEM, gsrDm.getSearchedInSystem());
+			map.put(PropertyType.UNIT, gsrDm.getSearchedInUnit());
+			map.put(PropertyType.SEARCH_TYPE, gsrDm.getSearchType());
+			map.put(PropertyType.USER, gsrDm.getSearchedBy());
+			map.put(PropertyType.TIME_STAMP, "" + gsrDm.getTimestamp().getTime());
+
+			IGSPRecordDao gspDao = daoFactory.getGSPRecordDao(session, new GSPRecordDataModel());
+			List<AbsRecord> gspRecords = gspDao.getRecordBy("GSPSID = '" + gsrDm.getSearchIdentifier() + "'");
+			populateMapDetail(map, gspRecords);
+
+			mapOfMaps.put(gsrDm.getSearchIdentifier(), map);
+		}
+
+		for (Map<PropertyType, String> map : mapOfMaps.values())
+		{
+			if (map.get(PropertyType.SEARCH_TYPE).equals(SearchType.ACCOUNT.toString()))
+			{
+				selectedSearchResults.add(new AccountSearchResult(map));
+			}
+			else if (map.get(PropertyType.SEARCH_TYPE).equals(SearchType.CUSTOMER.toString()))
+			{
+				selectedSearchResults.add(new CustomerSearchResult(map));
+			}
+			else if (map.get(PropertyType.SEARCH_TYPE).equals(SearchType.BRANCH.toString()))
+			{
+				selectedSearchResults.add(new BranchSearchResult(map));
+			}
+			else if (map.get(PropertyType.SEARCH_TYPE).equals(SearchType.DEAL.toString()))
+			{
+				selectedSearchResults.add(new DealSearchResult(map));
+			}
+			else if (map.get(PropertyType.SEARCH_TYPE).equals(SearchType.OPTION.toString()))
+			{
+				selectedSearchResults.add(new OptionSearchResult(map));
+			}
+			else
+			{
+				throw new EQException("ISearch.retrieveRecentSelectedSearches: Search Type: " + map.get(PropertyType.SEARCH_TYPE)
+								+ " not supported");
+			}
+		}
+		Collections.sort(selectedSearchResults);
+		return selectedSearchResults;
+	}
+
+	private void populateMapDetail(Map<PropertyType, String> map, List<AbsRecord> gspRecords)
+	{
+		for (AbsRecord record : gspRecords)
+		{
+			GSPRecordDataModel gspRecord = (GSPRecordDataModel) record;
+			map.put(PropertyType.valueOf(gspRecord.getSearchProperties()), gspRecord.getSearchValue());
+		}
+	}
+
+	/**
+	 * Utility method to generate a random number ...
+	 * 
+	 * @return long - Random number generated.
+	 */
+	private long generateId()
+	{
+		return System.currentTimeMillis();
+	}
+
+	/**
+	 * Given a sessionId this method returns the EqUser by fetching it from EquationCommonContext.
+	 */
+	protected EquationUser getEqUser(final String sessionId) throws EQException
+	{
+		final EquationUser eqUser = EquationCommonContext.getContext().getEquationUser(sessionId);
+		// Check that we do have a eqUser ...
+		if (eqUser == null)
+		{
+			throw new EQException("ISearch: getEqUser() Failed: No user available for session.");
+		}
+		else
+		{
+			return eqUser;
+		}
+	}
+
+	/**
+	 * Given a EqUser this method returns the EquationStandardSession by fetching it from EqUser.
+	 * 
+	 * @param eqUser
+	 * @return EquationStandardSession
+	 * @throws EQException
+	 */
+	protected EquationStandardSession getEquationStandardSession(final EquationUser eqUser) throws EQException
+	{
+		// Get the standard session ...
+		final EquationStandardSession session = eqUser.getEquationUnit().getEquationSessionPool().getEquationStandardSession();
+		// Check that we do have a session ...
+		if (session == null)
+		{
+			throw new EQException("SearchImpl: recordSearchItem() Failed: No session available.");
+		}
+		else
+		{
+			return session;
+		}
+	}
+
+	/**
+	 * Given a number of days this method adds/deducts days from the current date and resets the time to the start of that date.
+	 * 
+	 * @param int - No of days to add or subtract
+	 * @return Date - The new generated date.
+	 */
+	protected Date generateDayDate(final int noDays)
+	{
+		Calendar thresholdDate = Calendar.getInstance();
+		thresholdDate.add(Calendar.DAY_OF_YEAR, -noDays);
+		thresholdDate.set(Calendar.HOUR, 0);
+		thresholdDate.set(Calendar.MINUTE, 0);
+		thresholdDate.set(Calendar.SECOND, 0);
+		thresholdDate.set(Calendar.MILLISECOND, 0);
+		return thresholdDate.getTime();
+	}
+}

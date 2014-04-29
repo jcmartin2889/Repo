@@ -1,0 +1,279 @@
+package com.misys.equation.common.transaction.rce;
+
+import java.util.List;
+
+import com.misys.equation.common.utilities.EqDataType;
+
+public class RCEExtensionDataEvents
+{
+
+	//This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/** Automatic schedules */
+	public static final String AUTOMATIC_SCHEDULE = "2";
+
+	/** List of instructions */
+	private List<RCETransactionInstruction> instructions;
+
+	/** List of principal increase */
+	private List<RCETransactionPrincipalIncrease> principalIncreases;
+
+	/** List of rate changes */
+	private List<RCETransactionRateChange> rateChanges;
+
+	/** Next instruction record to be read */
+	private int instructionIndex;
+
+	/** Next principal increase record to be read */
+	private int principalIncreasesIndex;
+
+	/** Next rate change to be read */
+	private int rateChangesIndex;
+
+	/** List of manual schedules */
+	private List<RCEManualSchedules> manualSchedules;
+
+	/**
+	 * Constructor
+	 */
+	public RCEExtensionDataEvents()
+	{
+		reset();
+	}
+
+	/**
+	 * Constructor with events
+	 * 
+	 * @param instructions
+	 *            - the list of schedule instructions
+	 * @param principalIncreases
+	 *            - the list of principal increases
+	 * @param rateChanges
+	 *            - the list of rate changes
+	 */
+	public RCEExtensionDataEvents(List<RCETransactionInstruction> instructions,
+					List<RCETransactionPrincipalIncrease> principalIncreases, List<RCETransactionRateChange> rateChanges)
+	{
+		// each list must already be in sorted order
+		this.instructions = instructions;
+		this.principalIncreases = principalIncreases;
+		this.rateChanges = rateChanges;
+
+		// initialise
+		reset();
+	}
+
+	/**
+	 * Return the list of manual schedules
+	 * 
+	 * @return the list of manual schedules
+	 */
+	public List<RCEManualSchedules> getManualSchedules()
+	{
+		return manualSchedules;
+	}
+
+	/**
+	 * Set the list of manual schedules
+	 * 
+	 * @param manualSchedules
+	 *            - the list of manual schedules
+	 */
+	public void setManualSchedules(List<RCEManualSchedules> manualSchedules)
+	{
+		this.manualSchedules = manualSchedules;
+	}
+
+	/**
+	 * Return the list of instructions
+	 * 
+	 * @return the list of instructions
+	 */
+	public List<RCETransactionInstruction> getInstructions()
+	{
+		return instructions;
+	}
+
+	/**
+	 * Set the list of instructions
+	 * 
+	 * @param instructions
+	 *            - the list of instructions
+	 */
+	public void setInstructions(List<RCETransactionInstruction> instructions)
+	{
+		this.instructions = instructions;
+	}
+
+	/**
+	 * Return the list of principal increase
+	 * 
+	 * @return the list of principal increase
+	 */
+	public List<RCETransactionPrincipalIncrease> getPrincipalIncreases()
+	{
+		return principalIncreases;
+	}
+
+	/**
+	 * Set the list of principal increase
+	 * 
+	 * @param principalIncreases
+	 *            - the list of principal increase
+	 */
+	public void setPrincipalIncreases(List<RCETransactionPrincipalIncrease> principalIncreases)
+	{
+		this.principalIncreases = principalIncreases;
+	}
+
+	/**
+	 * Return the list of rate changes
+	 * 
+	 * @return the list of rate changes
+	 */
+	public List<RCETransactionRateChange> getRateChanges()
+	{
+		return rateChanges;
+	}
+
+	/**
+	 * Set the list of rate changes
+	 * 
+	 * @param rateChanges
+	 *            - the list of rate changes
+	 */
+	public void setRateChanges(List<RCETransactionRateChange> rateChanges)
+	{
+		this.rateChanges = rateChanges;
+	}
+
+	/**
+	 * Reset and read from start again
+	 */
+	public void reset()
+	{
+		this.instructionIndex = 0;
+		this.principalIncreasesIndex = 0;
+		this.rateChangesIndex = 0;
+	}
+
+	/**
+	 * Return the current instruction date
+	 * 
+	 * @return the current instruction date
+	 */
+	protected int getInstructionDate()
+	{
+		int instructionDate = EqDataType.DATE_OPENN;
+		if (instructions != null && instructionIndex < instructions.size())
+		{
+			instructionDate = instructions.get(instructionIndex).getInstructionDate();
+		}
+
+		return instructionDate;
+	}
+
+	/**
+	 * Return the current instruction
+	 * 
+	 * @return the current instruction
+	 */
+	protected RCETransactionInstruction getInstruction()
+	{
+		return instructions.get(instructionIndex);
+	}
+
+	/**
+	 * Return the current instruction date
+	 * 
+	 * @return the current instruction date
+	 */
+	protected int getPrincipalIncreaseDate()
+	{
+		int principalIncreaseDate = EqDataType.DATE_OPENN;
+		if (principalIncreases != null && principalIncreasesIndex < principalIncreases.size())
+		{
+			principalIncreaseDate = principalIncreases.get(principalIncreasesIndex).getPrincipalDate();
+		}
+
+		return principalIncreaseDate;
+	}
+
+	/**
+	 * Return the current instruction
+	 * 
+	 * @return the current instruction
+	 */
+	protected RCETransactionPrincipalIncrease getPrincipalIncrease()
+	{
+		return principalIncreases.get(principalIncreasesIndex);
+	}
+
+	/**
+	 * Return the current instruction date
+	 * 
+	 * @return the current instruction date
+	 */
+	protected int getRateChangeDate()
+	{
+		int rateChangeDate = EqDataType.DATE_OPENN;
+		if (rateChanges != null && rateChangesIndex < rateChanges.size())
+		{
+			rateChangeDate = rateChanges.get(rateChangesIndex).getChangeDate();
+		}
+
+		return rateChangeDate;
+	}
+
+	/**
+	 * Return the current instruction
+	 * 
+	 * @return the current instruction
+	 */
+	protected RCETransactionRateChange getRateChange()
+	{
+		return rateChanges.get(rateChangesIndex);
+	}
+
+	/**
+	 * Return the next event
+	 * 
+	 * @return next event
+	 */
+	public IRCETransactionEvent next()
+	{
+		// event
+		IRCETransactionEvent event = null;
+
+		// dates
+		int instructionDate = getInstructionDate();
+		int principalIncreaseDate = getPrincipalIncreaseDate();
+		int rateChangeDate = getRateChangeDate();
+
+		// Instruction date
+		if (instructionDate < EqDataType.DATE_OPENN && instructionDate <= principalIncreaseDate
+						&& instructionDate <= rateChangeDate)
+		{
+			event = instructions.get(instructionIndex);
+			instructionIndex++;
+		}
+
+		// Principal increase
+		else if (principalIncreaseDate < EqDataType.DATE_OPENN && principalIncreaseDate < rateChangeDate)
+		{
+			event = principalIncreases.get(principalIncreasesIndex);
+			principalIncreasesIndex++;
+		}
+
+		// Rate change
+		else if (rateChangeDate < EqDataType.DATE_OPENN)
+		{
+			event = rateChanges.get(rateChangesIndex);
+			rateChangesIndex++;
+		}
+
+		return event;
+	}
+
+}

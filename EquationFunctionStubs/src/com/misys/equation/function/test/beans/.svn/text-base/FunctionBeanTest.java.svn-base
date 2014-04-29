@@ -1,0 +1,191 @@
+package com.misys.equation.function.test.beans;
+
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EqDataType;
+import com.misys.equation.function.beans.Function;
+import com.misys.equation.function.beans.InputField;
+import com.misys.equation.function.beans.InputFieldSet;
+import com.misys.equation.function.beans.valid.MessageContainer;
+import com.misys.equation.function.language.LanguageResources;
+import com.misys.equation.problems.Message;
+
+/**
+ * Test cases for the Function bean class
+ */
+public class FunctionBeanTest extends BeanTestCase
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/**
+	 * Creates and returns a valid Function object
+	 * 
+	 * @return A valid Function object
+	 * @throws EQException
+	 */
+	private Function getValidFunction() throws EQException
+	{
+		Function function = new Function();
+		function.setModuleId("MOD");
+		function.setBaseLanguage("GB");
+		function.setId("DDD");
+		function.setLabel("DDD label");
+		function.setDescription("DDD description");
+		InputFieldSet primary = new InputFieldSet(Function.PRIMARY_ID, Function.PRIMARY_ID, Function.PRIMARY_ID);
+		InputField field1 = new InputField("FIELD1", "Field 1", "Field 1 Description");
+		field1.setDataType(EqDataType.TYPE_CHAR);
+		field1.setSize("10");
+		primary.addInputField(field1);
+		function.addInputFieldSet(primary);
+		return function;
+	}
+	/**
+	 * Test error when the module id is not 3 characters:
+	 */
+	public void testModuleId()
+	{
+		Function x = new Function();
+		x.setId("DDD");
+		x.setLabel("DDD label");
+		x.setDescription("DDD description");
+
+		// If blank
+		Message message = validateForOneMessage(x);
+		Object actual = message == null ? null : message.getText();
+		assertEquals(LanguageResources.getFormattedString("Langugae.ModuleIdMustBeThreeCharacters", x.getModuleId()), actual);
+
+		// 2 chars:
+		x.setModuleId("MO");
+		message = validateForOneMessage(x);
+		actual = message == null ? null : message.getText();
+		assertEquals(LanguageResources.getFormattedString("Langugae.ModuleIdMustBeThreeCharacters", x.getModuleId()), actual);
+	}
+
+	public void testBaseLanguageMustBeEntered()
+	{
+		Function x = new Function();
+		x.setModuleId("MOD");
+		x.setId("DDD");
+		x.setLabel("DDD label");
+		x.setDescription("DDD description");
+
+		Message message = validateForOneMessage(x);
+		Object actual = message == null ? null : message.getText();
+		assertEquals(LanguageResources.getString("Language.BaseLanguageMustBeEntered"), actual);
+	}
+
+	public void testValidFunction() throws EQException
+	{
+		Function x = getValidFunction();
+		Message message = validateForOneMessage(x);
+		if (message != null)
+		{
+			assertEquals(null, message.getText());
+		}
+	}
+	public void testValidShortOption() throws EQException
+	{
+		Function x = getValidFunction();
+		x.setId("D"); // A short option
+
+		Message message = validateForOneMessage(x);
+		Object actual = message == null ? null : message.getText();
+		assertEquals(null, actual);
+	}
+
+	public void testFunctionBlankOption()
+	{
+		Function x = new Function();
+		x.setModuleId("MOD");
+		x.setBaseLanguage("GB");
+		Message message = validateForOneMessage(x);
+		Object actual = message == null ? null : message.getText();
+		assertEquals(LanguageResources.getString("Language.OptionMustBeSpecified"), actual);
+	}
+
+	public void testInvalidCharactersInOption()
+	{
+		Function x = new Function();
+		x.setModuleId("MOD");
+		x.setBaseLanguage("GB");
+		x.setId("D?D");
+		Message message = validateForOneMessage(x);
+		Object actual = message == null ? null : message.getText();
+		assertEquals(LanguageResources.getString("Language.InvalidCharactersInOption"), actual);
+
+		// Space
+		x.setId("D D");
+		message = validateForOneMessage(x);
+		actual = message == null ? null : message.getText();
+		assertEquals(LanguageResources.getString("Language.InvalidCharactersInOption"), actual);
+
+		// Lower case
+		x.setId("d D");
+		message = validateForOneMessage(x);
+		actual = message == null ? null : message.getText();
+		assertEquals(LanguageResources.getString("Language.InvalidCharactersInOption"), actual);
+
+		// Asterisk
+		x.setId("* D");
+		message = validateForOneMessage(x);
+		actual = message == null ? null : message.getText();
+		assertEquals(LanguageResources.getString("Language.InvalidCharactersInOption"), actual);
+	}
+
+	public void testOptionTooLong()
+	{
+		Function x = new Function();
+		x.setModuleId("MOD");
+		x.setId("DDDD");
+
+		Message message = validateForOneMessage(x);
+
+		assertNotNull(message);
+		assertEquals(LanguageResources.getString("Language.OptionCannotBeLongerThan3Characters"), message.getText());
+	}
+
+	/**
+	 * Ensure that a blank title results in the expected error message
+	 */
+	public void testFunctionBlankTitle()
+	{
+		Function x = new Function();
+		x.setModuleId("MOD");
+		x.setId("DDD");
+
+		Message message = validateForOneMessage(x);
+
+		Object actual = message == null ? null : message.getText();
+		assertEquals(LanguageResources.getString("Language.ServiceTitleMustBeEntered"), actual);
+
+	}
+
+	/**
+	 * Ensure that a title longer than 35 characters results in the expected error message
+	 * 
+	 * @throws EQException
+	 */
+	public void testTitleTooLong() throws EQException
+	{
+		Function x = getValidFunction();
+		x.setLabel("123456789012345678901234567890123456");
+
+		Message message = validateForOneMessage(x);
+
+		Object actual = message == null ? null : message.getText();
+		assertEquals(LanguageResources.getString("Language.ServiceTitleCannotBeLongerThan35Characters"), actual);
+	}
+
+	public void testMultipleMessages()
+	{
+		Function x = new Function();
+		x.setModuleId("MOD");
+		x.setBaseLanguage("GB");
+		x.setId("DDD");
+
+		MessageContainer messageContainer = new MessageContainer();
+		x.validateBean(messageContainer, null, true);
+		assertEquals(2, messageContainer.getMessageCount());
+	}
+
+}

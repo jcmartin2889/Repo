@@ -1,0 +1,142 @@
+package com.misys.equation.common.globalprocessing.rule;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.SQLToolbox;
+
+/**
+ * Caches information about the rules table such as if any rules for a given export type exists.
+ * <p>
+ * Cached information may be updated by invoking one of the update() method.
+ * 
+ * @author berzosa
+ */
+public class RulesCacheUtil
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: RulesCacheUtil.java 11666 2011-09-02 14:14:55Z bterrado $";
+
+	/** Logger for this class */
+	private static final EquationLogger LOG = new EquationLogger(RulesCacheUtil.class);
+
+	/**
+	 * Private constructor forces singleton.
+	 */
+	private RulesCacheUtil()
+	{
+		// this is a singleton
+	}
+
+	/**
+	 * Static holder singleton idiom.
+	 */
+	private static class RulesCacheUtilHolder
+	{
+		private static RulesCacheUtil INSTANCE = new RulesCacheUtil();
+	}
+
+	/**
+	 * Returns the rules cache util singleton.
+	 * 
+	 * @return The rules cache singleton.
+	 */
+	public static RulesCacheUtil getInstance()
+	{
+		return RulesCacheUtilHolder.INSTANCE;
+	}
+
+	/**
+	 * An internal cached map which stores the number of rules per export type.
+	 */
+	private Map<String, Integer> rulesCountByExportType;
+
+	/**
+	 * Forces this cache to update its contents using the given {@link EquationStandardSession}.
+	 */
+	public void update(EquationStandardSession session) throws EQException
+	{
+		LOG.debug("Reloading Rules Cache...");
+
+		// obtain and cache the number of rules per export type using a global connection
+		final String query = "SELECT GPRETYP, COUNT(*) " //
+						+ "  FROM GPRPF " //
+						+ " WHERE GPRTYP = 'M' " //
+						+ "   AND GPRMON = 'Y' " //
+						+ "   AND (GPRMALL = 'Y' OR GPRMALL = 'N') " //
+						+ " GROUP BY GPRETYP";
+
+		try
+		{
+			// get a connection from the global data source
+			final Connection conn = session.getConnectionWrapper().getGlobalConnectionDataSource().getConnection();
+			Statement stmt = null;
+			try
+			{
+				stmt = conn.createStatement();
+				final Map<String, Integer> rulesCountByExportType = new HashMap<String, Integer>();
+				final ResultSet rs = stmt.executeQuery(query);
+
+				while (rs.next())
+				{
+					final String exportType = rs.getString(1).trim();
+					final Integer rulesCount = rs.getInt(2);
+					rulesCountByExportType.put(exportType, rulesCount);
+				}
+
+				// when successfully completed, update internal cache...
+				this.rulesCountByExportType = rulesCountByExportType;
+			}
+			finally
+			{
+				// cleanup the statement
+				SQLToolbox.close(stmt);
+
+				// Global connections must be explicitly closed!
+				SQLToolbox.close(conn);
+			}
+		}
+		catch (SQLException sqle)
+		{
+			// wrap errors in EQException
+			throw new EQException(sqle);
+		}
+
+		LOG.debug("Rules Cache reloaded.");
+	}
+
+	/**
+	 * Returns the cached the number of rules for the given export type that exist in the database.
+	 * 
+	 * @param exportType
+	 *            The export type to check rules for.
+	 * @return The number of rules that are linked to this export type
+	 * @throws IllegalStateException
+	 *             If the internal cache has not yet been initialised.
+	 */
+	public int getRulesForExportType(String exportType)
+	{
+		if (rulesCountByExportType == null)
+		{
+			throw new IllegalStateException("RulesCacheUtil not yet initalised!");
+		}
+
+		final Integer rulesCount = rulesCountByExportType.get(exportType);
+		if (rulesCount == null)
+		{
+			// no rules for this export type!
+			return 0;
+		}
+		else
+		{
+			return rulesCount;
+		}
+	}
+}

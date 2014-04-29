@@ -1,0 +1,279 @@
+package com.misys.equation.ui.servlets;
+
+import java.io.ByteArrayOutputStream;
+import java.util.List;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.poi.ss.usermodel.Workbook;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationUser;
+import com.misys.equation.common.utilities.Toolbox;
+import com.misys.equation.function.runtime.FunctionExcel;
+import com.misys.equation.function.runtime.FunctionHandler;
+import com.misys.equation.function.runtime.FunctionHandlerTable;
+import com.misys.equation.function.tools.FunctionRuntimeToolbox;
+import com.misys.equation.ui.context.EquationDesktopContext;
+import com.misys.equation.ui.pdfFonts.LangFont;
+import com.misys.equation.ui.pdfFonts.LangFontHelper;
+
+/**
+ * Print session servlet
+ * 
+ * This servlet provides the facility to print the Equation Desktop function
+ * 
+ */
+public class PrintSessionServlet extends HttpServlet
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	public static final int TYPE_PDF = 1;
+	public static final int TYPE_EXCEL = 2;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
+	 * Get processing
+	 * 
+	 * @param request
+	 *            the Servlet request object
+	 * @param response
+	 *            the Servlet request object
+	 */
+	@Override
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
+	{
+		// Are we printing pdf or excel?
+		int printType = Integer.parseInt(request.getParameter("printType"));
+		if (printType == TYPE_PDF)
+		{
+			// Function handler name
+			makePdf(request, response, "POST");
+		}
+		else if (printType == TYPE_EXCEL)
+		{
+			// Function handler name
+			makeExcel(request, response, "POST");
+		}
+	}
+
+	/**
+	 * Post processing
+	 * 
+	 * @param request
+	 *            the Servlet request object
+	 * @param response
+	 *            the Servlet request object
+	 * 
+	 * 
+	 */
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+	{
+		// Are we printing pdf or excel?
+		int printType = Integer.parseInt(request.getParameter("printType"));
+		if (printType == TYPE_PDF)
+		{
+			// Function handler name
+			makePdf(request, response, "POST");
+		}
+		else if (printType == TYPE_EXCEL)
+		{
+			// Function handler name
+			makeExcel(request, response, "POST");
+		}
+	}
+
+	/**
+	 * Performs the action: generate a PDF from a GET or POST.
+	 * 
+	 * @param request
+	 *            the Servlet request object
+	 * @param response
+	 *            the Servlet request object
+	 * @param methodGetPost
+	 *            the method that was used in the form
+	 */
+	public void makePdf(HttpServletRequest request, HttpServletResponse response, String methodGetPost)
+	{
+		try
+		{
+			// Function handler name
+			String name = request.getParameter("name");
+
+			// Retrieve the function handler and print
+			FunctionHandlerTable funcHandlerTable = (FunctionHandlerTable) request.getSession().getAttribute(
+							FunctionRuntimeToolbox.NAME);
+			FunctionHandler funcHandler = funcHandlerTable.getFunctionHandler(name);
+			List<String> lines = funcHandler.print();
+
+			// Retrieve the user
+			EquationUser equationuser = (EquationUser) request.getSession().getAttribute(EquationDesktopContext.SESSION_USER);
+
+			// create the PDF writer
+			ByteArrayOutputStream byteoutputstream = new ByteArrayOutputStream();
+			LangFont langFont = LangFontHelper.getLangFont(equationuser.getLanguageId(), equationuser.isLanguageRTL());
+			langFont.openOutputStream(byteoutputstream);
+			langFont.write(lines);
+			langFont.close();
+
+			// setting some response headers
+			response.setHeader("Expires", "0");
+			response.setHeader("Cache-Control", "must-revalidate, post-check=0, pre-check=0");
+			response.setHeader("Pragma", "public");
+
+			// setting the content type
+			response.setContentType("application/pdf");
+
+			// the content length is needed for MSIE
+			response.setContentLength(byteoutputstream.size());
+
+			// write PDF output stream to the ServletOutputStream
+			ServletOutputStream out = response.getOutputStream();
+			byteoutputstream.writeTo(out);
+			out.flush();
+		}
+		catch (Exception e)
+		{
+			EquationCommonContext.getContext().getLOG().error(e);
+
+			// setting some response headers
+			response.setHeader("Expires", "0");
+			response.setHeader("Cache-Control", "must-revalidate, post-check=0, pre-check=0");
+			response.setHeader("Pragma", "public");
+
+			// setting the content type
+			response.setContentType("application/pdf");
+
+			// write PDF output stream to the ServletOutputStream
+			try
+			{
+				ServletOutputStream out = response.getOutputStream();
+
+				int length = 0;
+				if (Toolbox.getExceptionMessage(e) != null)
+				{
+					out.println(Toolbox.getExceptionMessage(e));
+					length = Toolbox.getExceptionMessage(e).length();
+				}
+
+				StackTraceElement[] list = e.getStackTrace();
+				for (StackTraceElement element : list)
+				{
+					out.println(element.toString());
+					length += element.toString().length();
+				}
+
+				// the content length is needed for MSIE
+				response.setContentLength(length);
+
+				out.flush();
+			}
+			catch (Exception e2)
+			{
+				EquationCommonContext.getContext().getLOG().error(e);
+			}
+		}
+	}
+
+	/**
+	 * Performs the action: generate an EXCEL from a GET or POST.
+	 * 
+	 * @param request
+	 *            the Servlet request object
+	 * @param response
+	 *            the Servlet request object
+	 * @param methodGetPost
+	 *            the method that was used in the form
+	 */
+	public void makeExcel(HttpServletRequest request, HttpServletResponse response, String methodGetPost)
+	{
+		try
+		{
+			// Function handler name
+			String name = request.getParameter("name");
+
+			// Retrieve the function handler and print
+			FunctionHandlerTable funcHandlerTable = (FunctionHandlerTable) request.getSession().getAttribute(
+							FunctionRuntimeToolbox.NAME);
+			FunctionHandler funcHandler = funcHandlerTable.getFunctionHandler(name);
+			FunctionExcel functionExcel = new FunctionExcel(funcHandler);
+
+			Workbook workBook = functionExcel.getWorkBook();
+
+			// setting some response headers
+			response.setHeader("Expires", "0");
+			response.setHeader("Cache-Control", "must-revalidate, post-check=0, pre-check=0");
+			response.setHeader("Pragma", "public");
+
+			// setting the content type
+			response.setContentType("application/vnd.ms-excel");
+
+			ByteArrayOutputStream byteoutputstream = new ByteArrayOutputStream();
+			workBook.write(byteoutputstream);
+
+			// the content length is needed for MSIE
+			response.setContentLength(byteoutputstream.size());
+
+			// write output stream to the ServletOutputStream
+			ServletOutputStream out = response.getOutputStream();
+			byteoutputstream.writeTo(out);
+			out.flush();
+		}
+		catch (Exception e)
+		{
+			EquationCommonContext.getContext().getLOG().error(e);
+
+			// setting some response headers
+			response.setHeader("Expires", "0");
+			response.setHeader("Cache-Control", "must-revalidate, post-check=0, pre-check=0");
+			response.setHeader("Pragma", "public");
+
+			// setting the content type
+			response.setContentType("application/pdf");
+
+			// write PDF output stream to the ServletOutputStream
+			try
+			{
+				ServletOutputStream out = response.getOutputStream();
+
+				int length = 0;
+				if (Toolbox.getExceptionMessage(e) != null)
+				{
+					out.println(Toolbox.getExceptionMessage(e));
+					length = Toolbox.getExceptionMessage(e).length();
+				}
+
+				StackTraceElement[] list = e.getStackTrace();
+				for (StackTraceElement element : list)
+				{
+					out.println(element.toString());
+					length += element.toString().length();
+				}
+
+				// the content length is needed for MSIE
+				response.setContentLength(length);
+
+				out.flush();
+			}
+			catch (Exception e2)
+			{
+				EquationCommonContext.getContext().getLOG().error(e);
+			}
+		}
+	}
+
+	/**
+	 * @see javax.servlet.GenericServlet#destroy()
+	 */
+	@Override
+	public void destroy()
+	{
+	}
+
+}

@@ -1,0 +1,387 @@
+package com.misys.equation.function.test.run;
+
+import java.util.List;
+
+import com.misys.equation.common.files.JournalHeader;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.internal.eapi.core.EQMessage;
+import com.misys.equation.common.utilities.Toolbox;
+import com.misys.equation.function.beans.FunctionData;
+import com.misys.equation.function.runtime.FunctionHandler;
+import com.misys.equation.function.runtime.FunctionMessage;
+import com.misys.equation.function.runtime.FunctionMessages;
+import com.misys.equation.function.runtime.ScreenSet;
+
+/**
+ * Test Stub for the UE1 service
+ * 
+ */
+public class FunctionHandlerStubUE1 extends FunctionHandlerStubTestCase
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	FunctionHandler functionHandler = null;
+
+	public FunctionHandlerStubUE1()
+	{
+	}
+
+	@Override
+	public void setUp()
+	{
+		try
+		{
+			super.setUp();
+			System.out.println("------------------------------- 1");
+			functionHandler = FunctionToolboxStub.getFunctionHandler(user, "SESSIONID", "");
+
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static void main(String[] inputParameters)
+	{
+
+		FunctionHandlerStubUE1 test = new FunctionHandlerStubUE1();
+		try
+		{
+			test.setUp();
+			test.testStubUE1_001();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+		finally
+		{
+			cleanUp();
+		}
+	}
+
+	public void testStubUE1_001()
+	{
+		try
+		{
+			// Following assertion will fail if not authorised
+			assertTrue(functionHandler.doNewTransaction("UE1", ""));
+			FunctionData functionData = functionHandler.getFhd().getScreenSetHandler().rtvScrnSetCurrent().getFunctionData();
+
+			// Check that attempting to change the value of a non-existing field returns the appropriate return code:
+			assertTrue(functionData.chgFieldDbValue("INVFIELD", "Should return true"));
+
+			// Check that attempting to change the value of a existing field returns the appropriate return code (false)
+			assertFalse(functionData.chgFieldDbValue("DRF", "ValidRef"));
+
+			ScreenSet screenSet = functionHandler.getFhd().getScreenSetHandler().rtvScrnSetCurrent();
+			do
+			{
+				screenSet.validate(screenSet.getScrnNo(), screenSet.getScrnNo());
+			}
+			while (screenSet.nextScreen());
+
+			functionHandler.applyTransaction();
+			Toolbox.printList(functionHandler.print());
+
+			List<FunctionMessage> messages = functionHandler.rtvFunctionMessages().getMessages();
+			FunctionToolboxStub.printMessages(messages);
+			assertEquals(0, messages.size());
+
+			// retrieve journal header
+			JournalHeader journalHeader = functionHandler.getFhd().getJournalHeader();
+			assertNotNull(journalHeader);
+			System.out.println("Journal Header [" + journalHeader + "]");
+
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+
+	}
+
+	/**
+	 * This test checks for mandatory validation on the Reference, CCY and AMT and Value from date fields
+	 */
+	public void testStubUE1_002()
+	{
+		try
+		{
+			functionHandler.doNewTransaction("UE1", "");
+			FunctionData functionData = functionHandler.getFhd().getScreenSetHandler().rtvScrnSetCurrent().getFunctionData();
+
+			functionData.chgFieldDbValue("DRF", "");
+			functionData.chgFieldDbValue("CCY", "");
+			functionData.chgFieldDbValue("AMT", "");
+			functionData.chgFieldDbValue("VFR", "");
+
+			List<FunctionMessage> messages = validateFunction(functionHandler);
+			FunctionToolboxStub.printMessages(messages);
+
+			assertEquals(4, messages.size());
+			assertTrue(containsMessage(functionHandler, "KSM1562Reference", "DRF"));
+			assertTrue(containsMessage(functionHandler, "KSM1562Currency", "CCY"));
+			assertTrue(containsMessage(functionHandler, "KSM1562Amount", "AMT"));
+			assertTrue(containsMessage(functionHandler, "KSM1562Value date", "VFR"));
+
+			functionData.chgFieldDbValue("CCY", "GBP");
+			messages = validateFunction(functionHandler);
+			assertEquals(3, messages.size());
+
+			// Try to apply, to ensure cannot apply with errors:
+			int applySeverity = functionHandler.applyTransaction();
+			assertEquals(FunctionMessages.MSG_ERROR, applySeverity);
+
+			messages = functionHandler.rtvFunctionMessages().getMessages();
+			assertEquals(3, messages.size());
+
+			// retrieve journal header
+			JournalHeader journalHeader = functionHandler.getFhd().getJournalHeader();
+			assertNull(journalHeader);
+		}
+		catch (Exception e)
+		{
+			// If any exception occurs, this is a failure
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * This test checks that only specified values are permitted on a valid values field
+	 */
+	public void testStubUE1_003()
+	{
+		try
+		{
+			functionHandler.doNewTransaction("UE1", "");
+			FunctionData functionData = functionHandler.getFhd().getScreenSetHandler().rtvScrnSetCurrent().getFunctionData();
+			// Enter a valid value for the reference field:
+			functionData.chgFieldDbValue("DRF", "ValidRef");
+
+			// VV1 should permit: 100:101:102:103:104:105
+			functionData.chgFieldDbValue("VV1", "107");
+
+			// VVP should permit: 100:101:99999
+			functionData.chgFieldDbValue("VVP1", "102");
+
+			// VVZ should permit: 100:101:99999
+			functionData.chgFieldDbValue("VVZ1", "102");
+
+			List<FunctionMessage> messages = validateFunction(functionHandler);
+			FunctionToolboxStub.printMessages(messages);
+
+			assertEquals(3, messages.size());
+			assertTrue(containsMessage(functionHandler, "KSM7352VV1                 100:101:102:103:104:105", "VV1"));
+			assertTrue(containsMessage(functionHandler, "KSM7352VVP1                100:101:99999", "VVP1"));
+			assertTrue(containsMessage(functionHandler, "KSM7352VVZ1                100:101:99999", "VVZ1"));
+
+		}
+		catch (Exception e)
+		{
+			// If any exception occurs, this is a failure
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * This test checks min/max lengths/values:
+	 * 
+	 * The DRF reference field has min 5, max 15
+	 */
+	public void testStubUE1_004()
+	{
+		try
+		{
+			functionHandler.doNewTransaction("UE1", "");
+			FunctionData functionData = functionHandler.getFhd().getScreenSetHandler().rtvScrnSetCurrent().getFunctionData();
+
+			// Alpha field too short:
+			functionData.chgFieldDbValue("DRF", "XXX");
+			List<FunctionMessage> messages = validateFunction(functionHandler);
+			FunctionToolboxStub.printMessages(messages);
+			assertEquals(1, messages.size());
+			assertTrue(containsMessage(functionHandler, "KSM7349DRF                 5", "DRF"));
+
+			// Alpha field too long:
+			functionData.chgFieldDbValue("DRF", "XXX1234567890XXX");
+			messages = validateFunction(functionHandler);
+			FunctionToolboxStub.printMessages(messages);
+
+			// Message : KSM7353 The field will exceed the maximum length of the database field
+			// "KSM7353DRF                 15"
+			// assertEquals(1, messages.size());
+			assertTrue(containsMessage(functionHandler, "KSM7350DRF                 15", "DRF"));
+
+			// Make the reference field value again:
+			functionData.chgFieldDbValue("DRF", "ValidRef");
+
+			// Packed field too small:
+			functionData.chgFieldDbValue("MMP1", "-5000");
+			messages = validateFunction(functionHandler);
+			FunctionToolboxStub.printMessages(messages);
+			// assertEquals(1, messages.size());
+			// assertTrue(containsMessage(functionHandler, "KSM7349DRF                 5", "DRF"));
+
+			// Packed field too big:
+			functionData.chgFieldDbValue("MMP1", "46846853790");
+			messages = validateFunction(functionHandler);
+			FunctionToolboxStub.printMessages(messages);
+			// assertEquals(1, messages.size());
+			// assertTrue(containsMessage(functionHandler, "KSM7350DRF                15", "DRF"));
+
+		}
+		catch (Exception e)
+		{
+			// If any exception occurs, this is a failure
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * This test checks Regular Expression validation
+	 * 
+	 * The REGA1 field has a regular expression pattern of *.REGULAR
+	 */
+	public void testStubUE1_005()
+	{
+		try
+		{
+			functionHandler.doNewTransaction("UE1", "");
+			FunctionData functionData = functionHandler.getFhd().getScreenSetHandler().rtvScrnSetCurrent().getFunctionData();
+
+			// Make the reference field value again:
+			functionData.chgFieldDbValue("DRF", "ValidRef");
+
+			// Make the regular expression field invalid
+			functionData.chgFieldDbValue("REGA1", "XXXX");
+			List<FunctionMessage> messages = validateFunction(functionHandler);
+			FunctionToolboxStub.printMessages(messages);
+			assertEquals(1, messages.size());
+			assertTrue(containsMessage(functionHandler, "KSM7351REGA1               .*REGULAR.*", "REGA1"));
+
+			// This should be valid
+			functionData.chgFieldDbValue("REGA1", "XXREGULARXljh");
+			messages = validateFunction(functionHandler);
+			FunctionToolboxStub.printMessages(messages);
+			assertEquals(0, messages.size());
+
+			// Blank will also be invalid
+			functionData.chgFieldDbValue("REGA1", "");
+			messages = validateFunction(functionHandler);
+			FunctionToolboxStub.printMessages(messages);
+			assertEquals(1, messages.size());
+			assertTrue(containsMessage(functionHandler, "KSM7351REGA1               .*REGULAR.*", "REGA1"));
+		}
+		catch (Exception e)
+		{
+			// If any exception occurs, this is a failure
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * This test checks Field Syntax validation (using EL Scripts)
+	 * 
+	 * The VLDA1 field has two EL Scripts
+	 */
+	public void testStubUE1_006()
+	{
+		try
+		{
+			functionHandler.doNewTransaction("UE1", "");
+			FunctionData functionData = functionHandler.getFhd().getScreenSetHandler().rtvScrnSetCurrent().getFunctionData();
+
+			// Make the reference field value:
+			functionData.chgFieldDbValue("DRF", "ValidRef");
+
+			// Make the EL Script test field invalid (for one expression):
+			functionData.chgFieldDbValue("VLDA1", "XX");
+			List<FunctionMessage> messages = validateFunction(functionHandler);
+			FunctionToolboxStub.printMessages(messages);
+			assertEquals(1, messages.size());
+			assertTrue(containsMessage(functionHandler, "KSM7340Must be YY or blank", "VLDA1"));
+
+			// Make the EL Script test field invalid (for both expressions):
+			functionData.chgFieldDbValue("VLDA1", "XXREGULARXljh");
+			messages = validateFunction(functionHandler);
+			FunctionToolboxStub.printMessages(messages);
+			assertEquals(2, messages.size());
+			assertTrue(containsMessage(functionHandler, "KSM7340Must be XX or blank", "VLDA1"));
+			assertTrue(containsMessage(functionHandler, "KSM7340Must be YY or blank", "VLDA1"));
+
+			// Blank will be valid:
+			functionData.chgFieldDbValue("VLDA1", "");
+			messages = validateFunction(functionHandler);
+			FunctionToolboxStub.printMessages(messages);
+			assertEquals(0, messages.size());
+
+			// Make the EL Script test field invalid for the expression not specifying error text or id
+			functionData.chgFieldDbValue("VLDA2", "FAIL1");
+			messages = validateFunction(functionHandler);
+			FunctionToolboxStub.printMessages(messages);
+			assertEquals(1, messages.size());
+			assertTrue(containsMessage(functionHandler, "KSM7340VLDA2 eq 'FAIL1' or VLDA2 eq 'FAIL2'", "VLDA2"));
+
+			// Both should fail now:
+			functionData.chgFieldDbValue("VLDA2", "FAIL2");
+			messages = validateFunction(functionHandler);
+			FunctionToolboxStub.printMessages(messages);
+			assertEquals(2, messages.size());
+			assertTrue(containsMessage(functionHandler, "KSM7340VLDA2 eq 'FAIL1' or VLDA2 eq 'FAIL2'", "VLDA2"));
+			// KSM1756 ATM machine requires notes loading.
+			assertTrue(containsMessage(functionHandler, "KSM1756", "VLDA2"));
+		}
+		catch (Exception e)
+		{
+			// If any exception occurs, this is a failure
+			throw new RuntimeException(e);
+		}
+	}
+
+	private List<FunctionMessage> validateFunction(FunctionHandler functionHandler)
+	{
+		// ScreenSet screenSet = functionHandler.getFhd().getScreenSetHandler().rtvScrnSetCurrent();
+		try
+		{
+			functionHandler.validate();
+
+			// do
+			// {
+			// screenSet.validate(screenSet.getScrnNo(), screenSet.getScrnNo());
+			// }
+			// while (screenSet.nextScreen());
+		}
+		catch (EQException e)
+		{
+			throw new RuntimeException(e);
+		}
+
+		return functionHandler.rtvFunctionMessages().getMessages();
+	}
+
+	private boolean containsMessage(FunctionHandler functionHandler, String dsepmsText, String fieldId)
+	{
+		boolean result = false;
+		List<FunctionMessage> messages = functionHandler.rtvFunctionMessages().getMessages();
+		for (FunctionMessage message : messages)
+		{
+			if (fieldId == null || fieldId.equals(message.getFieldName()))
+			{
+				EQMessage eqMessage = message.getEqMessage();
+
+				if (eqMessage.getDsepms().equals(dsepmsText))
+				{
+					// Found a match...
+
+					result = true;
+				}
+			}
+		}
+		return result;
+	}
+
+}

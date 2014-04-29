@@ -1,0 +1,395 @@
+package com.misys.equation.common.utilities;
+
+import java.util.Map;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationStandardTable;
+import com.misys.equation.common.dao.beans.CARecordDataModel;
+import com.misys.equation.common.internal.eapi.core.EQException;
+
+public class EqSemanticConversion
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/** Equation account format */
+	public static String ACCOUNT_FORMAT_EQ = "1";
+
+	/** EAN account format */
+	public static String ACCOUNT_FORMAT_EAN = "2";
+
+	/** IBAN account format */
+	public static String ACCOUNT_FORMAT_IBAN = "3";
+
+	/** Branch mnemonic format */
+	public static String BRANCH_FORMAT_MNEM = "1";
+
+	/** Branch number format */
+	public static String BRANCH_FORMAT_NUMBER = "2";
+
+	/** Customer mnemonic format */
+	public static String CUSTOMER_FORMAT_MNEM = "1";
+
+	/** Customer number format */
+	public static String CUSTOMER_FORMAT_NUMBER = "2";
+
+	/** Customer external id format */
+	public static String CUSTOMER_FORMAT_EXT_ID = "3";
+
+	/** Account indexes */
+	public static int ACCOUNT_EQUATION = 0;
+	public static int ACCOUNT_EAN = 1;
+	public static int ACCOUNT_IBAN = 2;
+	public static int ACCOUNT_EQUATION_AB = 3;
+	public static int ACCOUNT_EQUATION_AN = 4;
+	public static int ACCOUNT_EQUATION_AS = 5;
+
+	/** Branch indexes */
+	public static int BRANCH_MNEMONIC = 0;
+	public static int BRANCH_NUMBER = 1;
+
+	/** Customer indexes */
+	public static int CUSTOMER_MNEMONIC = 0;
+	public static int CUSTOMER_LOCATION = 1;
+	public static int CUSTOMER_NUMBER = 2;
+	public static int CUSTOMER_PARTY_ID = 3;
+
+	/** Session */
+	private EquationStandardSession session;
+
+	/** Equation table for NE10LF for Equation account retrieval */
+	private EquationStandardTable equationTableNE10LF = null;
+
+	/** Equation table for GF01LF for Equation customer mnemonic retrieval */
+	private EquationStandardTable equationTableGF01LF = null;
+
+	/** Equation table for GF01LF for Equation customer number retrieval */
+	private EquationStandardTable equationTableGF03LF = null;
+
+	/** Equation table for GF01LF for Equation customer number retrieval */
+	private EquationStandardTable equationTableGFExt = null;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param session
+	 *            - the Equation session
+	 */
+	public EqSemanticConversion(EquationStandardSession session)
+	{
+		this.session = session;
+	}
+
+	/**
+	 * Retrieve the account formats given the account in a specific format
+	 * 
+	 * @param accountRef
+	 *            - the account
+	 * @param accountRefFlag
+	 *            - the account reference flag
+	 * 
+	 * @return the account formats [Equation account format, EAN, IBAN]
+	 */
+	public String[] getAccountReference(String accountRef, String accountRefFlag) throws EQException
+	{
+		// Account reference is blank?
+		if (accountRef == null || accountRef.trim().length() == 0)
+		{
+			return new String[] { "", "", "", "", "", "" };
+		}
+
+		// EAN
+		if (accountRefFlag.equals(ACCOUNT_FORMAT_EAN))
+		{
+			return getAccount(accountRef);
+		}
+
+		// IBAN
+		else if (accountRefFlag.equals(ACCOUNT_FORMAT_IBAN))
+		{
+			return getAccountIBAN(accountRef);
+		}
+
+		// Equation format
+		else
+		{
+			accountRef = Toolbox.pad(accountRef, 13);
+			String ab = accountRef.substring(0, 4);
+			String an = accountRef.substring(4, 10);
+			String as = accountRef.substring(10, 13);
+			return getAccount(ab, an, as);
+		}
+	}
+
+	/**
+	 * Retrieve the account formats given the account in a specific format
+	 * 
+	 * @param customerRef
+	 *            - the account
+	 * @param customerRefFlag
+	 *            - the account reference flag
+	 * 
+	 * @return the customer formats
+	 */
+	public String[] getCustomerReference(String customerRef, String customerRefFlag) throws EQException
+	{
+		// Customer reference is blank?
+		if (customerRef == null || customerRef.trim().length() == 0)
+		{
+			return new String[] { "", "", "", "" };
+		}
+
+		// Customer number
+		if (customerRefFlag.equals(CUSTOMER_FORMAT_NUMBER))
+		{
+			return getCustomer(customerRef);
+		}
+
+		// Customer external id
+		else if (customerRefFlag.equals(CUSTOMER_FORMAT_EXT_ID))
+		{
+			return getCustomerExtId(customerRef);
+		}
+
+		// Customer mnemonic
+		else
+		{
+			customerRef = Toolbox.pad(customerRef, 9);
+			String customerMnemonic = customerRef.substring(0, 6);
+			String customerLocation = customerRef.substring(6, 9);
+			return getCustomer(customerMnemonic, customerLocation);
+		}
+	}
+	/**
+	 * Retrieve the account formats given the account in a specific format
+	 * 
+	 * @param branchRef
+	 *            - the account
+	 * @param branchRefFlag
+	 *            - the account reference flag
+	 * 
+	 * @return the branch formats
+	 */
+	public String[] getBranchReference(String branchRef, String branchRefFlag) throws EQException
+	{
+		// Branch number
+		if (branchRefFlag.equals(BRANCH_FORMAT_NUMBER))
+		{
+			return getBranchMnemonic(branchRef);
+		}
+
+		// Branch mnemonic
+		else
+		{
+			return getBranchNumber(branchRef);
+		}
+	}
+
+	/**
+	 * Retrieve account formats given the account in Equation format
+	 * 
+	 * @param ab
+	 *            - the account branch
+	 * @param an
+	 *            - the account number
+	 * @param as
+	 *            - the account suffix
+	 * 
+	 * @return all account formats
+	 */
+	public String[] getAccount(String ab, String an, String as) throws EQException
+	{
+		// initialise table
+		if (equationTableNE10LF == null)
+		{
+			equationTableNE10LF = new EquationStandardTable("NE10LF", "NE10LF", "NEAB:NEAN:NEAS", session);
+		}
+
+		// set the fields
+		equationTableNE10LF.setFieldValue("NEAB", ab);
+		equationTableNE10LF.setFieldValue("NEAN", an);
+		equationTableNE10LF.setFieldValue("NEAS", as);
+
+		// retrieve
+		session.retrieveEquationTable(equationTableNE10LF);
+
+		// not existing
+		if (!equationTableNE10LF.exists())
+		{
+			return new String[] { ab + an + as, "", "", ab, an, as };
+		}
+
+		// return details
+		String ean = equationTableNE10LF.getFieldValue("NEEAN");
+		String iban = equationTableNE10LF.getFieldValue("NEIBAN");
+		return new String[] { ab + an + as, ean, iban, ab, an, as };
+	}
+
+	/**
+	 * Retrieve the account formats given the account in EAN
+	 * 
+	 * @param EAN
+	 *            - the account in EAN
+	 * 
+	 * @return al account formats
+	 */
+	public String[] getAccount(String EAN)
+	{
+		return EqDataToolbox.retrieveAccountEAN(session, "", "", "", EAN);
+	}
+
+	/**
+	 * Retrieve the account formats given the account in IBAN
+	 * 
+	 * @param IBAN
+	 *            - the account in IBAN format
+	 * 
+	 * @return all account formats
+	 */
+	public String[] getAccountIBAN(String IBAN)
+	{
+		return EqDataToolbox.retrieveAccountIBAN(session, "", "", "", IBAN);
+	}
+
+	/**
+	 * Retrieve the customer mnemonic given the number
+	 * 
+	 * @param customerNumber
+	 *            - the customer number
+	 * 
+	 * @return all customer formats
+	 */
+	public String[] getCustomer(String customerNumber) throws EQException
+	{
+		// initialise table
+		if (equationTableGF03LF == null)
+		{
+			equationTableGF03LF = new EquationStandardTable("GF03LF", "GF03LF", "GFCPNC", session);
+		}
+
+		// set the fields
+		equationTableGF03LF.setFieldValue("GFCPNC", customerNumber);
+
+		// retrieve
+		session.retrieveEquationTable(equationTableGF03LF);
+
+		// not existing
+		if (!equationTableGF03LF.exists())
+		{
+			return new String[] { "", "", customerNumber, "" };
+		}
+
+		// return details
+		String cus = equationTableGF03LF.getFieldValue("GFCUS");
+		String clc = equationTableGF03LF.getFieldValue("GFCLC");
+		String extId = equationTableGF03LF.getFieldValue("GFPID");
+		return new String[] { cus, clc, customerNumber, extId };
+	}
+
+	/**
+	 * Retrieve the customer number given the customer mnemonic/location
+	 * 
+	 * @param customerMnemnonic
+	 *            - the customer mnemonic
+	 * @param customerLocation
+	 *            - the customer location
+	 * 
+	 * @return all customer formats
+	 */
+	public String[] getCustomer(String customerMnemonic, String customerLocation) throws EQException
+	{
+		// initialise table
+		if (equationTableGF01LF == null)
+		{
+			equationTableGF01LF = new EquationStandardTable("GF01LF", "GF01LF", "GFCUS:GFCLC", session);
+		}
+
+		// set the fields
+		equationTableGF01LF.setFieldValue("GFCUS", customerMnemonic);
+		equationTableGF01LF.setFieldValue("GFCLC", customerLocation);
+
+		// retrieve
+		session.retrieveEquationTable(equationTableGF01LF);
+
+		// not existing
+		if (!equationTableGF01LF.exists())
+		{
+			return new String[] { customerMnemonic, customerLocation, "", "" };
+		}
+
+		// return details
+		String cpnc = equationTableGF01LF.getFieldValue("GFCPNC");
+		String extId = equationTableGF01LF.getFieldValue("GFPID");
+		return new String[] { customerMnemonic, customerLocation, cpnc, extId };
+	}
+
+	/**
+	 * Retrieve the customer number given the external id
+	 * 
+	 * @param customerExtId
+	 *            - the customer external id
+	 * 
+	 * @return all customer formats
+	 */
+	public String[] getCustomerExtId(String customerExtId) throws EQException
+	{
+		// initialise table
+		if (equationTableGFExt == null)
+		{
+			equationTableGFExt = new EquationStandardTable("GF01LF", "GF01LF", "GFPID", session);
+		}
+
+		// set the fields
+		equationTableGFExt.setFieldValue("GFPID", customerExtId);
+
+		// retrieve
+		session.retrieveEquationTable(equationTableGFExt);
+
+		// not existing
+		if (!equationTableGFExt.exists())
+		{
+			return new String[] { "", "", "", customerExtId };
+		}
+
+		// return details
+		String cus = equationTableGFExt.getFieldValue("GFCUS");
+		String clc = equationTableGFExt.getFieldValue("GFCLC");
+		String cpnc = equationTableGFExt.getFieldValue("GFCPNC");
+		return new String[] { cus, clc, cpnc, customerExtId };
+	}
+
+	/**
+	 * Retrieve the branch number (from the cache) given the mnemonic
+	 * 
+	 * @return all account formats
+	 */
+	public String[] getBranchNumber(String branchMnemonic) throws EQException
+	{
+		CARecordDataModel caRecord = session.getUnit().getRecords().getCARecord(branchMnemonic);
+		String branchNumber = "";
+		if (caRecord != null)
+		{
+			branchNumber = caRecord.getBranchNumber();
+		}
+		return new String[] { branchMnemonic, branchNumber };
+	}
+
+	/**
+	 * Retrieve branch mnemonic (from the cache) given the number
+	 * 
+	 * @return all account formats
+	 */
+	public String[] getBranchMnemonic(String branchNumber) throws EQException
+	{
+		Map<String, CARecordDataModel> caRecords = session.getUnit().getRecords().getCARecords();
+		for (Map.Entry<String, CARecordDataModel> entry : caRecords.entrySet())
+		{
+			CARecordDataModel caRecord = entry.getValue();
+			if (caRecord.getBranchNumber().equals(branchNumber))
+			{
+				return new String[] { caRecord.getBranchMnemonic(), branchNumber };
+			}
+		}
+		return new String[] { "", branchNumber };
+	}
+}

@@ -1,0 +1,623 @@
+// ------------------------------------------------------------------------------
+// Copyright Misys IBS
+//
+// Owner: Des Middlemass
+//
+// Class: EQTransaction: Base class for controlling an Equation TX
+// ------------------------------------------------------------------------------
+package com.misys.equation.common.internal.eapi.core;
+
+import java.util.ArrayList;
+
+import com.misys.equation.common.utilities.EquationLogger;
+
+/***********************************************************************************************************************************
+ * Controls an Equation transaction.
+ * <P>
+ * Transactions typically fall into two categories:
+ * <P>
+ * <strong>Single Action</strong>, which supports only one action; Add, Maintain or Delete.<br>
+ * Three Single Action transactions are required to support the lifecycle of their related database objects. An example of such an
+ * object is the Sundry Item. It is supported by Add Sundry Item (ASI - ASITransaction - Add) Maintain Sundry Item (MSI -
+ * MSITransaction - Maintain) and Cancel Sundry Item (CSI - CSITransaction - Delete).
+ * <P>
+ * <strong>Fully Functional</strong>, which supports all three actions.<br>
+ * Only one Fully Functional transaction is required to support the lifecycle of their related database objects. An example of such
+ * an object is a Settlement Instruction. It is supported by Standing Settlement Instruction (DCI - DCITransaction), which supports
+ * all actions.
+ * <P>
+ * Using a Single Action transaction is straight forward as it can only perform one action. When such a transaction is constructed
+ * it automatically sets the maintenace mode to the action it can perform (add, maintain or delete). For example to add an object to
+ * the database create the transaction object, set the required fields, (optionally perform a validation), and then call add.
+ * <P>
+ * When using a Fully Functional transaction, however, the application must set the required maintenance mode prior to calling the
+ * database access methods on the EQTransaction interface. This is because the desired action must be known in order to validate the
+ * data.
+ * <P>
+ * Transactions extend the read-only behaviour of the EQEnquiry by offering the ability to update the database.
+ * <P>
+ * When processing the transaction, the data is always validated before the database is updated.
+ * <P>
+ * An EQTransaction or subclass instance is created through the createObject method of the EQSessionImpl class.
+ * <P>
+ * Also, see the EQEnquirySample and EQTransactionSample for example usage.
+ * <P>
+ * 
+ * @see com.misys.equation.ebs.samples.EQEnquirySample
+ * @see com.misys.equation.ebs.samples.EQTransactionSample
+ * @author Misys International Banking Systems Ltd.
+ */
+public class EQTransactionImpl extends EQEnquiryImpl implements java.io.Serializable, EQTransaction
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EQTransactionImpl.java 4741 2009-09-16 16:33:23Z esther.williams $";
+
+	private static final EquationLogger LOG = new EquationLogger(EQTransactionImpl.class);
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/*******************************************************************************************************************************
+	 * Copyright <a href="http://www.misys.com"> Misys International Banking Systems Ltd, 2006 </a>
+	 */
+	public static final String copyright = "Copyright Misys International Banking Systems Ltd, 2006";
+	/*******************************************************************************************************************************
+	 * Load the meta data into the class.
+	 */
+	@Override
+	protected void initialise(EQObjectMetaData map)
+	{
+		super.initialise(map);
+		maintenanceMode = String.valueOf(MAINTENANCE_MODE_UNKNOWN);
+		setDefaultMaintenanceMode();
+	}
+	/*******************************************************************************************************************************
+	 * Specifies the default/required Action for the transaction.
+	 * <P>
+	 * This mode is an internal state variable which is set automatically. It is exposed for diagnostic purposes only. <BR>
+	 * Valid values are: TRANS_MODE_UPDATE - Validate the data and if valid update the database TRANS_MODE_VALIDATE - Validate the
+	 * data
+	 */
+	// protected void setAction(char action) {
+	// if (action == ACTION_UPDATE || action == ACTION_VALIDATE) {
+	// this.action = action;
+	// } else {
+	// LOG.error("invalid value for action " + action);
+	// throw new IllegalArgumentException("invalid value for process");
+	// }
+	// }
+	/*******************************************************************************************************************************
+	 * Get the current Maintenace Mode for the transaction.
+	 */
+	public char getMaintenanceMode()
+	{
+		return maintenanceMode.charAt(0);
+	}
+	/*******************************************************************************************************************************
+	 * Specifies the maintenance mode for the transaction.
+	 */
+	public void setMaintenanceMode(char cMaintenanceMode)
+	{
+		if ((cMaintenanceMode == EQTransaction.MAINTENANCE_MODE_ADD && getMetaData().supportsAdd)
+						|| (cMaintenanceMode == EQTransaction.MAINTENANCE_MODE_MAINTAIN && getMetaData().supportsMaintain)
+						|| (cMaintenanceMode == EQTransaction.MAINTENANCE_MODE_DELETE && getMetaData().supportsDelete)
+						|| cMaintenanceMode == EQTransaction.MAINTENANCE_MODE_UNKNOWN)
+		{
+			maintenanceMode = String.valueOf(cMaintenanceMode);
+		}
+		else
+		{
+			LOG.error("invalid value for maintence mode " + maintenanceMode);
+			throw new IllegalArgumentException("invalid value for maintence mode");
+		}
+	}
+	/*******************************************************************************************************************************
+	 * Helper method to setup transaction type when there is only one possibility.
+	 */
+	private void setDefaultMaintenanceMode()
+	{
+		if (getMaintenanceMode() == MAINTENANCE_MODE_UNKNOWN)
+		{
+			int numSupportedMaintenanceModes = 0;
+			numSupportedMaintenanceModes += getMetaData().supportsAdd() ? 1 : 0;
+			numSupportedMaintenanceModes += getMetaData().supportsMaintain() ? 1 : 0;
+			numSupportedMaintenanceModes += getMetaData().supportsDelete() ? 1 : 0;
+			if (numSupportedMaintenanceModes == 1)
+			{
+				if (getMetaData().supportsAdd)
+				{
+					maintenanceMode = String.valueOf(EQTransaction.MAINTENANCE_MODE_ADD);
+				}
+				else
+				{
+					if (getMetaData().supportsMaintain)
+					{
+						maintenanceMode = String.valueOf(EQTransaction.MAINTENANCE_MODE_MAINTAIN);
+					}
+					else
+					{
+						maintenanceMode = String.valueOf(EQTransaction.MAINTENANCE_MODE_DELETE);
+					}
+				}
+			}
+		}
+	}
+	/*******************************************************************************************************************************
+	 * Specifies a unique reference for the transaction.
+	 */
+	public void setReference(String uniqueRef)
+	{
+		if (uniqueRef.length() > 16)
+		{
+			throw new IllegalArgumentException("Reference Length Incorrect :" + uniqueRef);
+		}
+		INPUTREF = uniqueRef;
+	}
+	/*******************************************************************************************************************************
+	 * Get the unique reference associated with the transaction.
+	 */
+	public String getReference()
+	{
+		return INPUTREF;
+	}
+	/*******************************************************************************************************************************
+	 * Specifies the input branch for the transaction.
+	 */
+	public void setInputBranch(String inputBranch)
+	{
+		if (inputBranch.length() > 4)
+		{
+			throw new IllegalArgumentException("Reference Length Incorrect :" + inputBranch);
+		}
+		INPUTBRANCH = inputBranch;
+	}
+	/*******************************************************************************************************************************
+	 * Get the input branch associated with the transaction.
+	 */
+	public String getInputBranch()
+	{
+		return INPUTBRANCH;
+	}
+	/*******************************************************************************************************************************
+	 * Specifies the check reference field value.
+	 */
+	public void setCheckReference(String checkReference)
+	{
+		if (!checkReference.equals("Y") && !checkReference.equals("N"))
+		{
+			throw new IllegalArgumentException("Invalid Check Reference :" + checkReference);
+		}
+		CHECKREF = checkReference;
+	}
+	/*******************************************************************************************************************************
+	 * Get the check reference field value.
+	 */
+	public String getCheckReference()
+	{
+		return CHECKREF;
+	}
+	/*******************************************************************************************************************************
+	 * Sets the auto override value
+	 */
+	public void setAutoOverride(boolean autoOverride)
+	{
+		AUTOOVERRIDE = autoOverride ? "Y" : "N";
+	}
+	/*******************************************************************************************************************************
+	 * Get the automatic override value.
+	 */
+	public boolean isAutoOverride()
+	{
+		return AUTOOVERRIDE.charAt(0) == 'Y';
+	}
+	/*******************************************************************************************************************************
+	 * Get the list of overriden warning messages for the object.
+	 */
+	public ArrayList<EQMessage> getOverrides()
+	{
+		return OVERRIDES;
+	}
+	/**
+	 * Execute action on transaction.
+	 */
+	public boolean performAction(EQSession session, int iAction) throws EQException
+	{
+		if (iAction == ACTION_VALIDATE)
+		{
+			return validate(session);
+		}
+		else if (iAction == ACTION_UPDATE)
+		{
+			return update(session);
+		}
+		else if (iAction == EQEnquiry.ACTION_RETRIEVE)
+		{
+			return retrieve(session);
+		}
+		else
+		{
+			throw new EQException("invalid action");
+		}
+	}
+	/**
+	 * Execute action on transaction.
+	 */
+	public boolean performAction(EQSession session, int iAction, char iMaintenanceMode) throws EQException
+	{
+		setMaintenanceMode(iMaintenanceMode);
+		return performAction(session, iAction);
+	}
+	/*******************************************************************************************************************************
+	 * Validate - calls Equation to determine whether input data is valid.
+	 * <P>
+	 * The object should have its data set prior to this method being called
+	 * 
+	 * @return whether the call succeeded. Use getStatus for more detailed information
+	 */
+	private boolean validate(EQSession session) throws EQException
+	{
+		// make sure we have a mode in non-incremental mode
+		if (getMaintenanceMode() == MAINTENANCE_MODE_UNKNOWN && !isIncrementalMode())
+		{
+			LOG.error("invalid maintenance mode " + getMaintenanceMode());
+			throw new EQException("invalid maintenance mode");
+		}
+		// A validation is a simulated function key event in verify mode
+		action = ACTION_VALIDATE;
+		APIMODE = EQFunction.API_MODE_VERIFY;
+		if (isIncrementalMode())
+		{
+			ENTRYEVENT = EQUserInterfaceHelper.EVENT_VERIFY;
+			// simulate a VERIFY event
+		}
+		callAPILoop(session);
+		return status == STATUS_VALID;
+	}
+	/*******************************************************************************************************************************
+	 * Update - calls Equation to perform the transaction.
+	 * <P>
+	 * Equation will validate the date before performing the update
+	 * 
+	 * @return whether the call succeeded. Use getStatus for more detailed information
+	 */
+	private boolean update(EQSession session) throws EQException
+	{
+		// make sure we have a mode in non-incremental mode
+		if (getMaintenanceMode() == MAINTENANCE_MODE_UNKNOWN && !isIncrementalMode())
+		{
+			LOG.error("invalid maintenance mode " + getMaintenanceMode());
+			throw new EQException("invalid maintenance mode");
+		}
+		resetPrompt();
+		action = ACTION_UPDATE;
+		APIMODE = EQFunction.API_MODE_UPDATE;
+		// setup commitment boundary to commit this update
+		if (session.isAutoEQCommit())
+		{
+			CCSTARTTRANSACTION = "Y";
+			CCENDTRANSACTION = "Y";
+			// setCommitmentControlBoundaries(true, true);
+		}
+		// Call Host - Updates only if found valid
+		callAPILoop(session);
+		// check last return status to see if we have finished processing
+		if (status == EQObject.STATUS_COMPLETE || status == EQObject.STATUS_INT_UPDATE_ERROR)
+		{
+			setReadOnly();
+		}
+		return status == STATUS_COMPLETE;
+	}
+	/*******************************************************************************************************************************
+	 * Retrieve - calls Equation to obtain data associated with key.
+	 * <P>
+	 * The object should have its (key) data set prior to this method being called.
+	 * <P>
+	 * 
+	 * @param session
+	 *            the session connected to the server.
+	 * @return whether the call succeeded. Use getStatus for detailed status information.
+	 * @throws EQException
+	 *             if an error occurs during processing
+	 * 
+	 */
+	@Override
+	public boolean retrieve(EQSession session) throws EQException
+	{
+		resetPrompt();
+		// make sure we have a mode in non-incremental mode
+		if (getMaintenanceMode() == MAINTENANCE_MODE_UNKNOWN && !isIncrementalMode())
+		{
+			LOG.error("invalid maintenance mode " + getMaintenanceMode());
+			throw new EQException("invalid maintenance mode");
+		}
+		// A validation is a simulated function key event in verify mode
+		action = EQEnquiry.ACTION_RETRIEVE;
+		APIMODE = EQFunction.API_MODE_RETRIEVE;
+		if (isIncrementalMode())
+		{
+			ENTRYEVENT = EQUserInterfaceHelper.EVENT_VERIFY;
+			// simulate a VERIFY event
+		}
+		callAPILoop(session);
+		return status == STATUS_VALID;
+	}
+	/**
+	 * Add transaction.
+	 */
+	public boolean add(EQSession session, int iAction) throws EQException
+	{
+		if (!this.supportsAdd())
+		{
+			LOG.error("add is not supported on this transaction " + metaData.getIdentifier());
+			throw new EQException("add is not supported on this transaction");
+		}
+		// update our maintence mode
+		maintenanceMode = String.valueOf(MAINTENANCE_MODE_ADD);
+		return performAction(session, iAction);
+	}
+	/**
+	 * Maintain transaction.
+	 */
+	public boolean maintain(EQSession session, int iAction) throws EQException
+	{
+		if (!this.supportsMaintain())
+		{
+			LOG.error("maintian is not supported on this transaction " + metaData.getIdentifier());
+			throw new EQException("maintian is not supported on this transaction");
+		}
+		// change our maintence mode
+		maintenanceMode = String.valueOf(MAINTENANCE_MODE_MAINTAIN);
+		return performAction(session, iAction);
+	}
+	/**
+	 * Delete transaction.
+	 */
+	public boolean delete(EQSession session, int iAction) throws EQException
+	{
+		if (!this.supportsDelete())
+		{
+			LOG.error("delete is not supported on this transaction " + metaData.getIdentifier());
+			throw new EQException("delete is not supported on this transaction");
+		}
+		// update our maintence mode
+		maintenanceMode = String.valueOf(MAINTENANCE_MODE_DELETE);
+		if (isIncrementalMode())
+		{
+			ENTRYEVENT = EQUserInterfaceHelper.EVENT_DELETE;
+			// simulate a DELETE event
+		}
+		return performAction(session, iAction);
+	}
+	/*******************************************************************************************************************************
+	 * Calls Equation to override warnings.
+	 */
+	public boolean override(EQSession session) throws EQException
+	{
+		String autoOverride = AUTOOVERRIDE;
+
+		if (isIncrementalMode())
+		{
+			ENTRYEVENT = EQUserInterfaceHelper.EVENT_OVERRIDE;
+		}
+		else
+		{
+			// ensure autooveride in batch mode
+			AUTOOVERRIDE = "Y";
+		}
+		try
+		{
+			if (APIMODE == EQFunction.API_MODE_UPDATE)
+			{
+				update(session);
+			}
+			else
+			{
+				validate(session);
+			}
+		}
+		finally
+		{
+			if (!isIncrementalMode())
+			{
+				AUTOOVERRIDE = autoOverride;
+			}
+		}
+		return status != STATUS_ERRORS;
+	}
+	/*******************************************************************************************************************************
+	 * Accept - called when the transaction has been referred and accepted.
+	 */
+	public boolean accept(EQSession session, String supervisorID, char[] password, String comment) throws EQException
+	{
+		setSupervisor(session, supervisorID, password, comment);
+		if (isIncrementalMode())
+		{
+			ENTRYEVENT = EQUserInterfaceHelper.EVENT_SUPER_OVERRIDE;
+		}
+		update(session);
+		// remove supervisor credentials
+		setSupervisor(session, "", "".toCharArray(), "");
+		return status != STATUS_REFER;
+	}
+	/*******************************************************************************************************************************
+	 * Reject - called when the transaction has been referred and rejected.
+	 */
+	public boolean reject(String supervisorID, String reason)
+	{
+		resetPrompt();
+		status = STATUS_REJECTED;
+		return true;
+	}
+	/*******************************************************************************************************************************
+	 * Determine whether the Add operation is supported.
+	 */
+	public boolean supportsAdd()
+	{
+		return getMetaData().supportsAdd();
+	}
+	/*******************************************************************************************************************************
+	 * Determine whether the Maintain operation is supported.
+	 */
+	public boolean supportsMaintain()
+	{
+		return getMetaData().supportsMaintain();
+	}
+	/*******************************************************************************************************************************
+	 * Determine whether the Delete operation is supported.
+	 */
+	public boolean supportsDelete()
+	{
+		return getMetaData().supportsDelete();
+	}
+	/*******************************************************************************************************************************
+	 * Specifies whether a warning will be generated if data supplied to the API is not used in the transaction.
+	 * <P>
+	 * 
+	 * @param checkExtraData
+	 *            if true a warning will be generated if data supplied to the API is not used in the transaction.
+	 */
+	public void setCheckExtraDataFlag(boolean checkExtraData)
+	{
+		CHECKEXTRADATA = checkExtraData ? "Y" : "N";
+	}
+	/*******************************************************************************************************************************
+	 * Determine if a warning will be generated if data supplied to the API is not used in the transaction.
+	 * <P>
+	 * 
+	 * @return true if a warning will be generated if data supplied to the API is not used in the transaction.
+	 */
+	public boolean isCheckExtraDataFlagSet()
+	{
+		return CHECKEXTRADATA.equalsIgnoreCase("Y");
+	}
+	/*******************************************************************************************************************************
+	 * Specifies whether Equation should use default charges for this transaction.
+	 */
+	public void setUseDefaultCharges(boolean useDefaultCharges)
+	{
+		DEFAULTCHARGES = useDefaultCharges ? "Y" : "N";
+	}
+	/*******************************************************************************************************************************
+	 * Determine if Equation is applying default charges for this transaction.
+	 */
+	public boolean isUseDefaultCharges()
+	{
+		return DEFAULTCHARGES.equalsIgnoreCase("Y");
+	}
+	/*******************************************************************************************************************************
+	 * Set the credentials to be used for a supervisor override.
+	 */
+	public void setSupervisor(EQSession session, String userID, char[] password, String comment) throws EQException
+	{
+		// if a connection is passed we can encrypt
+		if (session != null)
+		{
+			SUPERVISORPASSWORD = ((EQSessionImpl) session).encryptPassword(password);
+		}
+		else
+		{
+			// assume password is being reset.
+			SUPERVISORPASSWORD = null;
+		}
+		SUPERVISORUSID = userID;
+		SUPERVISORCOMMENT = comment;
+	}
+	/*******************************************************************************************************************************
+	 * Get any comment added by a supervisor in an override.
+	 */
+	public String getSupervisorComment()
+	{
+		return SUPERVISORCOMMENT;
+	}
+	/*******************************************************************************************************************************
+	 * Get the user id of the supervisor used for overrides.
+	 */
+	public String getSupervisorID()
+	{
+		return SUPERVISORUSID;
+	}
+	/*******************************************************************************************************************************
+	 * Get the GY Journal key for this function.
+	 * <P>
+	 * The format is:<br>
+	 * 
+	 * <pre>
+	 * GYWSID (4 chars) Workstation id
+	 * GYDIM  (2 chars) Day in month
+	 * GYTIM  (6 chars) Time; hhmmss
+	 * GYSEQ  (7 chars) Sequence number
+	 * GYFRO  (4 chars) Program root
+	 * GYJTT  (1 char)  Journal Transaction Type.
+	 * </pre>
+	 * 
+	 * <P>
+	 * The method returns null if no key is available (no update has been made).
+	 * <P>
+	 * 
+	 * @return a string of length 24 representing the GY key for this function. Can be null.
+	 */
+	public String getEquationJournalKey()
+	{
+		if (!complete)
+		{
+			return null;
+		}
+		char key[] = new char[24];
+		GYWSID.getChars(0, GYWSID.length(), key, 0);
+		GYDIM.getChars(0, GYDIM.length(), key, 4);
+		GYTIM.getChars(0, GYTIM.length(), key, 6);
+		GYSEQ.getChars(0, GYSEQ.length(), key, 12);
+		GYFRO.getChars(0, GYFRO.length(), key, 19);
+		GYJTT.getChars(0, GYJTT.length(), key, 23);
+		return new String(key);
+	}
+	/*******************************************************************************************************************************
+	 * Get the Commitment Control Journal key for this function.
+	 * <P>
+	 * The format is:<br>
+	 * 
+	 * <pre>
+	 * GYCDT  (7 chars) Create date; cyymmdd
+	 * GYCLTM (6 chars) Commitment Control Link Time; hhmmss
+	 * GYCSEQ (7 chars) Commitment Control Link Sequence number
+	 * GYJOB  (6 chars) Job number
+	 * </pre>
+	 * 
+	 * <P>
+	 * The method returns null if no key is available (no update has been made).
+	 * <P>
+	 * 
+	 * @return a string of length 26 representing the GY key for this function. Can be null.
+	 */
+	public String getCommitmentControlJournalKey()
+	{
+		if (!complete)
+		{
+			return null;
+		}
+		char key[] = new char[26];
+		GYCDT.getChars(0, GYCDT.length(), key, 0);
+		GYCLTM.getChars(0, GYCLTM.length(), key, 7);
+		GYCSEQ.getChars(0, GYCSEQ.length(), key, 13);
+		GYJOB.getChars(0, GYJOB.length(), key, 20);
+		return new String(key);
+	}
+	/*******************************************************************************************************************************
+	 * Get the Equation Event Journal key for this EQFunction.
+	 * <P>
+	 * This represents the item on the AAHPF table.
+	 * <P>
+	 * The method returns null if no key is available (no update has been made).
+	 * <P>
+	 * 
+	 * @return a string representing the Event key for this function. Can be null.
+	 */
+	public String getEQEventKey()
+	{
+		if (!complete)
+		{
+			return null;
+		}
+		return AAHEVNK;
+	}
+}

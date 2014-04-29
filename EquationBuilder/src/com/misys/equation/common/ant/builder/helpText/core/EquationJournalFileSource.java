@@ -1,0 +1,163 @@
+package com.misys.equation.common.ant.builder.helpText.core;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.misys.equation.common.ant.builder.core.EquationControl;
+import com.misys.equation.common.ant.builder.core.EquationLogger;
+import com.misys.equation.common.ant.builder.helpText.backEnd.SQLToolbox;
+import com.misys.equation.common.ant.builder.helpText.helpers.Toolbox;
+
+public class EquationJournalFileSource
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EquationJournalFileSource.java 9442 2010-10-12 09:42:28Z MACDONP1 $";
+	// these need getters and setters...
+
+	private final ArrayList<String> source = new ArrayList<String>();
+	private final ArrayList<String> purpose = new ArrayList<String>();
+	private final ArrayList<String> details = new ArrayList<String>();
+	private final ArrayList<String> keys = new ArrayList<String>();
+	private EquationControl control;
+	private static HelpTextProperties helpTextProperties = HelpTextProperties.getInstance();
+
+	private static final EquationLogger LOG = new EquationLogger(EquationJournalFileSource.class);
+	/*
+	 * Constructor for reflection of the bean
+	 */
+	public EquationJournalFileSource()
+	{
+	}
+	/*
+	 * Constructor
+	 */
+	public EquationJournalFileSource(String optionId, String equationJournalFile)
+	{
+
+		Connection equationConnection = HelpTextlEnvironment.getHelpTextEnvironment().getConnection();
+		control = new EquationControl();
+		String sourceSqlString = null;
+		PreparedStatement sourceStatement = null;
+		ResultSet sourceRS = null;
+		String sourceLine = null;
+		String sourceType = null;
+		int sourceIndex = 0;
+		int purposeIndex = 0;
+		int detailsIndex = 0;
+		int keysIndex = 0;
+
+		// Determine the source library for the Equation Journal File
+		// The source will be copied into file QTEMP/SOURCE as well as having the source Library returned
+		String sourceLibrary = control.getSourceLibrary(equationConnection, helpTextProperties.getAldonLibrary(),
+						equationJournalFile);
+		if (sourceLibrary.trim().equals(""))
+		{
+			String error = new StringBuilder("Equation Journal File source does not exist for Option - ").append(optionId)
+							.append(Toolbox.TEXT_DELIMITER).append(equationJournalFile).toString();
+
+			throw new RuntimeException(error);
+		}
+
+		try
+		{
+
+			sourceSqlString = "SELECT * FROM QTEMP/SOURCE";
+			sourceStatement = equationConnection.prepareStatement(sourceSqlString, ResultSet.TYPE_FORWARD_ONLY,
+							ResultSet.CONCUR_READ_ONLY);
+			sourceRS = sourceStatement.executeQuery();
+
+			while (sourceRS.next())
+			{
+				sourceLine = sourceRS.getString(3);
+				if (sourceLine.length() > 6)
+				{
+					sourceType = sourceLine.substring(6, 8);
+				}
+				else
+				{
+					sourceType = "  ";
+				}
+
+				source.add(sourceIndex, sourceLine);
+				sourceIndex++;
+
+				if (sourceType.equals("*P"))
+
+				{
+
+					if (!sourceLine.substring(8).trim().toUpperCase().equals("PURPOSE"))
+					{
+						purpose.add(purposeIndex, sourceLine.substring(8));
+						purposeIndex++;
+					}
+
+				}
+				if (sourceType.equals("*D"))
+				{
+
+					if (!sourceLine.substring(8).trim().toUpperCase().equals("DETAILS"))
+					{
+						details.add(detailsIndex, sourceLine.substring(8));
+						detailsIndex++;
+					}
+
+				}
+				if (sourceType.equals("  "))
+				{
+					{
+						if (sourceLine.length() > 17)
+						{
+							if (sourceLine.substring(16, 17).toUpperCase().equals("K"))
+							{
+								keys.add(keysIndex, sourceLine.substring(18).trim().toUpperCase());
+								keysIndex++;
+							}
+						}
+					}
+				}
+			}
+		}
+		catch (RuntimeException runException)
+		{
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error(runException);
+			}
+		}
+		catch (SQLException sQLException)
+		{
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error(sQLException);
+			}
+		}
+		finally
+		{
+			SQLToolbox.closeResulset(sourceRS);
+			SQLToolbox.closePreparedStatement(sourceStatement);
+		}
+	}
+
+	// ------------GETTER AND SETTERS---------------//
+
+	public List<String> getSource()
+	{
+		return source;
+	}
+	public List<String> getPurpose()
+	{
+		return purpose;
+	}
+	public List<String> getDetails()
+	{
+		return details;
+	}
+	public List<String> getKeys()
+	{
+		return keys;
+	}
+}

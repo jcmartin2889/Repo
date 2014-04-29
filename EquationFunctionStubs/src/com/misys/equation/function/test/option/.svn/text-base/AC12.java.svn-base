@@ -1,0 +1,119 @@
+package com.misys.equation.function.test.option;
+
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.function.beans.DisplayAttributes;
+import com.misys.equation.function.beans.DisplayAttributesSet;
+import com.misys.equation.function.beans.Function;
+import com.misys.equation.function.beans.InputField;
+import com.misys.equation.function.beans.InputFieldSet;
+import com.misys.equation.function.beans.TextBean;
+import com.misys.equation.function.test.helper.DisplayFieldSetWrapper;
+import com.misys.equation.function.test.helper.FunctionGenerator;
+import com.misys.equation.function.test.run.FunctionToolboxStub;
+import com.misys.equation.function.tools.FunctionToolbox;
+import com.misys.equation.function.tools.MappingToolbox;
+import com.misys.equation.function.tools.TranslationToolbox;
+
+public class AC12 extends TestOptionStub
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	public AC12()
+	{
+		try
+		{
+			setUp();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] inputParameters)
+	{
+		AC12 test = new AC12();
+		test.test();
+	}
+
+	private DisplayFieldSetWrapper addRecord1(FunctionGenerator fg) throws EQException
+	{
+		// add the record
+		DisplayFieldSetWrapper fieldSetWrapper = fg.addFieldSetParameter("PRIMARY", "GBL000100", "GBL000101");
+		InputFieldSet inputFieldSet = fieldSetWrapper.getInputFieldSet();
+		DisplayAttributesSet attributeSet = fieldSetWrapper.getDisplayAttributesSet();
+
+		// input field
+		InputField inputField;
+		DisplayAttributes displayAttributes;
+
+		// add all the fields in this section ---------------------------------------
+
+		// Event mnemonic
+		inputField = FunctionToolbox.getInputFieldParameter("EVNM", "GBL000102", "GBL000103", "A", "6", "");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setProtected(DisplayAttributes.PROTECTED_YES);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Charge component
+		inputField = FunctionToolbox.getInputFieldParameter("ECNM", "GBL000104", "GBL000105", "A", "6", "");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setPrompt("AAJR10R");
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+		FunctionToolbox.addPVFieldSet(inputField, FunctionToolbox.getPVFieldSet(session, "AAJR10R", "", false, "N"));
+
+		// Add text owner
+		TranslationToolbox.addTextOwnerToDisplayAttributes(attributeSet, TextBean.OWNER_MISYS, FunctionGenerator.BASE_LANG);
+		TranslationToolbox.addTextOwnerToInputFields(null, inputFieldSet, TextBean.OWNER_MISYS, FunctionGenerator.BASE_LANG);
+
+		return fieldSetWrapper;
+	}
+	private void addLoadAPI(FunctionGenerator fg)
+	{
+	}
+
+	private void addUpdateAPI(FunctionGenerator fg) throws EQException
+	{
+		fg.getFunction().addReservedFieldSet(Function.CRM_FIELDSET, "");
+	}
+
+	private void addMappings(FunctionGenerator fg) throws EQException
+	{
+		// add validate mapping
+		fg.addValidateMappingToPV("PRIMARY", "EVNM", "PRIMARY", "ECNM", "AAJR10R", "$AAJEVNT");
+		fg.addValidateMappingToPV("PRIMARY", "ECNM", "PRIMARY", "ECNM", "AAJR10R", "$AAJECNM");
+		fg.addValidateMappingFromPV("PRIMARY", "ECNM", "AAJR10R", "$AAJECNM", "PRIMARY", "ECNM", MappingToolbox.TYPE_PRIMITIVE);
+	}
+
+	public void test()
+	{
+		// Have a bash...
+		try
+		{
+			printStartStatus(this.getClass().getSimpleName());
+			FunctionGenerator fg = new FunctionGenerator("AC1", "GBL000106", "GBL000107", "com.misys.equation.screens",
+							"com.misys.equation.screens.layout");
+			fg.setToParameter(null);
+			addRecord1(fg);
+			addLoadAPI(fg);
+			addUpdateAPI(fg);
+			addMappings(fg);
+
+			// Write to DB
+			FunctionToolboxStub.writeToDB(unit, fg, false);
+
+			// print
+			printCompleteStatus(fg, this.getClass().getSimpleName(), printXML);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+}

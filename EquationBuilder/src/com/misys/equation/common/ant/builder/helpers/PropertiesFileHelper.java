@@ -1,0 +1,321 @@
+package com.misys.equation.common.ant.builder.helpers;
+
+import java.io.Closeable;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Properties;
+
+import com.misys.equation.common.ant.builder.core.EquationLogger;
+import com.misys.equation.common.ant.builder.version.EquationVersionIncrementor;
+
+/***
+ * This class is a java properties wrapper.
+ * 
+ * @author DeRoset
+ * 
+ */
+public class PropertiesFileHelper
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: PropertiesFileHelper.java 13166 2012-04-02 15:21:14Z alex.lim $";
+	/**
+	 * Logger for this class
+	 */
+	private static final EquationLogger LOG = new EquationLogger(PropertiesFileHelper.class);
+	private static PropertiesFileHelper currentInstance;
+	private PropertiesFile currentPropertiesFileInstance = null;
+	private Properties currentPropertiesInstance = null;
+	private String fileName = null;
+	private InputStream inputStream;
+
+	/**
+	 * private default constructor.
+	 */
+	private PropertiesFileHelper()
+	{
+
+	}
+
+	/**
+	 * This method will return the only instance of <code>PropertiesFileHelper</code>
+	 * 
+	 * @return the only instance of <code>PropertiesFileHelper</code>
+	 */
+	public static PropertiesFileHelper getInstance()
+	{
+
+		synchronized (FileHelper.class)
+		{
+			if (currentInstance == null)
+			{
+				currentInstance = new PropertiesFileHelper();
+			}
+		}
+		return currentInstance;
+	}
+
+	/**
+	 * This method will load the property file in a <code>PropertiesFile</code> instance.
+	 * 
+	 * @param fileName
+	 *            this is the file path to be loaded.
+	 */
+	private void loadProperties(String fileName)
+	{
+
+		this.fileName = fileName;
+		currentPropertiesFileInstance = new PropertiesFile();
+
+		try
+		{
+
+			inputStream = new FileInputStream(this.fileName);
+			currentPropertiesFileInstance.load(inputStream);
+
+		}
+		catch (IOException iOException)
+		{
+
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error(new StringBuilder("There was a problem trying to load ").append(fileName).toString(), iOException);
+			}
+			closeInputStream(inputStream);
+		}
+
+	}
+
+	/**
+	 * This method will close the current input/outputStream.
+	 * 
+	 * @param this is the recourse to be closed.
+	 */
+	private void closeInputStream(Closeable resorseTobeClosed)
+	{
+		try
+		{
+
+			if (resorseTobeClosed != null)
+			{
+
+				resorseTobeClosed.close();
+			}
+
+		}
+		catch (IOException iOException)
+		{
+
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error(new StringBuilder("There was a problem trying to close ").append(fileName).toString(), iOException);
+			}
+		}
+
+	}
+	/***
+	 * This class will print the current property file instance in the standard output.
+	 */
+	public void printProperties()
+	{
+
+		System.out.println("Properties file of ");
+		System.out.println(fileName);
+		currentPropertiesFileInstance.list(System.out);
+	}
+
+	public Enumeration<Object> getKeys()
+	{
+
+		return currentPropertiesFileInstance.keys();
+	}
+
+	/**
+	 * this class will modify the passed property value.
+	 * 
+	 * @param key
+	 *            this is the property key.
+	 * @param value
+	 *            this is the new value to be set in the property.
+	 */
+	public void modifyProperty(String key, String value)
+	{
+
+		FileOutputStream fileOutputStream = null;
+
+		currentPropertiesFileInstance.setProperty(key, value);
+
+		try
+		{
+			fileOutputStream = new FileOutputStream(fileName);
+			currentPropertiesFileInstance.save(fileOutputStream, "/* properties updated */");
+
+		}
+		catch (FileNotFoundException fileNotFoundException)
+		{
+
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error(new StringBuilder("There was a problem trying to update ").append(fileName).toString(),
+								fileNotFoundException);
+			}
+			closeInputStream(inputStream);
+		}
+		finally
+		{
+
+			closeInputStream(fileOutputStream);
+		}
+
+	}
+
+	/**
+	 * This method will return a property value
+	 * 
+	 * @param key
+	 *            this is the property key.
+	 * @return this is the property value.
+	 */
+	public String getPropertyValue(String key)
+	{
+
+		return currentPropertiesFileInstance.getProperty(key);
+	}
+
+	/**
+	 * this method will be executed by the java GC and it it will check if the <code>InputStream</code> is still open. </br> In case
+	 * it is open this method will call close it.
+	 */
+	@Override
+	protected void finalize() throws Throwable
+	{
+
+		closeInputStream(inputStream);
+		super.finalize();
+	}
+
+	/** getter setter **/
+
+	public void setFileName(String fileName)
+	{
+
+		loadProperties(fileName);
+
+	}
+
+	/**
+	 * This method will create a new property file in the passed location.
+	 * 
+	 * @param fileName
+	 *            this is the file path for the new file location.
+	 */
+	public void createNewPropertyFile(String fileName)
+	{
+
+		this.fileName = fileName;
+		currentPropertiesInstance = new Properties();
+
+	}
+
+	/**
+	 * This method will set the key value property.
+	 * 
+	 * @param key
+	 *            this is the property key
+	 * @param value
+	 *            this is the property value.
+	 */
+	public void setProperty(String key, String value)
+	{
+
+		currentPropertiesInstance.setProperty(key, value);
+	}
+
+	public String getProperty(String key)
+	{
+		if (currentPropertiesInstance != null)
+		{
+			return currentPropertiesInstance.getProperty(key);
+		}
+		else
+		{
+			return currentPropertiesFileInstance.getProperty(key);
+		}
+	}
+
+	/**
+	 * This method will save the property file is the already set file path.
+	 */
+	public void saveProperties()
+	{
+
+		try
+		{
+
+			FileOutputStream fileOutputStream = new FileOutputStream(this.fileName);
+			currentPropertiesInstance.store(fileOutputStream, null);
+
+		}
+		catch (IOException iOException)
+		{
+
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error(new StringBuilder("There was a problem trying to load ").append(fileName).toString(), iOException);
+			}
+			closeInputStream(inputStream);
+		}
+	}
+
+	/**
+	 * Sole entry point to the class and application.
+	 * 
+	 * @param args
+	 *            Array of String arguments.
+	 */
+	public static void main(String[] args)
+	{
+
+		// String PROPFILE=
+		// "../EquationBuilder/build.properties,\\../ExternalJars/build.properties,\\../EquationServiceComposerHelp/build.properties,\\../EquationSamples/build.properties,\\../EquationFunctionWizard/build.properties,\\../EquationFunctionStubs/build.properties,\\../EquationFunction/build.properties,\\../EquationEclipseCommon/build.properties,\\../EquationDesktop/build.properties,\\../EquationCommonStubs/build.properties,\\../EquationCommon/build.properties,\\../EquationBankFusionServer/build.properties,\\../EquationBankFusionClient/build.properties";
+
+		String PROPFILE = "C:\\Thor\\workspaces\\Equation-workspace\\EquationBuilder\\resources\\test\\Application.properties";
+		PropertiesFileHelper propertiesFileHelper = new PropertiesFileHelper();
+		String version = null;
+		EquationVersionIncrementor versionIncrementor = null;
+
+		// Input Properties File
+		propertiesFileHelper.setFileName(PROPFILE.trim());
+		propertiesFileHelper.printProperties();
+		version = propertiesFileHelper.getPropertyValue("VERSION");
+
+		versionIncrementor = new EquationVersionIncrementor(version);
+
+		propertiesFileHelper.modifyProperty("VERSION", String.valueOf(versionIncrementor.getNewEquationVersionNumber()));
+		propertiesFileHelper.printProperties();
+
+	}
+	/**
+	 * This method will convert properties into a HashMap
+	 * 
+	 * @param properties
+	 *            this is the properties
+	 * @return
+	 */
+	public static HashMap<String, String> convertPropertiesToMap(Properties properties)
+	{
+		final HashMap<String, String> propertiesMap = new HashMap<String, String>();
+		for (Enumeration e = properties.propertyNames(); e.hasMoreElements();)
+		{
+			String key = (String) e.nextElement();
+			String value = properties.getProperty(key).trim();
+			propertiesMap.put(key, value);
+		}
+		return propertiesMap;
+	}
+}

@@ -1,0 +1,190 @@
+package com.misys.equation.common.test.dao;
+
+import com.misys.equation.common.dao.IAAIRecordDao;
+import com.misys.equation.common.dao.beans.AAIRecordDataModel;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.test.EquationTestCaseDao;
+
+/**
+ * This is a unit-test which will test AAIRecord services.
+ * 
+ * @author deroset
+ * 
+ */
+public class AAIRecord extends EquationTestCaseDao
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: AAIRecord.java 11310 2011-06-27 12:20:21Z ESTHER.WILLIAMS $";
+	public AAIRecord()
+	{
+
+	}
+
+	/**
+	 * 
+	 * This method is going to retrieve the Dao from the bean repository and set it as local attribute.
+	 */
+	@Override
+	protected void setDao()
+	{
+
+		dao = daoFactory.getAAIDao(session, dataModel);
+	}
+
+	/**
+	 * This method will test if the record has been already inserted in the dataBase.
+	 */
+	@Override
+	public void isRecord(boolean assertValue)
+	{
+		boolean result;
+
+		result = checkIfThisRecordIsInTheDB();
+		if (assertValue)
+		{
+			assertTrue(result);
+		}
+		else
+		{
+			assertFalse(result);
+		}
+
+	}
+
+	/**
+	 * This method is going to check the getRecord dao's service.<br>
+	 * The obtained result should be the same than the preset in the dao data-model.
+	 * 
+	 */
+	@Override
+	public AAIRecordDataModel getRecord()
+	{
+
+		AAIRecordDataModel aAIRecord = null;
+		aAIRecord = ((IAAIRecordDao) dao).getAAIRecord();
+		assertDataModel(aAIRecord);
+		return aAIRecord;
+	}
+
+	/**
+	 * This method will test the update dao's service.
+	 */
+	@Override
+	public void updateRecord()
+	{
+
+		AAIRecordDataModel aAIRecord = null;
+
+		this.getMyModel().setDescription("Program title Updated");
+		dao.updateRecord();
+		aAIRecord = getRecord();
+		assertEquals(this.getMyModel().getDescription(), aAIRecord.getDescription());
+	}
+
+	/**
+	 * This method will test the add dao's service.
+	 */
+	@Override
+	public void insertRecord()
+	{
+
+		dao.insertRecord();
+	}
+
+	/**
+	 * This method will test the delete dao's service.
+	 */
+	@Override
+	public void deleteRecord()
+	{
+
+		dao.deleteRecord();
+	}
+
+	@Override
+	protected void assertDataModel(AbsRecord dataModel)
+	{
+
+		AAIRecordDataModel aAIRecord = (AAIRecordDataModel) dataModel;
+
+		assertEquals(getMyModel().getEvent(), aAIRecord.getEvent());
+		assertEquals(getMyModel().getDescription(), aAIRecord.getDescription());
+		assertEquals(getMyModel().getType(), aAIRecord.getType());
+		assertEquals(getMyModel().getApp(), aAIRecord.getApp());
+		assertEquals(getMyModel().getReference(), aAIRecord.getReference());
+		assertEquals(getMyModel().getTranType(), aAIRecord.getTranType());
+
+		assertEquals(getMyModel().getUserDefined(), aAIRecord.getUserDefined());
+		assertEquals(getMyModel().getTranAmount(), aAIRecord.getTranAmount());
+		assertEquals(getMyModel().getDispTranRef(), aAIRecord.getDispTranRef());
+		assertEquals(getMyModel().getDispCreditAc(), aAIRecord.getDispCreditAc());
+		assertEquals(getMyModel().getDispAddRef(), aAIRecord.getDispAddRef());
+		assertEquals(getMyModel().getDispTranDate(), aAIRecord.getDispTranDate());
+		assertEquals(getMyModel().getDispSqn(), aAIRecord.getDispSqn());
+
+		assertEquals(getMyModel().getSupTQ(), aAIRecord.getSupTQ());
+		assertEquals(getMyModel().getSupFE(), aAIRecord.getSupFE());
+		assertEquals(getMyModel().getChargeEvent(), aAIRecord.getChargeEvent());
+		assertEquals(getMyModel().getSupEFC(), aAIRecord.getSupEFC());
+		assertEquals(getMyModel().getSupTranAudTrail(), aAIRecord.getSupTranAudTrail());
+
+	}
+
+	@Override
+	protected boolean checkIfThisRecordIsInTheDB()
+	{
+		boolean result;
+		result = ((IAAIRecordDao) dao).checkIfThisAAIRecordIsInTheDB();
+		return result;
+	}
+
+	@Override
+	protected void setDataModel()
+	{
+		AAIRecordDataModel record = new AAIRecordDataModel("XXX");
+		record.setApp("AP");
+		record.setDescription("description");
+		record.setChargeEvent("1");
+		record.setDispAddRef("2");
+		record.setDispCreditAc("3");
+		record.setDispSqn("4");
+		record.setDispTranDate("5");
+		record.setReference("6");
+		record.setSupEFC("7");
+		record.setSupFE("8");
+		record.setSupTQ("9");
+		record.setSupTranAudTrail("A");
+		record.setTranAmount("B");
+		record.setTranType("C");
+		record.setType("D");
+		record.setUserDefined("E");
+		record.setLibrary(kFilLibName);
+		this.dataModel = record;
+
+	}
+
+	/**
+	 * This method is going to return a casted data model.
+	 * 
+	 * @return a casted data model
+	 */
+	public AAIRecordDataModel getMyModel()
+	{
+
+		AAIRecordDataModel aAIRecordDataModel = null;
+
+		if (dataModel instanceof AAIRecordDataModel)
+		{
+
+			aAIRecordDataModel = (AAIRecordDataModel) dataModel;
+
+		}
+		else
+		{
+			throw new IllegalArgumentException("The set data-model does not correspond to the expected one.");
+		}
+
+		return aAIRecordDataModel;
+	}
+}

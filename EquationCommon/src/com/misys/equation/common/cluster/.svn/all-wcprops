@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/repos/bfeq_src/!svn/ver/17823/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/cluster
+END
+ClusterService.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/17823/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/cluster/ClusterService.java
+END
+BreakMessageCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/17823/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/cluster/BreakMessageCommand.java
+END
+ClusterTransportJms.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/17823/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/cluster/ClusterTransportJms.java
+END
+CommandData.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/repos/bfeq_src/!svn/ver/17823/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/cluster/CommandData.java
+END
+AbstractServerCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/17823/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/cluster/AbstractServerCommand.java
+END
+IClusterService.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/repos/bfeq_src/!svn/ver/17823/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/cluster/IClusterService.java
+END
+RemoveUnitCommand.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/17823/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/cluster/RemoveUnitCommand.java
+END

@@ -1,0 +1,190 @@
+package com.misys.equation.common.files.access;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.files.ValidationJavaUserExitFilterRecord;
+
+/**
+ * As a standard, please follow the persistence framework. Use ACORecordDao instead.
+ * 
+ * Accessor class for Validation Java user exit filter records (held on the ACOPF)
+ * 
+ * @author perkinj1
+ */
+@Deprecated
+public class ValidationJavaUserExitFilterAccessor extends GenericAccessor
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	public ValidationJavaUserExitFilterAccessor(EquationStandardSession session)
+	{
+		this.connection = session.getConnection();
+	}
+
+	/**
+	 * Ensure that SQL resources are closed
+	 */
+	@Override
+	public void finalize()
+	{
+		super.finalize();
+		try
+		{
+			if (rs != null)
+			{
+				rs.close();
+			}
+		}
+		catch (SQLException e)
+		{
+			// Throw an unchecked exception
+			throw new RuntimeException(e);
+		}
+		try
+		{
+			if (ps != null)
+			{
+				ps.close();
+			}
+		}
+		catch (SQLException e)
+		{
+			// Throw an unchecked exception
+			throw new RuntimeException(e);
+		}
+
+	}
+
+	/**
+	 * As there can be multiple records for a UserExit, a single record is not returned
+	 * 
+	 * @param userExit
+	 */
+	public void findByUserExit(String library, String userExit)
+	{
+		try
+		{
+			ps = connection.prepareStatement("SELECT ACOPGM, ACOSCN, ACOMOD FROM " + library.trim()
+							+ "/ACOPF WHERE ACOPGM = ? ORDER BY ACOPGM, ACOSCN, ACOMOD ");
+			ps.setString(1, userExit);
+
+			rs = ps.executeQuery();
+			// Finalise method has to do the close because the next method needs the result set left open.
+			// rs.close();
+			// ps.close();
+		}
+		catch (SQLException e)
+		{
+			// Throw an unchecked exception
+			throw new RuntimeException(e);
+		}
+
+	}
+
+	/**
+	 * Currently this operates over the resultset held in this instance. This means that the caller must finish iterating through
+	 * one set of results before attempting to call this method again.
+	 * 
+	 * @return ValidationJavaUserExitFilterRecord instance (or null)
+	 */
+	public ValidationJavaUserExitFilterRecord next()
+	{
+		ValidationJavaUserExitFilterRecord result = null;
+		try
+		{
+			if (rs != null)
+			{
+				if (rs.next())
+				{
+					result = new ValidationJavaUserExitFilterRecord();
+					result.setUserExit(rs.getString(1).trim());
+					result.setScreen(rs.getInt(2));
+					result.setMode(getResultSetChar(rs, 3));
+				}
+				else
+				{
+					// Ensure that the PreparedStatement and Resultset are closed:
+					finalize();
+				}
+			}
+		}
+		catch (SQLException e)
+		{
+			// Throw an unchecked exception
+			throw new RuntimeException(e);
+		}
+
+		return result;
+	}
+
+	public void insert(String library, ValidationJavaUserExitFilterRecord record)
+	{
+		try
+		{
+			PreparedStatement ps = connection.prepareStatement("INSERT INTO " + library.trim() + "/ACOPF VALUES(?, ?, ?)");
+
+			ps.setString(1, record.getUserExit());
+			ps.setInt(2, record.getScreen());
+			ps.setString(3, charToString(record.getMode()));
+			ps.execute();
+			ps.close();
+		}
+		catch (SQLException e)
+		{
+			// Throw an unchecked exception
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Deletes a single User Exit filter record
+	 * 
+	 * @param userExit
+	 * @param screen
+	 * @param mode
+	 */
+	public void delete(String userExit, int screen, String mode)
+	{
+		try
+		{
+			PreparedStatement ps = connection.prepareStatement("DELETE FROM ACOPF WHERE ACOPGM = ? AND ACOSCN = ? AND ACOMOD = ? ");
+
+			ps.setString(1, userExit);
+			ps.setInt(2, screen);
+			ps.setString(3, mode);
+
+			ps.executeUpdate();
+			ps.close();
+		}
+		catch (SQLException e)
+		{
+			// Throw an unchecked exception
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Deletes all user exit filter records for a given program name
+	 * 
+	 * @param program
+	 */
+	public void delete(String program)
+	{
+		try
+		{
+			PreparedStatement ps = connection.prepareStatement("DELETE FROM ACOPF WHERE ACOPGM = ?");
+			ps.setString(1, program);
+			ps.executeUpdate();
+			ps.close();
+		}
+		catch (SQLException e)
+		{
+			// Throw an unchecked exception
+			throw new RuntimeException(e);
+		}
+	}
+
+}

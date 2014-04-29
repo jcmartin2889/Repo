@@ -1,0 +1,469 @@
+package com.misys.equation.common.globalprocessing.calculators;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.dao.DaoFactory;
+import com.misys.equation.common.dao.INostroPositionsDao;
+import com.misys.equation.common.dao.beans.GPMRecordDataManager;
+import com.misys.equation.common.dates.EquationCalendar;
+import com.misys.equation.common.globalprocessing.GlobalParameterMap;
+import com.misys.equation.common.globalprocessing.calculators.NostroPositionsResult.NostroPositionCalculator;
+import com.misys.equation.common.globalprocessing.systemoptions.GlobalSystemOptions;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EqDataType;
+import com.misys.equation.common.utilities.EquationParameters;
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * This class will calculate all nostro-account positions.
+ * 
+ * @author deroset
+ */
+public class NostroPositionsEnquiry extends AbstractGlobalProcessingEnquiry
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private String enqCurrency;
+	private String startDateInDBFormat;
+	private String endDateInDBFormat;
+	private List<String> calculatedDays;
+	private List<String> calculatedDaysInDisplayFormat;
+	private List<Map<String, Object>> currentNostrosAccounts;
+	private List<Map<String, Object>> currentNostroAccountDetails;
+	private NostroPositionsResult nostroPositionsResult;
+	private final DaoFactory daoFactory = new DaoFactory();
+	private int defineNumberOfDays;
+	private String unitCurrency;
+
+	private INostroPositionsDao nostroPositionsDao;
+
+	public NostroPositionsEnquiry(String sessionIdentifier)
+	{
+		// Call the initialisation method
+		super(sessionIdentifier);
+		init(sessionIdentifier);
+		nostroPositionsResult = new NostroPositionsResult();
+	}
+
+	@Override
+	public AbstractGPEnquiryResult calculate()
+	{
+		// get Latest Pdate across units as the start date
+		setStartingDate();
+
+		// get the system option and calculate the end date
+		calculateDays();
+
+		// get the nostros per unit and process them
+		for (EquationStandardSession currentSession : sessions)
+		{
+			unitCurrency = getCurrencyForCurrentUnit(currentSession);
+			currentNostrosAccounts = getAllNostrosAccountsForAParticularUnit(currentSession);
+			processCurrentAccountNostro(currentSession);
+			preformatData();
+		}
+
+		return null;
+	}
+
+	/**
+	 * @param currentSession
+	 * @return the currency for the current unit
+	 */
+	private String getCurrencyForCurrentUnit(EquationStandardSession currentSession)
+	{
+		String currency = GlobalParameterMap.getParameterMap().getUnitAndSystemValue(currentSession, "C8",
+						currentSession.getUnitId(), currentSession.getSystemId(), enqCurrency);
+
+		if (currency.equals(""))
+		{
+			currency = enqCurrency;
+		}
+
+		return currency;
+	}
+
+	/**
+	 * This method will pre-format the data to be consistent with the screen.<br>
+	 * It will copy repeat the days where there was not any balance moved. for example if the day last movement was on the
+	 * 21/12/2000 and the day 22/12/200 does not has any movement it will be carry the previous movement.
+	 */
+	private void preformatData()
+	{
+		List<NostroPosition> nostroPositions = nostroPositionsResult.getNostroPositions();
+		Map<String, DateAndBalance> calculatedDayAndBalances = null;
+
+		for (NostroPosition nostroPosition : nostroPositions)
+		{
+
+			calculatedDayAndBalances = createCurrentDayAndBalanceBasedOnCalculatedDays(nostroPosition.getCurrentDayAndBalances());
+			nostroPosition.setCurrentDayAndBalances(calculatedDayAndBalances);
+		}
+	}
+
+	private Map<String, DateAndBalance> createCurrentDayAndBalanceBasedOnCalculatedDays(
+					Map<String, DateAndBalance> queriedDaysAndBalances)
+	{
+		Map<String, DateAndBalance> calculatedDayAndBalances = new LinkedHashMap<String, DateAndBalance>();
+		DateAndBalance currentDayAndBalance = null;
+		String currentBalance = "";
+		Calendar calendar = null;
+		String[] date;
+
+		for (String currentCalendar : calculatedDays)
+		{
+
+			if (queriedDaysAndBalances.containsKey(currentCalendar))
+			{
+				calculatedDayAndBalances.put(currentCalendar, queriedDaysAndBalances.get(currentCalendar));
+				currentBalance = queriedDaysAndBalances.get(currentCalendar).getNostroBalance();
+			}
+			else
+			{
+				// It mean that there was not any variation in the balance; for that reason this current day will keep the
+				// previous balance.
+				currentDayAndBalance = new DateAndBalance();
+
+				calendar = Calendar.getInstance();
+				date = currentCalendar.split("-");
+				// calendar.set(year, month, date);
+				calendar.set(Integer.parseInt(date[2]), Integer.parseInt(date[1]), Integer.parseInt(date[0]));
+
+				currentDayAndBalance.setDbFormatDate(Toolbox.getDateDBStringFormat(calendar));
+				// Due to there was any variation in balance, this day will carry the previous value.
+				currentDayAndBalance.setNostroBalance(getBalance(currentBalance, queriedDaysAndBalances));
+
+				calculatedDayAndBalances.put(currentCalendar, currentDayAndBalance);
+			}
+		}
+		return calculatedDayAndBalances;
+	}
+
+	private String getBalance(String currentBalance, Map<String, DateAndBalance> queriedDaysAndBalances)
+	{
+		String firstKey = queriedDaysAndBalances.keySet().iterator().next();
+
+		if (currentBalance.equals(""))
+		{
+			currentBalance = queriedDaysAndBalances.get(firstKey).getNostroBalance();
+		}
+		return currentBalance;
+	}
+
+	/**
+	 * This method will set the current day from the unit in data base format.
+	 */
+	private void setStartingDate()
+	{
+		startDateInDBFormat = EquationCalendar.getLatestProcessingDateString(sessions);
+	}
+
+	private void setEndDay(Calendar dbDate)
+	{
+		endDateInDBFormat = Toolbox.getDateDBStringFormat(dbDate);
+	}
+
+	/**
+	 * This method will calculate the days to be displayed in the screen. <br>
+	 * It will be today + 27 days.
+	 */
+	private void calculateDays()
+	{
+		GregorianCalendar now = Toolbox.parseEqDate(startDateInDBFormat);
+		calculatedDays = new ArrayList<String>();
+		calculatedDaysInDisplayFormat = new ArrayList<String>();
+		calculatedDays.add(Toolbox.convertCalendarDay(now));
+		Integer tempdate = Toolbox.getDateDBFormat(now);
+		long positionDate = Long.parseLong(tempdate.toString());
+		calculatedDaysInDisplayFormat.add(EqDataType.formatEquationDate("" + positionDate, "", "", EquationCommonContext
+						.getContext().getEquationUser(session.getSessionIdentifier()).getSystemDictionary(
+										EquationParameters.HA_SDJAN)));
+		defineNumberOfDays();
+
+		for (int index = 1; index < defineNumberOfDays; index++)
+		{
+			// TODO store dates in DB Format
+			now.add(Calendar.DATE, 1);
+			calculatedDays.add(Toolbox.convertCalendarDay(now));
+			Integer tempdate2 = Toolbox.getDateDBFormat(now);
+			long positionDate2 = Long.parseLong(tempdate2.toString());
+			calculatedDaysInDisplayFormat.add(EqDataType.formatEquationDate("" + positionDate2, "", "", EquationCommonContext
+							.getContext().getEquationUser(session.getSessionIdentifier()).getSystemDictionary(
+											EquationParameters.HA_SDJAN)));
+		}
+		setEndDay(now);
+	}
+
+	/**
+	 * This method will define the number of days to be displayed. It will be done base on system options.
+	 */
+	private void defineNumberOfDays()
+	{
+		GlobalSystemOptions currentGlobalSystemOptions = new GlobalSystemOptions(session);
+
+		GPMRecordDataManager gPMRecordDataManager = currentGlobalSystemOptions.getSystemOptionValue("GP_DISPLAY_NO_DAYS_GLB_GNE");
+		defineNumberOfDays = gPMRecordDataManager.getSystemOptionIntegerValue().intValue();
+	}
+
+	/**
+	 * This method will process the current account-nostro.
+	 * 
+	 * @param currentSession
+	 *            this is the current session that will provide the current unit.
+	 */
+	private void processCurrentAccountNostro(EquationStandardSession currentSession)
+	{
+		String currency;
+		String nostroMnemonic;
+		String balance;
+		String previousMovements;
+
+		for (Map<String, Object> currentNostroAccount : currentNostrosAccounts)
+		{
+			currency = (String) currentNostroAccount.get("GJCCY");
+			nostroMnemonic = (String) currentNostroAccount.get("GJNST");
+			balance = ((BigDecimal) currentNostroAccount.get("GJBAL")).toString();
+			// String nostroBranch = (String) currentNostroAccount.get("GJABF");
+
+			currentNostroAccountDetails = getAllNostrosAccountsDetailsForAParticularUnit(currentSession, nostroMnemonic, currency);
+
+			// previousMovements this is the value of all previous position. it was calculated using all previous dates positions.
+			previousMovements = getPreviousMovements(nostroPositionsDao.getAllNostrosAccountsLastPosition(nostroMnemonic, currency,
+							startDateInDBFormat));
+
+			processCurrentNostrosAccountsDetails(currency, nostroMnemonic, balance, currentSession.getUnitId(), previousMovements,
+							currentSession.getSystemId());
+		}
+	}
+
+	/**
+	 * This method will get the balance of all calculated previous positions.<br>
+	 * This calculation is done SUM( OPNWR - OPNWP ) per each date before to the unit date.
+	 * 
+	 * @param list
+	 *            this is the result of the query.
+	 * @return get the balance of all calculated previous positions
+	 */
+	private String getPreviousMovements(List<Map<String, Object>> list)
+	{
+		String result = "0";
+
+		if (list.isEmpty())
+		{
+			return result;
+		}
+		for (Map<String, Object> previousMovement : list)
+		{
+			if (previousMovement.get("RESULT") == null)
+			{
+				continue;
+			}
+			result = ((BigDecimal) previousMovement.get("RESULT")).toString();
+		}
+
+		return result;
+	}
+
+	/**
+	 * 
+	 * @param currency
+	 * @param nostroMnemonic
+	 * @param gjbal
+	 * @param currentUnit
+	 * @param previousMovements
+	 * @param nostroBranch
+	 */
+	private void processCurrentNostrosAccountsDetails(String currency, String nostroMnemonic, String gjbal, String currentUnit,
+					String previousMovements, String currentSystem)
+	{
+		String opnwr = null;
+		String opnwp = null;
+		String opdte = null;
+
+		NostroPositionCalculator nostroPositionCalculator = nostroPositionsResult.getANewNostroPositionCalculator();
+		NostroPosition nostroPosition = null;
+		nostroPosition = nostroPositionsResult.getANewNostroPositions();
+		DateAndBalance currentDayAndBalance = null;
+
+		// It sets the previous calculated Movements. before the starting date.
+		nostroPositionCalculator.setCurrentBalance(Double.parseDouble(previousMovements));
+
+		nostroPosition.setCurrency(currency);
+		nostroPosition.setNostroMnemonic(nostroMnemonic);
+		nostroPosition.setNostroSystem(currentSystem);
+		nostroPosition.setNostroUnit(currentUnit);
+		nostroPosition.setSystemUnitNostroKey(currentSystem.trim() + currentUnit.trim() + nostroMnemonic.trim());
+
+		// if there is not any position from the startDateInDBFormat it will carry the gjbal value.
+		if (currentNostroAccountDetails.isEmpty())
+		{
+			addFirstPosition(nostroPosition, nostroPositionCalculator, gjbal);
+			nostroPositionsResult.setANewNostroPositions(nostroPosition);
+			return;
+		}
+
+		for (Map<String, Object> currentNostroAccount : currentNostroAccountDetails)
+		{
+			opnwr = ((BigDecimal) currentNostroAccount.get("OPNWR")).toString();
+			opnwp = ((BigDecimal) currentNostroAccount.get("OPNWP")).toString();
+			opdte = ((BigDecimal) currentNostroAccount.get("OPDTE")).toString();
+
+			currentDayAndBalance = new DateAndBalance();
+
+			nostroPositionCalculator.calculateBalance(opnwr, opnwp);
+			currentDayAndBalance.setNostroBalance(nostroPositionCalculator.calculateBalancePositionForOneDay(gjbal));
+			currentDayAndBalance.setDbFormatDate(opdte);
+			nostroPosition.addCurrentDayAndBalance(opdte, currentDayAndBalance);
+		}
+		nostroPositionsResult.setANewNostroPositions(nostroPosition);
+	}
+
+	private void addFirstPosition(NostroPosition nostroPosition, NostroPositionCalculator nostroPositionCalculator, String gjbal)
+	{
+		DateAndBalance currentDayAndBalance = null;
+
+		currentDayAndBalance = new DateAndBalance();
+		currentDayAndBalance.setNostroBalance(nostroPositionCalculator.calculateBalancePositionForOneDay(gjbal));
+		currentDayAndBalance.setDbFormatDate(startDateInDBFormat);
+		nostroPosition.addCurrentDayAndBalance(startDateInDBFormat, currentDayAndBalance);
+	}
+
+	/**
+	 * This method will get nostro-accounts base on the set currency for a defined unit. the query will be executed using the passed
+	 * session.
+	 * 
+	 * @param currentSession
+	 *            this is the <code>EquationStandardSession</code> that will be used for a particular unit.
+	 * @return nostro-accounts base on the set currency for a defined unit.
+	 */
+	private List<Map<String, Object>> getAllNostrosAccountsForAParticularUnit(EquationStandardSession currentSession)
+	{
+		nostroPositionsDao = daoFactory.getNostroPositionsDao(session);
+
+		return nostroPositionsDao.getAllNostrosAccountsBaseOnThePassedCurrency(unitCurrency);
+	}
+
+	/**
+	 * THgis method will get all nostro-account details base on the passed nostro-mnemonic and currency. It will be done for one
+	 * particular unit.
+	 * 
+	 * @param currentSession
+	 *            this is the <code>EquationStandardSession</code> that will be used for a particular unit.
+	 * @param nostroMnemonic
+	 *            this is the passed nostro-mnemonic used to retrieve the data.
+	 * 
+	 * @param currency
+	 *            this currency used to retrieve the data.
+	 * @return
+	 */
+	private List<Map<String, Object>> getAllNostrosAccountsDetailsForAParticularUnit(EquationStandardSession currentSession,
+					String nostroMnemonic, String currency)
+	{
+		List<Map<String, Object>> result = null;
+		nostroPositionsDao = daoFactory.getNostroPositionsDao(session);
+		result = nostroPositionsDao.getAllNostrosAccountsDetails(nostroMnemonic, currency, startDateInDBFormat, endDateInDBFormat);
+
+		return result;
+	}
+
+	@Override
+	public AbstractGPEnquiryResult calculate(String... params) throws EQException
+	{
+		if (params.length != 1)
+		{
+			throw new EQException("Invalid initialisation arguments");
+		}
+		this.enqCurrency = params[0];
+		return calculate();
+	}
+
+	// -- Getter and Setters --//
+
+	public List<Map<String, Object>> getNostrosAccounts()
+	{
+		return currentNostrosAccounts;
+	}
+
+	public void setNostrosAccounts(List<Map<String, Object>> nostrosAccounts)
+	{
+		this.currentNostrosAccounts = nostrosAccounts;
+	}
+
+	public List<Map<String, Object>> getCurrentNostrosAccounts()
+	{
+		return currentNostrosAccounts;
+	}
+
+	public void setCurrentNostrosAccounts(List<Map<String, Object>> currentNostrosAccounts)
+	{
+		this.currentNostrosAccounts = currentNostrosAccounts;
+	}
+
+	public List<Map<String, Object>> getCurrentNostroAccountDetails()
+	{
+		return currentNostroAccountDetails;
+	}
+
+	public void setCurrentNostroAccountDetails(List<Map<String, Object>> currentNostroAccountDetails)
+	{
+		this.currentNostroAccountDetails = currentNostroAccountDetails;
+	}
+
+	public String getEnqCurrency()
+	{
+		return enqCurrency;
+	}
+
+	public void setEnqCurrency(String enqCurrency)
+	{
+		this.enqCurrency = enqCurrency;
+	}
+
+	public String getStaredDateInDBFormat()
+	{
+		return startDateInDBFormat;
+	}
+
+	public void setStartDateInDBFormat(String startDateInDBFormat)
+	{
+		this.startDateInDBFormat = startDateInDBFormat;
+	}
+
+	public List<String> getCalculatedDays()
+	{
+		return calculatedDays;
+	}
+
+	public void setCalculatedDays(List<String> calculatedDays)
+	{
+		this.calculatedDays = calculatedDays;
+	}
+
+	public NostroPositionsResult getNostroPositionsResult()
+	{
+		return nostroPositionsResult;
+	}
+
+	public void setNostroPositionsResult(NostroPositionsResult nostroPositionsResult)
+	{
+		this.nostroPositionsResult = nostroPositionsResult;
+	}
+
+	public List<String> getCalculatedDaysInDisplayFormat()
+	{
+		return calculatedDaysInDisplayFormat;
+	}
+
+	public void setCalculatedDaysInDisplayFormat(List<String> calculatedDaysInDisplayFormat)
+	{
+		this.calculatedDaysInDisplayFormat = calculatedDaysInDisplayFormat;
+	}
+}

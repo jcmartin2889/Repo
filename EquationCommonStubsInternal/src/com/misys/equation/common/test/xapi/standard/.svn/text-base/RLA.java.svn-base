@@ -1,0 +1,108 @@
+/*
+ * This sample code is provided by Misys for illustrative purposes only.
+ * 
+ * These examples have not been thoroughly tested under all conditions.
+ * 
+ * Misys, therefore, cannot guarantee or imply reliability, serviceability, or function of these programs.
+ * 
+ * All programs contained herein are provided to you "AS IS" without any warranties of any kind. The implied warranties of
+ * non-infringement, merchantability and fitness for a particular purpose are expressly disclaimed.
+ */
+package com.misys.equation.common.test.xapi.standard;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.access.EquationUnit;
+import com.misys.equation.common.access.EquationUser;
+import com.misys.equation.common.test.TestEnvironment;
+
+// *************************************************************************************************
+/**
+ * 
+ * 
+ */
+// *************************************************************************************************
+public class RLA
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	protected static EquationStandardSession session;
+	protected static EquationUnit unit;
+	protected static EquationUser user;
+	// *********************************************************************************************
+	/**
+	 * 
+	 */
+	// *********************************************************************************************
+	private RLA()
+	{
+		try
+		{
+			unit = TestEnvironment.getTestEnvironment().getEquationUnit();
+			user = TestEnvironment.getTestEnvironment().getEquationUser();
+			session = user.getSession();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+	public static void main(String[] inputParameters)
+	{
+		RLA test = new RLA();
+		test.test();
+	}
+	// *********************************************************************************************
+	/**
+	 * 
+	 */
+	// *********************************************************************************************
+	public void test()
+	{
+		// Have a bash...
+		try
+		{
+			EquationStandardTransaction transaction = new EquationStandardTransaction("N94ARRRLA", session);
+
+			// Set the transaction type
+			transaction.setMode("A");
+
+			transaction.setFieldValue("GZLNP", "CR2"); // Loan type
+			transaction.setFieldValue("GZLNR", "DESK-01"); // Loan reference
+			transaction.setFieldValue("GZBRNM", "LOND"); // Branch mnemonic
+			transaction.setFieldValue("GZCUS", "ACCS"); // Customer
+			transaction.setFieldValue("GZCLC", "DTA"); // Customer location
+			transaction.setFieldValue("GZCCY", "GBP"); // Currency mnemonic
+			transaction.setFieldValue("GZDLA", "1000000"); // Loan amount
+			transaction.setFieldValue("GZSDT", "991201"); // Start date
+			transaction.setFieldValue("GZIDB", "3"); // Interest days basis
+			transaction.setFieldValue("GZRAT", "15"); // Interest rate
+			transaction.setFieldValue("GZCPI", "N"); // Capitalise interest
+			transaction.setFieldValue("GZRPYM", "2"); // Repayment method
+			transaction.setFieldValue("GZSCHC", "2"); // Schedule recalculation control
+			transaction.setFieldValue("GZSAP", "Y"); // Schedule advice
+			transaction.setFieldValue("GZNPY", "10"); // Number of payments
+			transaction.setFieldValue("GZRPQ", "V01"); // Repayment frequency
+			transaction.setFieldValue("GZFDT", "991215"); // First repayment date
+			transaction.setFieldValue("GZAB", "9132"); // Receiving a/c branch
+			transaction.setFieldValue("GZAN", "234567"); // Receiving a/c number
+			transaction.setFieldValue("GZAS", "001"); // Receiving a/c suffix
+
+			// Apply the transaction
+			session.addEquationTransaction(transaction);
+			session.applyTransactions();
+			session.commitTransactions();
+
+			//
+			System.out.println(transaction);
+			System.out.println("finished!");
+
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.toString());
+			// Rollback any transactions for the unit
+		}
+	}
+}

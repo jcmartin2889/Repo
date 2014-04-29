@@ -1,0 +1,82 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCase;
+
+/**
+ * MWC - Add/Maintain WebFacing Codes
+ * 
+ * @author Alex Lim
+ */
+public class MWC_ extends EquationTestCase
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: MWC_.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	private EquationStandardTransaction transaction;
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		/*
+		 * Get an empty transaction class you'll need to enter the name of the transaction concatenated with the WMENU1 option id.
+		 */
+		transaction = getEquationStandardTransaction("A37FRRMWC");
+	}
+	public void testAdd() throws Exception
+	{
+		/*
+		 * Set the transaction type
+		 */
+		transaction.setMode("A");
+		/*
+		 * Set the transaction fields
+		 */
+		transaction.setFieldValue("GZCODE", "CODE"); // code
+		transaction.setFieldValue("GZRN", "Description of CODE"); // description
+		/*
+		 * See if it works
+		 */
+		assertTestStandardTransaction(transaction, true);
+	}
+	public void testMaintain() throws Exception
+	{
+		/*
+		 * Set the transaction type
+		 */
+		transaction.setMode("M");
+		/*
+		 * Set the transaction fields
+		 */
+		transaction.setFieldValue("GZCODE", "CODE"); // code
+		transaction.setFieldValue("GZRN", "Description of CODE"); // description
+		/*
+		 * See if it works
+		 */
+		assertTestStandardTransaction(transaction, true);
+	}
+	public void testCancel() throws Exception
+	{
+		/*
+		 * Set the transaction type
+		 */
+		transaction.setMode("D");
+		/*
+		 * Set the transaction fields
+		 */
+		transaction.setFieldValue("GZCODE", "CODE"); // code
+		/*
+		 * See if it works
+		 */
+		assertTestStandardTransaction(transaction, true);
+	}
+}

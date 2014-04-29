@@ -1,0 +1,9 @@
+package com.misys.meridian.userapi;
+
+public class Message
+{
+
+	//This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	// dummy class to disable BankFusion
+}

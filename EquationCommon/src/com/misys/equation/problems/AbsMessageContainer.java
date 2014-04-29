@@ -1,0 +1,164 @@
+package com.misys.equation.problems;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+/**
+ * Maintains a collection of Message objects during validation.
+ * 
+ * This class should be extended to implement methods based on a resource bundle<BR>
+ * specific to each project.
+ * 
+ * @author perkinj1
+ */
+public abstract class AbsMessageContainer implements Iterable<Message>
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: AbsMessageContainer.java 14832 2012-11-05 19:03:33Z williae1 $";
+	// List of messages
+	protected List<Message> messages = new ArrayList<Message>();
+
+	abstract public Message addErrorMessageId(String id, ProblemLocation problemLocation);
+	abstract public Message addErrorMessageId(String id, String param1, ProblemLocation problemLocation);
+	abstract public Message addErrorMessageId(String id, String[] params, ProblemLocation problemLocation);
+	abstract public Message addWarningMessageId(String id, String[] params, ProblemLocation problemLocation);
+
+	/**
+	 * Add an error message, without a class
+	 * 
+	 * @param text
+	 *            the message text
+	 * 
+	 * @return the newly added Message instance
+	 */
+	public Message addErrorMessage(String text)
+	{
+		Message message = new Message(text, Message.SEVERITY_ERROR, null);
+
+		// Add to message collection
+		messages.add(message);
+		return message;
+	}
+
+	/**
+	 * adds a message with the specified message text and severity
+	 * 
+	 * @param text
+	 *            Message text
+	 * @param severity
+	 *            An int indicating the severity. The <code>Message</code> class constants should be used for this
+	 * @param problemLocation
+	 *            The location of the problem (can be null)
+	 * @return the newly added Message instance
+	 */
+	public Message addMessage(String text, int severity, ProblemLocation problemLocation)
+	{
+		Message message = new Message(text, severity, problemLocation);
+
+		// Add to message collection
+		messages.add(message);
+		return message;
+	}
+
+	/**
+	 * This method gets the FIRST message in the container if one exists
+	 * 
+	 * @return Message the first message (or null if no messages exist)
+	 */
+	public Message getFirstMessage()
+	{
+		Message result = null;
+		if (!messages.isEmpty())
+		{
+			result = messages.get(0);
+		}
+
+		return result;
+	}
+
+	/**
+	 * This method gets the first error message in the container if one exists
+	 * 
+	 * @return Message the first message (or null if no messages exist)
+	 */
+	public Message getFirstErrorMessage()
+	{
+		Message result = null;
+
+		for (Message message : messages)
+		{
+			if (message.getSeverity() == Message.SEVERITY_ERROR)
+			{
+				result = message;
+				break;
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Indicates if the container has any error messages
+	 * 
+	 * @return boolean
+	 */
+	public boolean hasErrorMessages()
+	{
+		for (Message message : messages)
+		{
+			if (message.getSeverity() == Message.SEVERITY_ERROR)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Returns the total number of messages */
+	public int getMessageCount()
+	{
+		return messages.size();
+	}
+
+	public Iterator<Message> iterator()
+	{
+		return messages.iterator();
+	}
+
+	/**
+	 * Clears all messages from a MessageContainer
+	 */
+	public void clear()
+	{
+		messages.clear();
+	}
+
+	/**
+	 * Clean up unnecessary messages
+	 * 
+	 * @param severity
+	 *            - the message severity to be retained
+	 */
+	public void cleanUp(int severity)
+	{
+		for (int i = messages.size() - 1; i >= 0; i--)
+		{
+			if (messages.get(i).getSeverity() != severity)
+			{
+				messages.remove(i);
+			}
+		}
+	}
+
+	/**
+	 * Add all the messages
+	 * 
+	 * @param messageContainer
+	 *            - the message container
+	 */
+	public void addMessages(AbsMessageContainer messageContainer)
+	{
+		this.messages.addAll(messageContainer.messages);
+	}
+
+}

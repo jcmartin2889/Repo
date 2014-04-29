@@ -1,0 +1,108 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseMaintain;
+
+/**
+ * Equation test cases for Maintain Account Types
+ */
+public class MaintainTest_BCT extends EquationTestCaseMaintain
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: MaintainTest_BCT.java 5722 2009-12-21 16:23:23Z challip1 $";
+	String programName = "C35FRR";
+	String optionId = "BCT";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+	}
+
+	/**
+	 * Setup an existing key fields
+	 */
+	@Override
+	public void setupExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZCATP", "CARD"); // Card type
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	@Override
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZCGC", "Y"); // Generate Card Numbers?
+	}
+
+	/**
+	 * The purpose of MaintainTest_BCT.java is to change the "Generate card numbers?" flag to 'Y'es, to be used by
+	 * ZZ9_AutoGenerateCard later on so the following tests are not needed.
+	 */
+	@Override
+	public void test00100Maint_Validate_NonExistingRecord() throws Exception
+	{
+	}
+	@Override
+	public void test00200Maint_Retrieval_NonExistingRecord() throws Exception
+	{
+	}
+	@Override
+	public void test00300Maint_NonExistingRecord() throws Exception
+	{
+	}
+	@Override
+	public void test00400Maint_Retrieval_ExistingRecord() throws Exception
+	{
+	}
+	@Override
+	public void test00500Maint_Validate_ExistingRecord() throws Exception
+	{
+	}
+	@Override
+	public void test00700Maint_RetrievalMaintain_ExistingRecord() throws Exception
+	{
+	}
+}

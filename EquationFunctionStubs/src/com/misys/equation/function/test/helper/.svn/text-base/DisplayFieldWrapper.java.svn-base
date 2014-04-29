@@ -1,0 +1,60 @@
+package com.misys.equation.function.test.helper;
+
+import com.misys.equation.function.beans.DisplayAttributes;
+import com.misys.equation.function.beans.InputField;
+
+/**
+ * This class manages a InputField and DisplayAttributes pair.
+ * <p>
+ * This simplifies access to the field when dealing with both the business and UI layers at the same time. This situation is
+ * currently often found in Test Cases.
+ * 
+ * @see DisplayFieldSetWrapper
+ */
+public class DisplayFieldWrapper
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	InputField inputField;
+	DisplayAttributes displayAttributes;
+
+	private DisplayFieldWrapper(String id, String label, String description)
+	{
+		inputField = new InputField(id, label, description);
+		displayAttributes = new DisplayAttributes(id, label, description);
+	}
+
+	public DisplayFieldWrapper()
+	{
+		inputField = new InputField();
+		displayAttributes = new DisplayAttributes();
+	}
+
+	public InputField getInputField()
+	{
+		return inputField;
+	}
+
+	public DisplayAttributes getDisplayAttributes()
+	{
+		return displayAttributes;
+	}
+	public void setId(String id)
+	{
+		inputField.setId(id);
+		displayAttributes.setId(id);
+	}
+
+	public void setLabel(String label)
+	{
+		inputField.setLabel(label);
+		displayAttributes.setLabel(label);
+	}
+
+	public void setDescription(String description)
+	{
+		inputField.setDescription(description);
+		displayAttributes.setDescription(description);
+	}
+
+}

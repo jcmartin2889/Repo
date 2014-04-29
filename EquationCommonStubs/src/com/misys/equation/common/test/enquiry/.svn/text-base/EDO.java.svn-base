@@ -1,0 +1,43 @@
+package com.misys.equation.common.test.enquiry;
+
+import com.misys.equation.common.access.EquationStandardEnquiry;
+import com.misys.equation.common.test.EquationTestCase;
+
+/**
+ * @author weddelc1
+ */
+public class EDO extends EquationTestCase // Direct Debit Origination Enquiry
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private EquationStandardEnquiry enquiry;
+
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+
+		/*
+		 * Get the enquiry class - you'll need to enter the name of the enquiry program e.g. H68EER
+		 */
+		enquiry = getEquationStandardEnquiry("Q71EER");
+	}
+
+	public void testRetrieve() throws Exception
+	{
+		/*
+		 * Set up the key fields required for the enquiry
+		 */
+		enquiry.setFieldValue("HZCUS", "YOUNG"); // Customer mnemonic (6A)
+		enquiry.setFieldValue("HZCLC", "GRP"); // Customer location (3A)
+		enquiry.setFieldValue("HZREF", "DGDD001"); // Originators reference (20A)
+		enquiry.setFieldValue("HZLNP", "CLD"); // Loan type (3A)
+		enquiry.setFieldValue("HZLNR", "Y2CL102"); // Loan reference (13A)
+		enquiry.setFieldValue("HZBRNM", "CITY"); // Branch mnemonic (4A)
+
+		/*
+		 * See if it works
+		 */
+		assertTestStandardEnquiry(enquiry, true);
+	}
+}

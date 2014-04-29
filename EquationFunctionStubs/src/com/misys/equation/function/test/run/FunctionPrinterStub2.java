@@ -1,0 +1,86 @@
+package com.misys.equation.function.test.run;
+
+import com.misys.equation.common.utilities.Toolbox;
+import com.misys.equation.function.journal.JournalRecord;
+import com.misys.equation.function.runtime.FunctionHandler;
+import com.misys.equation.function.runtime.FunctionPrinter;
+
+/**
+ * FunctionPrinter stub
+ * 
+ * This is how to use the Function Printer given the journal record
+ * 
+ */
+public class FunctionPrinterStub2 extends FunctionHandlerStubTestCase
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: FunctionPrinterStub2.java 6793 2010-03-31 12:10:20Z deroset $";
+
+	public FunctionPrinterStub2()
+	{
+		try
+		{
+			setUp();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] inputParameters)
+	{
+		FunctionPrinterStub2 test = new FunctionPrinterStub2();
+		test.test();
+	}
+
+	private boolean test()
+	{
+		// Have a bash...
+		FunctionHandler functionHandler = null;
+		try
+		{
+			// create the function handler
+			functionHandler = FunctionToolboxStub.getFunctionHandler(user, "SESSIONID", "");
+
+			// create the function
+			functionHandler.doNewTransaction("ALZ", "");
+
+			// Setup the journal key (after image)
+			JournalRecord journalRecordAft = new JournalRecord(functionHandler.getFhd().getScreenSetHandler().rtvScrnSetCurrent()
+							.getFunction());
+			journalRecordAft.setWorkstationID("ABCD");
+			journalRecordAft.setJrnDay(3);
+			journalRecordAft.setJrnTime(93628);
+			journalRecordAft.setJrnSequence(1);
+			journalRecordAft.setImage(JournalRecord.IMAGE_AFT);
+			journalRecordAft.rtvRecord(session);
+			FunctionPrinter functionPrinter = new FunctionPrinter(functionHandler.getFhd());
+			functionPrinter.setPrintHeader(true);
+			functionPrinter.setPrintBlankLine(true);
+			functionPrinter.print(journalRecordAft);
+			System.out.println(Toolbox.printList(functionPrinter.getLines()));
+
+			System.out.println("Done");
+			return true;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+		finally
+		{
+			cleanUp();
+		}
+	}
+
+	public void testPrinter()
+	{
+		FunctionPrinterStub2 stub = new FunctionPrinterStub2();
+		boolean success = stub.test();
+		assertEquals(true, success);
+	}
+
+}

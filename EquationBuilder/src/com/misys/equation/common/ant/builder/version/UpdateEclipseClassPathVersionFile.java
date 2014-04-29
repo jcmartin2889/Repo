@@ -1,0 +1,286 @@
+/**
+ * This class will read the eclipse xml file classpath (.classpath ) and update all equation version numbers in the jar names. 
+ */
+package com.misys.equation.common.ant.builder.version;
+
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.StringWriter;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import com.misys.equation.common.ant.builder.core.EquationLogger;
+import com.misys.equation.common.ant.builder.helpers.FileHelper;
+
+public class UpdateEclipseClassPathVersionFile {
+
+	
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: UpdateEclipseClassPathVersionFile.java 12460 2012-01-13 14:24:55Z deroset $";
+	/**
+	 * Logger for this class
+	 */
+	private static final EquationLogger LOG = new EquationLogger(UpdateEclipseClassPathVersionFile.class);
+	private static UpdateEclipseClassPathVersionFile  currentInstance;
+	private String newEQVersionNumber;
+	private String previousEQVesionNumber;
+	//this is the eclipse xml file classpath (.classpath )
+	private String classPathXmlFilePath=null;
+	//this is the eclipse xml file classpath (.classpath ) File instance.
+	private File classPathXmlFile;
+	private Document xmlDocument=null;
+	
+	/**
+	 * private default constructor. 
+	 */
+	private UpdateEclipseClassPathVersionFile()
+	{
+
+	}
+	
+	/**
+	 * This method will return the only instance of <code>UpdateEclipseClassPathVersionFile</code>
+	 * @param newEQVersionNumber this is the new EQ version number that will be set in the jar name.
+	 * @param previousEQVesionNumber this is the old EQ version number to be updated.
+	 * @return the only instance of <code>UpdateEclipseClassPathVersionFile</code>
+	 */
+	public static UpdateEclipseClassPathVersionFile getInstance(String newEQVersionNumber,String previousEQVesionNumber)
+	{
+
+		synchronized (FileHelper.class)
+		{
+			if (currentInstance == null)
+			{
+				currentInstance = new UpdateEclipseClassPathVersionFile();
+				currentInstance.setNewEQVersionNumber(newEQVersionNumber);
+				currentInstance.setPreviousEQVesionNumber(previousEQVesionNumber);
+			}
+		}
+		return currentInstance;
+	}
+	
+	/**
+	 * This method will load the eclipse xml file classpath (.classpath )  in a <code>UpdateEclipseClassPathVersionFile</code> instance.
+	 * @param xmlfilePath this is the file path to be loaded. 
+	 */
+	private void  loadProperties(String xmlfilePath) {
+		
+		
+		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+		
+		try {
+			classPathXmlFile = new File(xmlfilePath);
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			xmlDocument= docBuilder.parse(classPathXmlFile);
+			
+		}catch (ParserConfigurationException parserConfigurationException) {
+			
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error(new StringBuilder("There was a problem performing docFactory.newDocumentBuilder()").append(xmlfilePath).toString(),parserConfigurationException);
+			}
+			
+		}catch (Exception exception) {
+			
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error(new StringBuilder("There was a problem opening the file:"  ).append(xmlfilePath).toString(),exception);
+			}
+		}
+	
+	}
+	
+	/**
+	 *This method will process the eclipse xml file classpath (.classpath ). That means load the file, iterate it, update it and write it. </br>
+	 *This method will call <code>loadProperties(classPathXmlFilePath)</code>  <code>iterateXmlFile()</code>  <code>writeXMLFile()</code>  
+	 */
+	public void processXMLClassPath(){
+		
+		loadProperties(classPathXmlFilePath);
+		iterateXmlFile();
+		writeXMLFile();
+	}
+	
+	
+	/**
+	 * this method will set the xml file path. 
+	 * @param classPathXmlFilePath the xml file path to be set.
+	 */
+	public void setClassPathXmlFilePath(String classPathXmlFilePath) {
+		
+		this.classPathXmlFilePath = classPathXmlFilePath;
+		
+	}
+	
+	/**
+	 * This method will iterate the eclipse xml file classpath (.classpath ) and update the equation jars in path attribute. 
+	 */
+	private void iterateXmlFile(){
+		
+		Node currentChildNode=null;
+		NamedNodeMap classpathEntryAttributes=null; 
+		Node pathAttribute=null;
+		String currentPathValue=null;
+		
+		Node rootElement = xmlDocument.getFirstChild();
+		NodeList nodeList =rootElement.getChildNodes();
+		
+		for(int index=0; index<nodeList.getLength(); index++){
+	      
+	     currentChildNode = nodeList.item(index); 
+	      
+	     if (currentChildNode.getNodeName() == "classpathentry") {
+	         
+	    	  classpathEntryAttributes = currentChildNode.getAttributes();
+	    	  pathAttribute=classpathEntryAttributes.getNamedItem("path");
+	    	  currentPathValue=pathAttribute.getNodeValue();
+	    	  
+	    	  if(currentPathValue.contains("equation")){
+	    		  
+	    		  updateEquationVersionNumber(currentPathValue,pathAttribute);
+	    	  }
+	      }	      
+	    }
+	}
+	
+	/**
+	 * This method will write the eclipse xml file classpath (.classpath ) with the updated jar names. 
+	 */
+	private void writeXMLFile(){
+		
+		Transformer transformer=null;
+		StreamResult result=null;
+		String xmlString =null;
+		OutputStream outputStream=null;
+		byte buffer[] =null;
+		
+		try
+		{
+			
+			//set up a transformer
+			TransformerFactory transfac = TransformerFactory.newInstance();
+			transformer = transfac.newTransformer();
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+			//initialize StreamResult with File object to save to file
+			result = new StreamResult(new StringWriter());
+			
+			DOMSource source = new DOMSource(xmlDocument);
+			transformer.transform(source, result);
+			xmlString = result.getWriter().toString();
+			buffer = xmlString.getBytes();
+			outputStream = new FileOutputStream(classPathXmlFile);
+			
+			for(int index=0;index<buffer .length;index++) {
+			   
+				outputStream.write(buffer[index]);
+			}		
+			buffer = null;
+			
+		}
+		catch (Exception exception)
+		{
+			
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error(new StringBuilder("There was a problem writing the file:"  ).append(classPathXmlFilePath).toString(),exception);
+			}
+		}finally{
+			
+			closeInputStream(outputStream);
+		}
+		
+		
+		System.out.println(xmlString);
+	}
+	
+	/**
+	 * This method will update the current jar name. The current DOM Node will be updated. 
+	 * @param currentPathValue this is the current equation jar name.
+	 * @param pathAttribute this is the current instance of the DOM Node. 
+	 */
+	private void updateEquationVersionNumber(String currentPathValue,Node pathAttribute){
+		
+		System.out.println(new StringBuilder( "This jar name will be updated:").append(currentPathValue));
+		currentPathValue=currentPathValue.replace(previousEQVesionNumber, newEQVersionNumber);
+		System.out.println(new StringBuilder( "This is the new jar name:").append(currentPathValue));	    		  
+		pathAttribute.setNodeValue(currentPathValue);
+	}
+	
+	
+	/**
+	 * This method will close the current input/outputStream.
+	 * @param this is the recourse to be closed.
+	 */
+	private void closeInputStream(Closeable resorseTobeClosed)
+	{
+		try {
+			
+			if(resorseTobeClosed!=null){
+				
+				resorseTobeClosed.close();
+			}
+			
+			
+		} catch (IOException iOException) {
+			
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error(new StringBuilder("There was a problem trying to close "  ).append(classPathXmlFilePath).toString(),iOException);
+			}			
+		}
+		
+	}
+	
+	
+	/***getter and setters ***/
+	
+	public String getNewEQVersionNumber() {
+		
+		return newEQVersionNumber;
+	}
+
+	public void setNewEQVersionNumber(String newEQVersionNumber) {
+		
+		this.newEQVersionNumber = newEQVersionNumber;
+	}
+
+	public String getPreviousEQVesionNumber() {
+		
+		return previousEQVesionNumber;
+	}
+
+	public void setPreviousEQVesionNumber(String previousEQVesionNumber) {
+		
+		this.previousEQVesionNumber = previousEQVesionNumber;
+	}
+
+	
+		
+	public static void main(String[] args)
+	{
+		
+		String xmlPath="C:\\Thor\\workspaces\\Equation-workspace\\resources\\test\\classpath";
+		
+		UpdateEclipseClassPathVersionFile updateClassPathVersionFile= UpdateEclipseClassPathVersionFile.getInstance("1.2.3","1.2.2");
+		updateClassPathVersionFile.setClassPathXmlFilePath(xmlPath);
+		updateClassPathVersionFile.processXMLClassPath();
+	}
+	
+}

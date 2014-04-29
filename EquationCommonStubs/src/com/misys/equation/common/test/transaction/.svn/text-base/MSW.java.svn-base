@@ -1,0 +1,184 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseMaintain;
+
+/**
+ * Equation test cases for SWIFT Variables Maintenance
+ */
+public class MSW extends EquationTestCaseMaintain
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	String programName = "T48MRR";
+	String optionId = "MSW";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	public void setUp() throws Exception
+	{
+		super.setUp();
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields
+	 */
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		// No database file used.
+	}
+
+	/**
+	 * Setup an existing key fields
+	 */
+	public void setupExistKeyFields(EquationStandardTransaction transaction)
+	{
+		// No database file used.
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZPRR", ""); // Pay/receive messages reqd (1A)
+		transaction.setFieldValue("GZCMR", ""); // Confirmation messages reqd (1A)
+		transaction.setFieldValue("GZFXR", "N"); // Maturity FX confirmations (1A)
+		transaction.setFieldValue("GZSIR", ""); // Sundry item confirmations (1A)
+		transaction.setFieldValue("GZSMR", "N"); // Statement messages reqd (1A)
+		transaction.setFieldValue("GZNSR", "N"); // NOSTRO/PC statements reqd (1A)
+		transaction.setFieldValue("GZMR7", ""); // Statement field 61 / 7 (4A)
+		transaction.setFieldValue("GZMR8", ""); // Statement field 61 / 8 (4A)
+		transaction.setFieldValue("GZMR9", ""); // Statement field 61 / 9 (4A)
+		transaction.setFieldValue("GZDCM", "N"); // Default cover message reqd (1A)
+		transaction.setFieldValue("GZMAT", "N"); // Confirmation matching reqd (1A)
+		transaction.setFieldValue("GZCXM", "N"); // Check transfer method (1A)
+		transaction.setFieldValue("GZRT", "N"); // Transmit msgs in recovery (1A)
+		transaction.setFieldValue("GZMQI", ""); // Incoming MQ queue (48A)
+		transaction.setFieldValue("GZMQO", ""); // Outgoing MQ queue (48A)
+		transaction.setFieldValue("GZSPC", "N"); // Suppress paper confirms (1A)
+		transaction.setFieldValue("GZSPS", "N"); // Suppress paper statements (1A)
+		transaction.setFieldValue("GZPMR", "N"); // SWIFT pay messages (1A)
+		transaction.setFieldValue("GZRMR", "N"); // SWIFT receive messages (1A)
+		transaction.setFieldValue("GZFXC", "N"); // SWIFT FX inception confirms (1A)
+		transaction.setFieldValue("GZMMC", "N"); // SWIFT MM inception confirms (1A)
+		transaction.setFieldValue("GZMMM", "N"); // SWIFT MM maturity confirms (1A)
+		transaction.setFieldValue("GZMMI", "N"); // SWIFT MM interest confirms (1A)
+		transaction.setFieldValue("GZCDR", "N"); // SWIFT debit advices (1A)
+		transaction.setFieldValue("GZCCR", "N"); // SWIFT credit advices (1A)
+		transaction.setFieldValue("GZDFC", "N"); // Default from cover (1A)
+		transaction.setFieldValue("GZCHG", ""); // Charges for (3A)
+		transaction.setFieldValue("GZPRS", "N"); // Payment reflects settlement (1A)
+		transaction.setFieldValue("GZAAL", "N"); // Add '/' to account line (1A)
+		transaction.setFieldValue("GZIWR", "Y"); // Ignore we receive for conf (1A)
+		transaction.setFieldValue("GZAPP", "N"); // Always produce payment (1A)
+		transaction.setFieldValue("GZPPN", "N"); // Produce posting narrative (1A)
+		transaction.setFieldValue("GZCWA", "N"); // Cancel w/o authorisation (1A)
+		transaction.setFieldValue("GZBTM", "Y"); // Bank transfer multiples (1A)
+		transaction.setFieldValue("GZCTM", "N"); // Customer tfr multiples (1A)
+		transaction.setFieldValue("GZNRM", "N"); // Notice to rec multiples (1A)
+		transaction.setFieldValue("GZQMAN", ""); // MQ queue manager (48A)
+
+		// Maintain GZNSRC
+		transaction.setFieldValue("GZNSRC", "N"); // NOSTRO/PC statements reqd customer default (1A)
+
+		transaction.setFieldValue("GZNSRA", ""); // NOSTRO/PC statements reqd account default (1A)
+		transaction.setFieldValue("GZSPCC", ""); // Suppress paper confirms customer default (1A)
+		transaction.setFieldValue("GZSPCA", ""); // Suppress paper confirms account default (1A)
+		transaction.setFieldValue("GZSPSC", ""); // Suppress paper statements customer default (1A)
+		transaction.setFieldValue("GZSPSA", ""); // Suppress paper statements account default (1A)
+		transaction.setFieldValue("GZSMRC", ""); // Statement Messages reqd customer default (1A)
+		transaction.setFieldValue("GZSMRA", ""); // Statement messages reqd account default (1A)
+		transaction.setFieldValue("GZPMRC", ""); // SWIFT pay messages customer default (1A)
+		transaction.setFieldValue("GZPMRA", ""); // SWIFT pay messages account default (1A)
+		transaction.setFieldValue("GZRMRC", ""); // SWIFT receive messages customer default (1A)
+		transaction.setFieldValue("GZRMRA", ""); // SWIFT receive messages account default (1A)
+		transaction.setFieldValue("GZFXCC", ""); // SWIFT FX inception confirms customer default (1A)
+		transaction.setFieldValue("GZFXCA", ""); // SWIFT FX inception confirms account default (1A)
+		transaction.setFieldValue("GZFXRC", ""); // Maturity FX confirmations customer default (1A)
+		transaction.setFieldValue("GZFXRA", ""); // Maturity FX confirmations account default (1A)
+		transaction.setFieldValue("GZMMCC", ""); // SWIFT MM inception confirms customer default (1A)
+		transaction.setFieldValue("GZMMCA", ""); // SWIFT MM inception confirms account default (1A)
+		transaction.setFieldValue("GZMMMC", ""); // SWIFT MM maturity confirms customer default (1A)
+		transaction.setFieldValue("GZMMMA", ""); // SWIFT MM maturity confirms account default (1A)
+		transaction.setFieldValue("GZMMIC", ""); // SWIFT MM interest confirms customer default (1A)
+		transaction.setFieldValue("GZMMIA", ""); // SWIFT MM interest confirms account default (1A)
+		transaction.setFieldValue("GZCDRC", ""); // SWIFT debit advices customer default (1A)
+		transaction.setFieldValue("GZCDRA", ""); // SWIFT debit advices account default (1A)
+		transaction.setFieldValue("GZCCRC", ""); // SWIFT credit advices customer default (1A)
+		transaction.setFieldValue("GZCCRA", ""); // SWIFT credit advices account default (1A)
+		transaction.setFieldValue("GZBTMC", ""); // Bank transfer multiples customer default (1A)
+		transaction.setFieldValue("GZBTMA", ""); // Bank transfer multiples account default (1A)
+		transaction.setFieldValue("GZCTMC", ""); // Customer tfr multiples customer default (1A)
+		transaction.setFieldValue("GZCTMA", ""); // Customer tfr multiples account default (1A)
+		transaction.setFieldValue("GZNRMC", ""); // Notice to rec multiples customer default (1A)
+		transaction.setFieldValue("GZNRMA", ""); // Notice to rec multiples account default (1A)
+		transaction.setFieldValue("GZA103", "N"); // Always produce MT103? (1A)
+		transaction.setFieldValue("GZINQ", ""); // Incoming data queue (10A)
+		transaction.setFieldValue("GZINL", ""); // Incoming data queue library (10A)
+		transaction.setFieldValue("GZOUTQ", ""); // Outgoing data queue (10A)
+		transaction.setFieldValue("GZOUTL", ""); // Outgoing data queue library (10A)
+		transaction.setFieldValue("GZAIX", "Y"); // Using alliance with AIX (1A)
+		transaction.setFieldValue("GZ86M", "Y"); // Use MRLs for field 86 (1A)
+		transaction.setFieldValue("GZ861", ""); // Statement field 86/1 (4A)
+		transaction.setFieldValue("GZ862", ""); // Statement field 86/2 (4A)
+		transaction.setFieldValue("GZ863", ""); // Statement field 86/3 (4A)
+		transaction.setFieldValue("GZ864", ""); // Statement field 86/4 (4A)
+		transaction.setFieldValue("GZ865", ""); // Statement field 86/5 (4A)
+		transaction.setFieldValue("GZ866", ""); // Statement field 86/6 (4A)
+		transaction.setFieldValue("GZSEM", "N"); // Suppress earlier messages (1A)
+		transaction.setFieldValue("GZVSC", "N"); // Vostro conf processing (1A)
+	}
+
+	/**
+	 * Skip the following invalid tests. MSW cannot distinguish a non-existing from an existing record.
+	 */
+	public void test00100Maint_Validate_NonExistingRecord() throws Exception
+	{
+	}
+	public void test00200Maint_Retrieval_NonExistingRecord() throws Exception
+	{
+	}
+	public void test00300Maint_NonExistingRecord() throws Exception
+	{
+	}
+
+	/**
+	 * Skip the following invalid tests. MSW does not have a database file so the following tests have no use.
+	 */
+	public void test00400Maint_Retrieval_ExistingRecord() throws Exception
+	{
+	}
+	public void test00700Maint_RetrievalMaintain_ExistingRecord() throws Exception
+	{
+	}
+}

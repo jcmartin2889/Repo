@@ -1,0 +1,99 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseFully;
+
+/**
+ * Equation test cases for Maintain function
+ */
+public class DSO extends EquationTestCaseFully
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	String programName = "O17FRR";
+	String optionId = "DSO";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		retrieveBeforeCancel = false;
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZFLN", "URJLX2"); // Field name (6A)
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	@Override
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZTYP", "1"); // Single character code (1A)
+		transaction.setFieldValue("GZDES", "Sample X2"); // Valid/default customer number characters (36A)
+		transaction.setFieldValue("GZSGP", "PE"); // System variable group (2A)
+		transaction.setFieldValue("GZFTYP", "1"); // Single character code (1A)
+		transaction.setFieldValue("GZLGTS", "20"); // Field length (2S,0)
+		transaction.setFieldValue("GZBLN", "Y"); // Blank allowed (1A)
+		transaction.setFieldValue("GZPVT", "N"); // Yes/no indicator? (1A)
+		transaction.setFieldValue("GZPAV", "N"); // Prompt available (1A)
+		transaction.setFieldValue("GZPHS", "ALL"); // Phase to run in (3A)
+		transaction.setFieldValue("GZARA", "DASYSCT3"); // Object name (10A)
+		transaction.setFieldValue("GZTYPO", "*DTAARA"); // Object type; *pgm, *file, *dtaara, *cmd (10A)
+		transaction.setFieldValue("GZPOS", "1950"); // Field array position (5P,0)
+		transaction.setFieldValue("GZLGTD", "1"); // Field length (2S,0)
+		transaction.setFieldValue("GZPGM", "SQZ01R"); // System program (10A)
+		transaction.setFieldValue("GZALD", "Y"); // Yes/no indicator? (1A)
+		transaction.setFieldValue("GZALM", "Y"); // Yes/no indicator? (1A)
+	}
+
+	/**
+	 * Setup the mandatory fields (maintain mode)
+	 */
+	@Override
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZDES", "test X2"); // Valid/default customer number characters (36A)
+		transaction.setFieldValue("GZSGP", "AS"); // System variable group (2A)
+		transaction.setFieldValue("GZPOS", "1951"); // Field array position (5P,0)
+	}
+
+}

@@ -1,0 +1,45 @@
+package com.misys.equation.common.utilities;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * This class is a helper for the <code>ThreadLocal</code> class and provides some static methods for storing and retrieving data
+ * relevant to the thread that is executing
+ */
+public class ThreadData
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	// Declare a static instance of thread data and initialise its storage to be a hash map.
+	@SuppressWarnings("unchecked")
+	private static ThreadLocal threadData = new ThreadLocal()
+	{
+		@Override
+		protected synchronized Object initialValue()
+		{
+			return new HashMap();
+		}
+	};
+
+	/**
+	 * @param key
+	 * @return the object stored with the given key (or null if it doesn't exist) for the given thread that put it there
+	 */
+	@SuppressWarnings("unchecked")
+	public static Object get(String key)
+	{
+		return threadData == null ? null : ((Map) threadData.get()).get(key);
+	}
+	/**
+	 * Sets a key value pair to store data for a thread that is executing
+	 * 
+	 * @param key
+	 * @param val
+	 */
+	@SuppressWarnings("unchecked")
+	public static void set(String key, Object val)
+	{
+		((Map) threadData.get()).put(key, val);
+	}
+}

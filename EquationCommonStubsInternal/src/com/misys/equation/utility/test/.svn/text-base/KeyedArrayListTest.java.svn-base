@@ -1,0 +1,197 @@
+package com.misys.equation.utility.test;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import junit.framework.TestCase;
+
+import com.misys.equation.common.utilities.KeyedArrayList;
+
+/**
+ * JUnit test to verify the functionality of the KeyedArrayList class
+ * 
+ * TODO: Test behaviour when uses as a base class, and when used by betwixt
+ */
+public class KeyedArrayListTest extends TestCase
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/**
+	 * Test basic Add and get behaviour
+	 */
+	public void testAddAndGet()
+	{
+		KeyedArrayList<String> kal = new KeyedArrayList<String>();
+		kal.add("A_Value", "A_Key");
+		kal.add("B_Value", "B_Key");
+		kal.add("C_Value", "C_Key");
+		kal.add("D_Value", "D_Key");
+		kal.add("E_Value", "E_Key");
+
+		assertEquals(5, kal.size());
+		assertEquals("A_Value", kal.get(0));
+		assertEquals("B_Value", kal.get(1));
+		assertEquals("C_Value", kal.get(2));
+		assertEquals("D_Value", kal.get(3));
+		assertEquals("E_Value", kal.get(4));
+	}
+
+	/**
+	 * Test behaviour when inserting at an index:
+	 */
+	public void testAddAtIndex()
+	{
+		KeyedArrayList<String> kal = new KeyedArrayList<String>();
+		kal.add("A_Value", "A_Key");
+		kal.add("C_Value", "C_Key");
+		kal.add("D_Value", "D_Key");
+		kal.add("E_Value", "E_Key");
+
+		// Insert:
+		kal.add(1, "B_Value", "B_Key");
+
+		// Build the expected results:
+		Map<String, String> expectedValuesMap = new LinkedHashMap<String, String>();
+		expectedValuesMap.put("A_Key", "A_Value");
+		expectedValuesMap.put("B_Key", "B_Value");
+		expectedValuesMap.put("C_Key", "C_Value");
+		expectedValuesMap.put("D_Key", "D_Value");
+		expectedValuesMap.put("E_Key", "E_Value");
+
+		compareLists(kal, expectedValuesMap);
+
+	}
+
+	/**
+	 * Test Contains method.
+	 */
+	public void testContains()
+	{
+		KeyedArrayList<String> kal = new KeyedArrayList<String>();
+		kal.add("A_Value", "A_Key");
+		kal.add("B_Value", "B_Key");
+		kal.add("C_Value", "C_Key");
+		kal.add("D_Value", "D_Key");
+		kal.add("E_Value", "E_Key");
+
+		assertTrue("Collection contains key ", kal.contains("C_Key"));
+		assertFalse("Collection keys must not contain ", kal.contains("NotAdded"));
+	}
+
+	/**
+	 * Test getKeys method.
+	 */
+	public void testGetKeys()
+	{
+		KeyedArrayList<String> kal = new KeyedArrayList<String>();
+		kal.add("A_Value", "A_Key");
+		kal.add("B_Value", "B_Key");
+		kal.add("C_Value", "C_Key");
+		kal.add("D_Value", "D_Key");
+		kal.add("E_Value", "E_Key");
+
+		ArrayList<String> expectedKeys = new ArrayList<String>();
+		expectedKeys.add("A_Key");
+		expectedKeys.add("B_Key");
+		expectedKeys.add("C_Key");
+		expectedKeys.add("D_Key");
+		expectedKeys.add("E_Key");
+
+		assertEquals(expectedKeys, kal.getKeys());
+	}
+
+	/**
+	 * Test behaviour when removing an entry by key
+	 */
+	public void testRemove()
+	{
+		KeyedArrayList<String> kal = new KeyedArrayList<String>();
+		kal.add("A_Value", "A_Key");
+		kal.add("B_Value", "B_Key");
+		kal.add("C_Value", "C_Key");
+		kal.add("D_Value", "D_Key");
+		kal.add("E_Value", "E_Key");
+
+		// Remove a value:
+		kal.remove("C_Key");
+
+		// Expected results:
+		Map<String, String> expectedValuesMap = new LinkedHashMap<String, String>();
+		expectedValuesMap.put("A_Key", "A_Value");
+		expectedValuesMap.put("B_Key", "B_Value");
+		expectedValuesMap.put("D_Key", "D_Value");
+		expectedValuesMap.put("E_Key", "E_Value");
+
+		compareLists(kal, expectedValuesMap);
+	}
+
+	/**
+	 * Test IndexOf method behaviour
+	 */
+	public void testIndexOf()
+	{
+		KeyedArrayList<String> kal = new KeyedArrayList<String>();
+		kal.add("A_Value", "A_Key");
+		kal.add("B_Value", "B_Key");
+		kal.add("C_Value", "C_Key");
+		kal.add("D_Value", "D_Key");
+		kal.add("E_Value", "E_Key");
+
+		// C_Key should be the third item
+		assertEquals(2, kal.indexOf("C_Key"));
+	}
+
+	/**
+	 * Test success behaviour when moving entries below
+	 */
+	public void testMoveBelowSuccess()
+	{
+		KeyedArrayList<String> kal = new KeyedArrayList<String>();
+		kal.add("A_Value", "A_Key");
+		kal.add("B_Value", "B_Key");
+		kal.add("C_Value", "C_Key");
+		kal.add("D_Value", "D_Key");
+		kal.add("E_Value", "E_Key");
+
+		// Move C to the top of the list:
+		kal.moveBelow("C_Key", null);
+
+		// Expected results:
+		Map<String, String> expectedValuesMap = new LinkedHashMap<String, String>();
+		expectedValuesMap.put("C_Key", "C_Value");
+		expectedValuesMap.put("A_Key", "A_Value");
+		expectedValuesMap.put("B_Key", "B_Value");
+		expectedValuesMap.put("D_Key", "D_Value");
+		expectedValuesMap.put("E_Key", "E_Value");
+
+		compareLists(kal, expectedValuesMap);
+	}
+
+	/**
+	 * Compare the order of items (keys and values) in a keyedArrayList to a reference list
+	 * 
+	 * @param keyedArrayList
+	 *            the KeyedArrayList to test
+	 * @param expected
+	 *            a LinkedHashMap containing expected values
+	 */
+	private void compareLists(KeyedArrayList<String> keyedArrayList, Map<String, String> expected)
+	{
+		assertEquals(expected.size(), keyedArrayList.size());
+
+		int index = 0;
+		for (Entry<String, String> entry : expected.entrySet())
+		{
+			String value = keyedArrayList.get(index);
+			String key = keyedArrayList.getKeys().get(index);
+
+			assertEquals(entry.getKey(), key);
+			assertEquals(entry.getValue(), value);
+			index++;
+		}
+	}
+
+}

@@ -1,0 +1,121 @@
+package com.misys.equation.ui.beans;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import com.misys.equation.common.internal.eapi.core.EQActionErrorException;
+
+/**
+ * 
+ * This class serves as a holder of users session limit. 1 user = 1 instance of this Object
+ * 
+ */
+public class EquationUserExtension
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EquationUserExtension.java 12326 2011-11-14 01:06:28Z fraramos $";
+	private final int sessionLimitCount;
+	private int currentSessionCount;
+	private Map<String, String> sessionIds = new HashMap<String, String>();
+	private static final int NOT_ALLOWED = 0;
+	private static final int UNLIMITED = -1;
+	/**
+	 * Constructor. This will automatically set the limitCount for every user
+	 * 
+	 * @param limitCount
+	 *            from equationConfiguration.properties
+	 */
+	public EquationUserExtension(int limit)
+	{
+		sessionLimitCount = limit;
+	}
+	/**
+	 * Getter method of sessionLimitCount variable.
+	 * 
+	 * @return sessionLimitCount
+	 */
+	public int getSessionLimit()
+	{
+		return sessionLimitCount;
+	}
+	/**
+	 * Getter method of currentSession variable
+	 * 
+	 * @return current session count.
+	 */
+	public int getCurrentSession()
+	{
+		return currentSessionCount;
+	}
+	/**
+	 * Increments the session count.
+	 * 
+	 * @param id
+	 *            - session id generates by the HttpServletRequest
+	 * @throws EQActionErrorException
+	 */
+	public synchronized void incrementCurrentSessionCount(String id) throws EQActionErrorException
+	{
+		// User's session/password was expired. Allow user to proceed.
+		if (sessionIds.get(id) != null)
+			return;
+
+		if (!isSessionLimitReached())
+		{
+			++this.currentSessionCount;
+			sessionIds.put(id, id);
+		}
+		else
+		{
+			throw new EQActionErrorException("error.parameterised", "error.user.sessionlimit.reached");
+		}
+	}
+	/**
+	 * Decrements the session count.
+	 * 
+	 * @param id
+	 *            - session id generates by the HttpServletRequest
+	 */
+	public synchronized void decrementCurrentSessionCount(String id)
+	{
+		if (sessionIds.get(id) != null)
+		{
+			sessionIds.remove(id);
+			if (this.currentSessionCount > 0)
+			{
+				--this.currentSessionCount;
+			}
+		}
+	}
+	/**
+	 * Checks and Validates the current session count.
+	 * 
+	 * @return boolean - true if limit has been reached.
+	 * @throws EQActionErrorException
+	 */
+	public boolean isSessionLimitReached() throws EQActionErrorException
+	{
+		validate(sessionLimitCount);
+		if (sessionLimitCount == -1)
+		{
+			return false;
+		}
+		return currentSessionCount >= sessionLimitCount;
+	}
+	/**
+	 * Validates the current session's limit value.
+	 * 
+	 * @param limit
+	 *            - Session Limit Count
+	 * @throws EQActionErrorException
+	 */
+	public static void validate(int limit) throws EQActionErrorException
+	{
+		if (limit == NOT_ALLOWED || limit < UNLIMITED)
+		{
+			throw new EQActionErrorException("error.parameterised", "error.user.sessionlimit.not.allowed");
+		}
+
+	}
+
+}

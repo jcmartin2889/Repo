@@ -1,0 +1,23 @@
+package com.misys.equation.common.globalprocessing.mbeans;
+
+/**
+ * Contains Global Service methods such as global library management.
+ * <p>
+ * This service will primarily be used by the Management Console through a JMX exposed service (See the EquationGlobalWeb project).
+ * The stub interfaces are exposed here so that both client and server components refer to the common source.
+ * <p>
+ * The method names, parameters, and interface type are heavily annotated for automatic generation of DynamicMBean meta information.
+ * 
+ * @author berzosa
+ */
+@Meta(name = "GlobalWebServiceMBean", desc = "Provides a global service layer exposed via JMX")
+public interface GlobalWebServiceMBean extends AdHocExportService, AuditService, GlobalOptionsService, GroupService,
+				RuleSetsService, RulesService, CommandsService, SessionManagementService, UnitOptionsService, SystemUnitsService,
+				LinkedCustomerSynchCodesService, DatabaseComparisonService
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: GlobalWebServiceMBean.java 9210 2010-09-17 15:31:21Z deroset $";
+
+	/** Attribute constant for retrieving version information for this web service */
+	public static final String VERSION_ATTRIB = "VERSION";
+}

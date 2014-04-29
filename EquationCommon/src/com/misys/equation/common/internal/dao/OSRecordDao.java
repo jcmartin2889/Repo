@@ -1,0 +1,88 @@
+package com.misys.equation.common.internal.dao;
+
+import java.util.Hashtable;
+import java.util.List;
+
+import com.misys.equation.common.dao.IOSRecordDao;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.dao.beans.OSRecordDataModel;
+import com.misys.equation.common.internal.dao.mappers.OSRecordRowMapper;
+
+public class OSRecordDao extends AbsEquationDao implements IOSRecordDao
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: OSRecordDao.java 6928 2010-04-14 12:04:49Z MACDONP1 $";
+	/**
+	 * This method will return an instance of the preset data model.
+	 * 
+	 * @return OSRecordDataModel - Data model
+	 */
+	public OSRecordDataModel getMyDataModel()
+	{
+		OSRecordDataModel recordDataModel = null;
+		AbsRecord record = getRecord();
+
+		if (record instanceof OSRecordDataModel)
+		{
+			recordDataModel = (OSRecordDataModel) getRecord();
+
+		}
+		return recordDataModel;
+	}
+
+	@Override
+	protected String getFields()
+	{
+		return " OSBRNM, OSDLP, OSDLR ";
+	}
+
+	@Override
+	protected String getParameterizedFields()
+	{
+		return " OSBRNM=?, OSDLP=?, OSDLR=? ";
+	}
+
+	@Override
+	protected Object[] getParameterizedFieldsValues()
+	{
+		OSRecordDataModel dataModel = getMyDataModel();
+		Object[] object = new Object[] { dataModel.getBranchMnemonic(), dataModel.getDealType(), dataModel.getDealReference(), };
+		return object;
+	}
+
+	@Override
+	protected String getParameters()
+	{
+		return " ?, ?, ? ";
+	}
+
+	@Override
+	protected String getWhereConditionBaseOnIdRecord()
+	{
+		StringBuilder whereCondition = new StringBuilder("OSBRNM='");
+		whereCondition.append(getMyDataModel().getBranchMnemonic());
+		whereCondition.append("' AND OSDLP='");
+		whereCondition.append(getMyDataModel().getDealType());
+		whereCondition.append("' AND OSDLP='");
+		whereCondition.append(getMyDataModel().getDealReference());
+		whereCondition.append("''");
+		return whereCondition.toString();
+	}
+	public List<AbsRecord> getRecordBy(String whereClause)
+	{
+		return getRecordBy(whereClause, new OSRecordRowMapper());
+	}
+
+	public List<AbsRecord> getRecords()
+	{
+		return getRecordBy(null, new OSRecordRowMapper());
+	}
+
+	@Override
+	protected Hashtable<String, AbsRecord> createHashtableRecordModel(List<AbsRecord> records)
+	{
+		throw new UnsupportedOperationException(
+						"OSRecordDao: createHashtableRecordModel() - This method has not been implemented for this DAO.");
+	}
+
+}

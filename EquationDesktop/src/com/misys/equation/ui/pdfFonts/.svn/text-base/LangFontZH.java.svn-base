@@ -1,0 +1,148 @@
+package com.misys.equation.ui.pdfFonts;
+
+import com.lowagie.text.Chunk;
+import com.lowagie.text.Font;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.pdf.BaseFont;
+import com.misys.equation.common.utilities.Toolbox;
+
+public class LangFontZH extends LangFont
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	Font defaultFont;
+
+	/**
+	 * Construct a new font style for Chinese
+	 * 
+	 * @throws Exception
+	 */
+	public LangFontZH() throws Exception
+	{
+		defaultFont = super.getFont();
+	}
+
+	/**
+	 * Return the Chinese font style
+	 * 
+	 * @return the Chinese font style
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	protected Font getFont() throws Exception
+	{
+		BaseFont bfChinese = BaseFont.createFont("STSong-Light", "UniGB-UCS2-H", BaseFont.NOT_EMBEDDED);
+		Font fontChinese = new Font(bfChinese, DEFAULT_FONTSIZE, Font.COURIER);
+		return fontChinese;
+	}
+
+	/**
+	 * Write the text to the PDF
+	 * 
+	 * @param text
+	 *            - the text to be written
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public void write(String text) throws Exception
+	{
+		// the writing needs to be intelligent
+		// for non-Chinese character use the default font to retain column alignment
+		// for Chinese character, use Chinese specific font to display these characters
+
+		// get the default paragraph
+		Paragraph para = getDefaultParagraph();
+
+		StringBuilder buffer = new StringBuilder();
+		boolean ordinaryChar = true;
+		for (int i = 0; i < text.length(); i++)
+		{
+			if (i == 0)
+			{
+				ordinaryChar = text.codePointAt(i) < 256;
+				buffer.append(text.charAt(i));
+			}
+			else
+			{
+				boolean ordinaryChar2 = text.codePointAt(i) < 256;
+
+				// same type, add to buffer
+				if (ordinaryChar == ordinaryChar2)
+				{
+					buffer.append(text.charAt(i));
+				}
+
+				// different type
+				else
+				{
+					// add whatever in the buffer to the PDF
+					writetoParagraph(para, buffer.toString(), ordinaryChar);
+
+					// clear the buffer and add the new character
+					buffer = new StringBuilder();
+					ordinaryChar = ordinaryChar2;
+					buffer.append(text.charAt(i));
+				}
+			}
+		}
+
+		// buffer not empty?
+		if (buffer.length() > 0)
+		{
+			writetoParagraph(para, buffer.toString(), ordinaryChar);
+		}
+
+		document.add(para);
+	}
+
+	/**
+	 * Write a text into the paragraph selecting either the default font or Chinese specific font
+	 * 
+	 * @param para
+	 *            - the paragraph
+	 * @param str
+	 *            - the text to be written
+	 * @param defFont
+	 *            - font selection
+	 */
+	private void writetoParagraph(Paragraph para, String str, boolean defFont)
+	{
+		if (defFont)
+		{
+			Chunk chunk = new Chunk(str, defaultFont);
+			para.add(chunk);
+		}
+		else
+		{
+			Chunk chunk = new Chunk(" ", defaultFont);
+			para.add(chunk);
+
+			chunk = new Chunk(str, font);
+			para.add(chunk);
+
+			chunk = new Chunk(" ", defaultFont);
+			para.add(chunk);
+
+			addSpaces(para, str.length());
+		}
+	}
+
+	/**
+	 * Add some spaces to offset the characters not occupying 2 full characters to align with English text
+	 * 
+	 * @param para
+	 */
+	private void addSpaces(Paragraph para, int spaces)
+	{
+		// add some spaces as these characters do not fully occupy 2 characters
+		// but has the effect of adding more spaces at the end
+		if (spaces > 0)
+		{
+			Chunk chunk = new Chunk(Toolbox.pad("", spaces), font);
+			para.add(chunk);
+		}
+	}
+
+}

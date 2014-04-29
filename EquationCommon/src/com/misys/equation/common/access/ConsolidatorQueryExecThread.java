@@ -1,0 +1,110 @@
+package com.misys.equation.common.access;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import com.misys.equation.common.utilities.EquationLogger;
+
+/**
+ * A simple thread to execute a query on a seperate line of execution. This thread is to be used in conjunction with the equation
+ * EquationConsolidator in order to avoid having to wait for the database call prior to initiating any other processing.
+ * 
+ * @author camillen
+ */
+public final class ConsolidatorQueryExecThread extends Thread
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: ConsolidatorQueryExecThread.java 9540 2010-10-20 08:48:52Z MACDONP1 $";
+
+	/** Logger for this class */
+	private static final EquationLogger LOG = new EquationLogger(ConsolidatorQueryExecThread.class);
+
+	private final int threadId; // Thread ID which matches the session array index
+	private final Connection connection; // EquationStandardSession used to retrieve a connection to execute the query
+	private final String sqlQuery; // String representing the SQL query to be executed
+	private ResultSet resultSet = null; // ResultSet containing the result of the query that has been executed
+	private Statement statement = null;// Statement containing the ResultSet containing the result of the query that has been
+										// executed
+	private boolean completed = false; // Flag indicating completion
+
+	/**
+	 * 
+	 * @param threadId
+	 *            int - Thread ID which matches the session array index
+	 * @param session
+	 *            EquationStandardSession - Used to retrieve a connection to execute the query
+	 * @param sqlQuery
+	 *            String - Represents the SQL query to be executed
+	 * @param resultSets
+	 *            ResultSet - containing the result of the query that has been executed
+	 */
+	protected ConsolidatorQueryExecThread(final int threadId, final Connection connection, final String sqlQuery,
+					final ResultSet[] resultSets)
+	{
+		this.threadId = threadId;
+		this.connection = connection;
+		this.sqlQuery = sqlQuery;
+	}
+
+	/**
+	 * Thread run method
+	 */
+	@Override
+	public final void run()
+	{
+		try
+		{
+			if (LOG.isDebugEnabled())
+			{
+				LOG.debug(sqlQuery);
+			}
+			statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+			resultSet = statement.executeQuery(sqlQuery);
+		}
+		catch (SQLException e)
+		{
+			LOG.error(e);
+		}
+		completed = true;
+	}
+
+	/**
+	 * Getter method to return the thread ID
+	 * 
+	 * @return int - Thread ID
+	 */
+	public final int getThreadId()
+	{
+		return threadId;
+	}
+
+	/**
+	 * Getter method to return the ResultSet
+	 * 
+	 * @return ResultSet - containing the result of the query that has been executed
+	 */
+	public final ResultSet getResultSet()
+	{
+		return resultSet;
+	}
+
+	/**
+	 * Getter method to return the Statement
+	 * 
+	 * @return Statement - Statement containing the ResultSet containing the result of the query that has been executed
+	 */
+	public Statement getStatement()
+	{
+		return statement;
+	}
+
+	/**
+	 * @return true if the thread has completed, otherwise false
+	 */
+	public final boolean isCompleted()
+	{
+		return completed;
+	}
+}

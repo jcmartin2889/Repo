@@ -1,0 +1,52 @@
+package com.misys.equation.common.globalprocessing.calculators;
+
+import java.security.InvalidParameterException;
+
+public final class GlobalEnquiryFactory
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	public static enum Enquiry
+	{
+		GLOBAL_CASH_POSITION, GLOBAL_CASH_MOVEMENTS, FX_PAYREC, FX_LADDER, FX_GLOBAL_POS, FX_GLOBAL_GAP_POS, MM_GLOBAL_GAP_POS, MM_LADDER, MM_PAYREC
+	};
+
+	/**
+	 * This method returns the appropriate calculator instance depending on the Enquiry enum value. This is instance is always a
+	 * subclass of the AbstractGlobalProcessingEnquiry class which abstracts functionality common to all calculators.
+	 * 
+	 * @param sessionId
+	 *            String - The session ID of the current user
+	 * @param enquiry
+	 *            - The enquiry type to be instantiated
+	 * 
+	 * @return AbstractGlobalProcessingEnquiry - Calculator instance which is a subclass of AbstractGlobalProcessingEnquiry
+	 */
+	public final static AbstractGlobalProcessingEnquiry createEnquiryCalculator(final String sessionId, final Enquiry enquiry)
+	{
+		switch (enquiry)
+		{
+			case GLOBAL_CASH_POSITION:
+				return new GlobalCashPositionsEnquiry(sessionId);
+			case FX_PAYREC:
+				return new GlobalFXCurrencyPayReceiveEnquiry(sessionId);
+			case FX_LADDER:
+				return new GlobalFXCurrencyLadderEnquiry(sessionId);
+			case FX_GLOBAL_POS:
+				return new GlobalFXCurrencyPositionsEnquiry(sessionId);
+			case FX_GLOBAL_GAP_POS:
+				return new GlobalFXGapPositionsEnquiry(sessionId);
+			case GLOBAL_CASH_MOVEMENTS:
+				throw new InvalidParameterException("Enquiry " + enquiry.toString() + " is not supported");
+			case MM_GLOBAL_GAP_POS:
+				return new GlobalMMGapPositionsEnquiry(sessionId);
+			case MM_LADDER:
+				return new GlobalMMCurrencyLadderEnquiry(sessionId);
+			case MM_PAYREC:
+				return new GlobalMMCurrencyPayReceiveEnquiry(sessionId);
+			default:
+				throw new InvalidParameterException("Enquiry " + enquiry.toString() + " is not supported");
+		}
+	}
+}

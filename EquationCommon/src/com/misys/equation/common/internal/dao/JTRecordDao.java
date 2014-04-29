@@ -1,0 +1,242 @@
+package com.misys.equation.common.internal.dao;
+
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+
+import com.misys.equation.common.dao.IJTRecordDao;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.dao.beans.JTRecordDataModel;
+import com.misys.equation.common.internal.dao.mappers.JTRecordRowMapper;
+
+/**
+ * This the JT-Record Dao implementation. <br>
+ * This class is going to provide all back-end services for JT-Record.
+ * 
+ * @author deroset
+ */
+public class JTRecordDao extends AbsEquationDao implements IJTRecordDao
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: JTRecordDao.java 9725 2010-11-08 12:34:45Z MACDONP1 $";
+	public JTRecordDao()
+	{
+		super();
+	}
+
+	/**
+	 * This method will check if the current record was already set in the database. <br>
+	 * The Sql <code>SELECT COUNT(*)</code> query will be executed.
+	 * 
+	 * @param sqlWhereStatement
+	 *            - the WHERE clause of the SQL statement
+	 * 
+	 * @return true if the SQL statement returns a count >= 1
+	 */
+	public boolean checkIfThisJTRecordIsInTheDB(String sqlWhereStatement)
+	{
+		return checkIfThisRecordIsInTheDB(sqlWhereStatement);
+	}
+
+	/**
+	 * This method will check if the current record was already set in the database. <br>
+	 * The Sql <code>SELECT COUNT(*)</code> query will be executed.
+	 * 
+	 * @return true if the SQL statement returns a count >= 1
+	 */
+	public boolean checkIfThisJTRecordIsInTheDB()
+	{
+		return checkIfThisRecordIsInTheDB(getWhereConditionBaseOnIdRecord());
+	}
+
+	/**
+	 * This method will return an instance of the preset data model.
+	 * 
+	 * @return an instance of the preset data model.
+	 */
+	public JTRecordDataModel getMyDataModel()
+	{
+		JTRecordDataModel JTRecordDataModel = null;
+		AbsRecord record = getRecord();
+
+		if (record instanceof JTRecordDataModel)
+		{
+			JTRecordDataModel = (JTRecordDataModel) getRecord();
+
+		}
+		return JTRecordDataModel;
+	}
+
+	/**
+	 * This method will return a <code>String</code> which represents and sql where condition base on the record id.<br>
+	 * For example <code>id = getDataModel.getId()</code>
+	 * 
+	 * @return a <code>String</code> which represents and sql filter.
+	 */
+	@Override
+	protected String getWhereConditionBaseOnIdRecord()
+	{
+		StringBuilder whereCondition = new StringBuilder("JTRMNM='");
+		whereCondition.append(getMyDataModel().getReportMnemonic());
+		whereCondition.append("' ");
+		return whereCondition.toString();
+	}
+
+	/**
+	 * This method will return a <code>String</code> which represents and sql where condition base on the run phase.<br>
+	 * For example <code>id = getDataModel.getId()</code>
+	 * 
+	 * @return a <code>String</code> which represents and sql filter.
+	 */
+	public String getWhereConditionBaseOnRunPhase()
+	{
+		StringBuilder whereCondition = new StringBuilder("JTPHS='");
+		whereCondition.append(getMyDataModel().getRunPhase());
+		whereCondition.append("' ");
+		return whereCondition.toString();
+	}
+
+	/**
+	 * Returns a list of name and ? pairs in the format of:
+	 * <p>
+	 * field1=?, field2=?, field3=?, ...
+	 * 
+	 * @return a list of name and ? pairs
+	 */
+	@Override
+	protected String getParameterizedFields()
+	{
+		String fields = " JTRMNM=?, JTPHS=?, JTRPD=? ";
+		return fields;
+	}
+
+	/**
+	 * Returns a list of the filed's name
+	 * 
+	 * @return a list of the filed's name
+	 */
+	@Override
+	protected String getFields()
+	{
+		String fields = " JTRMNM, JTPHS, JTRPD ";
+		return fields;
+	}
+
+	/**
+	 * Returns a list of the filed's parameters
+	 * 
+	 * @return the list of the filed's parameters
+	 */
+	@Override
+	protected String getParameters()
+	{
+		String fields = " ?, ?, ? ";
+		return fields;
+	}
+
+	/**
+	 * This method create an array that contains the fields values and Its types. <br>
+	 * It will be used by jdbc <code>PreparedStatement</code>
+	 * 
+	 * @return An array that contains the fields values and Its types.
+	 */
+	@Override
+	public Object[] getParameterizedFieldsValues()
+	{
+		JTRecordDataModel dataModel = getMyDataModel();
+
+		Object[] object = new Object[] { dataModel.getReportMnemonic(), dataModel.getRunPhase(), dataModel.getReportDescription(), };
+
+		return object;
+	}
+
+	/**
+	 * This method is going execute a Sql query using the filter criteria.
+	 * 
+	 * @param whereClause
+	 *            this is the <code>String</code> that represent the sql filter.
+	 * @return a <code>List</code> which contains a records
+	 */
+	public List<AbsRecord> getRecordBy(String whereClause)
+	{
+		return getRecordBy(whereClause, new JTRecordRowMapper());
+	}
+
+	/**
+	 * This method is going to get all records.
+	 * 
+	 * @return a <code>List</code> which contains a records
+	 */
+	public List<AbsRecord> getRecords()
+	{
+		return getRecordBy(null, new JTRecordRowMapper());
+	}
+
+	/**
+	 * This method is going to return a <code>JTRecordDataModel</code> base on JTFID
+	 * 
+	 * @return a <code>JTRecordDataModel</code> base on JTFID
+	 */
+	public JTRecordDataModel getJTRecord()
+	{
+		JTRecordDataModel JTRecordDataModel = null;
+		List<AbsRecord> results = getRecordBy(getWhereConditionBaseOnIdRecord(), new JTRecordRowMapper());
+
+		if (!results.isEmpty())
+		{
+
+			JTRecordDataModel = (JTRecordDataModel) results.get(0);
+		}
+
+		return JTRecordDataModel;
+	}
+
+	/**
+	 * This method will return a Map of JT records
+	 * 
+	 * @return a map of the data model records keyed by the field id
+	 */
+	@SuppressWarnings("unchecked")
+	public Map<String, JTRecordDataModel> getJTRecordsMap()
+	{
+		StringBuilder sqlBuilder = new StringBuilder(1024);
+		List<JTRecordDataModel> dataModels = null;
+		sqlBuilder.append("SELECT ");
+		sqlBuilder.append(getFields());
+		sqlBuilder.append(" FROM ");
+		sqlBuilder.append(getTableName());
+		sqlBuilder.append(" ORDER BY JTRMNM ASC");
+		JdbcTemplate select = getJdbcTemplate();
+		dataModels = select.query(sqlBuilder.toString(), new JTRecordRowMapper());
+
+		return createHashTableModel(dataModels);
+	}
+
+	/**
+	 * This is a internal helper method which create a <code>Hashtable</code> <br>
+	 * which contains a record of <code>JTRecordDataModel</code>
+	 * 
+	 * @param dataModels
+	 *            record of <code>JTRecordDataModel</code>.
+	 * @return a <code>Hashtable</code> which contains a <code>JTRecordDataModel</code> objects.
+	 */
+	private Hashtable<String, JTRecordDataModel> createHashTableModel(List<JTRecordDataModel> dataModels)
+	{
+		Hashtable<String, JTRecordDataModel> modelTable = new Hashtable<String, JTRecordDataModel>();
+
+		for (JTRecordDataModel record : dataModels)
+		{
+			modelTable.put(record.getReportMnemonic(), record);
+		}
+
+		return modelTable;
+	}
+
+	@Override
+	protected Hashtable<String, AbsRecord> createHashtableRecordModel(List<AbsRecord> records)
+	{
+		return null;
+	}
+}

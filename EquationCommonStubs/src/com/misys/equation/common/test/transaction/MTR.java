@@ -1,0 +1,103 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseFully;
+
+/**
+ * Equation test cases for Maintain function
+ */
+public class MTR extends EquationTestCaseFully
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: MTR.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	String programName = "C89FRR";
+	String optionId = "MTR";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		retrieveBeforeCancel = false;
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZTCD", "TRA"); // Transaction code (3A)
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	@Override
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZTCN", "DESC"); // Transaction code name (35A)
+		transaction.setFieldValue("GZDCI", "DR"); // Debit/Credit (1A)
+		transaction.setFieldValue("GZTCM", "TRA"); // Transaction code mnemonic (3A)
+		transaction.setFieldValue("GZTC1", "001"); // Suffix range 1 low (3A)
+		transaction.setFieldValue("GZTC2", "999"); // Suffix range 1 high (3A)
+		transaction.setFieldValue("GZTCDR", "999"); // Reversal trans code (3A)
+		transaction.setFieldValue("GZTAP", "N"); // Transaction advice (1A)
+		transaction.setFieldValue("GZPMA", "N"); // Valid for movement a/c (1A)
+		transaction.setFieldValue("GZPTA", "N"); // Valid for term accounts (1A)
+		transaction.setFieldValue("GZPEA", "N"); // Valid for exchange a/c (1A)
+		transaction.setFieldValue("GZPCA", "N"); // Valid for contingent a/c (1A)
+		transaction.setFieldValue("GZPIA", "N"); // Valid for internal a/c (1A)
+		transaction.setFieldValue("GZRVT", "N"); // Reversal trans code (1A)
+		transaction.setFieldValue("GZDDB", "N"); // Add default days for Dr (1A)
+		transaction.setFieldValue("GZPTN", "N"); // Print trans code name (1A)
+		transaction.setFieldValue("GZSUD", "N"); // Suppress update DLM (1A)
+		transaction.setFieldValue("GZSTR", "N"); // Turnover stats reversal (1A)
+		transaction.setFieldValue("GZDFA", "N"); // Debit if funds available (1A)
+		transaction.setFieldValue("GZBTR", "N"); // Bulking allowed (1A)
+		transaction.setFieldValue("GZCTC", "N"); // Stopped cheque validation (1A)
+		transaction.setFieldValue("GZMID", "N"); // Multi-item deposit (1A)
+		transaction.setFieldValue("GZVXD", "N"); // Valid for EXIMBILLS deals (1A)
+	}
+
+	/**
+	 * Setup the mandatory fields (maintain mode)
+	 */
+	@Override
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZTCN", "DESC 1"); // Transaction code name (35A)
+	}
+
+}

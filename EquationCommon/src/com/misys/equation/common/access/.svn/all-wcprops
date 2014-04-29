@@ -1,0 +1,389 @@
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/repos/bfeq_src/!svn/ver/17823/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access
+END
+EquationPVDecodeMetaData.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationPVDecodeMetaData.java
+END
+EquationDataStructure.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationDataStructure.java
+END
+EquationStandardReport.java
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationStandardReport.java
+END
+Equation38Session.java
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/Equation38Session.java
+END
+EquationRecords.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/17691/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationRecords.java
+END
+AbstractEquationSessionPool.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/AbstractEquationSessionPool.java
+END
+IFunctionLayerCallback.java
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/17823/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/IFunctionLayerCallback.java
+END
+SessionLimitConfiguration.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/SessionLimitConfiguration.java
+END
+EquationStandardListValidation.java
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationStandardListValidation.java
+END
+EquationStandardEnquiry.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationStandardEnquiry.java
+END
+EquationUnit.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/repos/bfeq_src/!svn/ver/17823/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationUnit.java
+END
+EquationWidget.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationWidget.java
+END
+EquationDataStructureRepeatingData.java
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationDataStructureRepeatingData.java
+END
+EquationDataListTVR20R.java
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationDataListTVR20R.java
+END
+EquationStandardAPIManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationStandardAPIManager.java
+END
+EquationStandardQuery.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationStandardQuery.java
+END
+EquationStandardMultipleValidation.java
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationStandardMultipleValidation.java
+END
+EquationDataListHGR01R.java
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationDataListHGR01R.java
+END
+EquationConsolidator.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationConsolidator.java
+END
+EquationStandardSQLPagingList.java
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/17302/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationStandardSQLPagingList.java
+END
+EquationStandardSession.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/17621/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationStandardSession.java
+END
+EquationDataList.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationDataList.java
+END
+Equation4Session.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/Equation4Session.java
+END
+package.html
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/package.html
+END
+IDataList.java
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/IDataList.java
+END
+EquationStandardTable.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/17189/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationStandardTable.java
+END
+EquationDataSQLPagingList.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/17583/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationDataSQLPagingList.java
+END
+EquationSessionPool.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/repos/bfeq_src/!svn/ver/17189/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationSessionPool.java
+END
+ConsolidatorQueryExecThread.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/ConsolidatorQueryExecThread.java
+END
+EquationUser.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/repos/bfeq_src/!svn/ver/17515/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationUser.java
+END
+EquationDB2Table.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationDB2Table.java
+END
+EquationTransactionManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationTransactionManager.java
+END
+GlobalProcessingLogonUserAction.java
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/GlobalProcessingLogonUserAction.java
+END
+EquationSystem.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/17621/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationSystem.java
+END
+EquationStandardObjectHelper.java
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationStandardObjectHelper.java
+END
+AbsEquationStandardSession.java
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/17621/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/AbsEquationStandardSession.java
+END
+EquationFieldDefinition.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationFieldDefinition.java
+END
+EquationConnectionWrapper.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/17506/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationConnectionWrapper.java
+END
+EquationPVEditorValidation.java
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationPVEditorValidation.java
+END
+EquationLogin.java
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationLogin.java
+END
+EquationStandardListEnquiry.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/17189/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationStandardListEnquiry.java
+END
+EquationStandardValidation.java
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationStandardValidation.java
+END
+EquationPVData.java
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationPVData.java
+END
+EquationStandardQueryList.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationStandardQueryList.java
+END
+EquationGroupConfiguration.java
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationGroupConfiguration.java
+END
+IListTransaction.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/IListTransaction.java
+END
+EquationPVMetaData.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/17585/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationPVMetaData.java
+END
+NonJndiSessionPool.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/NonJndiSessionPool.java
+END
+EquationPVFieldMetaData.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationPVFieldMetaData.java
+END
+EquationScreenDataStructure.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationScreenDataStructure.java
+END
+EquationStandardGSListTransaction.java
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationStandardGSListTransaction.java
+END
+EquationCommonContext.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/17823/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationCommonContext.java
+END
+IEquationStandardObject.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/IEquationStandardObject.java
+END
+EquationStandardListTable.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationStandardListTable.java
+END
+EquationPre38Session.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationPre38Session.java
+END
+EquationStandardTransaction.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationStandardTransaction.java
+END
+IEquationSQLPagingListCallback.java
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/17303/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/IEquationSQLPagingListCallback.java
+END
+EquationData.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationData.java
+END
+EquationConfigurationPropertiesBean.java
+K 25
+svn:wc:ra_dav:version-url
+V 152
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationConfigurationPropertiesBean.java
+END
+UnitNotAvailableException.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/UnitNotAvailableException.java
+END
+UnitPropertiesBean.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/UnitPropertiesBean.java
+END
+EquationConsolidatedTable.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationConsolidatedTable.java
+END
+EquationDataStructureData.java
+K 25
+svn:wc:ra_dav:version-url
+V 142
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/EquationDataStructureData.java
+END
+GlobalProcessingApiExecuter.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/access/GlobalProcessingApiExecuter.java
+END

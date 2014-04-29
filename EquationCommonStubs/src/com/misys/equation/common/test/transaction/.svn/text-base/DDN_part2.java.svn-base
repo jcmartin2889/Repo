@@ -1,0 +1,78 @@
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseMaintainCancel;
+
+/**
+ * Equation test cases for Add/Maintain Default Nostros
+ */
+public class DDN_part2 extends EquationTestCaseMaintainCancel
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	String programName = "G06FRR";
+	String optionId = "DDN";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		retrieveBeforeCancel = false;
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup an existing key fields only
+	 */
+	@Override
+	public void setupExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZIMG", "A"); // Journal image
+		transaction.setFieldValue("GZBRNM", "ACC1"); // Branch mnemonic
+		transaction.setFieldValue("GZCCY", "GBP"); // Currency mnemonic
+		transaction.setFieldValue("GZING", "FX"); // Instruction group
+		transaction.setFieldValue("GZNST", "BARGBP"); // Nostro mnemonic
+	}
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZBRNM", "ACD1"); // Branch mnemonic
+		transaction.setFieldValue("GZCCY", "GBP"); // Currency mnemonic
+		transaction.setFieldValue("GZING", "FX"); // Instruction group
+	}
+
+	/**
+	 * Setup the mandatory fields (maintain mode)
+	 */
+	@Override
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZNST", "GBP P"); // Nostro mnemonic
+	}
+
+}

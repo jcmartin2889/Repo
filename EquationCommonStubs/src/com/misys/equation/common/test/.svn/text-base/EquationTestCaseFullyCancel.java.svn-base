@@ -1,0 +1,53 @@
+package com.misys.equation.common.test;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.access.IEquationStandardObject;
+
+/**
+ * Test cases for Fully functional function
+ */
+abstract public class EquationTestCaseFullyCancel extends EquationTestCase
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	protected boolean retrieveBeforeCancel = false;
+
+	// ------------------------------------------------------------------------ Abstract methods
+	abstract public void setupExistKeyFields(EquationStandardTransaction transaction);
+	abstract public EquationStandardTransaction getTransaction() throws Exception;
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+	}
+
+	// ------------------------------------------------------------------------ Test cases
+
+	/**
+	 * Test: cancel mode: existing record<br>
+	 * Expected result: Success<br>
+	 * 
+	 * @throws Exception
+	 */
+	public void testCancel_ExistingRecord() throws Exception
+	{
+		System.out.println("testCancel_ExistingRecord()");
+		EquationStandardTransaction transaction = getTransaction();
+		transaction.setMode(IEquationStandardObject.FCT_DEL);
+		setupExistKeyFields(transaction);
+
+		// retrieve before cancelling?
+		if (retrieveBeforeCancel)
+		{
+			session.retrieveEquationTransaction(transaction);
+		}
+
+		applyTransaction(transaction, true);
+	}
+
+}

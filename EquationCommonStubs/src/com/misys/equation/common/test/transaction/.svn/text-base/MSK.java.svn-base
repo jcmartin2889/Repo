@@ -1,0 +1,90 @@
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseFully;
+
+/**
+ * Equation test cases for Maintain function
+ */
+public class MSK extends EquationTestCaseFully
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	String programName = "B04FRR";
+	String optionId = "MSK";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		retrieveBeforeCancel = false;
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZCCD", "TS"); // Charge code (2A)
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	@Override
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZSDE", "Test charge code"); // Description of charge category (35A)
+		transaction.setFieldValue("GZAN", "900402"); // Basic part of account number (6A)
+		transaction.setFieldValue("GZSNA", "@TS"); // Short name abbreviation (3A)
+		transaction.setFieldValue("GZPAT", "YP"); // Account type (2A)
+		transaction.setFieldValue("GZPAC", "IN"); // Analysis code (2A)
+		transaction.setFieldValue("GZPCT", "IB"); // Customer type (2A)
+		transaction.setFieldValue("GZDRT", "260"); // Debit transaction code (3A)
+		transaction.setFieldValue("GZCRT", "760"); // Credit transaction code (3A)
+		transaction.setFieldValue("GZEXPL", "N"); // Exclude from P&L statistics? (1A)
+		transaction.setFieldValue("GZTAX", "N"); // Tax processing? (1A)
+		transaction.setFieldValue("GZAMOR", "N"); // Amortise? (1A)
+		transaction.setFieldValue("GZRFND", "N"); // Refund unearned charge on RL payoff? (1A)
+		transaction.setFieldValue("GZACCR", "N"); // Accrued manual charge? (1A)
+		transaction.setFieldValue("GZRECC", "N"); // Recurring? (1A)
+		transaction.setFieldValue("GZACRV", "N"); // Deferred charge (1A)
+		transaction.setFieldValue("GZIAS", "N"); // IAS amortised? (1A)
+	}
+
+	/**
+	 * Setup the mandatory fields (maintain mode)
+	 */
+	@Override
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZSDE", "Test charge code (M)"); // Description of charge category (35A)
+		transaction.setFieldValue("GZAN", "900403"); // Basic part of account number (6A)
+		transaction.setFieldValue("GZTAX", "Y"); // Tax processing? (1A)
+		transaction.setFieldValue("GZACRV", "Y"); // Deferred charge (1A)
+	}
+
+}

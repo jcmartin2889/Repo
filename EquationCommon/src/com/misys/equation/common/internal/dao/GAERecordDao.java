@@ -1,0 +1,268 @@
+package com.misys.equation.common.internal.dao;
+
+import java.util.Hashtable;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.dao.IGAERecordDao;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.dao.beans.GAERecordDataModel;
+import com.misys.equation.common.internal.dao.mappers.GAERecordRowMapper;
+import com.misys.equation.common.internal.dao.mappers.KeyedListRowMapper;
+
+/**
+ * This the GAE-Record Dao implementation. <br>
+ * This class is going to provide all back-end services for GAE-Record.
+ * 
+ * @author deroset
+ */
+public class GAERecordDao extends AbsEquationDao implements IGAERecordDao
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: GAERecordDao.java 8910 2010-08-26 15:25:20Z MACDONP1 $";
+
+	// default constructor
+	public GAERecordDao()
+	{
+		super();
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<GAERecordDataModel> getGAERecordDataModel(String whereClause)
+	{
+		StringBuilder sqlBuilder = new StringBuilder(1024);
+		List<GAERecordDataModel> dataModels = null;
+
+		sqlBuilder.append("SELECT GAEFID, GAEFPR, GAEFNM, GAEEFF, GAEUDEF, GAEPCI, GAEEIA, GAEENC, GAEAID, GAEAPIR, GAEDSPF, GAESCN, GAEATYP, GAESCND, GAEAPIA, GAEAPIM, GAEAPID, GAELSF, GAELRR, GAESAE, GAEE247, GAEAPIE, GAEKEY, GAECPY, GAEDSN, GAEPMT, GAEPPV, GAEMAPO, GAEJFH, GAEJFD, GAERDOFF, GAERDLEN FROM GAEPF WHERE ");
+		sqlBuilder.append(whereClause);
+		JdbcTemplate select = getJdbcTemplate();
+		dataModels = select.query(sqlBuilder.toString(), new GAERecordRowMapper());
+		return dataModels;
+	}
+
+	/**
+	 * This method is going execute a Sql query using the filter criteria.
+	 * 
+	 * @param whereClause
+	 *            this is the <code>String</code> that represent the sql filter.
+	 * @return a <code>Hashtable</code> which contains a record of <code>GAERecordDataModel</code>
+	 */
+	public Hashtable<String, GAERecordDataModel> getGAERecordKeyedByApiId(String whereClause)
+	{
+		List<GAERecordDataModel> dataModels = getGAERecordDataModel(whereClause);
+		Hashtable<String, GAERecordDataModel> modelTable = new Hashtable<String, GAERecordDataModel>();
+		for (GAERecordDataModel record : dataModels)
+		{
+			modelTable.put(record.getApiId(), record);
+		}
+		return modelTable;
+	}
+
+	/**
+	 * This method is going execute a Sql query using the filter criteria.
+	 * 
+	 * @param whereClause
+	 *            this is the <code>String</code> that represent the sql filter.
+	 * @return a <code>Hashtable</code> which contains a record of <code>GAERecordDataModel</code>
+	 */
+	public Hashtable<String, GAERecordDataModel> getGAERecordKeyedByScreenHandler(String whereClause)
+	{
+		List<GAERecordDataModel> dataModels = getGAERecordDataModel(whereClause);
+		Hashtable<String, GAERecordDataModel> modelTable = new Hashtable<String, GAERecordDataModel>();
+		for (GAERecordDataModel record : dataModels)
+		{
+			modelTable.put(record.getScreenHandler(), record);
+		}
+		return modelTable;
+	}
+
+	/**
+	 * This method is going to get all records.
+	 * 
+	 * @return a <code>List</code> which contains GAE records
+	 */
+	public List<AbsRecord> getRecords()
+	{
+		return getRecordBy(null, new GAERecordRowMapper());
+	}
+
+	/**
+	 * Read the GAE and return a LinkedHashMap which has the Program root as the key and the description as the 'value'.
+	 * 
+	 * Note that unlike the FindByWhereClause method, this does not actually return GAERecords
+	 * 
+	 * The returned collection excludes duplicate program roots (only the first is added).
+	 * 
+	 * @param whereClause
+	 *            this is the <code>String</code> that represent the sql filter.
+	 * @return Map<String>
+	 */
+	@SuppressWarnings("unchecked")
+	public Map<String, String> findByWhereClauseOrderByRoot(String whereClause)
+	{
+		StringBuilder sqlBuilder = new StringBuilder(1024);
+		List<GAERecordDataModel> dataModels = null;
+
+		sqlBuilder.append("SELECT GAEAPIR, GAEFNM FROM GAEPF WHERE ");
+		sqlBuilder.append(whereClause);
+		sqlBuilder.append(" ORDER BY GAEAPIR ASC");
+		JdbcTemplate select = getJdbcTemplate();
+		dataModels = select.query(sqlBuilder.toString(), new KeyedListRowMapper());
+		return createLinkedHashMap(dataModels);
+	}
+
+	/**
+	 * This method is going to return a <code>GARecordDataModel</code> base on GAFID
+	 * 
+	 * @return a <code>GARecordDataModel</code> base on GAFID
+	 */
+	public GAERecordDataModel getGAERecord()
+	{
+		GAERecordDataModel gAERecordDataModel = null;
+		List<AbsRecord> results = getRecordBy(getWhereConditionBaseOnIdRecord(), new GAERecordRowMapper());
+
+		if (!results.isEmpty())
+		{
+
+			gAERecordDataModel = (GAERecordDataModel) results.get(0);
+		}
+
+		return gAERecordDataModel;
+	}
+
+	/**
+	 * This method will return an instance of the preset data model.
+	 * 
+	 * @return an instance of the preset data model.
+	 */
+	public GAERecordDataModel getMyDataModel()
+	{
+
+		GAERecordDataModel gaeRecordDataModel = null;
+		AbsRecord record = getRecord();
+
+		if (record instanceof GAERecordDataModel)
+		{
+			gaeRecordDataModel = (GAERecordDataModel) getRecord();
+		}
+		return gaeRecordDataModel;
+	}
+
+	public List<AbsRecord> getRecordBy(String whereClause)
+	{
+		return getRecordBy(whereClause, new GAERecordRowMapper());
+	}
+
+	/**
+	 * Return the list of the field names
+	 * 
+	 * @return the list of the field names
+	 */
+	@Override
+	protected String getFields()
+	{
+		String fields = " GAEFID, GAEFPR, GAEFNM, GAEEFF, GAEUDEF, GAEPCI, GAEEIA, GAEENC, GAEAID, GAEAPIR, GAEDSPF, GAESCN, GAEATYP, GAESCND, GAEAPIA, GAEAPIM, GAEAPID, GAELSF, GAELRR, GAESAE, GAEE247, GAEAPIE, GAEKEY, GAECPY, GAEDSN, GAEPMT, GAEPPV, GAEMAPO, GAEJFH, GAEJFD, GAERDOFF, GAERDLEN ";
+		return fields;
+	}
+
+	@Override
+	protected String getParameterizedFields()
+	{
+		String fields = " GAEFID= ?, GAEFPR= ?, GAEFNM= ?, GAEEFF= ?, GAEUDEF= ?, GAEPCI= ?, GAEEIA= ?, GAEENC= ?, GAEAID= ?, GAEAPIR= ?, GAEDSPF= ?, GAESCN= ?, GAEATYP= ?, GAESCND= ?, GAEAPIA= ?, GAEAPIM= ?, GAEAPID= ?, GAELSF= ?, GAELRR= ?, GAESAE= ?, GAEE247= ?, GAEAPIE= ?, GAEKEY= ?, GAECPY= ?, GAEDSN= ?, GAEPMT= ?, GAEPPV= ?, GAEMAPO= ?, GAEJFH= ?, GAEJFD= ?, GAERDOFF= ?, GAERDLEN= ? ";
+		return fields;
+	}
+
+	@Override
+	protected Object[] getParameterizedFieldsValues()
+	{
+		GAERecordDataModel gaeRecordDataModel = getMyDataModel();
+		Object[] objects = new Object[] { gaeRecordDataModel.getFunctionId(), gaeRecordDataModel.getProgramName(),
+						gaeRecordDataModel.getDescription(), gaeRecordDataModel.getUserDefinedKeysAllowed(),
+						gaeRecordDataModel.getUserDefinedAndPromptable(), gaeRecordDataModel.getPcProgramName(),
+						gaeRecordDataModel.getExtendedInputAllowed(), gaeRecordDataModel.getEnhancement(),
+						gaeRecordDataModel.getApiId(), gaeRecordDataModel.getProgramRoot(), gaeRecordDataModel.getDisplayFile(),
+						gaeRecordDataModel.getScreenHandler(), gaeRecordDataModel.getType(),
+						gaeRecordDataModel.getScreenHandlerDescription(), gaeRecordDataModel.getSupportsAdd(),
+						gaeRecordDataModel.getSupportsMaintain(), gaeRecordDataModel.getSupportsDelete(),
+						gaeRecordDataModel.getListSizeFixed(), gaeRecordDataModel.getListRetrievalRequired(),
+						gaeRecordDataModel.getStandardAPIEnhanced(), gaeRecordDataModel.getEnabledFor24x7(),
+						gaeRecordDataModel.getEnhancedAPIEnhanced(), gaeRecordDataModel.getKeys(),
+						gaeRecordDataModel.getCopysourceName(), gaeRecordDataModel.getDatastructureName(),
+						gaeRecordDataModel.getPromptable(), gaeRecordDataModel.getPrimaryPVModule(),
+						gaeRecordDataModel.getMapperOnly(), gaeRecordDataModel.getHeaderJournalFileName(),
+						gaeRecordDataModel.getDetailJournalFileName(), gaeRecordDataModel.getRepeatingDataOffset(),
+						gaeRecordDataModel.getRepeatingDataOffset(), };
+
+		return objects;
+	}
+	@Override
+	protected String getWhereConditionBaseOnIdRecord()
+	{
+		StringBuilder whereCondition = new StringBuilder("GAEAID='");
+		whereCondition.append(getMyDataModel().getApiId());
+		whereCondition.append("' ");
+
+		return whereCondition.toString();
+	}
+
+	@Override
+	protected String getParameters()
+	{
+		// 27 fields....
+		return "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?";
+	}
+
+	@Override
+	protected Hashtable<String, AbsRecord> createHashtableRecordModel(List<AbsRecord> records)
+	{
+		Hashtable<String, AbsRecord> results = null;
+
+		GAERecordDataModel gaeRecordDataModel;
+
+		if (!records.isEmpty())
+		{
+
+			results = new Hashtable<String, AbsRecord>();
+		}
+		else
+		{
+
+			return null;
+		}
+
+		for (AbsRecord absRecord : records)
+		{
+			gaeRecordDataModel = (GAERecordDataModel) absRecord;
+			results.put(gaeRecordDataModel.getFunctionId(), gaeRecordDataModel);
+		}
+
+		return results;
+	}
+
+	/**
+	 * 
+	 * @param dataModels
+	 * @return
+	 */
+	private LinkedHashMap<String, String> createLinkedHashMap(List<GAERecordDataModel> dataModels)
+	{
+		LinkedHashMap<String, String> results = new LinkedHashMap<String, String>();
+
+		for (GAERecordDataModel record : dataModels)
+		{
+			// Use the root as the key
+			String root = record.getProgramRoot();
+			// Exclude records where the program root is blank, is W90F (an EQ4 service) or has been added already:
+			if (root.length() > 0 && !root.equals(EquationStandardTransaction.EDF_ROOT) && !results.containsKey(root))
+			{
+				results.put(root, record.getDescription());
+			}
+		}
+		return results;
+	}
+
+}

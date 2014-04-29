@@ -1,0 +1,239 @@
+// ------------------------------------------------------------------------------
+// Copyright Misys IBS
+//
+// Owner: Des Middlemass
+//
+// Class: EQField: Abstract class to store the state for an Equation field
+// ------------------------------------------------------------------------------
+package com.misys.equation.common.internal.eapi.core;
+
+/***********************************************************************************************************************************
+ * Class for storing the defintion of a field.
+ * <P>
+ * 
+ * @author Misys International Banking Systems Ltd.
+ */
+public class EQFieldDefinition implements java.io.Serializable
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/*******************************************************************************************************************************
+	 * Copyright <a href="http://www.misys.com"> Misys International Banking Systems Ltd, 2006 </a>
+	 */
+	public static final String copyright = "Copyright Misys International Banking Systems Ltd, 2006";
+	// The data set the field belongs to
+	// 'F' fixed
+	// 'V' variable/list/row
+	protected char dataSet;
+	protected String fieldName;
+	// Whether the field is input capable
+	protected boolean inputCapable;
+	// Whether the field is a key field
+	protected boolean keyField;
+	// Data type
+	// 'A' String
+	// 'S' Integer
+	// 'P' Packed
+	protected char dataType;
+	// Decimal places
+	protected int decimalPlaces;
+	// Maximum field value length in String form.
+	// Numbers have been addjusted so size is
+	// number of digits plus 2 extra characters for decimal place and sign.
+	protected int maxSize;
+	// Offset in the data set image
+	protected int dataSetImageOffset;
+	// Field Reference
+	protected String fieldReference;
+	// Field Description
+	protected String fieldDescription;
+	// Whether the field must be all uppercase
+	protected boolean upperCaseOnly;
+	// Whether the field supports double byte characters
+	protected boolean doubleByteSupported;
+	// Whether the field represents a before image for a list
+	protected boolean listBeforeImage;
+	/*******************************************************************************************************************************
+	 * Default Constructor.
+	 */
+	@SuppressWarnings("unused")
+	private EQFieldDefinition()
+	{
+	}
+	/*******************************************************************************************************************************
+	 * Constructs a field definition from its characteristics.
+	 * <P>
+	 * 
+	 * @param dataSet
+	 *            the set/group the field belongs to
+	 * @param fieldName
+	 *            the name (id) for the field
+	 * @param inputCapable
+	 *            whether the field value can be changed
+	 * @param maxSize
+	 *            the maximum number of characters supported for the field's value
+	 * @param upperCaseOnly
+	 *            whether the field value only supports upper case characters, i.e. not lower or mixed case.
+	 * @param doubleByteSupported
+	 *            whether the field value supports double byte characters.
+	 * @param fieldDescription
+	 *            the description of the field
+	 * @param fieldReference
+	 *            the fieldReference for the field
+	 * @param dataType
+	 *            the internal type for the field
+	 * @param decimalPlaces
+	 *            the number of decimal places supported for the field's value
+	 * @param keyField
+	 *            whether the field is a key field for the Enquiry/Transaction/Prompt
+	 * @param listBeforeImage
+	 *            whether the field contains the before image for a row
+	 * @param dataSetImageOffset
+	 *            the field's offset in an internal data structure for the data set
+	 * 
+	 */
+	protected EQFieldDefinition(char dataSet, String fieldName, boolean inputCapable, int maxSize, boolean upperCaseOnly,
+					boolean doubleByteSupported, String fieldDescription, String fieldReference, char dataType, int decimalPlaces,
+					boolean keyField, boolean listBeforeImage, int dataSetImageOffset)
+	{
+		this.dataSet = dataSet;
+		this.fieldName = fieldName;
+		this.inputCapable = inputCapable;
+		this.maxSize = maxSize;
+		this.upperCaseOnly = upperCaseOnly;
+		this.doubleByteSupported = doubleByteSupported;
+		this.fieldDescription = fieldDescription;
+		this.fieldReference = fieldReference;
+		this.dataType = dataType;
+		this.decimalPlaces = decimalPlaces;
+		this.keyField = keyField;
+		this.listBeforeImage = listBeforeImage;
+		this.dataSetImageOffset = dataSetImageOffset;
+	}
+	/*******************************************************************************************************************************
+	 * Get the name (id) of the field.
+	 * <P>
+	 * 
+	 * @return the field name.
+	 */
+	public String getFieldName()
+	{
+		return fieldName;
+	}
+	/*******************************************************************************************************************************
+	 * Determine whether the field is input capable.
+	 * <P>
+	 * 
+	 * @return whether the field's value can be input.
+	 */
+	public boolean isInputCapable()
+	{
+		return inputCapable;
+	}
+	/*******************************************************************************************************************************
+	 * Determine whether the field is a key field.
+	 * <P>
+	 * 
+	 * @return whether the field is a key field.
+	 */
+	public boolean isKeyField()
+	{
+		return keyField;
+	}
+	/*******************************************************************************************************************************
+	 * Determine whether the field represents a list before image.
+	 * <P>
+	 * 
+	 * @return whether the field represents a list before image.
+	 */
+	protected boolean isListBeforeImage()
+	{
+		return listBeforeImage;
+	}
+	/*******************************************************************************************************************************
+	 * Get the name of the reference field for this field.
+	 * <P>
+	 * 
+	 * @return the field reference for this field.
+	 */
+	public String getFieldReference()
+	{
+		return fieldReference;
+	}
+	/*******************************************************************************************************************************
+	 * Get the maximum number of characters supported for the field's string value.
+	 * <P>
+	 * 
+	 * @return the maximum size of a field. This is not the length of it's value.
+	 */
+	public int getMaxSize()
+	{
+		return maxSize;
+	}
+	/*******************************************************************************************************************************
+	 * Get the offset of the field in the data set image
+	 * <P>
+	 * 
+	 * @return the maximum size of a field. This is not the length of it's value.
+	 */
+	protected int getDataSetImageOffset()
+	{
+		return dataSetImageOffset;
+	}
+	/*******************************************************************************************************************************
+	 * Determine whether the field only supports upper case characters for its value.
+	 * <P>
+	 * 
+	 * @return whether the field's value should be UpperCaseOnly.
+	 */
+	public boolean isUpperCaseOnly()
+	{
+		return upperCaseOnly;
+	}
+	/*******************************************************************************************************************************
+	 * Determine whether the field supports double byte characters in its value.
+	 * <P>
+	 * 
+	 * @return whether the field's value supports double byte characters.
+	 */
+	public boolean isDoubleByteSupported()
+	{
+		return doubleByteSupported;
+	}
+	/*******************************************************************************************************************************
+	 * Get the data type of the field.
+	 * <P>
+	 * 
+	 * @return the data type for this field.
+	 */
+	protected char getDataType()
+	{
+		return dataType;
+	}
+	/*******************************************************************************************************************************
+	 * Get the number of decimal places for this field.
+	 * <P>
+	 * 
+	 * @return the number of decimal places for this field.
+	 */
+	protected int getDecimalPlaces()
+	{
+		return decimalPlaces;
+	}
+	/*******************************************************************************************************************************
+	 * Get the description of this field.
+	 * <P>
+	 * Whether the field description is stored is dependent on a configuration property.
+	 * <P>
+	 * 
+	 * @return the description of this field. This can be null.
+	 */
+	public String getFieldDescription()
+	{
+		return fieldDescription;
+	}
+}

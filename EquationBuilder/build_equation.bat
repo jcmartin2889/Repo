@@ -1,0 +1,1 @@
+ant package_equation > #build_output.txt

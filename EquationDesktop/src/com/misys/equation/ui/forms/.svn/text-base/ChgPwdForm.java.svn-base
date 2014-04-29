@@ -1,0 +1,170 @@
+package com.misys.equation.ui.forms;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.struts.action.ActionErrors;
+import org.apache.struts.action.ActionForm;
+import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.ActionMessage;
+
+public class ChgPwdForm extends ActionForm
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String systemName;
+	private String userId;
+	private String oldPassword;
+	private String newPassword;
+	private String newPassword2;
+	private String unit;
+	private String isMainPage;
+	private String optId;
+	private String optParm;
+	private String workstationId;
+	private String style;
+	public void setUserId(String userId)
+	{
+		this.userId = userId.trim().toUpperCase();
+	}
+	public void setOldPassword(String oldPassword)
+	{
+		this.oldPassword = oldPassword;
+	}
+	public void setSystemName(String systemName)
+	{
+		this.systemName = systemName.trim().toUpperCase();
+	}
+	public String getUserId()
+	{
+		return userId;
+	}
+	public String getOldPassword()
+	{
+		return oldPassword;
+	}
+	public String getSystemName()
+	{
+		return systemName;
+	}
+	public String getNewPassword()
+	{
+		return newPassword;
+	}
+	public void setNewPassword(String newPassword)
+	{
+		this.newPassword = newPassword;
+	}
+	public String getNewPassword2()
+	{
+		return newPassword2;
+	}
+	public void setNewPassword2(String newPassword2)
+	{
+		this.newPassword2 = newPassword2;
+	}
+
+	public String getUnit()
+	{
+		return unit;
+	}
+	public void setUnit(String unit)
+	{
+		this.unit = unit;
+	}
+
+	public String getIsMainPage()
+	{
+		return isMainPage;
+	}
+	public void setIsMainPage(String isMainPage)
+	{
+		this.isMainPage = isMainPage;
+	}
+
+	public String getOptId()
+	{
+		return optId;
+	}
+	public void setOptId(String optId)
+	{
+		this.optId = optId;
+	}
+
+	public String getOptParm()
+	{
+		return optParm;
+	}
+	public void setOptParm(String optParm)
+	{
+		this.optParm = optParm;
+	}
+	public String getWorkstationId()
+	{
+		return workstationId;
+	}
+	public void setWorkstationId(String workstationId)
+	{
+		this.workstationId = workstationId;
+	}
+	public String getStyle()
+	{
+		return style;
+	}
+	public void setStyle(String style)
+	{
+		this.style = style;
+	}
+	@Override
+	public ActionErrors validate(ActionMapping mapping, HttpServletRequest request)
+	{
+		ActionErrors ae = new ActionErrors();
+		setUnit(request.getParameter("unit"));
+		request.setAttribute("unit", request.getParameter("unit"));
+		request.setAttribute("system", request.getParameter("systemName"));
+		request.setAttribute("user", request.getParameter("userId"));
+		// Basic syntactic validation before we go to the db.
+		if (userId == null || userId.equals(""))
+		{
+			ae.add("userId", new ActionMessage("error.no.userId"));
+		}
+		if (systemName == null || systemName.equals(""))
+		{
+			ae.add("systemName", new ActionMessage("error.no.systemName"));
+		}
+		if (oldPassword == null || oldPassword.equals(""))
+		{
+			ae.add("oldPassword", new ActionMessage("error.no.oldPassword"));
+		}
+		// Check that our new password is not blank
+		if (newPassword == null || newPassword.equals(""))
+		{
+			ae.add("newPassword", new ActionMessage("error.no.newPassword"));
+		}
+		// Check that our new password confirmation field is not blank
+		if (newPassword2 == null || newPassword2.equals(""))
+		{
+			ae.add("newPassword2", new ActionMessage("error.no.newPassword2"));
+		}
+		// New password must be different
+		if (oldPassword != null & newPassword != null)
+		{
+			if (oldPassword.equals(newPassword))
+			{
+				ae.add("newPassword", new ActionMessage("error.new.passWord"));
+			}
+		}
+		// Check that our two new passwords match each other
+		if (newPassword != null && newPassword2 != null)
+		{
+			if (!newPassword.equals(newPassword2))
+			{
+				ae.add("newPassword2", new ActionMessage("error.mismatched.passWords"));
+			}
+		}
+		return ae;
+	}
+}

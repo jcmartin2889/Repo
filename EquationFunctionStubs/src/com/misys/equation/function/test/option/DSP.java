@@ -1,0 +1,379 @@
+package com.misys.equation.function.test.option;
+
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.function.beans.DisplayAttributes;
+import com.misys.equation.function.beans.DisplayAttributesSet;
+import com.misys.equation.function.beans.DisplayGroup;
+import com.misys.equation.function.beans.InputField;
+import com.misys.equation.function.beans.InputFieldSet;
+import com.misys.equation.function.beans.ValidationExpression;
+import com.misys.equation.function.test.helper.DisplayFieldSetWrapper;
+import com.misys.equation.function.test.helper.FunctionGenerator;
+import com.misys.equation.function.test.run.FunctionToolboxStub;
+import com.misys.equation.function.tools.FunctionToolbox;
+
+public class DSP extends TestOptionStub
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: DSP.java 7138 2010-05-04 14:59:54Z lima12 $";
+
+	public DSP()
+	{
+		try
+		{
+			setUp();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] inputParameters)
+	{
+		DSP test = new DSP();
+		test.test();
+	}
+
+	private DisplayFieldSetWrapper addRecord1(FunctionGenerator fg) throws EQException
+	{
+		// add the record
+		DisplayFieldSetWrapper fieldSetWrapper = fg.addFieldSet("PRIMARY", "Record 1 of AC3", "Description 1 of AC3");
+		InputFieldSet inputFieldSet = fieldSetWrapper.getInputFieldSet();
+		DisplayAttributesSet attributeSet = fieldSetWrapper.getDisplayAttributesSet();
+
+		// input field
+		InputField inputField;
+		DisplayAttributes displayAttributes;
+		DisplayGroup group;
+		DisplayGroup subGroup;
+		int groupN;
+		int fldN;
+		int sgroupN;
+
+		// add all the fields in this section ---------------------------------------
+		ValidationExpression validationExpression = new ValidationExpression("val1", "label of val1", "desc of val1");
+		validationExpression.setErrorMessageId("KSM0001");
+		validationExpression.setExpression("£$32423");
+
+		// some fields first
+		fldN = 1;
+		inputField = FunctionToolbox.getInputField("STD" + fldN, "££First field" + fldN, "STD" + fldN, "A", "4", "");
+		inputField.addValidationExpression(validationExpression);
+		inputField.setMandatory(InputField.MANDATORY_SCRIPT);
+		inputField.setMandatoryExpression("if( STD1 eq 'F' )");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Group 1
+		groupN = 1001;
+		group = new DisplayGroup("GRP" + groupN, "£Group with a single subgroup test" + " [" + groupN + "]", "Description of GRP"
+						+ groupN);
+		attributeSet.addItem(group);
+
+		sgroupN = 1101;
+		subGroup = new DisplayGroup("SGRP" + sgroupN, "Label of SGRP " + sgroupN, "Description of SGRP" + sgroupN);
+		group.addItem(subGroup);
+
+		fldN = 1101;
+		inputField = FunctionToolbox.getInputField("FLD" + fldN, "FLD" + fldN, "FLD" + fldN, "A", "4", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		subGroup.addItem(displayAttributes);
+
+		// some fields
+		fldN = 2;
+		inputField = FunctionToolbox.getInputField("STD" + fldN, "B1&2G" + fldN, "Field between 1st and 2nd group" + fldN, "A",
+						"4", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Group 2
+		groupN = 2101;
+		group = new DisplayGroup("GRP" + groupN, "No subgroup default to close - only input fields" + " [" + groupN + "]",
+						"Description of GRP" + groupN);
+		group.setDefaultOpen(false);
+		attributeSet.addItem(group);
+
+		fldN = 2101;
+		inputField = FunctionToolbox.getInputField("FLD" + fldN, "FLD" + fldN, "FLD" + fldN, "A", "4", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		group.addItem(displayAttributes);
+
+		fldN = 2201;
+		inputField = FunctionToolbox.getInputField("FLD" + fldN, "FLD" + fldN, "FLD" + fldN, "A", "4", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		group.addItem(displayAttributes);
+
+		// Group 3
+		groupN = 3101;
+		group = new DisplayGroup("GRP" + groupN, "Group with 2 or more subgroups test" + " [" + groupN + "]", "Description of GRP"
+						+ groupN);
+		attributeSet.addItem(group);
+
+		sgroupN = 3101;
+		subGroup = new DisplayGroup("SGRP" + sgroupN, "Label of SGRP " + sgroupN, "Description of SGRP" + sgroupN);
+		group.addItem(subGroup);
+
+		fldN = 3101;
+		inputField = FunctionToolbox.getInputField("FLD" + fldN, "FLD" + fldN, "FLD" + fldN, "A", "4", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		subGroup.addItem(displayAttributes);
+
+		fldN = 3102;
+		inputField = FunctionToolbox.getInputField("FLD" + fldN, "FLD" + fldN, "FLD" + fldN, "A", "4", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		subGroup.addItem(displayAttributes);
+
+		fldN = 3103;
+		inputField = FunctionToolbox.getInputField("FLD" + fldN, "FLD" + fldN, "FLD" + fldN, "A", "4", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		subGroup.addItem(displayAttributes);
+
+		sgroupN = 3201;
+		subGroup = new DisplayGroup("SGRP" + sgroupN, "Label of SGRP " + sgroupN, "Description of SGRP" + sgroupN);
+		group.addItem(subGroup);
+
+		fldN = 3201;
+		inputField = FunctionToolbox.getInputField("FLD" + fldN, "FLD" + fldN, "FLD" + fldN, "A", "4", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		subGroup.addItem(displayAttributes);
+
+		fldN = 3202;
+		inputField = FunctionToolbox.getInputField("FLD" + fldN, "FLD" + fldN, "FLD" + fldN, "A", "4", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		subGroup.addItem(displayAttributes);
+
+		fldN = 3203;
+		inputField = FunctionToolbox.getInputField("FLD" + fldN, "FLD" + fldN, "FLD" + fldN, "A", "4", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		subGroup.addItem(displayAttributes);
+
+		fldN = 3204;
+		inputField = FunctionToolbox.getInputField("FLD" + fldN, "FLD" + fldN, "FLD" + fldN, "A", "4", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		subGroup.addItem(displayAttributes);
+
+		fldN = 3205;
+		inputField = FunctionToolbox.getInputField("FLD" + fldN, "FLD" + fldN, "FLD" + fldN, "A", "4", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		subGroup.addItem(displayAttributes);
+
+		// Group 4
+		groupN = 4101;
+		group = new DisplayGroup("GRP" + groupN, "Group with subgroups and input fields" + " [" + groupN + "]",
+						"Description of GRP" + groupN);
+		attributeSet.addItem(group);
+
+		sgroupN = 4101;
+		subGroup = new DisplayGroup("SGRP" + sgroupN, "Label of SGRP " + sgroupN, "Description of SGRP" + sgroupN);
+		group.addItem(subGroup);
+
+		fldN = 4101;
+		inputField = FunctionToolbox.getInputField("FLD" + fldN, "FLD" + fldN, "FLD" + fldN, "A", "4", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		subGroup.addItem(displayAttributes);
+
+		fldN = 4901;
+		inputField = FunctionToolbox.getInputField("FLD" + fldN, "Fix FLD" + fldN, "FLD" + fldN, "A", "4", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		group.addItem(displayAttributes);
+
+		sgroupN = 4201;
+		subGroup = new DisplayGroup("SGRP" + sgroupN, "Label of SGRP " + sgroupN, "Description of SGRP" + sgroupN);
+		group.addItem(subGroup);
+
+		fldN = 4201;
+		inputField = FunctionToolbox.getInputField("FLD" + fldN, "FLD" + fldN, "FLD" + fldN, "A", "4", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		subGroup.addItem(displayAttributes);
+
+		fldN = 4902;
+		inputField = FunctionToolbox.getInputField("FLD" + fldN, "Fix FLD" + fldN, "FLD" + fldN, "A", "4", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		group.addItem(displayAttributes);
+
+		// Group 5
+		groupN = 5101;
+		group = new DisplayGroup("GRP" + groupN, "Group with not details - must not be displayed" + " [" + groupN + "]",
+						"Description of GRP" + groupN);
+		attributeSet.addItem(group);
+
+		// Group 6
+		groupN = 6101;
+		group = new DisplayGroup("GRP" + groupN, "Group with a subgroup with no details" + " [" + groupN + "]",
+						"Description of GRP" + groupN);
+		attributeSet.addItem(group);
+
+		sgroupN = 6101;
+		subGroup = new DisplayGroup("SGRP" + sgroupN, "Label of SGRP " + sgroupN, "Description of SGRP" + sgroupN);
+		group.addItem(subGroup);
+
+		// Group 7
+		groupN = 7101;
+		group = new DisplayGroup("GRP" + groupN, "Group with 2 or more subgroups test and empty subgroup" + " [" + groupN + "]",
+						"Description of GRP" + groupN);
+		attributeSet.addItem(group);
+
+		sgroupN = 7101;
+		subGroup = new DisplayGroup("SGRP" + sgroupN, "Label of SGRP " + sgroupN, "Description of SGRP" + sgroupN);
+		group.addItem(subGroup);
+
+		fldN = 7101;
+		inputField = FunctionToolbox.getInputField("FLD" + fldN, "FLD" + fldN, "FLD" + fldN, "A", "4", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		subGroup.addItem(displayAttributes);
+
+		sgroupN = 7201;
+		subGroup = new DisplayGroup("SGRP" + sgroupN, "Label of SGRP " + sgroupN, "Description of SGRP" + sgroupN);
+		group.addItem(subGroup);
+
+		fldN = 7201;
+		inputField = FunctionToolbox.getInputField("FLD" + fldN, "FLD" + fldN, "FLD" + fldN, "A", "4", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		subGroup.addItem(displayAttributes);
+
+		fldN = 7202;
+		inputField = FunctionToolbox.getInputField("FLD" + fldN, "FLD" + fldN, "FLD" + fldN, "A", "4", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		subGroup.addItem(displayAttributes);
+
+		sgroupN = 7301;
+		subGroup = new DisplayGroup("SGRP" + sgroupN, "Label of SGRP " + sgroupN, "Description of SGRP" + sgroupN);
+		group.addItem(subGroup);
+
+		sgroupN = 7401;
+		subGroup = new DisplayGroup("SGRP" + sgroupN, "Label of SGRP " + sgroupN, "Description of SGRP" + sgroupN);
+		group.addItem(subGroup);
+
+		fldN = 7401;
+		inputField = FunctionToolbox.getInputField("FLD" + fldN, "FLD" + fldN, "FLD" + fldN, "A", "4", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		subGroup.addItem(displayAttributes);
+
+		// Group 8
+		groupN = 8101;
+		group = new DisplayGroup("GRP" + groupN, "Group with 2 or more subgroups test and empty subgroup" + " [" + groupN + "]",
+						"Description of GRP" + groupN);
+		attributeSet.addItem(group);
+
+		sgroupN = 8101;
+		subGroup = new DisplayGroup("SGRP" + sgroupN, "Label of SGRP " + sgroupN, "Description of SGRP" + sgroupN);
+		group.addItem(subGroup);
+
+		sgroupN = 8201;
+		subGroup = new DisplayGroup("SGRP" + sgroupN, "Label of SGRP " + sgroupN, "Description of SGRP" + sgroupN);
+		group.addItem(subGroup);
+
+		fldN = 8201;
+		inputField = FunctionToolbox.getInputField("FLD" + fldN, "FLD" + fldN, "FLD" + fldN, "A", "4", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		subGroup.addItem(displayAttributes);
+
+		fldN = 8202;
+		inputField = FunctionToolbox.getInputField("FLD" + fldN, "FLD" + fldN, "FLD" + fldN, "A", "4", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		subGroup.addItem(displayAttributes);
+
+		sgroupN = 8301;
+		subGroup = new DisplayGroup("SGRP" + sgroupN, "Label of SGRP " + sgroupN, "Description of SGRP" + sgroupN);
+		group.addItem(subGroup);
+
+		sgroupN = 8401;
+		subGroup = new DisplayGroup("SGRP" + sgroupN, "Label of SGRP " + sgroupN, "Description of SGRP" + sgroupN);
+		group.addItem(subGroup);
+
+		fldN = 8401;
+		inputField = FunctionToolbox.getInputField("FLD" + fldN, "FLD" + fldN, "FLD" + fldN, "A", "4", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		subGroup.addItem(displayAttributes);
+
+		fldN = 8402;
+		inputField = FunctionToolbox.getInputField("FLD" + fldN, "FLD" + fldN, "FLD" + fldN, "A", "4", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		subGroup.addItem(displayAttributes);
+
+		sgroupN = 8501;
+		subGroup = new DisplayGroup("SGRP" + sgroupN, "Label of SGRP " + sgroupN, "Description of SGRP" + sgroupN);
+		group.addItem(subGroup);
+
+		sgroupN = 8601;
+		subGroup = new DisplayGroup("SGRP" + sgroupN, "Label of SGRP " + sgroupN, "Description of SGRP" + sgroupN);
+		group.addItem(subGroup);
+
+		fldN = 8601;
+		inputField = FunctionToolbox.getInputField("FLD" + fldN, "FLD" + fldN, "FLD" + fldN, "A", "4", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		subGroup.addItem(displayAttributes);
+
+		fldN = 8602;
+		inputField = FunctionToolbox.getInputField("FLD" + fldN, "FLD" + fldN, "FLD" + fldN, "A", "4", "");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		subGroup.addItem(displayAttributes);
+
+		return fieldSetWrapper;
+	}
+	private void addLoadAPI(FunctionGenerator fg)
+	{
+	}
+
+	private void addUpdateAPI(FunctionGenerator fg)
+	{
+	}
+
+	private void addMappings(FunctionGenerator fg)
+	{
+	}
+
+	public void test()
+	{
+		// Have a bash...
+		try
+		{
+			printStartStatus(this.getClass().getSimpleName());
+			FunctionGenerator fg = new FunctionGenerator("DSP", "Test display", "This is the description of DSP",
+							"com.misys.equation.screens", "com.misys.equation.screens.layout");
+			addRecord1(fg);
+			addLoadAPI(fg);
+			addUpdateAPI(fg);
+			addMappings(fg);
+
+			// Write to DB
+			FunctionToolboxStub.writeToDB(unit, fg.getFunctionBean(), fg.getLayoutBean(), null, null);
+
+			// print
+			printCompleteStatus(fg, this.getClass().getSimpleName(), printXML);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+}

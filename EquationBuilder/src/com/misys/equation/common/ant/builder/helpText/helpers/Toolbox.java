@@ -1,0 +1,200 @@
+package com.misys.equation.common.ant.builder.helpText.helpers;
+
+import java.sql.Connection;
+import java.util.Iterator;
+import java.util.Set;
+
+import org.springframework.web.util.HtmlUtils;
+
+import com.ibm.as400.access.AS400JDBCConnection;
+import com.ibm.as400.access.AS400JDBCConnectionHandle;
+
+/**
+ * @author weddelc1
+ */
+public class Toolbox
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: Toolbox.java 5021 2009-10-02 21:34:22Z esther.williams $";
+	public final static String TEXT_DELIMITER = " - ";
+
+	/**
+	 * Get a list of comma seperated fields
+	 * 
+	 * @param fieldNames
+	 *            - a set of strings of field names
+	 * 
+	 * @return the list of comma seperated fields
+	 */
+	public static String cvtSetToCSV(Set<String> fieldNames)
+	{
+		// Start to build the sql
+		StringBuilder string = new StringBuilder();
+		// Add the fields
+		for (Iterator<String> iterator = fieldNames.iterator(); iterator.hasNext();)
+		{
+			string.append(iterator.next() + ",");
+		}
+		string.deleteCharAt(string.length() - 1);
+		return string.toString();
+	}
+
+	/**
+	 * Return the job id of an AS400 connection
+	 * 
+	 * @param connection
+	 *            - the AS400 connection
+	 * 
+	 * @return the job id
+	 */
+	public static String getJobId(Connection connection)
+	{
+		try
+		{
+			if (connection instanceof AS400JDBCConnection)
+			{
+				AS400JDBCConnection as400JDBC = (AS400JDBCConnection) connection;
+				return as400JDBC.getServerJobIdentifier();
+			}
+
+			else if (connection instanceof AS400JDBCConnectionHandle)
+			{
+				AS400JDBCConnectionHandle as400JDBC = (AS400JDBCConnectionHandle) connection;
+				return as400JDBC.getServerJobIdentifier();
+			}
+
+			else
+			{
+				return "";
+			}
+		}
+		catch (Exception e)
+		{
+			return "";
+		}
+	}
+
+	/**
+	 * Returns the text representation of an integer, left padded with '0' characters.
+	 * 
+	 * Note that this method is not intended to cope with negative numbers.
+	 * 
+	 * For example, supplying a value of 6, and a length of 2 would return "06".
+	 * 
+	 * @param value
+	 *            the input value
+	 * @param length
+	 *            the required maximum length
+	 * @return a formatted String
+	 */
+	public static String leftZeroPad(int value, int length)
+	{
+		StringBuilder result = new StringBuilder();
+		String initialString = String.valueOf(value);
+		int remaining = length - initialString.length();
+		while (remaining-- > 0)
+		{
+			result.append('0');
+		}
+		result.append(initialString);
+		return result.toString();
+	}
+
+	/**
+	 * Replace the space with the non-breaking space
+	 * 
+	 * @param str
+	 *            - string to be analysed
+	 * 
+	 * @return the converted string
+	 */
+	public static String rplSpaces(String str)
+	{
+		str = str.replaceAll(" ", "&nbsp;");
+		return str;
+	}
+
+	/**
+	 * Replace the space with the non-breaking space and encodes special characters
+	 * 
+	 * @param str
+	 *            - string to be analysed
+	 * 
+	 * @return the converted string
+	 */
+	public static String rplSpacesAndSpecialCharacters(String str)
+	{
+		str = HtmlUtils.htmlEscape(str);
+		str = str.replaceAll(" ", "&nbsp;");
+		return str;
+	}
+	/**
+	 * Pad a string with spaces
+	 * 
+	 */
+	public static String pad(String inputString, int length)
+	{
+		return pad(inputString, " ", length);
+	}
+
+	/**
+	 * Pad a string with the specified string
+	 * 
+	 */
+	public static String pad(String inputString, String value, int length)
+	{
+		StringBuilder outputBuffer;
+		if (inputString == null)
+		{
+			outputBuffer = new StringBuilder();
+		}
+		else
+		{
+			outputBuffer = new StringBuilder(inputString);
+		}
+		while (outputBuffer.length() < length)
+		{
+			outputBuffer.append(value);
+		}
+		return outputBuffer.toString();
+	}
+
+	/**
+	 * Pad a string at the front with the specified string
+	 * 
+	 */
+	public static String padAtFront(String inputString, String value, int length)
+	{
+		int inputStringLen = inputString.trim().length();
+		int padLength = length - inputStringLen;
+		StringBuilder outputBuffer = new StringBuilder("");
+		while (outputBuffer.length() < padLength)
+		{
+			outputBuffer.append(value);
+		}
+		return outputBuffer.toString() + inputString.trim();
+	}
+
+	/**
+	 * Return the string of the specified maximum length
+	 * 
+	 * @param str
+	 *            - the string
+	 * @param length
+	 *            - the maximum length
+	 * 
+	 * @return the string of the specified maxixum length
+	 */
+	public static String trim(String str, int length)
+	{
+		if (str.length() > length)
+		{
+			return str.substring(0, length);
+		}
+		else
+		{
+			return str;
+		}
+	}
+
+}

@@ -1,0 +1,118 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseMaintain;
+
+/**
+ * Equation test cases for Maintain Account Types
+ */
+public class MaintainTest_MAT extends EquationTestCaseMaintain
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: MaintainTest_MAT.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	String programName = "I09FRR";
+	String optionId = "MAT";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+	}
+
+	/**
+	 * Setup an existing key fields
+	 */
+	@Override
+	public void setupExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZATP", "VG"); // Account type
+		transaction.setFieldValue("GZAPP", "SW"); // Application code; FX, MM, " ", SW, CL, MS, CP, IR,
+		transaction.setFieldValue("GZACS", "M"); // Account structure
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	@Override
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZATD", "Swap Loan Contra"); // Account type description
+		transaction.setFieldValue("GZII0A", "Y"); // Interest bearing account type?
+		transaction.setFieldValue("GZHBN", "99"); // To range
+		transaction.setFieldValue("GZHVS", "998"); // Highest valid suffix for account type
+		transaction.setFieldValue("GZLBN", "80"); // From range
+		transaction.setFieldValue("GZLVS", "001"); // Lowest valid suffix for account type
+		transaction.setFieldValue("GZILS", "001Y"); // Interval since last statement
+		transaction.setFieldValue("GZCXM", "Y"); // Charge from transfer method?
+		transaction.setFieldValue("GZCRM", "Y"); // Deduct charge from remittance?
+	}
+
+	/**
+	 * The purpose of MaintainTest_MAT.java is to change the "Interest bearing account type?" flag to 'Y'es, to be used by MIX (Post
+	 * Manual Interest - Internal A/C) later on so the following tests are not needed.
+	 */
+	@Override
+	public void test00100Maint_Validate_NonExistingRecord() throws Exception
+	{
+	}
+	@Override
+	public void test00200Maint_Retrieval_NonExistingRecord() throws Exception
+	{
+	}
+	@Override
+	public void test00300Maint_NonExistingRecord() throws Exception
+	{
+	}
+	@Override
+	public void test00400Maint_Retrieval_ExistingRecord() throws Exception
+	{
+	}
+	@Override
+	public void test00500Maint_Validate_ExistingRecord() throws Exception
+	{
+	}
+	@Override
+	public void test00700Maint_RetrievalMaintain_ExistingRecord() throws Exception
+	{
+	}
+}

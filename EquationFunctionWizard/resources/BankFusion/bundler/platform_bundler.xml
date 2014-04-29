@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>BUNDLE DETAILS</comment>
+	
+	<!--************************ BUNDLE CREATION DETAILS  ************************-->
+	
+	<!-- Mode type can be RELEASE/PATCH  -->
+	<entry key="BUNDLE_MODE">PATCH</entry>
+	<!-- Specify location where repository checkout can be done -->
+	<entry key="BUNDLE_ROOT">C:/Eclipse_workspaces/SVN/3.0.1/EquationFunctionWizardBundler/temp</entry>
+	<!--Specify location where bundle can be created -->
+	<entry key="BUNDLE_LOCATION">C:/Eclipse_workspaces/SVN/3.0.1/EquationFunctionWizardBundler/bundles</entry>
+	<!-- Specify name of the bundle jar file -->
+	<entry key="BUNDLE_JAR_NAME">Application_EquationServices</entry>
+	<!--Specify bundle version for the .bfj file. Ex: SBA-BLR-2.5-0.6 -->
+	<entry key="BUNDLE_VERSION">ATB</entry>
+	<!--Is Bundle version is hot deployable -->
+	<entry key="HOTDEPLOYABLE">true</entry>
+	
+	<!--************************ SCM DETAILS FOR BINARY REPOSITORYS ************************-->
+	
+	<!-- SCM user name -->
+	<entry key="SCM_USERNAME">deepak</entry>
+	<!--SCM user password matching the user name specified -->
+	<entry key="SCM_PASSWORD">deepak</entry>
+	<!--SCM binary repository path -->
+	<entry key="SCM_REPOSITORY_PATH">
+		svn://blrub130:48001/BFSVN/
+	</entry>
+	<!--SCM location in case of patch TAG1 (SOURCE)-->
+	<entry key="SCM_SOURCE_TAG">BFEQ</entry>
+	<!-- SCM location in case of patch TAG2 (COMPARING SOURCE):Enabled only for patch -->
+	<entry key="SCM_TARGET_TAG">/</entry>
+	<!-- SCM_TYPE for SVN=1 or CVS=2 -->
+	<entry key="SCM_TYPE">1</entry>
+	<!-- SCM relative path to the binaries or artefacts to be used for bundling -->
+	<entry key="BF_CHECKOUT">/Services</entry>
+	<!-- SCM Qualifier. branches or tags -->
+	<entry key="SCM_QUALIFIER_PATH">branches</entry>
+	
+	<entry key="SCM_SERVICE_PROPERTY">SERVICE_EXECUTOR</entry>
+	<!-- If database is the source for artefact binaries, set this to true,
+	     If your SCM is the source for artefact binaries, set this to false -->
+	<entry key="DB_DATA_CONSTRUCTION_BASED_ON_SOURCE">true</entry>
+	<!-- Specifies whether source components mentioned in bundleDefinition.xml are to be included in the bundle or not -->
+	<entry key="INCLUSION_OF_SOURCE_IN_BUNDLE">true</entry>
+	<entry key="CREATE_RELEASE_BUNDLE_IN_ARTEFACT_MODE">true</entry>
+	<entry key="IGNORE_APPLICATION_ID">true</entry>
+	
+	<!--************************ SCM DETAILS FOR SOURCE REPOSITORYS ************************-->
+	
+	<!-- SCM user name -->
+	<entry key="SCM_SOURCE_USER">deepak</entry>
+	<!--SCM user password matching the user name specified -->
+	<entry key="SCM_SOURCE_PASSWORD">deepak</entry>
+	<!--SCM source repository path -->
+	<entry key="SCM_SOURCE_PATH">
+		svn://blrub130:48001/BFSVN/
+	</entry>
+	<!-- SCM relative path to the source to be used for bundling -->
+	<entry key="SCM_SOURCE_ROOT">/Services</entry>
+	<!-- SCM Qualifier. branches or tags -->
+	<entry key="SCM_SOURCE_QUALIFIER_PATH">branches</entry>
+	
+	<!--************************* DATABASE DETAILS ******************************************-->
+	<!-- User ID of the database -->
+	<entry key="DB_USER_ID">williae1</entry>
+	<!-- Password matching the User ID specified -->
+	<entry key="DB_PASSWORD">williae1</entry>
+	<!-- URL to be used to connect to the configured database -->
+	<entry key="DB_URL">jdbc:as400://SLOUGH1</entry>
+	<!-- Specify Driver corresponding to the database type -->
+	<entry key="DB_DRIVER_NAME">com.ibm.as400.access.AS400JDBCDriver</entry>
+	<!-- DataBase type: db2,oracle,sqlserver-->
+	<entry key="DB_TYPE">db2</entry>
+	<!-- Schema name from where artefact details need to be taken if DB_DATA_CONSTRUCTION_BASED_ON_SOURCE is true -->
+	<entry key="DB_SCHEMA">BFEW2122</entry>
+	
+
+	
+	<!--Specify number of threads to be used while importing DB -->
+	<entry key="NO_OF_THREADS">10</entry>
+	<!-- Specify how many records each thread to process while importing DB, which is mentioned above -->
+	<entry key="PROCESS_RECORDS">200</entry>
+	<!-- Specify the flags for different Modes,can be development or production by default true for production -->
+	<entry key="PRODUCTION_MODE">false</entry>
+	<!-- Version of the artefacts being included in the bundle. If set to UNVERSIONED, the latest version is included -->
+	<entry key="SCM_VERSION">UNVERSIONED</entry>
+	
+	
+	<!--************************ JAR SIGNING DETAILS ****************************************-->
+	<!-- Location of the keystore file used to sign the bundle -->
+	<entry key="KEYSTORE_LOCATION">./</entry>
+	<!-- Name of the keystore used for signing the bundle -->
+	<entry key="KEYSTORE_NAME">BFJarsKeyStore.store</entry>
+	<!-- Keystore password provided with the source build -->
+	<entry key="STORE_PASS">BFJarsStorepassKeyStore</entry>
+	<!-- Key pass word provided with the source build -->
+	<entry key="KEY_PASS">bfjarpass</entry>
+	<!-- Key alias provided with the source build -->
+	<entry key="KEY_ALIAS">bfJars</entry>
+	<entry key="USE_SVNDIFF_PROVIDED">true</entry>
+	
+</properties>

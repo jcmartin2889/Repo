@@ -1,0 +1,288 @@
+package com.misys.equation.function.testmain;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.GregorianCalendar;
+import java.util.Hashtable;
+import java.util.Locale;
+import java.util.Map;
+
+import javax.swing.text.MaskFormatter;
+
+import com.ibm.as400.access.AS400Text;
+import com.ibm.as400.access.BidiStringType;
+import com.misys.equation.common.access.EquationRecords;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationStandardValidation;
+import com.misys.equation.common.access.EquationUnit;
+import com.misys.equation.common.access.EquationUser;
+import com.misys.equation.common.dao.DaoFactory;
+import com.misys.equation.common.dao.IACMRecordDao;
+import com.misys.equation.common.dao.beans.ACMRecordDataModel;
+import com.misys.equation.common.datastructure.EqDS_DSJOBE;
+import com.misys.equation.common.datastructure.EqDS_DSJRN;
+import com.misys.equation.common.datastructure.EqDS_DSSYS2;
+import com.misys.equation.common.datastructure.EqDS_DSSYS3;
+import com.misys.equation.common.datastructure.EqDS_DSSYSE;
+import com.misys.equation.common.datastructure.EqDS_DSWSI2;
+import com.misys.equation.common.datastructure.EqDS_DSWSID;
+import com.misys.equation.common.test.TestEnvironment;
+import com.misys.equation.common.utilities.EqDataToolbox;
+import com.misys.equation.common.utilities.EqSemanticConversion;
+import com.misys.equation.common.utilities.EquationControl;
+import com.misys.equation.common.utilities.Toolbox;
+import com.misys.equation.function.beans.Function;
+import com.misys.equation.function.beans.Layout;
+import com.misys.equation.function.beans.LinkService;
+import com.misys.equation.function.linkage.ServiceLinkage;
+
+// Via Save and Restore
+public class TestMain
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: TestMain.java 17609 2013-11-19 09:40:58Z lima12 $";
+	EquationStandardSession session;
+	EquationUnit unit;
+	EquationUser user;
+
+	public TestMain()
+	{
+		try
+		{
+			unit = TestEnvironment.getTestEnvironment().getEquationUnit();
+			session = TestEnvironment.getTestEnvironment().getStandardSession();
+			user = TestEnvironment.getTestEnvironment().getEquationUser();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] inputParameters)
+	{
+		TestMain test = new TestMain();
+		test.test();
+	}
+
+	private void test()
+	{
+		// Have a bash...
+		try
+		{
+			EqDS_DSWSID dswsid = new EqDS_DSWSID();
+			EqDS_DSWSI2 dswsi2 = new EqDS_DSWSI2();
+			EqDS_DSJOBE dsjobe = new EqDS_DSJOBE();
+			EqDS_DSJRN dsjrn = new EqDS_DSJRN();
+			EqDS_DSSYSE dssyse = new EqDS_DSSYSE();
+			EqDS_DSSYS2 dssys2 = new EqDS_DSSYS2();
+			EqDS_DSSYS3 dssys3 = new EqDS_DSSYS3();
+
+			unit.getSystemOption("$FCMCN");
+
+			boolean result;
+			String str = "ABxsd";
+			result = str.matches("AB.*");
+			System.out.println(result);
+			result = str.matches(".*A*");
+			System.out.println(result);
+
+			String outputMask = "#-#-#";
+			String outputValue = "123";
+			MaskFormatter mf = new MaskFormatter(outputMask);
+			mf.setValueContainsLiteralCharacters(false);
+			System.out.println(mf.valueToString(outputValue));
+
+			System.out.println(Float.parseFloat("1000.00"));
+			System.out.println(Integer.MAX_VALUE);
+			System.out.println(Long.MAX_VALUE);
+			System.out.println(Double.MAX_VALUE);
+			System.out.println(Float.MAX_VALUE);
+
+			float f1 = 1234567890;
+			System.out.println(String.valueOf(f1));
+
+			float d1 = 1234567890;
+			System.out.println(String.valueOf(d1));
+
+			System.out.println(Toolbox.truncateDbAmount("00001000000", 2, 3));
+			System.out.println(Toolbox.truncateDbAmount("1000000", 2, 3));
+			System.out.println(Toolbox.truncateDbAmount("abcd", 2, 3));
+			System.out.println(Toolbox.truncateDbAmount("123456789012345", 2, 3));
+			System.out.println(Toolbox.truncateDbAmount("1234567890123454", 2, 0));
+			System.out.println(Toolbox.truncateDbAmount("123456789012345", 0, 0));
+
+			EquationStandardValidation equationStandardValidation = EqDataToolbox.callPV(session, "JVR01R", "", "                ",
+							"N", "N");
+			System.out.println("JVR01R:" + equationStandardValidation.getError());
+
+			String s = "";
+			s = unit.getSystemOption(session, "KFIL", "9450");
+			System.out.println(s);
+
+			long f = 123456789012345678L;
+			System.out.println(String.valueOf(f));
+			System.out.println(Float.toString(f));
+
+			System.out.println("parselong " + Long.parseLong("00100"));
+
+			Hashtable<String, String> hashtable = new Hashtable<String, String>();
+			hashtable.put("LID", "valueLID");
+			hashtable.put("ABE", "valueABE");
+			hashtable.put("OSPF", "valueOSPF");
+
+			SimpleDateFormat df = new SimpleDateFormat("yyyymmdd", Locale.getDefault());
+			GregorianCalendar cal = new GregorianCalendar();
+			System.out.println(df.toPattern());
+			System.out.println(df.format(cal.getTime()));
+
+			DateFormat dateformat = DateFormat.getDateInstance();
+			System.out.println(dateformat.format(cal.getTime()));
+
+			System.out.println("$XXX".replaceAll("\\$", "-"));
+			System.out.println("$XXX".replaceAll("\\$", "\\\\\\$"));
+
+			String convBefore = "ش  لا ؤ 123 456";
+			AS400Text text = new AS400Text(35, 420);
+			byte[] b = new byte[35];
+			String s2;
+			// convBefore = "789 456 123";
+			text = new AS400Text(35, 420);
+			b = new byte[35];
+			System.out.println("=" + Toolbox.convertTextIntoAS400TextCCSID(convBefore, 35, 420, BidiStringType.ST9));
+			text.toBytes(convBefore, b, 0, BidiStringType.DEFAULT);
+			System.out.println("DFLT: " + Toolbox.cvtBytesToHexString(b));
+			s2 = (String) text.toObject(b);
+			System.out.println(s2);
+			text.toBytes(convBefore, b, 0, BidiStringType.NONE);
+			System.out.println("NONE: " + Toolbox.cvtBytesToHexString(b));
+			s2 = (String) text.toObject(b);
+			System.out.println(s2);
+			text.toBytes(convBefore, b, 0, BidiStringType.ST4);
+			System.out.println("ST04: " + Toolbox.cvtBytesToHexString(b));
+			s2 = (String) text.toObject(b);
+			System.out.println(s2);
+			text.toBytes(convBefore, b, 0, BidiStringType.ST5);
+			System.out.println("ST05: " + Toolbox.cvtBytesToHexString(b));
+			s2 = (String) text.toObject(b);
+			System.out.println(s2);
+			text.toBytes(convBefore, b, 0, BidiStringType.ST6);
+			System.out.println("ST06: " + Toolbox.cvtBytesToHexString(b));
+			s2 = (String) text.toObject(b);
+			System.out.println(s2);
+			text.toBytes(convBefore, b, 0, BidiStringType.ST7);
+			System.out.println("ST07: " + Toolbox.cvtBytesToHexString(b));
+			s2 = (String) text.toObject(b);
+			System.out.println(s2);
+			text.toBytes(convBefore, b, 0, BidiStringType.ST8);
+			System.out.println("ST08: " + Toolbox.cvtBytesToHexString(b));
+			s2 = (String) text.toObject(b);
+			System.out.println(s2);
+			text.toBytes(convBefore, b, 0, BidiStringType.ST9);
+			System.out.println("ST09: " + Toolbox.cvtBytesToHexString(b));
+			s2 = (String) text.toObject(b);
+			System.out.println(s2);
+			text.toBytes(convBefore, b, 0, BidiStringType.ST10);
+			System.out.println("ST10: " + Toolbox.cvtBytesToHexString(b));
+			s2 = (String) text.toObject(b);
+			System.out.println(s2);
+			text.toBytes(convBefore, b, 0, BidiStringType.ST11);
+			System.out.println("ST11: " + Toolbox.cvtBytesToHexString(b));
+			s2 = (String) text.toObject(b);
+			System.out.println(s2);
+			System.out.println("done");
+
+			System.out.println("---");
+			byte[] numBytes = Toolbox.convertNumberIntoAS400ZonedBytes(-1000, 15, 0);
+			System.out.print(Toolbox.convertAS400Zoned(numBytes, 15, 0));
+
+			// unit.generateLanguageProperty();
+
+			DaoFactory daoFactory = new DaoFactory();
+			IACMRecordDao ACMRecordDao = daoFactory.getACMDao(session, new ACMRecordDataModel());
+			Map<String, ACMRecordDataModel> acmRecords = ACMRecordDao.getACMRecordsMap();
+
+			// FunctionToolbox.getSqlFieldSet(session, "id", "description", "select * from sapf");
+
+			System.out.println(EquationControl.isIndexFile(session.getConnection(), "KFILAL7", "SX50LF"));
+			System.out.println(EquationControl.isIndexFile(session.getConnection(), "KFILAL7", "PRDA10LF"));
+
+			// unit.generateLanguageProperty();
+
+			// System.out.println(Toolbox.cvtBytesToHexString(session.getUserToken("EQUIADMIN", "")));
+			// System.out.println(Toolbox.cvtBytesToHexString(session.getUserToken("EQCHINESE", "EQCHINESE")));
+
+			EquationRecords equationRecords = session.getUnit().getRecords();
+			equationRecords.getEquationAdditionalInfoGroup("CU", "EA");
+			// equationRecords.getEquationAdditionalInfoGroup("DL", "EA");
+
+			// EquationAdditionalInfoToolbox.getCustomerLinkParameter(session, "ACCS", "DTA");
+
+			LinkService linkService = new LinkService();
+			linkService.setPrimaryId("XX1");
+			linkService.getSecondaryIds().add("XX2");
+
+			ServiceLinkage serviceLinkage = new ServiceLinkage(linkService);
+			Function linkedFunction = serviceLinkage.rtvLinkedFunction(session, true);
+			Layout linkedLayout = serviceLinkage.rtvLinkedLayout(session, true);
+
+			// FunctionJournalComparator comparator = new FunctionJournalComparator();
+			// ElementDifference ed = comparator.compare(session, "LL1", linkedFunction);
+			// System.out.println(ed.toString());
+			//
+			// Layout layout = XMLToolbox.getXMLToolbox().getLayout(session, "X91", true);
+			// Function function = XMLToolbox.getXMLToolbox().getFunction(session, "XX9", true);
+			// FunctionLayoutComparator functionLayoutComparator = new FunctionLayoutComparator();
+			// ElementDifference property = functionLayoutComparator.compare(layout, function);
+			// System.out.println(property);
+
+			String customerAccsDta = EqDataToolbox.retrieveCustomer(session, "", "", "", "ACCS", "DTA");
+			String customerAtlant = EqDataToolbox.retrieveCustomer(session, "", "", "", "ATLANT", "");
+			String customerAtlantInd = EqDataToolbox.retrieveCustomer(session, "", "", "", "ATLANT", "IND");
+			System.out.println("ACCS   DTA = " + customerAccsDta);
+			System.out.println("ATLANT     = " + customerAtlant);
+			System.out.println("ATLANT IND = " + customerAtlantInd);
+
+			String[] accounts1 = EqDataToolbox.retrieveAccountEAN(session, "", "", "", "0380CITY012008020ABC");
+			String[] accounts2 = EqDataToolbox.retrieveAccountIBAN(session, "", "", "", "0380CITY012008020ABC-------------X");
+
+			System.out.println("EAN");
+			System.out.println(Toolbox.printArray(accounts1));
+			System.out.println("IBAN");
+			System.out.println(Toolbox.printArray(accounts2));
+
+			System.out.println("Eq semantic testing");
+			EqSemanticConversion eqSemantic = new EqSemanticConversion(session);
+			String[] account01 = eqSemantic.getAccountReference("0132012008020", EqSemanticConversion.ACCOUNT_FORMAT_EQ);
+			String[] account02 = eqSemantic.getAccountReference("0380CITY012008020ABC", EqSemanticConversion.ACCOUNT_FORMAT_EAN);
+			String[] account03 = eqSemantic.getAccountReference("0380CITY012008020ABC-------------X",
+							EqSemanticConversion.ACCOUNT_FORMAT_IBAN);
+			System.out.println(Toolbox.printArray(account01));
+			System.out.println(Toolbox.printArray(account02));
+			System.out.println(Toolbox.printArray(account03));
+
+			System.out.println("ACCS DTA = "
+							+ eqSemantic.getCustomerReference("ACCS  DTA", EqSemanticConversion.CUSTOMER_FORMAT_MNEM));
+			System.out.println("350201   = "
+							+ eqSemantic.getCustomerReference("350201", EqSemanticConversion.CUSTOMER_FORMAT_NUMBER));
+			System.out.println("ACCS DTA = "
+							+ eqSemantic.getCustomerReference("PARTY-ACCS-DTA", EqSemanticConversion.CUSTOMER_FORMAT_EXT_ID));
+
+			System.out.println("LOND = " + eqSemantic.getBranchReference("LOND", EqSemanticConversion.BRANCH_FORMAT_MNEM));
+			System.out.println("9543   = " + eqSemantic.getBranchReference("9543", EqSemanticConversion.BRANCH_FORMAT_NUMBER));
+
+			System.out.println("SDANH=" + user.getSystemDictionary("SDANH"));
+			System.out.println("sdfsd=" + user.getSystemDictionary("sdfsd"));
+			System.out.println("D4-00=" + user.getCodeDescription("D4", "00"));
+			System.out.println("D4-XX=" + user.getCodeDescription("D4", "XX"));
+
+			System.out.println("done");
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+}

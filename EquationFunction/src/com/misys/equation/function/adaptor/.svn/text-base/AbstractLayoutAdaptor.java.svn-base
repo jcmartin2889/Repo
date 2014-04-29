@@ -1,0 +1,55 @@
+package com.misys.equation.function.adaptor;
+
+import com.misys.equation.function.runtime.UserData;
+
+/**
+ * Default implementation of the layout exit points.
+ * <p>
+ * This class is intended to be used as the super class for the layout user exit outer class implementation.
+ * <p>
+ * TODO: These exit points require review.
+ * 
+ * @see ILayoutAdaptor LayoutAdaptor
+ */
+public abstract class AbstractLayoutAdaptor implements ILayoutAdaptor
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	/**
+	 * Determine the previous screen. The returned screen number must be less than the current screen. If this is not satisfied,
+	 * then it will display the previous screen.
+	 * 
+	 * This user exit is invoked whenever the page up (or back) key has been pressed
+	 * 
+	 * @param curScreen
+	 *            - the current screen
+	 * 
+	 * @return the previous screen (or 0 to ignore the user exit)
+	 */
+	public int prevScreen(int curScreen, UserData userData)
+	{
+		return 0;
+	}
+
+	/**
+	 * Determine the next screen. The returned screen number must be greater than the current screen. If this is not satified, then
+	 * it will display the next screen.
+	 * 
+	 * When the returned screen is greater than the current screen, then the system will validate all the screens from the current
+	 * screen and the returned screen (exclusive). If there are any messages issued in any of the screen, then it will display this
+	 * particular screen.
+	 * 
+	 * This user exit is invoked whenever the page down (or next) key has been pressed and there are no messages issued in the
+	 * current screen.
+	 * 
+	 * @param curScreen
+	 *            - the current screen
+	 * 
+	 * @return the next screen (or 0 to ignore the user exit)
+	 */
+	public int nextScreen(int curScreen, UserData userData)
+	{
+		return 0;
+	}
+
+}

@@ -1,0 +1,264 @@
+package com.misys.equation.ui.actions;
+
+import java.util.List;
+import java.util.concurrent.locks.Lock;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.struts.Globals;
+import org.apache.struts.action.Action;
+import org.apache.struts.action.ActionErrors;
+import org.apache.struts.action.ActionForm;
+import org.apache.struts.action.ActionForward;
+import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.ActionMessage;
+import org.apache.struts.action.ActionMessages;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationLogin;
+import com.misys.equation.common.utilities.EqTimingTest;
+import com.misys.equation.common.utilities.Toolbox;
+import com.misys.equation.function.beans.NextAction;
+import com.misys.equation.function.runtime.ConversionRules;
+import com.misys.equation.function.runtime.FunctionBankFusion;
+import com.misys.equation.function.runtime.FunctionHandler;
+import com.misys.equation.function.runtime.FunctionHandlerData;
+import com.misys.equation.function.runtime.FunctionHandlerTable;
+import com.misys.equation.function.runtime.FunctionKeys;
+import com.misys.equation.function.runtime.FunctionMessage;
+import com.misys.equation.function.tools.FunctionRuntimeToolbox;
+import com.misys.equation.function.tools.HTMLToolbox;
+import com.misys.equation.ui.context.EquationDesktopContext;
+import com.misys.equation.ui.tools.EqDesktopToolBox;
+
+public class FunctionAction extends Action
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: FunctionAction.java 17382 2013-10-08 08:45:53Z Lima12 $";
+
+	public FunctionAction()
+	{
+	}
+
+	/**
+	 * Perform processing
+	 */
+	@Override
+	public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response)
+	{
+		EqDesktopToolBox.setupThreadData(request);
+
+		// Print timing test
+		EqTimingTest.printStartTime("FunctionAction.execute()", "");
+
+		// Initialise list of errors for the strut
+		ActionErrors ae = new ActionErrors();
+
+		// Retrieve the function handler
+		FunctionHandlerTable functionHandlerTable = null;
+		FunctionHandler functionHandler = null;
+		FunctionHandlerData fhd = null;
+		NextAction nextAction = null;
+
+		// Determine name of the function handler
+		String name = request.getParameter(HTMLToolbox.OBJ_NAME);
+
+		// Next processing - assume redisplay screen
+		int nextProcess = FunctionRuntimeToolbox.PROC_REDISPLAY_SCREEN;
+
+		try
+		{
+			// get the function handler
+			functionHandlerTable = (FunctionHandlerTable) request.getSession().getAttribute(FunctionRuntimeToolbox.NAME);
+			functionHandler = functionHandlerTable.getFunctionHandler(name);
+			fhd = functionHandler.getFhd();
+			// Ensure only 1 use of the session at a time
+			Lock sessionLock = fhd.getEquationUser().getSession().getSessionLock();
+			if (sessionLock.tryLock())
+			{
+				try
+				{
+					// retrieve the function key
+					int ckey = fhd.getFunctionKeys().getFuncKey();
+
+					// supervisor message
+					String reason = request.getParameter(HTMLToolbox.OBJ_SUPMSG);
+					String loadFieldSet = request.getParameter(HTMLToolbox.OBJ_LOADFIELDSET);
+					String loadField = request.getParameter(HTMLToolbox.OBJ_LOADFIELD);
+					String referToUserId = request.getParameter(HTMLToolbox.OBJ_REFERTOUSERID);
+
+					// drill down?
+					if (ckey == FunctionKeys.KEY_DRILLDOWN || ckey == FunctionKeys.KEY_DRILLDOWN2
+									|| ckey == FunctionKeys.KEY_DRILLDOWN3)
+					{
+						loadField = request.getParameter(HTMLToolbox.OBJ_FLDVAL).trim();
+					}
+
+					// Set the comment/user
+					fhd.setReason(reason);
+					fhd.setReferToUserId(referToUserId);
+
+					// action the function key
+					EqTimingTest.printStartTime("FunctionAction.execute().actionFkey()", "");
+					// If BankFusion is installed then call a dummy BankFusion microflow to wrap the update process.
+					if (EquationCommonContext.isBankFusionInstalled())
+					{
+						ConversionRules conversionRules = FunctionRuntimeToolbox.getConversionRules(null, fhd);
+						conversionRules.setDateFormat(ConversionRules.DATE_CYYMMDD);
+						conversionRules.setAmountFormat(ConversionRules.AMOUNT_MINOR_CURRENCY);
+						FunctionBankFusion functionBankFusion = new FunctionBankFusion();
+						nextProcess = functionBankFusion.callDummyUpdateMicroflow(fhd.getScreenSetHandler().rtvScreenSetMain(),
+										ckey, reason, loadFieldSet, loadField, name, conversionRules);
+					}
+					else
+					{
+
+						nextProcess = functionHandler.actionFkey(ckey, reason, loadFieldSet, loadField);
+					}
+					EqTimingTest.printTime("FunctionAction.execute().actionFkey()", "");
+
+					// retrieve any messages
+					ae = loadIntoActionErrors(ae, functionHandler.rtvFunctionMessages().getMessages());
+
+					// include messages from other messages
+					ae = loadIntoActionErrors(ae, fhd.getFunctionMsgManager().getOtherMessages().getMessages());
+
+					// get next action so it can be put in the request and used in welcome.jsp - the functionHander will be deleted
+					// before
+					// welcome.jsp
+					nextAction = fhd.getNextAction();
+
+					// remove the child function handler?
+					if (!name.equals("") && nextProcess != FunctionRuntimeToolbox.PROC_SCREEN1
+									&& nextProcess != FunctionRuntimeToolbox.PROC_REDISPLAY_SCREEN)
+					{
+						FunctionHandler fh = functionHandlerTable.removeChild(name);
+
+						// if this is a drill down window and update has been made, then inform main function handler
+						if (fh.getFhd().isUpdateMade()
+										&& fh.getFhd().getFunctionInfo().getSessionType() == EquationCommonContext.SESSION_CHILD_DRILLDOWN)
+						{
+							// get the main function handler
+							FunctionHandler mainFunctionHandler = functionHandlerTable.getFunctionHandler("");
+							if (mainFunctionHandler.getFhd().getScreenSetHandler().rtvScreenSetMain().chkEnquiry())
+							{
+								nextProcess = FunctionRuntimeToolbox.PROC_REFRESH_MAIN_WINDOW;
+							}
+
+							// NOTE: updating the main function handler is going to be difficult, because
+							// even if we update the session here, it does not seems to get reflected
+							// on the other window's session!
+						}
+					}
+
+					// save the function handler back to the request
+					// functionHandlerTable.setFunctionHandler(FunctionRuntimeToolbox.UNIQUE_NAME, functionHandler);
+					request.getSession().setAttribute(FunctionRuntimeToolbox.NAME, functionHandlerTable);
+
+					// **********************************GP *********************************
+					// TODO this code should only be executed for global processing equation services
+					// need to enquire this in functionHandler
+					FunctionHandler childfh = functionHandler.getFhd().rtvLastDrillDownChild();
+					request.setAttribute("gp", "");
+					if (childfh != null)
+					{
+						FunctionHandlerData childfhd = childfh.getFhd();
+						if (childfhd.isLegacyOption())
+						{
+							request.setAttribute("gp", "Y");
+							request.setAttribute("unit", childfhd.getGpUnit());
+						}
+					}
+					// **********************************GP *********************************
+				}
+				finally
+				{
+					sessionLock.unlock();
+				}
+			}
+			else
+			{
+				// Please try again
+				String error = EquationCommonContext.getContext().getLanguageResource(fhd.getEquationUser(), "GBL900009");
+				throw new Exception(error);
+			}
+
+		}
+		catch (Exception e)
+		{
+			EquationCommonContext.getContext().getLOG().error(e);
+			ae = new ActionErrors();
+			ae.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("error.parameterised", Toolbox.getExceptionMessage(e)));
+			super.saveErrors(request, ae);
+		}
+		finally
+		{
+			if (nextAction != null)
+			{
+				request.getSession().setAttribute(FunctionRuntimeToolbox.NEXT_ACTION, nextAction);
+			}
+			else
+			{
+				request.getSession().setAttribute(FunctionRuntimeToolbox.NEXT_ACTION, null);
+			}
+			request.getSession().setAttribute(FunctionRuntimeToolbox.UNIQUE_NAME, name);
+			request.getSession().setAttribute(FunctionRuntimeToolbox.REFRESH_MAIN_WINDOW, "");
+		}
+
+		// Save the errors back to the HTTP request
+		request.setAttribute(Globals.ERROR_KEY, ae);
+
+		// Print timing test
+		EqTimingTest.printTime("FunctionAction.execute()", "");
+
+		// Save context in case it has changed
+		FunctionHandler childHandler = functionHandlerTable.getFunctionHandler(name);
+		if (childHandler != null && childHandler != functionHandler)
+		{
+			EquationLogin existinglogin = (EquationLogin) request.getSession().getAttribute(EquationDesktopContext.SESSION_LOGIN);
+			existinglogin.setContextData1(childHandler.getFhd().getContextHandler().getDswsid1Str());
+			existinglogin.setContextData2(childHandler.getFhd().getContextHandler().getDswsid2Str());
+		}
+
+		// Determine the next page to display
+		if (nextProcess == FunctionRuntimeToolbox.PROC_REDISPLAY_SCREEN)
+		{
+			return mapping.findForward("function");
+		}
+		else if (nextProcess == FunctionRuntimeToolbox.PROC_SCREEN1)
+		{
+			return mapping.findForward("function");
+		}
+		else if (nextProcess == FunctionRuntimeToolbox.PROC_EXIT_DESKTOP)
+		{
+			return mapping.findForward("exitdesktop");
+		}
+		else if (nextProcess == FunctionRuntimeToolbox.PROC_REFRESH_MAIN_WINDOW)
+		{
+			request.getSession().setAttribute(FunctionRuntimeToolbox.REFRESH_MAIN_WINDOW, "true");
+			return mapping.findForward("exitdesktop");
+		}
+		else
+		{
+			return mapping.findForward("welcome");
+		}
+	}
+	/**
+	 * Performs initial processing prior to displaying the function
+	 * 
+	 * @param messages
+	 *            - list of messages
+	 * 
+	 * @return the action errors
+	 * 
+	 */
+	public ActionErrors loadIntoActionErrors(ActionErrors ae, List<FunctionMessage> messages)
+	{
+		for (int i = 0; i < messages.size(); i++)
+		{
+			ae.add(ActionMessages.GLOBAL_MESSAGE, new ActionMessage("error.parameterised", messages.get(i).rtvUnformattedText()));
+		}
+		return ae;
+	}
+}

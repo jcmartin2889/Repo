@@ -1,0 +1,554 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+     This is ant project which contains all common tasks for all projects.
+     Local project properties values are passed to manage local projects contents.
+     ====================================================================== -->
+<project name="EquationBuilderCommon" basedir=".">
+
+	<!-- ************************** PROPERTIES ***************************** -->
+
+	<!--Sets the properties values using the predefined build.properties. -->
+	<property file="build.properties" />
+
+
+	<!-- External project properties files. It will load the ext properties files  with a different prefix.-->
+	<property file="${EQUATION_COMMON}/build.properties" prefix="equation.common" />
+	<property file="${EQUATION_FUNCTION}/build.properties" prefix="equation.function" />
+	<property file="${EQUATION_INSTALLER}/build.properties" prefix="equation.installer" />
+	<property file="${EQUATION_ECLIPSE_COMMON}/build.properties" prefix="equation.eclipse.common" />
+
+	<!--  External projects'dist.-->
+	<property name="equation.common.dist" location="${dist.dir}/${equation.common.TARGET}" />
+	<property name="equation.function.dist" location="${dist.dir}/${equation.function.TARGET}" />
+	<property name="equation.eclipse.common.dist" location="${dist.dir}/${equation.eclipse.common.TARGET}" />
+
+
+	<!--javac compiler parameters -->
+	<property name="javac.target" value="1.6" />
+	<property name="javac.source" value="1.6" />
+	<property name="javac.mem.init" value="128m" />
+	<property name="javac.mem.max" value="1024m" />
+	<property name="javac.debug" value="true" />
+	<!-- Note that both "source" and "lines" options need to be specified in order for log4j to be able generate line number log info -->
+	<property name="javac.debugLevel" value="lines,source,vars" />
+	<property name="javac.nowarn" value="false" />
+	<property name="javac.max-errors" value="2000" />
+	<property name="javac.lint" value="unchecked" />
+
+	<!--Builder dist directory.-->
+	<property name="equation.builder.dist" value="${dist.dir}" />
+	<!--It defines the builder temp directory. -->
+	<property name="temp.dir" location="${EQUATION_BUILDER}/${BUILDER_TEMP}" />
+	<!--It defines the deliverable directory. -->
+	<property name="deliverable.dir" location="${EQUATION_BUILDER}/${DELIVERABLE_DIR}" />
+	<!--It defines the update site directory. -->
+	<property name="updateSite.dir" location="${UPDATESITEPATH}" />
+
+	<!-- Java doc directory -->
+	<property name="equation.function.wizard.bin" location="${EQUATION_FUNCTION_WIZARD}/bin" />
+
+	<!--It will import the global ant deffitions. such as classpaths and pathconverts -->
+	<import optional="true" file="${build.project.dir}/equationBuilderGlobalDefinitions.xml" />
+
+	<!-- *************************** TARGETS ******************************* -->
+
+	<!-- =================================================================== -->
+	<!-- target: init                                                        -->
+	<!-- =================================================================== -->
+
+	<!-- It will  create  the build directories.-->
+	<target name="init" depends="clean" description="It will  create  the build directories.">
+		<mkdir dir="${dist.target}" />
+		<mkdir dir="${dist.lib}" />
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: clean                                                       -->
+	<!-- =================================================================== -->
+
+	<target name="clean" unless="no.clean" description="This task is going to clean the dist directory.">
+		<delete verbose="true" failonerror="false">
+			<fileset dir="${dist.target}" >
+			<exclude name=".svn" />
+			</fileset>
+		</delete>	
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: printClasspath                                              -->
+	<!-- =================================================================== -->
+
+	<target name="printClasspath" description="This task is going to print the classpath.">
+		<echo message="|-- compile classpath" />
+		<echo message="|   |" />
+		<echo message="|   |-- ${echo.path.compile}" />
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: printClasspath                                              -->
+	<!-- =================================================================== -->
+
+	<target name="printRuntimeClasspath" description="This task is going to print the runtime classpath.">
+		<echo message="|-- Runtime classpath" />
+		<echo message="|   |" />
+		<echo message="|   |-- ${echo.path.runtime}" />
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: compile                                                     -->
+	<!-- =================================================================== -->
+
+	<target name="compile" depends="printClasspath" description="This task is going to compile all sources in the predefined directory.">
+
+		<delete verbose="true" failonerror="false">
+			<fileset dir="${class.dir}"  >
+			<exclude name=".svn" />
+			</fileset>
+		</delete>	
+		<mkdir dir="${class.dir}" />
+
+		<!-- Note that lint is enabled (-Xlint), apart from path warnings 
+			which are switched off. This is because some jars manifest 
+			files specify class	path entries jars. These jar names are 
+			automatically added to the compiler class path. These cannot 
+			be found and generate warnings -->
+
+		<javac srcdir="${src.dir}" 
+		
+				destdir="${class.dir}" 
+				debug="${javac.debug}" 
+				debuglevel="${javac.debugLevel}" 
+				source="${javac.source}" 
+				target="${javac.target}" 
+				verbose="true" 
+				nowarn="${javac.nowarn}" 
+				failonerror="true" 
+				deprecation="true" 
+				encoding="8859_1"
+			>
+
+			<compilerarg value="-Xlint" />
+			<compilerarg value="-Xlint:-path" />
+			<compilerarg line="-Xmaxerrs ${javac.max-errors}" />
+
+			<classpath refid="classpath">
+			</classpath>
+		</javac>
+
+		<copy todir="${class.dir}" overwrite="true" verbose="true">
+			<fileset dir="${src.dir}">
+				<include name="**/*.class" />
+				<include name="**/*.config" />
+				<include name="**/*.properties" />
+				<include name="**/*.xml" />
+				<include name="**/eq*.txt" />
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: compile_src_resources                                                 -->
+	<!-- =================================================================== -->
+
+	<target name="compile_src_resources" depends="printClasspath" description="This task is going to compile all sources and copy resources in the predefined directory.">
+
+		<delete verbose="true" failonerror="false">
+			<fileset dir="${class.dir}"  >
+			<exclude name=".svn" />
+			</fileset>
+		</delete>	
+		<mkdir dir="${class.dir}" />
+
+		<echo level="info" message="${src.resources}" />
+
+		<copy todir="${class.dir}" overwrite="true" verbose="true">
+
+			<fileset dir="${src.resources}">
+				<include name="**/*.class" />
+				<include name="**/*.config" />
+				<include name="**/*.properties" />
+				<include name="**/*.xml" />
+				<include name="**/eq*.txt" />
+			</fileset>
+		</copy>
+
+		<javac srcdir="${src.dir}" 
+		
+			destdir="${class.dir}" 
+			debug="${javac.debug}" 
+			debuglevel="${javac.debugLevel}" 
+			source="${javac.source}" 
+			target="${javac.target}" 
+			verbose="true" 
+			nowarn="${javac.nowarn}" 
+			failonerror="true" 
+			deprecation="true" 
+			encoding="8859_1"
+			>
+			<compilerarg value="-Xlint" />
+			<compilerarg value="-Xlint:-path" />
+			<compilerarg line="-Xmaxerrs ${javac.max-errors}" />
+
+			<classpath refid="classpath">
+			</classpath>
+
+
+		</javac>
+
+		<copy todir="${class.dir}" overwrite="true" verbose="true">
+			<fileset dir="${src.dir}">
+				<include name="**/*.class" />
+				<include name="**/*.config" />
+				<include name="**/*.properties" />
+				<include name="**/*.xml" />
+				<include name="**/eq*.txt" />
+			</fileset>
+		</copy>
+
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: compile_all_src_resources                                       -->
+	<!-- =================================================================== -->
+
+	<target name="compile_all_src_resources" depends="printClasspath" description="This task is going to compile all sources and copy resources in the predefined directory.">
+
+		<delete verbose="true" failonerror="false">
+			<fileset dir="${class.dir}"  >
+			<exclude name=".svn" />
+			</fileset>
+		</delete>	
+		<mkdir dir="${class.dir}" />
+
+		<echo level="info" message="${src.resources}" />
+
+		<copy todir="${class.dir}" overwrite="true" verbose="true">
+
+			<fileset dir="${src.resources}">
+				<include name="**/*.class" />
+				<include name="**/*.config" />
+				<include name="**/*.properties" />
+				<include name="**/*.xml" />
+				<include name="**/eq*.txt" />
+			</fileset>
+		</copy>
+
+		<javac srcdir="${src.dir}:${src.gen.dir}" 
+			destdir="${class.dir}" 
+			debug="${javac.debug}" 
+			debuglevel="${javac.debugLevel}" 
+			source="${javac.source}" 
+			target="${javac.target}" 
+			verbose="true" 
+			nowarn="${javac.nowarn}" 
+			failonerror="true" 
+			deprecation="true" 
+			encoding="8859_1"
+			>
+			<compilerarg value="-Xlint" />
+			<compilerarg value="-Xlint:-path" />
+			<compilerarg line="-Xmaxerrs ${javac.max-errors}" />
+
+			<classpath refid="classpath">
+			</classpath>
+
+
+		</javac>
+
+		<copy todir="${class.dir}" overwrite="true" verbose="true">
+			<fileset dir="${src.dir}">
+				<include name="**/*.class" />
+				<include name="**/*.config" />
+				<include name="**/*.properties" />
+				<include name="**/*.xml" />
+				<include name="**/eq*.txt" />
+			</fileset>
+		</copy>
+
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: create_jar                                                  -->
+	<!-- =================================================================== -->
+
+	<target name="create_jar" description="This task will deploy all classes in a jar.">
+
+		<mkdir dir="${dist.lib}" />
+
+		<jar jarfile="${jar.path}">
+
+			<fileset dir="${class.dir}">
+				<include name="**/*.class" />
+				<include name="**/*.config" />
+				<include name="**/*.properties" />
+				<include name="**/*.xml" />
+				<include name="**/eq*.txt" />
+			</fileset>
+
+			<fileset dir="${build.project.dir}">
+				<include name="META-INF/**/*" />
+			</fileset>
+
+			<manifest id="MANIFEST.MF">
+				<attribute name="Built-Date" value="${today}" />
+				<attribute name="Built-By" value="${user.name}" />
+				<attribute name="Implementation-Vendor" value="Misys International Banking Systems Ltd." />
+				<attribute name="Implementation-Title" value="Equation" />
+				<attribute name="Implementation-Version" value="4" />
+			</manifest>
+
+		</jar>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: javadoc                                                     -->
+	<!-- =================================================================== -->
+
+	<target name="javadoc" description="This task will create Javadocs for the this project.">
+
+		<echo level="info" message="Creating the java-doc directory." />
+
+		<mkdir dir="${docs.dir}" />
+
+		<echo level="info" message="Creating the java-docs" />
+
+		<javadoc 
+			destdir="${docs.dir}" 
+			verbose="true" 
+			author="true" 
+			version="true" 
+			classpathref="classpath" 
+			classpath="classpath" 
+			windowtitle="Equation" 
+			header="Equation 4." 
+			footer="Equation 4." 
+			bottom="Misys International Banking Systems Ltd." 
+			failonerror="true" 
+			useexternalfile="yes" 
+			encoding="8859_1" 
+			doclet="com.misys.equation.builder.javadoc.EquationDoclet" 
+			docletpath="${EQUATION_BUILDER}/bin">
+
+			<taglet 
+				name="com.misys.equation.builder.javadoc.taglet.EquationExternalTaglet" 
+				path="${EQUATION_BUILDER}/bin"
+			 />
+
+
+			<packageset dir="${src.dir}" defaultexcludes="yes">
+				<include name="com/misys/**" />
+			</packageset>
+			<doctitle><![CDATA[<h1>Equation 4 <br>API Specification.</h1>]]></doctitle>
+		</javadoc>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: deploy_jar                                                  -->
+	<!-- =================================================================== -->
+
+	<target name="deploy_jar" description="This task will copy the jar file to the destination directory.">
+
+		<delete file="${to.dir}/${jar.name}" verbose="true" failonerror="false" />
+		<!--it will delete old jar versions  -->
+		<delete verbose="true" failonerror="false">
+			<fileset dir="${to.dir}">
+				<include name="${JAR_NAME}**/*" />
+				<include name="${JAR_NAME}*.*/*" />
+				<include name="${JAR_NAME}**" />
+				<exclude name=".svn" />	
+			</fileset>
+		</delete>
+
+		<copy todir="${to.dir}" overwrite="true" verbose="true">
+			<fileset file="${jar.path}">
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: copy_to_runtime_temp                                        -->
+	<!-- =================================================================== -->
+
+	<target name="copy_to_runtime_temp" description="This task will copy the jar file to the temp directory.">
+		<delete file="${to.dir}/${jar.name}" failonerror="false" />
+		<copy file="${dist.target}\lib\${jar.name}" todir="${temp.dir}">
+		</copy>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: move_readme_docs                                            -->
+	<!-- =================================================================== -->
+
+	<target name="move_readme_docs" description="This task wil copy all docs">
+
+		<mkdir dir="${dist.readme}" />
+
+		<echo level="info" message="${docs.templates}" />
+
+		<copy todir="${dist.readme}" overwrite="true" verbose="true">
+
+			<fileset dir="${docs.templates}">
+				<include name="**/*.html" />
+				<include name="/*.html" />
+				<include name="**/*.doc" />
+				<include name="/*.doc" />
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: cvs_version                                                 -->
+	<!-- =================================================================== -->
+
+	<target name="cvs_version" description="This task will add the cvs-version attribute in all java files.">
+		<ant antfile="${build.project.dir}\equationBuilderCustomTask.xml" target="cvs_version" inheritall="true" inheritRefs="true">
+			<property name="src.dir" location="${src.dir}" />
+		</ant>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: helpConverterTag                                            -->
+	<!-- =================================================================== -->
+
+	<target name="helpConverterTag" depends="printRuntimeClasspath" description="This task will add the cvs-version attribute in all java files.">
+		<ant antfile="${build.project.dir}\equationBuilderCustomTask.xml" target="helpConverterTag" inheritall="true" inheritRefs="true">
+			<property name="doc.source" location="${doc.source}" />
+			<property name="docOutputProject" location="${docOutputProject}" />
+			<property name="helpFilesXrefProject" location="${helpFilesXrefProject}" />
+			<property name="version" value="${version}" />
+			<property name="resources.dir" location="${EQUATION_BUILDER}/resources" />
+		</ant>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: minimumFieldsExtractor                                      -->
+	<!-- =================================================================== -->
+
+	<target name="minimumFieldsExtractor" depends="printRuntimeClasspath" description="This task will excecute the fields extractor and write the properties file.">
+		<ant antfile="${build.project.dir}\equationBuilderCustomTask.xml" target="minimumFieldsExtractorTag" inheritall="true" inheritRefs="true">
+			<property name="inputDirectory.dir" location="${inputDirectory.dir}" />
+			<property name="targetFileLocation.file" location="${targetFileLocation.file}" />
+		</ant>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: help_Text                                                   -->
+	<!-- =================================================================== -->
+
+	<target name="help_Text" depends="printRuntimeClasspath" description="This task will excecute the helpText task and create the html text files.">
+		<ant antfile="${build.project.dir}\equationBuilderCustomTask.xml" target="helpTextTag" inheritall="true" inheritRefs="true">
+			<property name="helpTextInput.dir" location="${helpTextInput.dir}" />
+			<property name="helpTextOutput.dir" location="${helpTextOutput.dir}" />
+			<property name="resources.dir" location="${EQUATION_BUILDER}/resources" />
+		</ant>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: equationVersionNumberTag                                                   -->
+	<!-- =================================================================== -->
+
+	<target name="equationVersionNumber" depends="printRuntimeClasspath" description="This task will excecute the equationVersionNumberTag task and update the version.">
+		<ant antfile="${build.project.dir}\equationBuilderCustomTask.xml" target="equationVersionNumberTag" inheritall="true" inheritRefs="true">
+			<property name="inputVersionNumberAttributeFiles" location="${EQUATION_VERSION_NUMBER_ATTRIBUTE}" />
+			<property name="inputVersionNumberInJarNamesFiles" location="${EQUATION_VERSION_NUMBER_IN_JARS_NAMES}" />
+			<property name="eclipseClassPathFiles" location="${EQUATION_VERSION_NUMBER_ECLIPSE_CLASSPATH}" />
+			<property name="eclipsePluginPathFiles" location="${EQUATION_VERSION_NUMBER_IN_ECLIPSE_PLUGIN}" />
+			<property name="overwriteVersion" value="${OVERWRITE_EQUATION_VERSION}" />
+			<property name="versionNumberInManifest" value="${EQUATION_VERSION_NUMBER_IN_MANIFEST}" />
+			<property name="versionNumberInJavaFiles" value="${EQUATION_VERSION_NUMBER_IN_JAVA_SOURCE}" />
+		</ant>
+	</target>
+
+	
+	<target name="eclipseConfiguationFileBackupTag" depends="printRuntimeClasspath"  description="This task will excecute the equationVersionNumberTag task and update the version.">
+		
+		<ant antfile="${build.project.dir}\equationBuilderCustomTask.xml" target="eclipseConfiguationFileBackupTag" inheritall="true" inheritRefs="true">
+			
+			<property name="inputVersionNumberAttributeFiles" value="${EQUATION_VERSION_NUMBER_ATTRIBUTE}"/>
+			<property name="inputVersionNumberInJarNamesFiles" value="${EQUATION_VERSION_NUMBER_IN_JARS_NAMES}"/>
+			<property name="eclipseClassPathFiles" value="${EQUATION_VERSION_NUMBER_ECLIPSE_CLASSPATH}"/>
+			<property name="eclipsePluginPathFiles" value="${EQUATION_VERSION_NUMBER_IN_ECLIPSE_PLUGIN}"/>						
+			<property name="backupFilepath" value="./backup.properties"/>
+		</ant>
+	</target>
+	
+	<target name="eclipseConfigurationFilesRestoreTag" depends="printRuntimeClasspath"  description="This task will restore the eclipse coonfigaration files.">
+			
+		<ant antfile="${build.project.dir}\equationBuilderCustomTask.xml" target="eclipseConfigurationFilesRestoreTag" inheritall="true" inheritRefs="true">
+			<property name="backupFilepath" value="./backup.properties"/>
+		</ant>
+	</target>
+		
+	<!-- =================================================================== -->
+	<!-- target: generatePluginUpdateSite                                   -->
+	<!-- =================================================================== -->
+
+	<target name="generatePluginUpdateSite" depends="printRuntimeClasspath" description="This task will generate the plugin update site.">
+		<ant antfile="${build.project.dir}\equationBuilderCustomTask.xml" target="generatePluginUpdateSiteTag" inheritall="true" inheritRefs="true">
+			<property name="builderProjectPropertyFile" location="${BUILDERPROJECTPROPERTYFILE}" />
+			<property name="pluginProjectManifests" location="${PLUGINPROJECTMANIFESTS}" />
+			<property name="pluginJarFolders" location="${PLUGINJARFOLDERS}" />
+		</ant>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: instrument                                                  -->
+	<!-- =================================================================== -->
+
+	<target name="instrument" description="instrument equation classes and jars for code coverage">
+
+		<property name="builder.emma.path" value="${temp.dir}/emma" />
+
+		<!-- Delete the instrumentation folder -->
+		<delete verbose="true" dir="${builder.emma.path}" />
+
+		<!-- The name of the Service Composer plug-in file -->
+		<property name="plugin.filename" value="com.misys.equation.EquationFunctionWizard_${VERSION}.jar" />
+		<!-- Full path to the distributable plug-in -->
+		<property name="plugin.dist.location" value="${equation.common.DIST}\equation-function-wizard\lib\${plugin.filename}" />
+		<!-- Location of the coverage metadata file -->
+		<property name="emma.metadata.file" value="${builder.emma.path}/bfeqCoverage.em" />
+
+		<!-- First, unzip the classes and equation jars from the plug-in -->
+		<delete dir="${temp.dir}/unzip" failonerror="false" />
+		<unzip src="${plugin.dist.location}" dest="${temp.dir}\unzip">
+			<patternset>
+				<include name="**/equation-*.jar" />
+				<include name="**/com/**/*.class" />
+			</patternset>
+		</unzip>
+
+		<path id="emma.lib">
+			<pathelement location="${EXTERNAL_JARS}/lib/emma_libs/emma.jar" />
+			<pathelement location="${EXTERNAL_JARS}/lib/emma_libs/emma_ant.jar" />
+		</path>
+
+		<taskdef resource="emma_ant.properties" classpathref="emma.lib" />
+
+		<!-- instrument the class files for the plug-in project itself -->
+		<emma>
+			<instr instrpath="${temp.dir}/unzip/com" mode="overwrite" verbosity="verbose" metadatafile="${emma.metadata.file}" merge="true">
+			</instr>
+		</emma>
+
+		<!-- instrument the equation jars (including the equation-desktop jar -->
+		<emma>
+			<instr mode="overwrite" verbosity="verbose" metadatafile="${emma.metadata.file}" merge="true">
+				<instrpath>
+					<fileset dir="${temp.dir}/unzip/com" includes="**/*.class" />
+					<fileset dir="${temp.dir}/unzip" includes="**/*.jar" excludes="**/*-stubs-*.jar" />
+				</instrpath>
+			</instr>
+		</emma>
+
+		<!-- Make a new version of the plugin, with instrumented jars -->
+		<copy file="${plugin.dist.location}" todir="${builder.emma.path}" />
+
+		<zip destfile="${builder.emma.path}/${plugin.filename}" update="yes" duplicate="add" basedir="${temp.dir}/unzip">
+			<fileset dir="${temp.dir}/unzip" includes="**/*.class" />
+			<fileset dir="${temp.dir}/unzip" includes="**/*.jar" />
+		</zip>
+
+	</target>
+
+</project>

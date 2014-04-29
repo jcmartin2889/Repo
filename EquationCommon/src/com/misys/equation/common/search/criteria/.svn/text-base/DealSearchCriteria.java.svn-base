@@ -1,0 +1,86 @@
+package com.misys.equation.common.search.criteria;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.dao.DaoFactory;
+import com.misys.equation.common.dao.IDao;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.dao.beans.OSRecordDataModel;
+import com.misys.equation.common.search.results.SearchType;
+
+public class DealSearchCriteria implements ISearchCriteria
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private String branchMnemonic; // Branch Mnemonic (OSBRNM)
+	private String dealType; // Deal Type (OSDLP)
+	private String dealReference; // Deal Reference (OSDLR)
+
+	public DealSearchCriteria(String branchMnemonic, String dealType, String dealReference)
+	{
+		super();
+		if (branchMnemonic == null || branchMnemonic.equals("*"))
+		{
+			this.branchMnemonic = "";
+		}
+		else
+		{
+			this.branchMnemonic = branchMnemonic.trim();
+		}
+
+		if (dealType == null || dealType.equals("*"))
+		{
+			this.dealType = "";
+		}
+		else
+		{
+			this.dealType = dealType.trim();
+		}
+
+		if (dealReference == null || dealReference.equals("*"))
+		{
+			this.dealReference = "";
+		}
+		else
+		{
+			this.dealReference = dealReference.trim();
+		}
+	}
+
+	public String getBranchMnemonic()
+	{
+		return branchMnemonic;
+	}
+
+	public String getDealType()
+	{
+		return dealType;
+	}
+
+	public String getDealReference()
+	{
+		return dealReference;
+	}
+
+	public AbsRecord getDataModel()
+	{
+		return new OSRecordDataModel();
+	}
+
+	public String getSearchString()
+	{
+		return "OSBRNM LIKE '%" + branchMnemonic + "%' AND OSDLP LIKE '%" + dealType + "%' AND OSDLR LIKE '%" + dealReference
+						+ "%'";
+	}
+
+	public SearchType getSearchType()
+	{
+		return SearchType.DEAL;
+	}
+
+	public IDao getRecordDao(EquationStandardSession session, DaoFactory daoFactory, AbsRecord record)
+	{
+		return daoFactory.getOSRecordDao(session, record);
+	}
+
+}

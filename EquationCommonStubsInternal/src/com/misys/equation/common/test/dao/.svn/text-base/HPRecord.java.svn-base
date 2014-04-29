@@ -1,0 +1,138 @@
+package com.misys.equation.common.test.dao;
+
+import com.misys.equation.common.dao.IHPRecordDao;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.dao.beans.HPRecordDataModel;
+import com.misys.equation.common.test.EquationTestCaseDao;
+
+/**
+ * This is a unit-test which will test HPIRecord services.
+ * 
+ * @author deroset
+ * 
+ */
+public class HPRecord extends EquationTestCaseDao
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	public HPRecord()
+	{
+
+	}
+
+	/**
+	 * 
+	 * This method is going to retrieve the Dao from the bean repository and set it as local attribute.
+	 */
+	@Override
+	protected void setDao()
+	{
+
+		dao = daoFactory.getHPDao(session, dataModel);
+	}
+
+	/**
+	 * This method will test if the record has been already inserted in the dataBase.
+	 */
+	@Override
+	public void isRecord(boolean assertValue)
+	{
+		boolean result;
+
+		result = checkIfThisRecordIsInTheDB();
+		if (assertValue)
+		{
+			assertTrue(result);
+		}
+		else
+		{
+			assertFalse(result);
+		}
+
+	}
+
+	/**
+	 * This method is going to check the getRecord dao's service.<br>
+	 * The obtained result should be the same than the preset in the dao data-model.
+	 * 
+	 */
+	@Override
+	public HPRecordDataModel getRecord()
+	{
+
+		HPRecordDataModel HPRecord = null;
+		HPRecord = ((IHPRecordDao) dao).getHPRecord();
+		assertDataModel(HPRecord);
+		return HPRecord;
+	}
+
+	/**
+	 * This method will test the update dao's service.
+	 */
+	@Override
+	public void updateRecord()
+	{
+
+		HPRecordDataModel HPRecord = null;
+
+		this.getMyModel().setInThousand("F");
+		dao.updateRecord();
+		HPRecord = getRecord();
+		assertEquals(this.getMyModel().getInThousand(), HPRecord.getInThousand());
+	}
+
+	@Override
+	protected void assertDataModel(AbsRecord dataModel)
+	{
+
+		HPRecordDataModel record = (HPRecordDataModel) dataModel;
+		assertEquals(getMyModel().getCountryCode(), record.getCountryCode());
+		assertEquals(getMyModel().getGroupName(), record.getGroupName());
+		assertEquals(getMyModel().getCusMnem(), record.getCusMnem());
+		assertEquals(getMyModel().getCusLoc(), record.getCusLoc());
+		assertEquals(getMyModel().getInThousand(), record.getInThousand());
+
+	}
+
+	@Override
+	protected boolean checkIfThisRecordIsInTheDB()
+	{
+		boolean result;
+		result = ((IHPRecordDao) dao).checkIfThisHPRecordIsInTheDB();
+		return result;
+	}
+
+	@Override
+	protected void setDataModel()
+	{
+		HPRecordDataModel record = new HPRecordDataModel("COUNTRY", "GROUP", "CUS", "CLC");
+		record.setLibrary(kFilLibName);
+		this.dataModel = record;
+
+	}
+
+	/**
+	 * This method is going to return a casted data model.
+	 * 
+	 * @return a casted data model
+	 */
+	public HPRecordDataModel getMyModel()
+	{
+
+		HPRecordDataModel HPRecordDataModel = null;
+
+		if (dataModel instanceof HPRecordDataModel)
+		{
+
+			HPRecordDataModel = (HPRecordDataModel) dataModel;
+
+		}
+		else
+		{
+			throw new IllegalArgumentException("The set data-model does not correspond to the expected one.");
+		}
+
+		return HPRecordDataModel;
+	}
+}

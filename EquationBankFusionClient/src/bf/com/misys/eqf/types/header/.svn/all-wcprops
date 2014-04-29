@@ -1,0 +1,269 @@
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/repos/bfeq_src/!svn/ver/17859/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header
+END
+Orig.java
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/repos/bfeq_src/!svn/ver/17859/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/Orig.java
+END
+UpdateEsfStatusRqHeader.java
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/17859/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/UpdateEsfStatusRqHeader.java
+END
+.castor.cdr
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/repos/bfeq_src/!svn/ver/17762/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/.castor.cdr
+END
+UpdateEsfStatusRsHeader.java
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/UpdateEsfStatusRsHeader.java
+END
+StartEsfRqProcessHeader.java
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/17859/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/StartEsfRqProcessHeader.java
+END
+StartEsfRsProcessHeader.java
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/17859/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/StartEsfRsProcessHeader.java
+END
+ServiceRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/17759/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/ServiceRequest.java
+END
+TaskBasicDetails.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/17859/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/TaskBasicDetails.java
+END
+ServiceRqHeader.java
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/17859/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/ServiceRqHeader.java
+END
+TaskEsfRqHeader.java
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/17859/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/TaskEsfRqHeader.java
+END
+EqProcessHeader.java
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/EqProcessHeader.java
+END
+TaskEsfRsHeader.java
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/17859/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/TaskEsfRsHeader.java
+END
+ServiceRsHeader.java
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/ServiceRsHeader.java
+END
+ServiceResponse.java
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/17759/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/ServiceResponse.java
+END
+UiControlRq.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/UiControlRq.java
+END
+SearchRqHeader.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/17859/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/SearchRqHeader.java
+END
+UiControlRs.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/UiControlRs.java
+END
+JournalKey.java
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/JournalKey.java
+END
+SearchRsHeader.java
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/SearchRsHeader.java
+END
+StartLRPProcessRqHeader.java
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/17859/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/StartLRPProcessRqHeader.java
+END
+StartLRPProcessRsHeader.java
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/17859/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/StartLRPProcessRsHeader.java
+END
+RqHeader.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/17859/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/RqHeader.java
+END
+RsHeader.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/17859/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/RsHeader.java
+END
+EnquiryRq.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/repos/bfeq_src/!svn/ver/17323/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/EnquiryRq.java
+END
+EnquiryRs.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/repos/bfeq_src/!svn/ver/17323/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/EnquiryRs.java
+END
+Overrides.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/repos/bfeq_src/!svn/ver/17859/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/Overrides.java
+END
+ServiceUserExitRqHeader.java
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/ServiceUserExitRqHeader.java
+END
+ServiceUserExitRsHeader.java
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/ServiceUserExitRsHeader.java
+END
+CrmMessages.java
+K 25
+svn:wc:ra_dav:version-url
+V 135
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/CrmMessages.java
+END
+ExtensionDataRq.java
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/ExtensionDataRq.java
+END
+Formatting.java
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/17859/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/Formatting.java
+END
+EqMessage.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/repos/bfeq_src/!svn/ver/17859/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/EqMessage.java
+END
+ExtensionDataRs.java
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/ExtensionDataRs.java
+END
+FieldLocation.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/FieldLocation.java
+END
+TaskRqHeader.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/repos/bfeq_src/!svn/ver/17859/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/TaskRqHeader.java
+END
+TaskRsHeader.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/repos/bfeq_src/!svn/ver/17859/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/TaskRsHeader.java
+END
+BranchLimitParameters.java
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/BranchLimitParameters.java
+END
+LayoutUserExitRqHeader.java
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/LayoutUserExitRqHeader.java
+END
+LayoutUserExitRsHeader.java
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/LayoutUserExitRsHeader.java
+END
+EsfKey.java
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/repos/bfeq_src/!svn/ver/17859/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/EsfKey.java
+END
+CrmMessage.java
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/CrmMessage.java
+END
+ServiceStack.java
+K 25
+svn:wc:ra_dav:version-url
+V 136
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/ServiceStack.java
+END
+MessageStatus.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/17188/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/MessageStatus.java
+END
+BranchKeys.java
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/repos/bfeq_src/!svn/ver/17859/branches/BFEQ_Branch_3-1/EquationBankFusionClient/src/bf/com/misys/eqf/types/header/BranchKeys.java
+END

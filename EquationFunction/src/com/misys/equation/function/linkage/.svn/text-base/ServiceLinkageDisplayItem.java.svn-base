@@ -1,0 +1,54 @@
+package com.misys.equation.function.linkage;
+
+import com.misys.equation.function.beans.Element;
+import com.misys.equation.function.beans.IDisplayItem;
+
+public class ServiceLinkageDisplayItem extends AbstractServiceLinkage
+{
+
+	//This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	// the target display item
+	protected IDisplayItem targetDisplayItem;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param targetDisplayItem
+	 *            - the target display item
+	 */
+	public ServiceLinkageDisplayItem(IDisplayItem targetDisplayItem)
+	{
+		this.targetDisplayItem = targetDisplayItem;
+	}
+
+	/**
+	 * Link the source display item into the target display item
+	 * 
+	 * @param sourceDisplayItem
+	 *            - the source display item
+	 * @param locationId1
+	 *            - the layout where the item is
+	 * @param locationId2
+	 *            - the display attribute field set where the item is
+	 * 
+	 * @return the target display item
+	 */
+	public IDisplayItem link(IDisplayItem sourceDisplayItem, String locationId1, String locationId2)
+	{
+		// clear messages
+		messageContainer.clear();
+
+		// cast the display item to an Element to retrieve display item property
+		Element sourceElement = (Element) sourceDisplayItem;
+
+		// Different?
+		if (targetDisplayItem.getClass().getSimpleName().equals(sourceDisplayItem.getClass().getSimpleName()))
+		{
+			addMessage("Language.LinkageDisplayItemNotSameTypeError", sourceElement.getId(), locationId1, locationId2, "", "");
+		}
+
+		return targetDisplayItem;
+	}
+
+}

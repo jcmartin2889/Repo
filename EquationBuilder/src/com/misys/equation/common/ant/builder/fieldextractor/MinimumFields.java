@@ -1,0 +1,72 @@
+package com.misys.equation.common.ant.builder.fieldextractor;
+
+import java.util.HashSet;
+import java.util.Iterator;
+
+public class MinimumFields
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: MinimumFields.java 4741 2009-09-16 16:33:23Z esther.williams $";
+	String optId = null;
+	String pgmId = null;
+	HashSet<String> fldIds = new HashSet<String>();
+	public MinimumFields()
+	{
+		super();
+	}
+	public MinimumFields(String optId, String pgmId)
+	{
+		super();
+		this.optId = optId;
+		this.pgmId = pgmId;
+	}
+	public String getOptId()
+	{
+		return optId;
+	}
+	public void setOptId(String optId)
+	{
+		this.optId = optId;
+	}
+	public String getPgmId()
+	{
+		return pgmId;
+	}
+	public void setPgmId(String pgmId)
+	{
+		this.pgmId = pgmId;
+	}
+	public HashSet<String> getFldIds()
+	{
+		return fldIds;
+	}
+	public void setFldIds(HashSet<String> fldIds)
+	{
+		this.fldIds = fldIds;
+	}
+	public void addFldId(String fldId)
+	{
+		fldIds.add(fldId);
+	}
+	@Override
+	public String toString()
+	{
+		StringBuffer stringBuffer = new StringBuffer();
+		stringBuffer.append(optId + "=");
+		boolean firstTime = true;
+		for (Iterator iterator = fldIds.iterator(); iterator.hasNext();)
+		{
+			String fldId = (String) iterator.next();
+			if (!firstTime)
+			{
+				stringBuffer.append(",");
+			}
+			else
+			{
+				firstTime = false;
+			}
+			stringBuffer.append(fldId);
+		}
+		return stringBuffer.toString();
+	}
+}

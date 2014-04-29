@@ -1,0 +1,152 @@
+package com.misys.equation.common.utilities;
+
+import java.util.Calendar;
+import java.util.Hashtable;
+
+public class EqTimingTest
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(EqTimingTest.class);
+
+	/** List of start time */
+	private static Hashtable<String, Calendar> list = new Hashtable<String, Calendar>();
+
+	/**
+	 * Print start time
+	 * 
+	 * @param id
+	 *            - the unique id
+	 * @param text
+	 *            - the text
+	 */
+	public static void printStartTime(String id, String text)
+	{
+		// info enabled?
+		if (!isLoggingEnabled())
+		{
+			return;
+		}
+
+		list.remove(id);
+		printTime(id, text);
+	}
+
+	/**
+	 * Print interim time
+	 * 
+	 * @param id
+	 *            - the unique id
+	 * @param text
+	 *            - the text
+	 */
+	public static void printInterimTime(String id, String text)
+	{
+		// info enabled?
+		if (!isLoggingEnabled())
+		{
+			return;
+		}
+
+		print(id, "INT", text, Calendar.getInstance(), list.get(id));
+	}
+
+	/**
+	 * Print the current time / duration for the id
+	 * 
+	 * @param id
+	 *            - the unique id
+	 * @param text
+	 *            - the text
+	 */
+	public static void printTime(String id, String text)
+	{
+		// info enabled?
+		if (!isLoggingEnabled())
+		{
+			return;
+		}
+
+		// get from the list if id already exists
+		Calendar startTime = list.get(id);
+
+		// get the current time
+		Calendar currentTime = Calendar.getInstance();
+
+		// new timer
+		String prefix = "";
+		if (startTime == null)
+		{
+			list.put(id, currentTime);
+			prefix = "STR";
+		}
+		else
+		{
+			list.remove(id);
+			prefix = "END";
+		}
+
+		// print
+		print(id, prefix, text, currentTime, startTime);
+	}
+
+	/**
+	 * Print the current time and the duration from the reference time
+	 * 
+	 * @param id
+	 *            - the unique id
+	 * @param text
+	 *            - the text
+	 * @param currentTime
+	 *            - the current time
+	 * @param referenceTime
+	 *            - the start time
+	 */
+	private static void print(String id, String prefix, String text, Calendar currentTime, Calendar referenceTime)
+	{
+		StringBuffer output = new StringBuffer();
+		output.append("TimeTest - " + prefix + " - ");
+		output.append(id);
+		output.append(": ");
+		output.append(currentTime.getTime());
+		output.append(" ");
+		output.append(currentTime.getTimeInMillis());
+		output.append(" - ");
+
+		// duration of execution
+		if (referenceTime != null)
+		{
+			long duration = currentTime.getTimeInMillis() - referenceTime.getTimeInMillis();
+			output.append(" (");
+			output.append(duration);
+			output.append("ms) ");
+		}
+
+		// add user defined text
+		output.append(text);
+
+		// print it
+		LOG.info(output.toString());
+	}
+
+	/**
+	 * Clear the list
+	 */
+	public void clear()
+	{
+		list.clear();
+	}
+
+	/**
+	 * Determine if logging enabled
+	 * 
+	 * @return true if logging enabled
+	 */
+	private static boolean isLoggingEnabled()
+	{
+		return LOG.isInfoEnabled();
+	}
+
+}

@@ -1,0 +1,122 @@
+package com.misys.equation.common.internal.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import com.misys.equation.common.dao.ICLDRecordDaoImp;
+
+public class CLDRecordDaoImplementation extends CLDRecordDao implements ICLDRecordDaoImp
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	public CLDRecordDaoImplementation()
+	{
+		super();
+	}
+
+	/**
+	 * This method will return customer and unit base on globalCustomerNumber.
+	 * 
+	 * @param globalCustomerNumber
+	 *            this is the unique id.
+	 */
+	public List<Map<String, Object>> getCustomerNumberAndUnitBaseOnGlobalCustomerNumber(String globalCustomerNumber)
+	{
+		StringBuilder sql = new StringBuilder("SELECT CLDCOUN,CLDCNO, CLDSYS FROM ");
+		List<Map<String, Object>> result = null;
+
+		sql.append(getTableName());
+		sql.append(" WHERE CLDGCID ='");
+		sql.append(globalCustomerNumber);
+		sql.append("'");
+		result = getJdbcTemplate().queryForList(sql.toString());
+		return result;
+	}
+
+	/**
+	 * This method will return global customer data.
+	 * 
+	 * @param globalCustomerNumber
+	 *            this is the unique id.
+	 */
+	public List<Map<String, Object>> getGlobalCustomerData(String globalCustomerNumber)
+	{
+		StringBuilder sql = new StringBuilder("SELECT CLDGCID,CLDSEQ,CLDSYS, CLDCOUN,CLDCNO,CLDMFLG FROM ");
+		List<Map<String, Object>> result = null;
+
+		sql.append(getTableName());
+		sql.append(" WHERE CLDGCID ='");
+		sql.append(globalCustomerNumber);
+		sql.append("'");
+		result = getJdbcTemplate().queryForList(sql.toString());
+		return result;
+	}
+
+	/**
+	 * This method will get all customer information across units.
+	 * 
+	 * @param globalCustomerNumber
+	 *            this the universal customer id.
+	 * @return the <code> List </code> of customer of information.
+	 */
+	public List<Map<String, Object>> getCustomerInformationAcrossAllUnits(String globalCustomerNumber)
+	{
+
+		StringBuilder sqlBuilder = new StringBuilder(1024);
+		List<Map<String, Object>> result = null;
+
+		sqlBuilder.append("SELECT  CLDCNO,CLDGCID,CLDMFLG,CLDCOUN, CLDSYS  FROM ");
+		sqlBuilder.append(getTableName());
+		sqlBuilder.append(" WHERE CLDGCID = '");
+		sqlBuilder.append(globalCustomerNumber);
+		sqlBuilder.append("' ");
+
+		result = getJdbcTemplate().queryForList(sqlBuilder.toString());
+		return result;
+	}
+
+	/**
+	 * This method will return a global customer id base on the passed customer number
+	 * 
+	 * @param this is the customer number used to get the global customer id.
+	 * @return the global customer id.
+	 */
+	public List<Map<String, Object>> getGlobalCustomerIDBaseOnCustomerNumber(String customernumber)
+	{
+
+		StringBuilder sqlBuilder = new StringBuilder(1024);
+		List<Map<String, Object>> result = null;
+
+		sqlBuilder.append("SELECT  CLDGCID FROM ");
+		sqlBuilder.append(getTableName());
+		sqlBuilder.append(" WHERE CLDCNO= '");
+		sqlBuilder.append(customernumber);
+		sqlBuilder.append("' FETCH FIRST 1 ROWS ONLY");
+
+		result = getJdbcTemplate().queryForList(sqlBuilder.toString());
+		return result;
+	}
+
+	/**
+	 * This method will get the next sequence.
+	 * 
+	 * @return this is the next sequence.
+	 */
+	public List<Map<String, Object>> getSequence()
+	{
+		StringBuilder sqlBuilder = new StringBuilder(1024);
+		List<Map<String, Object>> result = null;
+
+		// select * from address order by name desc fetch first 1 row only
+
+		sqlBuilder.append("SELECT CLDSEQ FROM ");
+		sqlBuilder.append(getTableName());
+		sqlBuilder.append(" ORDER BY CLDSEQ DESC");
+		sqlBuilder.append(" FETCH FIRST 1 ROWS ONLY");
+		result = getJdbcTemplate().queryForList(sqlBuilder.toString());
+
+		return result;
+	}
+
+}

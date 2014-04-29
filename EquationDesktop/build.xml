@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+     This file has all needed tasks to build EquationDesktop.
+     This ant project will include workerBuild.xml which provides some 
+     facilities such as creating jars, creating  java-docs, copying files 
+     and others.
+     
+     inheritall="true"  inheritRefs="true" attributes are used to pass 
+     properties values to the included projects.   
+     ====================================================================== -->
+<project name="Equation Desktop" default="build" basedir=".">
+
+	<description>
+		
+		These are the main projects tasks.
+		
+		package:
+		1)Add the version attribute 
+		2)Compile 
+		3)Build the WAR 
+		4)Deploy it 
+		5)Generate Java-docs 
+
+		build:
+		1)Build the jar 
+		2)Deploy it
+		
+		The default ant task  will be used by eclipse to build the current project.
+
+    </description>
+
+	<!--************************* Properties *************************************-->
+
+	<!--Sets the properties values using the predefined build.properties. -->
+	<property file="build.properties" />
+	<!--it gets the property file from the equation builder. -->
+		<property file="${EQUATION_BUILDER}/build.properties" prefix="equation.builde"/>
+	
+	 
+	<!--project info -->
+	<property name="project.name" location="${PROJECT_NAME}" />
+	<property name="user.name" location="${USER_NAME}"/>
+
+	
+	<!--project directories and files-->
+	<property name="war.name" value="${WAR_NAME}-${VERSION}.war" />
+	<property name="jar.name" value="${JAR_NAME}-${VERSION}.jar" />
+	<property name="class.dir" location="${CLASSES}" />
+	<property name="src.dir" location="${SRC}" />
+	<property name="src.resources" location="${RESOURCES}" />
+
+	<!--Deploy dirs -->
+	<property name="deploy.dir" location="${DEPLOY_DIR}" />
+
+	<!-- Dist properties -->
+	<property name="dist.dir" value="${DIST}" />
+	<property name="dist.target" location="${dist.dir}/${TARGET}" />
+
+	<property name="dist.lib" location="${dist.target}/lib" />
+	<property name="dist.readme" location="${dist.target}" />	
+	<property name="war.path" value="${dist.lib}/${war.name}" />
+	<property name="docs.dir" location="${dist.target}/${JAVA_DOCS_NAME}" />
+
+	<!--Classpath-jars -->
+	<property name="classpath.dir" location="${CLASSPATH}/lib" />
+
+	<!--- Build project references. -->
+	<property name="build.project.dir" location="${EQUATION_BUILDER}" />
+	<property name="docs.templates" location="${DOCS}" />
+
+	<!--Dependency libs. -->
+	<property file="${EQUATION_COMMON}/build.properties" prefix="equation.common"/>
+	<property file="${EQUATION_FUNCTION}/build.properties" prefix="equation.function"/>	
+	<property name="equation.common.dist" location="${dist.dir}/${equation.common.TARGET}"/>
+	<property name="equation.function.dist" location="${dist.dir}/${equation.function.TARGET}" />
+
+	<property name="equation.function.wizard" location="${EQUATION_FUNCTION_WIZARD}"/>
+
+	<!--web properties. -->
+	<property name="web.classes" location="build/classes" />
+	<property name="webContent.dir" location="WebContent" />
+	<property name="equation.jsp.dir" location="${webContent.dir}/equation" />
+	<property name="webinf.dir" location="${webContent.dir}/WEB-INF" />
+	<property name="web.lib.dir" location="${webinf.dir}/lib" />
+	<property name="webxml.dir" location="${webinf.dir}/web.xml" />
+
+	<!-- equation.function.wizard properties. -->
+	<property name="equation.function.wizard" location="${equation.function.wizard}" />
+
+	<property name="equation.function.wizard.equationDesktopArtefacts" 
+						location="${equation.function.wizard}/resources/EquationDesktop" />
+
+	<property name="equation.function.wizard.equationDesktopArtefacts.webContent" 
+					location="${equation.function.wizard}/resources/EquationDesktop/WebContent" />
+
+	<property name="equation.function.wizard.equationDesktopArtefacts.webinf" 
+						location="${equation.function.wizard.equationDesktopArtefacts.webContent}/WEB-INF" />
+
+	<property name="equation.function.wizard.equationDesktopArtefacts.webinf.lib" 
+							location="${equation.function.wizard.equationDesktopArtefacts.webinf}/lib" />
+
+	<property name="equation.function.wizard.deploy" 
+								location="${equation.function.wizard.equationDesktopArtefacts.webinf.lib}/${jar.name}"/>
+
+
+	<property name="equation.function.wizard.equationDesktopArtefacts.equation" 
+							location="${equation.function.wizard.equationDesktopArtefacts.webContent}/equation" />
+
+	<!--It will check if the tomcat lib path needs to be set in the classpath.-->
+	<!--It gets the tomcat lib value -->	
+
+	<property name="equation.builde.tomcat.path" value="${equation.builde.TOMCAT_HOME_LIB_PATH}"/>
+	<!--It will check if the tomcat lib path needs to be set.-->
+	<condition property="tomcat.home.lib.path" value="${equation.builde.tomcat.path}">
+		<!--It will set the value of the tomcat lib path -->
+		<isset property="IS_A_TOMCAT_PROJECT"/>
+	</condition>
+	<!--if the current project is not a tomcat project tomcat.home.lib.path will be null.-->
+	<property name="tomcat.home.lib.path" value=""/>
+	
+	<!--It will check if the eclipse lib path needs to be set in the classpath.-->
+	<!--It gets the eclipse value -->
+	<property name="equation.builde.eclipse.plugins.path" value="${equation.builde.ECLIPSE_PLUGIN_LIBS_PATH}"/>	
+	<!--It will check if the eclipse lib path needs to be set.-->
+	<condition property="eclipse.plugins.lib.path" value="${equation.builde.eclipse.plugins.path}">
+		<!--It will set the value of the tomcat lib path -->
+		<isset property="IS_A_ECLIPSE_PROJECT"/>
+	</condition>
+	<!--if the current project is not a eclipse project eclipse.plugins.lib.path will be null.-->
+	<property name="eclipse.plugins.lib.path" value=""/>	
+		
+	
+	<property name="eclipse.plugins.lib.path" value=""/>
+	<!--this is the server cache webinf lib location. -->
+	<property name="server.cache.webinf.lib" location="${SERVER_CACHE_WEBINF.LIB}"/>
+	
+	
+
+
+	<!-- *************************** TARGETS ******************************* -->
+
+	<!-- =================================================================== -->
+	<!-- target: init                                                        -->
+	<!-- =================================================================== -->
+
+	<!-- It will create the build directories and local dist target directories . -->
+	<target name="init" description="It will create the build directories and local dist target directories.">
+		<ant antfile="${build.project.dir}/build.xml" target="check_builder_initialisation" inheritall="false" inheritrefs="false" />
+		<ant antfile="${build.project.dir}/workerBuild.xml" target="init" />
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: build                                                       -->
+	<!-- =================================================================== -->
+
+	<target name="build" description="Build the library that presents Equation">
+		
+		<mkdir dir="${equation.function.wizard.equationDesktopArtefacts.webinf}" />
+		<mkdir dir="${equation.function.wizard.equationDesktopArtefacts.webinf.lib}"/>
+		
+		<copy todir="${equation.function.wizard.equationDesktopArtefacts.equation}" overwrite="true">
+			<fileset dir="${equation.jsp.dir}" />
+		</copy>
+		<copy todir="${equation.function.wizard.equationDesktopArtefacts.webinf.lib}" overwrite="true">
+			<fileset dir="${web.lib.dir}" />
+		</copy>
+		<copy file="${webinf.dir}/server-config.wsdd" todir="${equation.function.wizard.equationDesktopArtefacts.webinf}" overwrite="true">
+		</copy>
+		<copy file="${webinf.dir}/struts-bean.tld" todir="${equation.function.wizard.equationDesktopArtefacts.webinf}" overwrite="true">
+		</copy>
+		<copy file="${webinf.dir}/struts-eqinv.xml" todir="${equation.function.wizard.equationDesktopArtefacts.webinf}" overwrite="true" >
+		</copy>
+		<copy file="${webinf.dir}/struts-html.tld" todir="${equation.function.wizard.equationDesktopArtefacts.webinf}" overwrite="true">
+		</copy>
+		<copy file="${webinf.dir}/struts-logic.tld" todir="${equation.function.wizard.equationDesktopArtefacts.webinf}" overwrite="true">
+		</copy>
+		
+		<copy file="build\classes\com\misys\equation\ui\resources\ApplicationResources.properties" todir="${equation.function.wizard.equationDesktopArtefacts}">
+		</copy>
+		<copy file="build\classes\com\misys\equation\ui\resources\ApplicationResources_TMPLT.properties" todir="${equation.function.wizard.equationDesktopArtefacts}" overwrite="true">
+		</copy>
+		<copy file="build\classes\com\misys\equation\ui\resources\COUR.TTF" todir="${equation.function.wizard.equationDesktopArtefacts}" overwrite="true">
+		</copy>
+
+		<!--Try and remove previous created jar of same name -->
+		<delete file="${equation.function.wizard.deploy}" verbose="true" failonerror="false"/>
+
+		<!--Try and remove previous versions of the jar -->
+		<delete  verbose="true" failonerror="false">
+			<fileset dir="${equation.function.wizard.equationDesktopArtefacts.webinf.lib}" >
+				<include name="${JAR_NAME}**/*"/>
+				<include name="${JAR_NAME}*.*/*"/>
+				<include name="${JAR_NAME}**"/>
+			</fileset>
+		</delete>
+
+		<!--build the jar -->
+		<jar jarfile="${equation.function.wizard.deploy}">
+			<fileset dir="build\classes">
+				<include name="**/*.class"/>
+			</fileset>
+			
+			<fileset dir=".\resources">
+				<include name="*.properties" />
+			</fileset>
+		</jar>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: clean                                                       -->
+	<!-- =================================================================== -->
+
+	<!-- This task is going to clean the current project.. -->
+	<target name="clean" description="This task is going to clean the current project.">
+		
+		<delete verbose="true" failonerror="false">
+			<fileset dir="${dist.target}"  >
+			<exclude name=".svn" />
+			</fileset>
+		</delete>	
+		<delete verbose="true" failonerror="false">
+			<fileset dir="${equation.function.wizard.equationDesktopArtefacts}"  >
+			<exclude name=".svn" />
+			</fileset>
+		</delete>	
+
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: package                                                     -->
+	<!-- =================================================================== -->
+
+	<target name="package" depends="create_folders,init"  description="This task will create a jar a deploy it.">
+
+		<echo level="info" message="Equation Desktop builder:  building the project."/>
+		<ant  target="cvs_version" inheritall="true" />
+		<ant  target="compile" inheritall="true" />		
+		<ant  target="build" inheritall="true" />
+		<ant  target="create_war" inheritall="false" />
+		<ant  target="deploy" inheritall="false" />
+		<ant  target="javadoc" inheritall="true" />
+		<ant  target="move_readme_docs" inheritall="true" />
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: create_folders                                                       -->
+	<!-- =================================================================== -->
+
+	<target name="create_folders" description="Create required folders that are pruned by CVS">
+		<!-- ensure that the resources folder exists, even if not retrieved from CVS -->
+		<mkdir dir="${src.resources}" />
+	</target>
+	
+	<!-- =================================================================== -->
+	<!-- target: compile                                                     -->
+	<!-- =================================================================== -->
+
+	<target name="compile" depends="depends" description="This task will complile the current project.">
+
+		<ant antfile="${build.project.dir}/workerBuild.xml" target="compile_src_resources" inheritall="true" inheritRefs="true">
+			<property name="src.dir" location="${src.dir}" />
+			<property name="src.resources" location="${src.resources}" />
+		</ant>
+
+		<mkdir dir="${class.dir}\com\misys\equation\ui\resources"/>
+		<copy file="${src.dir}\com\misys\equation\ui\resources\ApplicationResources.properties" todir="${class.dir}\com\misys\equation\ui\resources" />
+		<copy file="${src.dir}\com\misys\equation\ui\resources\COUR.TTF" todir="${class.dir}\com\misys\equation\ui\resources" />
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: create_war                                                  -->
+	<!-- =================================================================== -->
+
+	<target name="create_war" depends="depends" description="This target creates the project’s jar.">
+
+		<echo level="info" message="Equation Desktop: The ${war.name} in going to be created ."/>
+
+		<war warfile="${war.path}" webxml="${webxml.dir}">
+
+			<fileset dir="${webContent.dir}">
+				<include name="**/*.*" />
+				<exclude name="**/*.jar"/>
+				<exclude name="**/*.MF"/>
+			</fileset>
+
+			<fileset dir="${build.project.dir}">
+				<include name="META-INF/**/*"/>
+			</fileset>
+
+			<lib dir="${web.lib.dir}" >
+				<include name="**/**/*.jar" />
+			</lib>
+
+			<lib dir="${equation.common.dist}" >
+				<include name="**/**/*.jar" />
+			</lib>
+
+			<lib dir="${equation.function.dist}" >
+				<include name="**/**/*.jar" />
+			</lib>
+
+			<classes dir="${web.classes}"/>
+		</war>
+
+		<echo level="info" message="Equation Desktop: The ${war.name} was created. "/>
+
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: javadoc                                                     -->
+	<!-- =================================================================== -->
+
+	<target name="javadoc" description="This target creates the javadocs for this project.">
+
+		<echo level="info" message="Equation Desktop: The java docs are going to be  generated."/>
+
+		<ant antfile="${build.project.dir}/workerBuild.xml" target="javadoc" inheritall="true"  inheritRefs="true">
+			<property name="src.dir" location="${src.dir}"/>
+		</ant>
+
+		<echo level="info" message="Equation Desktop: The Java doc generation has finished. "/>
+
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: deploy                                                      -->
+	<!-- =================================================================== -->
+
+	<target name="deploy" description="This task will deploy the  created jar.">
+
+		<ant antfile="${build.project.dir}/workerBuild.xml" target="deploy_jar" inheritall="true"  inheritRefs="true">
+			<property name="to.dir" location="${deploy.dir}"/>
+		</ant>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: move_readme_docs                                            -->
+	<!-- =================================================================== -->
+
+	<target name="move_readme_docs" description="This task will move the read me files.">
+		
+		<ant antfile="${build.project.dir}/workerBuild.xml" target="move_readme_docs" inheritall="true"  inheritRefs="true">
+		</ant>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- target: cvs_version                                                 -->
+	<!-- =================================================================== -->
+
+	<target name="cvs_version" description="This task will add the cvs version attribute to all classes.">
+
+		<ant antfile="${build.project.dir}/workerBuild.xml" target="cvs_version" inheritall="true"  inheritRefs="true">
+			<property name="src.dir" location="${src.dir}"/>
+		</ant>
+	</target>
+	
+	
+	<!-- =================================================================== -->
+	<!-- target: deployWebJarInTheServerCacheDir                             -->
+	<!-- =================================================================== -->
+
+	<target name="deployWebJarInTheServerCacheDir" description="This task will deploy teh webinf jar in the server cache dir.">
+		
+		<delete verbose="true" failonerror="false">
+			<fileset dir="${server.cache.webinf.lib}"  >
+			<exclude name=".svn" />
+			</fileset>
+		</delete>	
+		
+	   <copy todir="${server.cache.webinf.lib}" overwrite="true" verbose="true">
+			<fileset dir="${web.lib.dir}">
+				<include name="**/*.jar"/>
+			</fileset>
+		</copy>
+		
+	</target>
+	            
+	<!-- =================================================================== -->
+	<!-- target: jslint                                                        -->
+	<!-- =================================================================== -->
+	<target name="jslint" description="Runs JSLint over java script.">
+	<!-- This target is intended for use by server builds, although it can also 
+	be invoked in a development environment	if desired. 
+	 -->
+		<echo message="jslint4java.jarfile value = ${jslint4java.jarfile}"/>
+		<fail unless="jslint4java.jarfile">You must set the jslint4java.jarfile system property to point to the jslint4java jar file. For example -Djslint4java.jarfile=C:\jslint4java-2.0.2\jslint4java-2.0.2.jar</fail>
+	
+		<echo message="jslint.file value = ${jslint.file}"/>
+		<fail unless="jslint.file">You must set the jslint.file system property to point to a jslint file. For example -Djslint.file=C:\jslint.js</fail>
+		
+		<taskdef name="jslint" classname="com.googlecode.jslint4java.ant.JSLintTask" classpath="${jslint4java.jarfile}" />
+
+		<property name="output.dir" location="${basedir}/#jslint" />
+
+		<delete failonerror="false" verbose="true" dir="${output.dir}" />
+		<mkdir dir="${output.dir}" />
+		
+		<jslint haltonfailure="false" jslint="${jslint.file}" options="evil,forin,sub,undef,white,sloppy,vars,eqeq,maxerr=999,plusplus">
+			<formatter type="plain" />
+			<formatter type="xml" destfile="${output.dir}/jslintOutput.xml" />
+			<formatter type="report" destfile="${output.dir}/jslintReport.html" />			
+			<fileset dir="WebContent/equation/scripts" includes="**/*.js" excludes="prototype.js,ws.js"/>
+		</jslint> 
+	</target>
+	
+	<!-- =================================================================== -->
+	<!-- target: depends                                                     -->
+	<!-- =================================================================== -->
+
+	<target name="depends">
+	</target>
+</project>

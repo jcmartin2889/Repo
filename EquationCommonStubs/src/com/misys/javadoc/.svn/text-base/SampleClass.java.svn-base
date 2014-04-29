@@ -1,0 +1,12 @@
+package com.misys.javadoc;
+
+/**
+ * @equation.external
+ * 
+ */
+public class SampleClass
+{
+
+	//This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+}

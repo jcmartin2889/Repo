@@ -1,0 +1,201 @@
+package com.misys.equation.common.access;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.misys.equation.common.utilities.EquationLogger;
+
+/**
+ * This class is going to execute an API program over a list of sessions
+ */
+public class GlobalProcessingApiExecuter
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: GlobalProcessingApiExecuter.java 10493 2011-02-18 14:43:35Z MACDONP1 $";
+	// this is an array which defines the sessions to be used. it filter the Api call only to used defined sessions.
+	private List<String> systemUnitsToBeUsed = null;
+	private List<EquationStandardSession> equationStandardSessions;
+	private EquationStandardAPIManager equationStandardAPIManager;
+	private EquationStandardSession currentSession;
+	private EquationCommonContext equationCommonContext;
+	private Map<String, String> apiFields;
+	private String apiName;
+	private Map<String, IEquationStandardObject> results;
+	private static final EquationLogger LOG = new EquationLogger(GlobalProcessingApiExecuter.class);
+	private String mode;
+
+	/**
+	 * This is the default constructor.
+	 */
+	public GlobalProcessingApiExecuter(EquationStandardSession equationStandardSession)
+	{
+		this(equationStandardSession, IEquationStandardObject.FCT_FUL);
+	}
+
+	/**
+	 * Create a GlobalProcessingApiExecuter given a session and mode
+	 * 
+	 * @param equationStandardSession
+	 * @param mode
+	 */
+	public GlobalProcessingApiExecuter(EquationStandardSession equationStandardSession, String mode)
+	{
+		try
+		{
+			equationCommonContext = EquationCommonContext.getContext();
+			results = new HashMap<String, IEquationStandardObject>();
+
+			this.mode = mode;
+
+			equationStandardSessions = equationCommonContext.getGlobalProcessingEquationStandardSessions(equationStandardSession
+							.getSessionIdentifier());
+		}
+		catch (Exception eQException)
+		{
+			if (LOG.isErrorEnabled())
+			{
+				StringBuilder message = new StringBuilder("There is a problem creating Global processing the sessions");
+				LOG.error(message.toString(), eQException);
+			}
+		}
+	}
+
+	/**
+	 * This method will execute the defined API program using all predefined EQ sessions.
+	 */
+	public void executeAPI()
+	{
+		for (EquationStandardSession equationStandardSession : equationStandardSessions)
+		{
+			currentSession = equationStandardSession;
+
+			if (validateSessionToUse(currentSession))
+			{
+				equationStandardAPIManager = new EquationStandardAPIManager(currentSession, apiName, mode);
+				equationStandardAPIManager.setApiFields(apiFields);
+
+				IEquationStandardObject result = equationStandardAPIManager.executeAPI();
+
+				// this map hold all results.
+				results.put(currentSession.getUnitId(), result);
+			}
+			else
+			{
+				// The current session has not been defined in sessionsToBeused.
+				continue;
+			}
+		}
+	}
+
+	/**
+	 * This method will evaluate if the current session can be used to call the API.
+	 * 
+	 * @param session
+	 *            this is the <code>EquationStandardSession</code> session to be evaluated.
+	 * @return true if the current session can be use to call the API.
+	 */
+	private boolean validateSessionToUse(EquationStandardSession session)
+	{
+		boolean result = false;
+
+		// if it is true it means that all session can be used.
+		if (systemUnitsToBeUsed == null)
+		{
+			return true;
+		}
+
+		if (systemUnitsToBeUsed.contains(createKey(session.getSystemId().trim(), session.getUnitId().trim())))
+		{
+			result = true;
+		}
+
+		return result;
+	}
+
+	/** getter and setters **/
+
+	public EquationStandardSession getCurrentSession()
+	{
+		return currentSession;
+	}
+
+	public void setCurrentSession(EquationStandardSession currentSession)
+	{
+		this.currentSession = currentSession;
+	}
+
+	public Map<String, String> getApiFields()
+	{
+		return apiFields;
+	}
+
+	public void setApiFields(Map<String, String> apiFields)
+	{
+		this.apiFields = apiFields;
+	}
+
+	public String getApiName()
+	{
+		return apiName;
+	}
+
+	public void setApiName(String apiName)
+	{
+		this.apiName = apiName;
+	}
+
+	public List<EquationStandardSession> getEquationStandardSessions()
+	{
+		return equationStandardSessions;
+	}
+
+	public Map<String, IEquationStandardObject> getResults()
+	{
+		return results;
+	}
+
+	/**
+	 * This method defines the set of units to be used during the API call.
+	 * 
+	 * @return a <code>List</code> of units to be used.
+	 */
+	public List<String> getUnitsToBeUsed()
+	{
+		return systemUnitsToBeUsed;
+	}
+
+	/**
+	 * Sets the set of units to be used during the API call.
+	 * 
+	 * @param a
+	 *            <code>List</code> of all valid units to be used.
+	 */
+	public void setUnitsToBeUsed(List<String> systemUnitsToBeUsed)
+	{
+		this.systemUnitsToBeUsed = systemUnitsToBeUsed;
+	}
+
+	/**
+	 * Sets the units to be used during the API call.
+	 * 
+	 * @param systemToBeUsed
+	 *            valid unit to be used.
+	 * @param unitToBeUsed
+	 *            valid systemToBeUsed to be used.
+	 */
+	public void setSystemAndUnitToBeUsed(String systemToBeUsed, String unitToBeUsed)
+	{
+		if (this.systemUnitsToBeUsed == null)
+		{
+			this.systemUnitsToBeUsed = new ArrayList<String>();
+		}
+		this.systemUnitsToBeUsed.add(createKey(systemToBeUsed, unitToBeUsed));
+	}
+
+	private String createKey(String systemToBeUsed, String unitToBeUsed)
+	{
+		return new StringBuilder(systemToBeUsed).append("-").append(unitToBeUsed).toString();
+	}
+}

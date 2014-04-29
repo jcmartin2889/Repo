@@ -1,0 +1,75 @@
+package com.misys.equation.common.utilities;
+
+public class FileErrorLog
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: FileErrorLog.java 10856 2011-04-26 10:45:41Z MACDONP1 $";
+	private static FileErrorLog currentInstance;
+	private boolean hasBeenUsed = false;
+	private StringBuilder buffer;
+
+	private FileErrorLog()
+	{
+		initialise();
+	}
+
+	private void initialise()
+	{
+		buffer = new StringBuilder();
+		hasBeenUsed = false;
+	}
+
+	/**
+	 * This method will return the singleton of class FileErrorLog.
+	 * 
+	 * @return FileUtils this is the singleton of class FileErrorLog.
+	 */
+	public static FileErrorLog getInstance()
+	{
+		synchronized (FileErrorLog.class)
+		{
+			if (currentInstance == null)
+			{
+				currentInstance = new FileErrorLog();
+			}
+		}
+		return currentInstance;
+	}
+
+	/**
+	 * This method will append a message to a collection of messages.
+	 * 
+	 * @param id
+	 *            this is an id for the message
+	 * @param message
+	 *            this is the message text
+	 */
+	public void appendMessage(String id, String message)
+	{
+		if (hasBeenUsed == false)
+		{
+			hasBeenUsed = true;
+		}
+
+		buffer.append(id);
+		buffer.append(" ");
+		buffer.append(message);
+		buffer.append("\n");
+	}
+
+	/**
+	 * This method will persist the errors found.
+	 * 
+	 * @param fileName
+	 *            this is the file that will be created to hold the errors.
+	 */
+	public void persistErrorLogFile(String fileName)
+	{
+		if (hasBeenUsed == true)
+		{
+			FileUtils.writeInAFile(buffer.toString(), fileName);
+			// it cleans the buffer.
+			initialise();
+		}
+	}
+}

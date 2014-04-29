@@ -1,0 +1,485 @@
+package com.misys.equation.common.access;
+
+import java.io.CharConversionException;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import com.ibm.as400.access.AS400Text;
+import com.ibm.as400.access.ExtendedIllegalArgumentException;
+import com.ibm.as400.access.Record;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.internal.eapi.core.EQRuntimeException;
+import com.misys.equation.common.utilities.EqDataType;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * This class extends EquationDataStructureData to add storage for repeating data
+ */
+public class EquationDataStructureRepeatingData extends EquationDataStructureData
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EquationDataStructureRepeatingData.java 11069 2011-05-27 14:40:04Z challip1 $";
+
+	private static final long serialVersionUID = 1L;
+
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(EquationDataStructureRepeatingData.class);
+
+	private final Set<String> keys = new HashSet<String>();
+
+	// Repeating fields
+	private List<Record> rcds = new ArrayList<Record>();
+	private Record currentRow = null;
+	private int currentRowIndex = -1;
+
+	/**
+	 * constructor
+	 */
+	public EquationDataStructureRepeatingData(EquationDataStructure eqDS, String keys)
+	{
+		super(eqDS);
+		// Put keys in a Set for simple checking
+		String[] keyArray = keys.split(":");
+		for (String key : keyArray)
+		{
+			this.keys.add(key);
+		}
+	}
+
+	/**
+	 * Need to call next() after this call to prepare for data
+	 */
+	public void moveFirst()
+	{
+		currentRow = null;
+		currentRowIndex = -1;
+	}
+
+	/**
+	 * Overrides base class method to set value in either the repeating or non-repeating data as appropriate
+	 */
+	@Override
+	public void setFieldValue(String fieldName, String fieldValue)
+	{
+		// Use either the repeating or non-repeating set of fields:
+		Record row = keys.contains(fieldName) ? rcd : currentRow;
+
+		if (row == null)
+		{
+			throw new EQRuntimeException("No currentRow for field [ " + fieldName + "]");
+		}
+		EquationFieldDefinition fieldDefinition = eqDS.getFieldDefinition(fieldName);
+		if (fieldDefinition != null)
+		{
+			int fieldType = fieldDefinition.getFieldDataType();
+			int fieldLength = fieldDefinition.getFieldLength();
+			if (fieldType == Types.CHAR || fieldType == Types.BINARY || fieldType == Types.VARCHAR || fieldType == Types.VARBINARY
+							|| fieldType == Types.TIMESTAMP)
+			{
+				if (fieldValue == null)
+				{
+					fieldValue = "";
+				}
+				row.setField(fieldName.toUpperCase(), Toolbox.trim(fieldValue, fieldLength));
+			}
+			// else if (fieldType == Types.TIMESTAMP)
+			// {
+			// if (fieldValue == null)
+			// {
+			// fieldValue = new Timestamp(0L);
+			// }
+			// row.setField(fieldName.toUpperCase(), Toolbox.trim(fieldValue, fieldLength));
+			// }
+			else
+			{
+				// Have a bash at parsing what we've been passed as a decimal
+				try
+				{
+					// not defined or blank
+					if (fieldValue == null || fieldValue.trim().length() == 0)
+					{
+						fieldValue = "0";
+					}
+
+					// ensure valid decimal places
+					else
+					{
+						fieldValue = Toolbox.removeTrailingZeroes(fieldValue, EqDataType.DECIMALSEP);
+					}
+
+					// create the big decimal
+					BigDecimal fieldValueNumber = new BigDecimal(fieldValue);
+					row.setField(fieldName.toUpperCase(), fieldValueNumber);
+				}
+				catch (NumberFormatException e)
+				{
+					LOG.warn(e);
+					LOG.warn("Trying to set Field [" + fieldName + "] with value of [" + fieldValue + "]");
+					row.setField(fieldName.toUpperCase(), new BigDecimal(0));
+				}
+				catch (ExtendedIllegalArgumentException e)
+				{
+					LOG.warn(e);
+					LOG.warn("Trying to set Field [" + fieldName + "] with value of [" + fieldValue + "]");
+					row.setField(fieldName.toUpperCase(), new BigDecimal(0));
+				}
+			}
+		}
+		else
+		{
+			// If the field is not found, then log an error:
+			LOG.error("Field [" + fieldName + "] not found in data structure [" + eqDS.getFormatId() + "]");
+		}
+	}
+
+	/**
+	 * 
+	 */
+	@Override
+	public void setBytes(byte[] bytes)
+	{
+		try
+		{
+			// Ensure that the gzData contains the correct length
+			int length = getEqDS().getInitialBytes().length;
+			if (bytes.length >= length)
+			{
+				currentRow.setContents(bytes);
+			}
+			else
+			{
+				byte[] gzDataTmp = new byte[length];
+				System.arraycopy(bytes, 0, gzDataTmp, 0, bytes.length);
+				for (int i = bytes.length; i < length; i++)
+				{
+					gzDataTmp[i] = 0x40; // blank in HEX
+				}
+				currentRow.setContents(gzDataTmp);
+			}
+		}
+		catch (UnsupportedEncodingException e)
+		{
+			LOG.error(e);
+		}
+	}
+
+	/**
+	 * 
+	 */
+	@Override
+	public byte[] getBytes()
+	{
+		try
+		{
+			// TODO: Append all rows...
+			return currentRow.getContents();
+		}
+		catch (CharConversionException e)
+		{
+			LOG.error(e);
+			return null;
+		}
+		catch (UnsupportedEncodingException e)
+		{
+			LOG.error(e);
+			return null;
+		}
+	}
+
+	/**
+	 * Return the field value of the field
+	 * <p>
+	 * Overrides base class method to get value from either the repeating or non-repeating data as appropriate
+	 * 
+	 * @return the field value of the field
+	 * 
+	 */
+	@Override
+	public String getFieldValue(String fieldName)
+	{
+		// Use either the repeating or non-repeating set of fields:
+		Record row = keys.contains(fieldName) ? rcd : currentRow;
+		return getFieldValue(row, fieldName);
+	}
+
+	/**
+	 * Gets a value from a record
+	 * <p>
+	 * This allows the toString code to re-use this code
+	 * 
+	 * @param record
+	 * @param fieldName
+	 * @return String the field value
+	 */
+	private String getFieldValue(Record record, String fieldName)
+	{
+		EquationFieldDefinition fieldDefinition = eqDS.getFieldDefinition(fieldName);
+		String fieldValue = "";
+		if (!(fieldDefinition == null))
+		{
+			try
+			{
+				int fieldType = fieldDefinition.getFieldDataType();
+				if (fieldType == Types.CHAR || fieldType == Types.BINARY || fieldType == Types.VARCHAR
+								|| fieldType == Types.VARBINARY || fieldType == Types.TIMESTAMP)
+				{
+					fieldValue = (String) (record.getField(fieldName.toUpperCase()));
+				}
+				else
+				{
+					BigDecimal fieldValueNumber = (BigDecimal) (record.getField(fieldName.toUpperCase()));
+					fieldValue = fieldValueNumber.toPlainString();
+				}
+			}
+			catch (UnsupportedEncodingException e)
+			{
+				LOG.error("Trying to retrieve Field [" + fieldName + "]");
+				LOG.error(e);
+			}
+			catch (NumberFormatException e)
+			{
+				LOG.error("Trying to retrieve Field [" + fieldName + "]");
+				LOG.error(e);
+			}
+		}
+		return fieldValue;
+	}
+
+	/**
+	 * Return the field value of the field
+	 * 
+	 * @return the field value of the field
+	 * 
+	 */
+	@Override
+	public byte[] getFieldValueBytes(String fieldName)
+	{
+		return currentRow.getFieldAsBytes(fieldName.toUpperCase());
+	}
+
+	/**
+	 * Return the String representation of the content of the data structure
+	 * 
+	 * @return the String representation of the content of the data structure
+	 */
+	@Override
+	public String toString()
+	{
+		StringBuffer serialisation = new StringBuffer();
+		Set<String> keySet = eqDS.getFieldNames();
+
+		int row = 1;
+		for (Record record : rcds)
+		{
+			serialisation.append("\nRow" + row + "\n");
+
+			Iterator<String> keys = keySet.iterator();
+			while (keys.hasNext())
+			{
+				String fieldName = keys.next();
+				EquationFieldDefinition fd = getEqDS().getFieldDefinition(fieldName);
+				String fieldNameCol = String.format("%-20s", fieldName);
+				String fieldValueCol = String.format("%-20s", getFieldValue(record, fieldName));
+				String fieldTypeCol = String.format("%-20s", fd.rtvDataTypeString());
+				String fieldValueHexCol = String.format("%-20s", getBytesString(fd.getFieldStartIndex(), fd.getByteLength()));
+				serialisation.append(fieldNameCol + ":" + fieldTypeCol + ":" + fieldValueCol + ":" + fieldValueHexCol + "\n");
+			}
+			row++;
+		}
+
+		return serialisation.toString();
+	}
+
+	/**
+	 * Return the String representation of a byte array
+	 * 
+	 * @param start
+	 *            - starting index within the array
+	 * @param length
+	 *            - the length
+	 * 
+	 * @return the String representation of a byte array
+	 */
+	private String getBytesString(int start, int length)
+	{
+		StringBuffer buffer = new StringBuffer();
+
+		// get the byte data
+		byte[] byteData = getBytes();
+
+		// initialise the end position
+		int end = start + length;
+		if (byteData.length < end)
+		{
+			end = byteData.length;
+		}
+
+		for (int i = start; i < end; i++)
+		{
+			buffer.append(String.format("%02X ", byteData[i]));
+		}
+
+		return buffer.toString();
+	}
+
+	/**
+	 * Copy content from another Equation data structure data of the same definition
+	 * 
+	 * @param eqDsData
+	 *            - the Equation data structure data to copy from
+	 */
+	public void copy(EquationDataStructureRepeatingData eqDsData)
+	{
+		setBytes(eqDsData.getBytes());
+	}
+
+	/**
+	 * Reset the content to the initial value
+	 */
+	@Override
+	public void reset()
+	{
+		setBytes(eqDS.getInitialBytes());
+	}
+
+	/**
+	 * Adds an empty row to the list
+	 */
+	public void addRow()
+	{
+		try
+		{
+			Record record = new Record(eqDS.getRcdFmt(), eqDS.getInitialBytes());
+			rcds.add(record);
+			currentRow = record;
+		}
+		catch (UnsupportedEncodingException e)
+		{
+			throw new EQRuntimeException("EquationDataStructureRepeatingData: addRow Failed", e);
+		}
+	}
+
+	/**
+	 * Attempts to move to the next row of repeating data
+	 * 
+	 * @return a boolean indicating if the move next was successful (and therefore there is a current row of data)
+	 */
+	public boolean next()
+	{
+		if (currentRowIndex + 1 < rcds.size())
+		{
+			currentRowIndex++;
+			currentRow = rcds.get(currentRowIndex);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	/**
+	 * Clears repeating records
+	 */
+	public void clear()
+	{
+		rcds = new ArrayList<Record>();
+		moveFirst();
+	}
+
+	/**
+	 * @return The number of repeating items
+	 */
+	public int rows()
+	{
+		return rcds.size();
+	}
+
+	/**
+	 * @return The length in bytes of a row
+	 */
+	public int rowSize()
+	{
+		return eqDS.getInitialBytes().length;
+	}
+
+	/**
+	 * Moves to a particular row
+	 * 
+	 * @param row
+	 *            0 based row index to move to
+	 * @return boolean indicating success
+	 */
+	public boolean moveToRow(int row)
+	{
+		if (row >= 0 && row < rcds.size())
+		{
+			currentRowIndex = row;
+			currentRow = rcds.get(currentRowIndex);
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Load the details from the result set
+	 * 
+	 * @param resultSet
+	 *            - the result row containing the details
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public void setResultSet(ResultSet resultSet) throws EQException
+	{
+		try
+		{
+			// set the keys and retrieve
+			Set<String> fieldNames = eqDS.getFieldNames();
+
+			for (String fieldName : fieldNames)
+			{
+				EquationFieldDefinition fd = eqDS.getFieldDefinition(fieldName);
+				int type = fd.getFieldDataType();
+				if (type == Types.CHAR || type == Types.VARCHAR)
+				{
+					AS400Text text = new AS400Text(fd.getByteLength(), eqDS.getCcsid());
+					String fieldValue = (String) text.toObject(resultSet.getBytes(fieldName));
+					setFieldValue(fieldName, fieldValue);
+				}
+				else if (type == Types.NUMERIC || type == Types.DECIMAL)
+				{
+					setFieldValue(fieldName, resultSet.getBigDecimal(fieldName).toString());
+				}
+				else if (type == Types.TIMESTAMP)
+				{
+					setFieldValue(fieldName, resultSet.getTimestamp(fieldName).toString());
+				}
+				else
+				{
+					setFieldValue(fieldName, resultSet.getString(fieldName));
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			LOG.error(e);
+			if (e instanceof EQException)
+			{
+				throw (EQException) e;
+			}
+			else
+			{
+				throw new EQException(e);
+			}
+		}
+	}
+}

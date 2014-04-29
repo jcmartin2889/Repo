@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/repos/bfeq_src/!svn/ver/17382/branches/BFEQ_Branch_3-1/EquationDesktop/src/com/misys/equation/ui/actions
+END
+FunctionAction.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/repos/bfeq_src/!svn/ver/17382/branches/BFEQ_Branch_3-1/EquationDesktop/src/com/misys/equation/ui/actions/FunctionAction.java
+END
+LoginAction.java
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/src/com/misys/equation/ui/actions/LoginAction.java
+END
+LogoutAction.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/src/com/misys/equation/ui/actions/LogoutAction.java
+END
+GetPwdAction.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/repos/bfeq_src/!svn/ver/17139/branches/BFEQ_Branch_3-1/EquationDesktop/src/com/misys/equation/ui/actions/GetPwdAction.java
+END
+RedisplayFHAction.java
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/src/com/misys/equation/ui/actions/RedisplayFHAction.java
+END
+ChgPwdAction.java
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/src/com/misys/equation/ui/actions/ChgPwdAction.java
+END
+SwitchToHomeUnitAction.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationDesktop/src/com/misys/equation/ui/actions/SwitchToHomeUnitAction.java
+END

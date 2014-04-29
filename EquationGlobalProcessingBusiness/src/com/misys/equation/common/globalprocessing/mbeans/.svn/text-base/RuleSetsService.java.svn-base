@@ -1,0 +1,194 @@
+package com.misys.equation.common.globalprocessing.mbeans;
+
+import java.util.List;
+
+import com.misys.equation.common.dao.beans.GPARecordDataModel;
+import com.misys.equation.common.dao.beans.GPERecordDataModel;
+import com.misys.equation.common.dao.beans.GPVRecordDataModel;
+import com.misys.equation.common.internal.eapi.core.EQException;
+
+/**
+ * Contains service methods for rules management.
+ * 
+ * @author corrala1
+ */
+public interface RuleSetsService
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/**
+	 * Returns all GPE records (sets)
+	 * 
+	 * @param sessionId
+	 *            A valid session identifier
+	 * @return
+	 * @throws EQException
+	 *             Error encountered
+	 */
+	@MBeanOperation("Gets and returns all set records")
+	public List<GPERecordDataModel> getAllSets(//
+					@Meta(name = "sessionId", desc = "Session Identifier") String sessionId)//
+					throws EQException;
+
+	/**
+	 * Returns all GPE records (sets) that contains the given ruleId
+	 * 
+	 * @param sessionId
+	 *            A valid session identifier
+	 * @param ruleId
+	 *            the Rule ID to find the set(s) in
+	 * @return
+	 * @throws EQException
+	 *             Error encountered
+	 */
+	@MBeanOperation("Gets and returns all set records that contains the given ruleId")
+	public List<GPERecordDataModel> findRuleInSet(@Meta(name = "sessionId", desc = "Session Identifier") String sessionId //
+					, @Meta(name = "ruleId", desc = "Rule ID") String ruleId) throws EQException;
+
+	/**
+	 * Returns all GPA records (rule-set rel) belonging to the specified Set.
+	 * 
+	 * @param sessionId
+	 *            A valid session identifier
+	 * @param SetID
+	 *            The ID that uniquely identifies the Set
+	 * @return List of GPA records
+	 * @throws EQException
+	 *             Error encountered
+	 */
+	@MBeanOperation("Returns all GPA records (rule-set rel) belonging to the specified Set")
+	public List<GPARecordDataModel> getSetRuleRecords(//
+					@Meta(name = "sessionId", desc = "Session Identifier") String sessionId, //
+					@Meta(name = "setID", desc = "Set Identifier") String setID)//
+					throws EQException;
+
+	/**
+	 * Returns a GPE record (set) with all set info for the given Set ID.
+	 * 
+	 * @param sessionId
+	 *            A valid session identifier
+	 * @param SetID
+	 *            The ID that uniquely identifies the Set
+	 * @return GPE record
+	 * @throws EQException
+	 *             Error encountered
+	 */
+	@MBeanOperation("Returns a GPE record (set) with all set info for the given Set ID.")
+	public GPERecordDataModel getSetRecord(//
+					@Meta(name = "sessionId", desc = "Session Identifier") String sessionId, //
+					@Meta(name = "setID", desc = "Set Identifier") String setID)//
+					throws EQException;
+
+	/**
+	 * Returns a GPV record (set-unit relation) with 'T' value for the given Set ID.
+	 * 
+	 * @param sessionId
+	 *            A valid session identifier
+	 * @param SetID
+	 *            The ID that uniquely identifies the Set
+	 * @return List of GPV records
+	 * @throws EQException
+	 *             Error encountered
+	 */
+	@MBeanOperation("Returns GPV records (set-unit relation) with 'T' value or TO UNITS for the given Set ID.")
+	public List<GPVRecordDataModel> getSetUnitsToPropagateRecords(//
+					@Meta(name = "sessionId", desc = "Session Identifier") String sessionId, //
+					@Meta(name = "setID", desc = "Set Identifier") String setID)//
+					throws EQException;
+
+	/**
+	 * Returns a GPV record (set-unit relation) with 'O' value for the given Set ID.
+	 * 
+	 * @param sessionId
+	 *            A valid session identifier
+	 * @param SetID
+	 *            The ID that uniquely identifies the Set
+	 * @return GPV record
+	 * @throws EQException
+	 *             Error encountered
+	 */
+	@MBeanOperation("Returns a GPV record (set-unit relation) with 'O' value or ORIGINATING UNIT for the given Set ID.")
+	public GPVRecordDataModel getSetOriginatingUnitRecord(//
+					@Meta(name = "sessionId", desc = "Session Identifier") String sessionId, //
+					@Meta(name = "setID", desc = "Set Identifier") String setID)//
+					throws EQException;
+
+	/**
+	 * Defines a new Data Propagation Rule Set by inserting GPE, GPA and GPV records.
+	 * 
+	 * @param sessionId
+	 *            A valid session identifier
+	 * @param gpeRecord
+	 *            GPE Record (Set)
+	 * @param gpaRecord
+	 *            List of GPA Records (Set-Rule Rel)
+	 * @param gpvRecord
+	 *            List of GPV Records (Set-Unit Rel)
+	 * @throws EQException
+	 *             Error encountered.
+	 */
+	@MBeanOperation("Defines a new Data Propagation Rule Set by inserting GPE, GPA and GPV records")
+	public void newSetTransaction(//
+					@Meta(name = "sessionId", desc = "Session Identifier") String sessionId, //
+					@Meta(name = "gpeRecord", desc = "GPE Record") GPERecordDataModel gpeRecord,//
+					@Meta(name = "gpaRecords", desc = "List of GPA Record") List<GPARecordDataModel> gpaRecords, //
+					@Meta(name = "gpvRecords", desc = "List of GPV Record") List<GPVRecordDataModel> gpvRecords) //
+					throws EQException;
+
+	/**
+	 * Modifies the Data Propagation Rule Set.
+	 * 
+	 * @param sessionId
+	 *            A valid session identifier
+	 * @param gpeRecord
+	 *            GPE Record (Set)
+	 * @param updatedGpaRecords
+	 *            new order/list of GPA Records to replace old
+	 * @param updatedGpvRecords
+	 *            List of GPV Records To Delete(Set-Unit Rel)
+	 * @throws EQException
+	 *             Error encountered.
+	 */
+	@MBeanOperation("Modifies the Data Propagation Rule Set.")
+	public void editSetTransaction(
+					//
+					@Meta(name = "sessionId", desc = "Session Identifier") String sessionId, //
+					@Meta(name = "gpeRecord", desc = "GPE Record") GPERecordDataModel gpeRecord,//
+					@Meta(name = "updatedGpaRecords", desc = "New setup of GPA Records") List<GPARecordDataModel> updatedGpaRecords, //
+					@Meta(name = "updatedGpvRecords", desc = "New setup of GPV Records") List<GPVRecordDataModel> updatedGpvRecords) //
+					throws EQException;
+
+	/**
+	 * Deletes Data Propagation Rule Set by deleting its GPE, GPA and GPV records.
+	 * 
+	 * @param sessionId
+	 *            A valid session identifier
+	 * @param SetID
+	 *            The ID that uniquely identifies the Set
+	 * @throws EQException
+	 *             Error encountered.
+	 */
+	@MBeanOperation("Deletes Data Propagation Rule Set by deleting its GPE, GPA and GPV records.")
+	public void deleteSetTransaction(//
+					@Meta(name = "sessionId", desc = "Session Identifier") String sessionId, //
+					@Meta(name = "setID", desc = "Set Identifier") String setID)//
+					throws EQException;
+
+	/**
+	 * Deletes the Data Propagation Rule in the Data Propagation Set.
+	 * 
+	 * @param sessionId
+	 *            A valid session identifier
+	 * @param ruleId
+	 *            A valid Rule identifier
+	 * @param setId
+	 *            A valid Set identifier
+	 * @throws EQException
+	 *             when an error is encountered.
+	 */
+	@MBeanOperation(value = "Deletes the Data Propagation Rule in the Data Propagation Set.")
+	public void deleteRuleFromSet(@Meta(name = "sessionId", desc = "Session Identifier") String sessionId,
+					@Meta(name = "ruleId", desc = "Rule Identifier") String ruleId,
+					@Meta(name = "setId", desc = "Set Identifier") String setId) throws EQException;
+}

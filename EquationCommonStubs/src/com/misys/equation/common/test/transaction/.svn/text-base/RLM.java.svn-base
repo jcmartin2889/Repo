@@ -1,0 +1,81 @@
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseMaintain;
+
+/**
+ * Equation test cases for Maintain Retail Loan
+ */
+public class RLM extends EquationTestCaseMaintain
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	String programName = "N94MRR";
+	String optionId = "RLM";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZLNP", "CAP"); // Loan type
+		transaction.setFieldValue("GZLNR", "X"); // Loan refrence
+		transaction.setFieldValue("GZBRNM", "ACC1"); // Branch mnemonic
+	}
+
+	/**
+	 * Setup an existing key fields
+	 */
+	@Override
+	public void setupExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZLNP", "CAP"); // Loan type
+		transaction.setFieldValue("GZLNR", "TEST-01"); // Loan refrence
+		transaction.setFieldValue("GZBRNM", "ACC1"); // Branch mnemonic
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	@Override
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZPRP", "N"); // Repayment reminder
+		transaction.setFieldValue("GZCLT", "N"); // Collateral required?
+		transaction.setFieldValue("GZSCHC", "2"); // Schedule recalculation control
+		transaction.setFieldValue("GZSU", "Y"); // Schedule update
+		transaction.setFieldValue("GZSAP", "N"); // Schedule advice
+		transaction.setFieldValue("GZMXRT", "20"); // Maximum rate
+		transaction.setFieldValue("GZMNRT", "10"); // Minimum rate
+	}
+
+}

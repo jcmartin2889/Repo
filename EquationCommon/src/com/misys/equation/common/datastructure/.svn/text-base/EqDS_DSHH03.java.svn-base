@@ -1,0 +1,99 @@
+package com.misys.equation.common.datastructure;
+
+import com.misys.equation.common.access.EquationDataStructure;
+import com.misys.equation.common.utilities.Toolbox;
+
+public class EqDS_DSHH03 extends EquationDataStructure
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	private static final long serialVersionUID = 1L;
+
+	// Field names
+	public final static String HHAB = "HHAB";
+	public final static String HHAN = "HHAN";
+	public final static String HHAS = "HHAS";
+	public final static String HHBRN = "HHBRN";
+	public final static String HHDLP = "HHDLP";
+	public final static String HHDLR = "HHDLR";
+	public final static String HHMVT = "HHMVT";
+	public final static String HHCMR = "HHCMR";
+	public final static String HHCUS = "HHCUS";
+	public final static String HHCLC = "HHCLC";
+	public final static String HHATP = "HHATP";
+	public final static String HHCY1 = "HHCY1";
+	public final static String HHCY2 = "HHCY2";
+	public final static String HHSRC = "HHSRC";
+	public final static String HHUC1 = "HHUC1";
+	public final static String HHUC2 = "HHUC2";
+	public final static String HHSDT = "HHSDT";
+	public final static String HHMDT = "HHMDT";
+	public final static String HHDRF = "HHDRF";
+	public final static String HHAMC = "HHAMC";
+	public final static String HHODC = "HHODC";
+	public final static String HHFCT = "HHFCT";
+	public final static String HHAB2 = "HHAB2";
+	public final static String HHAN2 = "HHAN2";
+	public final static String HHAS2 = "HHAS2";
+	public final static String HHCU2 = "HHCU2";
+	public final static String HHCL2 = "HHCL2";
+	public final static String HHDR2 = "HHDR2";
+	public final static String HHAMP = "HHAMP";
+	public final static String HHODP = "HHODP";
+	public final static String HHDSP = "HHDSP";
+	public final static String HHCAC = "HHCAC";
+	public final static String HHCAP = "HHCAP";
+	public final static String HHMCH = "HHMCH";
+	public final static String HHKEY = "HHKEY";
+	public final static String DUM1 = "DUM1";
+
+	/**
+	 * Constructor to create the DSHH03 data structure
+	 */
+	public EqDS_DSHH03()
+	{
+		super("DSHH03", Toolbox.DEF_CCSID);
+
+		// create the DS
+		createCharacterField(HHAB, "Account branch", 1, 4);
+		createCharacterField(HHAN, "Account number", 5, 6);
+		createCharacterField(HHAS, "Account suffix", 11, 3);
+		createCharacterField(HHBRN, "Deal branch", 14, 4);
+		createCharacterField(HHDLP, "Deal type", 18, 3);
+		createCharacterField(HHDLR, "Deal reference", 21, 13);
+		createCharacterField(HHMVT, "Deal movement type", 34, 1);
+		createCharacterField(HHCMR, "Commitment reference", 35, 13);
+		createCharacterField(HHCUS, "Customer mnemonic", 48, 6);
+		createCharacterField(HHCLC, "Customer location", 54, 3);
+		createCharacterField(HHATP, "Account type", 57, 2);
+		createCharacterField(HHCY1, "First currency", 59, 3);
+		createCharacterField(HHCY2, "Second currency", 62, 3);
+		createCharacterField(HHSRC, "Sundry reference", 65, 2);
+		createCharacterField(HHUC1, "User code 1", 67, 3);
+		createCharacterField(HHUC2, "User code 2", 70, 3);
+		createZonedField(HHSDT, "Start date", 73, 7, 0);
+		createZonedField(HHMDT, "Maturity date", 80, 7, 0);
+		createCharacterField(HHDRF, "Reconciliation reference", 87, 16);
+		createPackedField(HHAMC, "Amount (current)", 103, 15, 0);
+		createPackedField(HHODC, "Overdraft limit (current)", 111, 15, 0);
+		createCharacterField(HHFCT, "Check type", 119, 1);
+		createCharacterField(HHAB2, "Account branch (previous)", 120, 4);
+		createCharacterField(HHAN2, "Account number (previous)", 124, 6);
+		createCharacterField(HHAS2, "Account suffix (previous)", 130, 3);
+		createCharacterField(HHCU2, "Customer mnemonic (previous)", 133, 6);
+		createCharacterField(HHCL2, "Customer location (previous)", 139, 3);
+		createCharacterField(HHDR2, "Reconciliation reference (previous)", 142, 16);
+		createPackedField(HHAMP, "Amount (previous)", 158, 15, 0);
+		createPackedField(HHODP, "Overdraft limit (previous)", 166, 15, 0);
+		createCharacterField(HHDSP, "Display error to subfile", 174, 1);
+		createPackedField(HHCAC, "Commitment amount (current)", 175, 15, 0);
+		createPackedField(HHCAP, "Commitment amount (previous)", 183, 15, 0);
+		createCharacterField(HHMCH, "Reservation matched/obsolete", 201, 1);
+		createCharacterField(DUM1, "Dummy 1", 202, 1);
+		createCharacterField(HHKEY, "Command key returned", 203, 2);
+
+		// final setup
+		initialDefaultValue();
+	}
+}

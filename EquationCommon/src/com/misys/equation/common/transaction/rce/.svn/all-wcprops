@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/repos/bfeq_src/!svn/ver/17493/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/transaction/rce
+END
+RCETransactionInstruction.java
+K 25
+svn:wc:ra_dav:version-url
+V 151
+/svn/repos/bfeq_src/!svn/ver/17493/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/transaction/rce/RCETransactionInstruction.java
+END
+RCETransactionRateChange.java
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/repos/bfeq_src/!svn/ver/17435/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/transaction/rce/RCETransactionRateChange.java
+END
+RCEExtensionDataEvents.java
+K 25
+svn:wc:ra_dav:version-url
+V 148
+/svn/repos/bfeq_src/!svn/ver/17435/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/transaction/rce/RCEExtensionDataEvents.java
+END
+RCETransactionDetails.java
+K 25
+svn:wc:ra_dav:version-url
+V 147
+/svn/repos/bfeq_src/!svn/ver/17493/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/transaction/rce/RCETransactionDetails.java
+END
+RCEManualSchedules.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/17435/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/transaction/rce/RCEManualSchedules.java
+END
+IRCETransactionEvent.java
+K 25
+svn:wc:ra_dav:version-url
+V 146
+/svn/repos/bfeq_src/!svn/ver/17383/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/transaction/rce/IRCETransactionEvent.java
+END
+RCETransactionKeys.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/17435/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/transaction/rce/RCETransactionKeys.java
+END
+RCETransactionPrincipalIncrease.java
+K 25
+svn:wc:ra_dav:version-url
+V 157
+/svn/repos/bfeq_src/!svn/ver/17435/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/transaction/rce/RCETransactionPrincipalIncrease.java
+END
+RCEInstructionEvent.java
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/17435/branches/BFEQ_Branch_3-1/EquationCommon/src/com/misys/equation/common/transaction/rce/RCEInstructionEvent.java
+END

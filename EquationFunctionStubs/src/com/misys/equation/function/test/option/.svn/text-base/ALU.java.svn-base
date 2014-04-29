@@ -1,0 +1,187 @@
+package com.misys.equation.function.test.option;
+
+import java.io.File;
+
+import com.misys.equation.common.access.IEquationStandardObject;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.function.beans.APIFieldSet;
+import com.misys.equation.function.beans.DisplayAttributes;
+import com.misys.equation.function.beans.DisplayAttributesSet;
+import com.misys.equation.function.beans.DisplayGroup;
+import com.misys.equation.function.beans.Field;
+import com.misys.equation.function.beans.Function;
+import com.misys.equation.function.beans.InputField;
+import com.misys.equation.function.beans.InputFieldSet;
+import com.misys.equation.function.test.helper.DisplayFieldSetWrapper;
+import com.misys.equation.function.test.helper.FunctionGenerator;
+import com.misys.equation.function.test.run.FunctionToolboxStub;
+import com.misys.equation.function.tools.FunctionToolbox;
+import com.misys.equation.function.tools.MappingToolbox;
+
+public class ALU extends TestOptionStub
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	public ALU()
+	{
+		try
+		{
+			setUp();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] inputParameters)
+	{
+		ALU test = new ALU();
+		test.test();
+	}
+
+	private DisplayFieldSetWrapper addRecord1(FunctionGenerator fg) throws EQException
+	{
+		// add the record
+		DisplayFieldSetWrapper fieldSetWrapper = fg.addFieldSet("PRIMARY", "Record 1 of ALU", "Description 1 of ALU");
+		InputFieldSet inputFieldSet = fieldSetWrapper.getInputFieldSet();
+		DisplayAttributesSet attributeSet = fieldSetWrapper.getDisplayAttributesSet();
+
+		// input field
+		InputField inputField;
+		DisplayAttributes displayAttributes;
+
+		// Key group
+		DisplayGroup keygroup = new DisplayGroup("+KEYS", "Key", "Key description");
+		attributeSet.addItem(keygroup);
+
+		// add all the fields in this section ---------------------------------------
+
+		// Hold code
+		inputField = FunctionToolbox.getInputField("AHLD", "Hold code", "This is the hold code", "A", "3", "");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		inputField.setKey(true);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setPrompt("JVR01R");
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		keygroup.addItem(displayAttributes);
+		FunctionToolbox.addPVFieldSet(inputField, FunctionToolbox.getPVFieldSet(session, "JVR01R", "", true, ""));
+
+		// ------------ NON-KEYS !!
+
+		// Hold code description
+		inputField = FunctionToolbox.getInputField("ADSC", "Hold code description", "This is the hold code description", "A", "35",
+						"");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Reference
+		inputField = FunctionToolbox.getInputField("ADRF", "Reference", "This is the reference", "A", "20", "");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		return fieldSetWrapper;
+	}
+
+	private void addLoadAPI(FunctionGenerator fg) throws EQException
+	{
+		APIFieldSet apiFieldSet = FunctionToolbox.getServiceFieldSet(session, "HCX", "HCX", "", IEquationStandardObject.FCT_FUL,
+						true);
+		fg.addLoadAPIFieldSet("PRIMARY", apiFieldSet);
+	}
+
+	private void addUpdateAPI(FunctionGenerator fg) throws EQException
+	{
+		APIFieldSet apiFieldSet;
+
+		// HCX test
+		apiFieldSet = FunctionToolbox.getServiceFieldSet(session, "HCX", "HCX", "", IEquationStandardObject.FCT_FUL, false);
+		fg.addUpdateAPIFieldSet(apiFieldSet);
+
+		// ALZ test
+		apiFieldSet = FunctionToolbox.getServiceFieldSet(session, "ALZ", "ALZ", "", IEquationStandardObject.FCT_ADD, false);
+		fg.addUpdateAPIFieldSet(apiFieldSet);
+
+		// CRM
+		apiFieldSet = fg.getFunction().addReservedFieldSet(Function.CRM_FIELDSET, "Description of CRM");
+		apiFieldSet.getAPIField("HHCY1").setUpdateAssignment(Field.ASSIGNMENT_CODE);
+		apiFieldSet.getAPIField("HHAMC").setUpdateAssignment(Field.ASSIGNMENT_CODE);
+		apiFieldSet.getAPIField("HHFCT").setUpdateAssignment(Field.ASSIGNMENT_CODE);
+		apiFieldSet.getAPIField("HHAB").setUpdateAssignment(Field.ASSIGNMENT_CODE);
+		apiFieldSet.getAPIField("HHAN").setUpdateAssignment(Field.ASSIGNMENT_CODE);
+		apiFieldSet.getAPIField("HHAS").setUpdateAssignment(Field.ASSIGNMENT_CODE);
+
+		// EFC
+		apiFieldSet = fg.getFunction().addReservedFieldSet(Function.EFC_FIELDSET, "Description of EFC");
+		apiFieldSet.getAPIField("EBRNM").setUpdateAssignment(Field.ASSIGNMENT_CODE);
+		apiFieldSet.getAPIField("EDLP").setUpdateAssignment(Field.ASSIGNMENT_CODE);
+		apiFieldSet.getAPIField("EDLR").setUpdateAssignment(Field.ASSIGNMENT_CODE);
+		apiFieldSet.getAPIField("EDCCY").setUpdateAssignment(Field.ASSIGNMENT_CODE);
+
+		// GY
+		apiFieldSet = fg.getFunction().addReservedFieldSet(Function.GY_FIELDSET, "Description of GY");
+		apiFieldSet.getAPIField("GYIREF").setUpdateAssignment(Field.ASSIGNMENT_CODE);
+	}
+
+	private void addMappings(FunctionGenerator fg) throws EQException
+	{
+		// add update mapping (HCX)
+		fg.addUpdateMapping("PRIMARY", "AHLD", "HCX", "HLD");
+		fg.addUpdateMapping("PRIMARY", "ADSC", "HCX", "DSC");
+
+		// add update mapping (ALZ)
+		fg.addUpdateMapping("PRIMARY", "ADRF", "ALZ", "DRF");
+
+		// add load transaction
+		fg.addLoadMappingToLoad("PRIMARY", "AHLD", "PRIMARY", "HCX", "HLD");
+		fg.addLoadMappingFromLoad("PRIMARY", "HCX", "DSC", "PRIMARY", "ADSC", MappingToolbox.TYPE_PRIMITIVE);
+		fg.addLoadMappingFromLoad("PRIMARY", "HCX", "DSC", "PRIMARY", "ADRF", MappingToolbox.TYPE_PRIMITIVE);
+
+		// gy
+		fg.addUpdateMapping("PRIMARY", "AHLD", Function.GY_FIELDSET, "GYWHO");
+		fg.addUpdateMapping("PRIMARY", "AHLD", Function.GY_FIELDSET, "GYSHN");
+		fg.addUpdateMapping("PRIMARY", "ADSC", Function.GY_FIELDSET, "GYJREF");
+	}
+
+	public FunctionGenerator test()
+	{
+		// Have a bash...
+		try
+		{
+			printStartStatus(this.getClass().getSimpleName());
+			FunctionGenerator fg = new FunctionGenerator("ALU", "Label of ALU", "Desc of ALU", "com.misys.equation.screens",
+							"com.misys.equation.screens.layout");
+			fg.getFunction().setAllowedAdd(true);
+			fg.getFunction().setAllowedMaint(true);
+			fg.getFunction().setAllowedDel(true);
+			addRecord1(fg);
+			addLoadAPI(fg);
+			addUpdateAPI(fg);
+			addMappings(fg);
+
+			fg.getFunction().setApplyDuringExtInput(true);
+			fg.getFunction().setApplyDuringRecovery(false);
+
+			File serviceClass = new File(workSpace + "com\\misys\\equation\\screens\\ALU.class");
+
+			// Write to DB
+			FunctionToolboxStub.writeToDB(unit, fg.getFunctionBean(), fg.getLayoutBean(), serviceClass, null);
+
+			// print
+			printCompleteStatus(fg, this.getClass().getSimpleName(), printXML);
+
+			return fg;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+}

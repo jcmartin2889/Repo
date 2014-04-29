@@ -1,0 +1,263 @@
+package com.misys.equation.common.test;
+
+import junit.framework.TestCase;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.dao.DaoFactory;
+import com.misys.equation.common.dao.IDao;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.utilities.ApplicationContextManager;
+import com.misys.equation.common.utilities.EquationLogger;
+
+/**
+ * This class is an abstraction of all common test.
+ * 
+ * @author deroset
+ * 
+ */
+public abstract class EquationTestCaseDao extends TestCase
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EquationTestCaseDao.java 9442 2010-10-12 09:42:28Z MACDONP1 $";
+	protected EquationStandardSession session;
+	protected ApplicationContextManager applicationContextManager;
+	protected DaoFactory daoFactory = new DaoFactory();
+	protected final EquationLogger LOG = new EquationLogger(this.getClass());
+	protected String kFilLibName;
+	// this is going to be part of the kFilLibName, the default name is "KFIL.
+	private String kLibName;
+
+	protected AbsRecord dataModel;
+	protected IDao dao;
+
+	/**
+	 * This method is going to setup the test environment.<br>
+	 * ApplicationContextManager, Session, EqUnit, Data-model and library are goimng to be set.
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		applicationContextManager = ApplicationContextManager.getInstance();
+		setUpTestingEnvironment();
+		setKLibName();
+		setKFilLibName();
+		setDataModel();
+		setDao();
+		cleanPreviousTest();
+	}
+	/**
+	 * This method will delete previous test's data.<br>
+	 * If other test fails their data has to be deleted. This method will delete all entries based on the set ids.<br>
+	 */
+	protected void cleanPreviousTest()
+	{
+		try
+		{
+			session.startEquationTransaction();
+			deleteRecord();
+			session.commitTransaction();
+			session.endEquationTransaction();
+
+		}
+		catch (Exception exception)
+		{
+			if (LOG.isDebugEnabled())
+			{
+				LOG.debug("There was not previous data that correspond to other test", exception);
+			}
+		}
+	}
+
+	/**
+	 * This method will set the current <code>kFilLibName</code>
+	 */
+	protected void setKFilLibName()
+	{
+		if (kLibName == null)
+		{
+			return;
+		}
+		String unitName = session.getUnitId();
+		kFilLibName = new StringBuilder(kLibName).append(unitName).toString();
+	}
+
+	/**
+	 * This method set Session and EqUnit.
+	 */
+	public void setUpTestingEnvironment()
+	{
+		try
+		{
+			TestEnvironment.setTestEnvironment();
+			if (EquationCommonContext.getContext().checkIfGPIsInstalled(TestEnvironment.getTestEnvironment().getSessionId()))
+			{
+				EquationCommonContext.getContext().loadEquationConfigurationPropertiesBean();
+			}
+			session = TestEnvironment.getTestEnvironment().getStandardSession();
+		}
+		catch (Exception exception)
+		{
+			if (LOG.isErrorEnabled())
+			{
+				StringBuilder message = new StringBuilder("There was an error in ");
+				message.append(this.getClass().getSimpleName());
+				message.append(" :setUpTestingEnvironment() ");
+				LOG.error(message.toString(), exception);
+			}
+		}
+	}
+
+	/**
+	 * This test in going to test all RecordDao services add, get, update and delete.
+	 * <ul>
+	 * <li>1)Add a new record.</li>
+	 * <li>2)Check if this record was added.</li>
+	 * <li>3)Get this record and evaluate if it is equals to the previous added.</li>
+	 * <li>4)Modify this record and test it.</li>
+	 * <li>5)Delete this record and test it.</li>
+	 * </ul>
+	 */
+	public void testRecordDaoServices()
+	{
+		try
+		{
+			session.startEquationTransaction();
+			insertRecord();
+			session.commitTransaction();
+			isRecord(true);
+
+			getRecord();
+
+			updateRecord();
+			session.commitTransaction();
+
+			deleteRecord();
+			session.commitTransaction();
+			isRecord(false);
+			session.endEquationTransaction();
+
+		}
+		catch (Exception exception)
+		{
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error("There was a problem when the testRecordDaoServices() was executed ", exception);
+			}
+		}
+	}
+
+	/**
+	 * This test is going to stop the journal and start it again.
+	 */
+	public void testJournal()
+	{
+		// String unitName = session.getUnitId();
+		// dao.setAutocommitable(false);
+		// assertTrue(dao.endJournal(unitName));
+		// assertTrue(dao.startJournal(unitName));
+	}
+
+	/**
+	 * This method will test the add dao's service.
+	 */
+	public void insertRecord()
+	{
+		dao.insertRecord();
+	}
+
+	/**
+	 * This method will test the delete dao's service.
+	 */
+	public void deleteRecord()
+	{
+		dao.deleteRecord();
+	}
+
+	/**
+	 * This method will test if the GA record has been already inserted in the dataBase.
+	 */
+	public void isRecord(boolean assertValue)
+	{
+		boolean result;
+
+		result = checkIfThisRecordIsInTheDB();
+		if (assertValue)
+		{
+			assertTrue(result);
+		}
+		else
+		{
+			assertFalse(result);
+		}
+	}
+
+	public String getKLibName()
+	{
+		return kLibName;
+	}
+	public void setKLibName(String libName)
+	{
+		kLibName = libName;
+	}
+
+	/**
+	 * This is method is going to set part of the kFilLibName.<br>
+	 * This method can be overwritten if other lib nedds to used.<br>
+	 * <code>kFilLibName=  kFilLibName + unitName</code>
+	 */
+	public void setKLibName()
+	{
+		kLibName = "KFIL";
+	}
+
+	public String getkFilLibName()
+	{
+		return kFilLibName;
+	}
+
+	/**
+	 * 
+	 * This method is going to retrieve the Dao from the bean repository and set it as local attribute.
+	 */
+	protected abstract void setDao();
+
+	/**
+	 * 
+	 * This method is going to set the current data-Model.
+	 */
+	protected abstract void setDataModel();
+
+	/**
+	 * 
+	 * This method is going to assert the obtained data-model fields using the preset data-model.
+	 */
+	protected abstract void assertDataModel(AbsRecord dataModel);
+
+	/**
+	 * This method is going to check the getRecord dao's service.<br>
+	 * The obtained result should be the same than the preset in the Dao's data-model. An assertion will be performed to prove it.
+	 */
+	protected abstract AbsRecord getRecord();
+
+	/**
+	 * This method will test the update dao's service. This method will
+	 * <ul>
+	 * <li>change the dao's data model</li>
+	 * <li>update it</li>
+	 * <li>get the same record from the data base</li>
+	 * <li>Assert both data-models</li>
+	 * </ul>
+	 */
+	protected abstract void updateRecord();
+
+	/**
+	 * This method will check if the current record was already inserted in the data-base. <br>
+	 * This method should be overwritten calling the an specific Dao service.
+	 * 
+	 * @return true if the record was already inserted in the database.
+	 */
+	protected abstract boolean checkIfThisRecordIsInTheDB();
+
+}

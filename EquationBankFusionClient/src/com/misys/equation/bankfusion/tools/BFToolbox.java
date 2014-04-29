@@ -1,0 +1,784 @@
+package com.misys.equation.bankfusion.tools;
+
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import bf.com.misys.bankfusion.attributes.all.ZoneBusinessDate;
+import bf.com.misys.bf.attributes.ErrorResponse;
+import bf.com.misys.bf.attributes.Event;
+import bf.com.misys.eqf.types.header.ServiceRqHeader;
+import bf.com.misys.eqf.types.header.ServiceRsHeader;
+
+import com.misys.bankfusion.command.impl.ExecuteLocalCommand;
+import com.misys.bankfusion.common.command.ICommandResponse;
+import com.misys.bankfusion.common.runtime.service.ServiceManagerFactory;
+import com.misys.bankfusion.common.service.IServiceManager;
+import com.misys.bankfusion.common.util.BankFusionPropertySupport;
+import com.misys.bankfusion.subsystem.microflow.runtime.exception.ExceptionInfo;
+import com.misys.bankfusion.subsystem.security.ISecurityService;
+import com.misys.bankfusion.subsystem.security.runtime.impl.CASAuthenticationProvider;
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationUnit;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EqTimingTest;
+import com.misys.equation.common.utilities.Toolbox;
+import com.trapedza.bankfusion.core.BankFusionException;
+import com.trapedza.bankfusion.core.MetaDataEnum;
+import com.trapedza.bankfusion.gateway.messaging.interfaces.ICommandRequest;
+import com.trapedza.bankfusion.messaging.commands.core.CommandHelper;
+import com.trapedza.bankfusion.servercommon.commands.BankFusionEnvironment;
+import com.trapedza.bankfusion.servercommon.core.BankFusionThreadLocal;
+import com.trapedza.bankfusion.servercommon.microflow.MFExecuter;
+
+public class BFToolbox
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: BFToolbox.java 17382 2013-10-08 08:45:53Z Lima12 $";
+
+	// Logger
+	private static final transient Log logger = LogFactory.getLog(BFToolbox.class.getName());
+
+	/** Default BankFusion Zone */
+	public final static String DEFAULT_ZONE = "BF";
+
+	/** Name of the start step header tag */
+	public static final String PARM_IN_FUNC_HEADER = "ServiceHeader";
+
+	/** Name of the start step data tag */
+	public static final String PARM_IN_FUNC_DATA = "ServiceData";
+
+	/** Name of the end step header tag */
+	public static final String PARM_OUT_FUNC_HEADER = "OutputServiceHeader";
+
+	/** Name of the end step data tag */
+	public static final String PARM_OUT_FUNC_DATA = "OutputServiceData";
+
+	/** Name of the start step */
+	public static final String PARM_REQUEST = "EqServiceRequest";
+
+	/** Name of the end step */
+	public static final String PARM_RESPONSE = "EqServiceResponse";
+
+	/** Referral Event */
+	public static final Integer referralEvent = new Integer(11000001);
+
+	public BFToolbox()
+	{
+	}
+
+	/**
+	 * Logs a user onto BankFusion
+	 * <p>
+	 * Note that this no longer uses the Client API, instead uses LocalCommand, so requires co-existence of BF and EQ objects
+	 * 
+	 * @param userName
+	 *            - the user name
+	 * @param password
+	 *            - the user password
+	 * @param passwordType
+	 *            - the password type
+	 * 
+	 * @return A String containing the BankFusion UserLocator
+	 */
+	public static String login(String userName, String password, String passwordType) throws EQException
+	{
+		String result = null;
+		try
+		{
+			EqTimingTest.printStartTime("BFToolbox.login", "");
+
+			ICommandRequest command = new CommandHelper(ICommandRequest.LOGIN_COMMAND);
+
+			HashMap loginParameters = command.getData();
+			loginParameters.put(MetaDataEnum.PROP_LOGIN_NAME, rtvUserId(userName));
+			loginParameters.put(MetaDataEnum.PROP_IS_FROM_PLATFORM, Boolean.TRUE);
+			loginParameters.put(MetaDataEnum.PROP_SESSION_TIMEOUT, Integer.valueOf(-1));
+
+			// Determine password type
+			boolean isPasswordToken = passwordType.equals(EquationCommonContext.PASSWORD_TYPE_PROFILETOKEN_PLAIN)
+							|| passwordType.equals(EquationCommonContext.PASSWORD_TYPE_PROFILETOKEN_BASE64);
+
+			// Password as token
+			if (isPasswordToken)
+			{
+				loginParameters.put(MetaDataEnum.IS_PASSWORD_A_TOKEN, Boolean.TRUE);
+
+				// Token as encoded by Equation
+				if (passwordType.equals(EquationCommonContext.PASSWORD_TYPE_PROFILETOKEN_PLAIN))
+				{
+					logger.info("User BF authentication via plain token : token [" + password + "]");
+					byte[] tokenBytes = Toolbox.cvtPwdToAS400TokenBytes(password, passwordType);
+					String base64 = Toolbox.byteArrayToBase64String(tokenBytes);
+					loginParameters.put(MetaDataEnum.PROP_LOGIN_PASSWORD, base64);
+				}
+
+				// Token as encoded by BF
+				else if (passwordType.equals(EquationCommonContext.PASSWORD_TYPE_PROFILETOKEN_BASE64))
+				{
+					logger.info("User BF authentication via base64 : token [" + password + "]");
+					loginParameters.put(MetaDataEnum.PROP_LOGIN_PASSWORD, password);
+				}
+			}
+			// Plain password text
+			else
+			{
+				logger.info("User BF authentication via password");
+				loginParameters.put(MetaDataEnum.PROP_LOGIN_PASSWORD, password);
+			}
+
+			// Make the call
+			Object returnValue = new ExecuteLocalCommand().executeCommand(command);
+
+			// Check the output
+			if (returnValue instanceof ICommandResponse)
+			{
+				ICommandResponse commandResponse = (ICommandResponse) returnValue;
+				if (commandResponse.getData() instanceof BankFusionException)
+				{
+					BankFusionException bfException = (BankFusionException) commandResponse.getData();
+					throw new EQException(bfException);
+				}
+				result = (String) commandResponse.getData();
+			}
+			else
+			{
+				throw new EQException("ExecuteLocalCommand return value not instanceof ICommandResponse");
+			}
+		}
+		catch (Exception e)
+		{
+			logger.error(e);
+			if (e instanceof EQException)
+			{
+				throw (EQException) e;
+			}
+			else
+			{
+				throw new EQException(e);
+			}
+		}
+		finally
+		{
+			EqTimingTest.printTime("BFToolbox.login", "");
+		}
+		return result;
+	}
+
+	/**
+	 * Log off user from BankFusion
+	 */
+	public static void logoff(String userLocator) throws EQException
+	{
+		try
+		{
+			EqTimingTest.printStartTime("BFToolbox.logoff", "");
+			ICommandRequest command = new CommandHelper(ICommandRequest.LOGOUT_COMMAND);
+			command.getHeader().setUserLocator(userLocator);
+
+			// Make the call
+			Object returnValue = new ExecuteLocalCommand().executeCommand(command);
+
+			// Check the output
+			if (returnValue instanceof ICommandResponse)
+			{
+				ICommandResponse commandResponse = (ICommandResponse) returnValue;
+				if (commandResponse.getData() instanceof BankFusionException)
+				{
+					BankFusionException bfException = (BankFusionException) commandResponse.getData();
+					throw new EQException(bfException);
+				}
+			}
+			else
+			{
+				throw new EQException("ExecuteLocalCommand return value not instanceof ICommandResponse");
+			}
+
+		}
+		catch (Exception e)
+		{
+			logger.error(e);
+			if (e instanceof EQException)
+			{
+				throw (EQException) e;
+			}
+			else
+			{
+				throw new EQException(e);
+			}
+		}
+		finally
+		{
+			EqTimingTest.printTime("BFToolbox.logoff", "");
+		}
+	}
+
+	/**
+	 * Call the dummy Microflow and return the list of errors
+	 * 
+	 * @param userLocator
+	 *            - BankFusion UserLocator
+	 * @param microflowName
+	 *            - the Microflow to call
+	 * @param bf_serviceHeader
+	 *            - the BF service header
+	 * @param bf_serviceData
+	 *            - the service complex type
+	 * 
+	 * @return the list of messages
+	 */
+	public ServiceRsHeader callDummyMicroflow(String userLocator, String microflowName, ServiceRqHeader bf_serviceHeader,
+					Object bf_serviceData) throws Exception
+	{
+		try
+		{
+			EqTimingTest.printStartTime("BFToolbox.callDummyUpdateMicroflow", "");
+
+			ICommandRequest command = new CommandHelper(CommandHelper.EXECUTE_HEADLESS_MICROFLOW_COMMAND);
+			command.getHeader().setMfID(microflowName);
+			command.getHeader().setUserLocator(userLocator);
+			HashMap commandParameters = command.getData();
+			Hashtable paramTable = new Hashtable();
+
+			// when header is null, then assume it is a combined xsd
+			if (bf_serviceHeader == null)
+			{
+				paramTable.put(PARM_REQUEST, bf_serviceData);
+			}
+			else
+			{
+				paramTable.put(PARM_IN_FUNC_HEADER, bf_serviceHeader);
+				paramTable.put(PARM_IN_FUNC_DATA, bf_serviceData);
+			}
+
+			commandParameters.put(MetaDataEnum.PROP_EXECUTE_BP_NOUI, paramTable);
+
+			// Make the call
+			Object returnValue = new ExecuteLocalCommand().executeCommand(command);
+
+			// Check the output
+			if (returnValue instanceof ICommandResponse)
+			{
+				ICommandResponse commandResponse = (ICommandResponse) returnValue;
+				if (commandResponse.getData() instanceof BankFusionException)
+				{
+					BankFusionException bfException = (BankFusionException) commandResponse.getData();
+					throw new EQException(bfException);
+				}
+
+				HashMap outmap = (HashMap) commandResponse.getData();
+				ServiceRsHeader outputServiceHeader = null;
+
+				// combined xsd
+				if (bf_serviceHeader == null)
+				{
+					Object responseData = outmap.get(PARM_RESPONSE);
+					outputServiceHeader = (ServiceRsHeader) getFieldObject(responseData, "getServiceHeader");
+				}
+				else
+				{
+					outputServiceHeader = (ServiceRsHeader) outmap.get(PARM_OUT_FUNC_HEADER);
+				}
+				return outputServiceHeader;
+			}
+			else
+			{
+				throw new EQException("ExecuteLocalCommand return value not instanceof ICommandResponse");
+			}
+
+		}
+		finally
+		{
+			EqTimingTest.printTime("BFToolbox.callDummyUpdateMicroflow", "");
+		}
+	}
+	/**
+	 * Call the Microflow and return a status
+	 * 
+	 * @param userLocator
+	 *            - BankFusion UserLocator
+	 * @param microflowName
+	 *            - the Microflow to call
+	 * @param inputParameters
+	 *            - the hashmap of input parameters
+	 * @return the status of the call which is 'S'-Success, 'E'-Error, 'R'-Referred
+	 */
+	public String callMicroflowReturnStatus(String userLocator, String microflowName, HashMap inputParameters) throws Exception
+	{
+		String result = "S";
+		try
+		{
+			EqTimingTest.printStartTime("BFToolbox.callMicroflowReturnStatus for " + microflowName, "");
+			try
+			{
+				ICommandRequest command = new CommandHelper(CommandHelper.EXECUTE_HEADLESS_MICROFLOW_COMMAND);
+				command.getHeader().setMfID(microflowName);
+				command.getHeader().setUserLocator(userLocator);
+				HashMap commandParameters = command.getData();
+
+				commandParameters.put(MetaDataEnum.PROP_SUB_PROCESS_CALL, "");
+				commandParameters.put(MetaDataEnum.PROP_EXECUTE_BP_NOUI, inputParameters);
+
+				// Make the call
+				Object returnValue = new ExecuteLocalCommand().executeCommand(command);
+
+				// Check the output
+				if (returnValue instanceof ICommandResponse)
+				{
+					ICommandResponse commandResponse = (ICommandResponse) returnValue;
+					if (commandResponse.getData() instanceof BankFusionException)
+					{
+						BankFusionException bfException = (BankFusionException) commandResponse.getData();
+						throw new EQException(bfException);
+					}
+
+					HashMap outmap = (HashMap) commandResponse.getData();
+					Object errorInfo = outmap.get("ErrorResponse");
+					if (errorInfo == null)
+					{
+						errorInfo = outmap.get("error");
+					}
+					if (errorInfo == null)
+					{
+						errorInfo = outmap.get("response");
+					}
+					if (errorInfo != null)
+					{
+						if (errorInfo instanceof ErrorResponse)
+						{
+							ErrorResponse exceptionResponse = (ErrorResponse) errorInfo;
+
+							for (Event event : exceptionResponse.getEventCollection().getEvent())
+							{
+								if (event.getEventNumber().equals(referralEvent))
+								{
+									result = "R";
+								}
+								else
+								{
+									result = "E";
+									logger.info(microflowName + " " + event.getEventMessage());
+								}
+							}
+						}
+						if (errorInfo instanceof ExceptionInfo)
+						{
+							ExceptionInfo exceptionResponse = (ExceptionInfo) errorInfo;
+
+							for (Event event : exceptionResponse.getEventCollection().getEvent())
+							{
+
+								if (event.getEventNumber().equals(referralEvent))
+								{
+									result = "R";
+								}
+								else
+								{
+									result = "E";
+									logger.info(microflowName + " " + event.getEventMessage());
+								}
+							}
+						}
+					}
+				}
+				else
+				{
+					throw new EQException("ExecuteLocalCommand for " + microflowName
+									+ " return value not instanceof ICommandResponse");
+				}
+			}
+			catch (Exception e)
+			{
+				throw new EQException("ExecuteLocalCommand for " + microflowName + " failed " + e);
+			}
+			return result;
+		}
+		finally
+		{
+			EqTimingTest.printTime("BFToolbox.callMicroflowReturnStatus for " + microflowName, "");
+		}
+	}
+	/**
+	 * Set the BankFusion business date based on the Equation Unit business date
+	 * 
+	 * @param userLocator
+	 *            - locator or user logged onto BankFusion
+	 * @param unit
+	 *            - Equation unit for obtaining the business date
+	 */
+	public static void setBankFusionBusinessDate(String userLocator, EquationUnit unit)
+	{
+		// Call the BankFusion microflow
+		String microflowName = "SetBusinessDateByzoneServiceMF";
+
+		ZoneBusinessDate zoneBusinessDate = new ZoneBusinessDate();
+		zoneBusinessDate.setNEWBUSINESSDATE(Toolbox.convertDbDateToTimestamp(unit.getProcessingDateCYYMMDD()));
+		zoneBusinessDate.setZONENAME(DEFAULT_ZONE);
+
+		// Setup input parameters
+		HashMap inputParams = new HashMap();
+		inputParams.put("zoneBusinessDate", zoneBusinessDate);
+
+		try
+		{
+			// This is called at login either from inside a service microflow (e.g. WebService call)
+			// or from outside a service (e.g. Desktop, Service Directory)
+			// If we are inside a MF and therefore BankFusionEnvironment is not null, we should use
+			// MFExecutor to run the MF so we don't wipe out BankFusionEnvironment
+			BankFusionEnvironment env = BankFusionThreadLocal.getBankFusionEnvironment();
+			if (env != null)
+			{
+				HashMap result = new BFToolbox().callMFExecuter(microflowName, inputParams);
+			}
+			else
+			{
+				// Otherwise we use ExecuteLocalCommand to call MF. This will clean up BankFusionEnvironment when it is finished
+				String result = new BFToolbox().callMicroflowReturnStatus(userLocator, microflowName, inputParams);
+			}
+		}
+		catch (Exception e)
+		{
+			logger.error(microflowName + " Error: " + e);
+		}
+	}
+	/**
+	 * Call a Microflow and return output parameter
+	 * 
+	 * @param userLocator
+	 *            - BankFusion UserLocator
+	 * @param microflowName
+	 *            - the Microflow to call
+	 * @param inputParams
+	 *            - the input parameter of the Microflow
+	 * 
+	 * @return the list of messages
+	 */
+	public HashMap callMicroflow(String userLocator, String microflowName, Map inputParams) throws EQException
+	{
+		try
+		{
+			EqTimingTest.printStartTime("BFToolbox.callMicroflow", "");
+
+			ICommandRequest command = new CommandHelper(CommandHelper.EXECUTE_HEADLESS_MICROFLOW_COMMAND);
+			command.getHeader().setMfID(microflowName);
+			command.getHeader().setUserLocator(userLocator);
+			HashMap commandParameters = command.getData();
+			commandParameters.put(MetaDataEnum.PROP_EXECUTE_BP_NOUI, inputParams);
+
+			// Make the call
+			Object returnValue = new ExecuteLocalCommand().executeCommand(command);
+
+			// Check the output
+			if (returnValue instanceof ICommandResponse)
+			{
+				ICommandResponse commandResponse = (ICommandResponse) returnValue;
+				if (commandResponse.getData() instanceof BankFusionException)
+				{
+					BankFusionException bfException = (BankFusionException) commandResponse.getData();
+					throw new EQException(bfException);
+				}
+
+				HashMap outmap = (HashMap) commandResponse.getData();
+				return outmap;
+			}
+			else
+			{
+				throw new EQException("ExecuteLocalCommand return value not instanceof ICommandResponse");
+			}
+		}
+		finally
+		{
+			EqTimingTest.printTime("BFToolbox.callMicroflow", "");
+		}
+	}
+
+	/**
+	 * Call a Microflow using the current BankFusionEnvironment
+	 * 
+	 * @param microFlowName
+	 *            - the Microflow name
+	 * @param bf_serviceHeader
+	 *            - the BF function request header
+	 * @param bf_serviceData
+	 *            - the service data complex type
+	 * @return a HashMap containing the output parameters from the Microflow
+	 */
+	public HashMap callMFExecuter(String microFlowName, ServiceRqHeader bf_serviceHeader, Object bf_serviceData)
+					throws BankFusionException
+	{
+		try
+		{
+			EqTimingTest.printStartTime("BFToolbox.callMFExecutor", microFlowName);
+
+			// setup the details
+			HashMap inputParams = new HashMap();
+			inputParams.put(PARM_IN_FUNC_HEADER, bf_serviceHeader);
+			inputParams.put(PARM_IN_FUNC_DATA, bf_serviceData);
+
+			BankFusionEnvironment env = BankFusionThreadLocal.getBankFusionEnvironment();
+
+			// execute it
+			HashMap outputParms = MFExecuter.executeMF(microFlowName, env, inputParams, false);
+
+			return outputParms;
+		}
+		finally
+		{
+			EqTimingTest.printTime("BFToolbox.callMFExecutor", microFlowName);
+		}
+	}
+
+	/**
+	 * Call a Microflow using the current BankFusionEnvironment
+	 * 
+	 * @param microFlowName
+	 *            - the Microflow name
+	 * @param inputParams
+	 *            - the input parameter of the Microflow
+	 * 
+	 * @return a HashMap containing the output parameters from the Microflow
+	 */
+	public HashMap callMFExecuter(String microFlowName, Map inputParams) throws BankFusionException
+	{
+		try
+		{
+			EqTimingTest.printStartTime("BFToolbox.callMFExecutor", microFlowName);
+			BankFusionEnvironment env = BankFusionThreadLocal.getBankFusionEnvironment();
+
+			// execute it
+			HashMap outputParms = MFExecuter.executeMF(microFlowName, env, inputParams, false);
+
+			return outputParms;
+		}
+		finally
+		{
+			EqTimingTest.printTime("BFToolbox.callMFExecutor", microFlowName);
+		}
+	}
+
+	/**
+	 * Call the default Microflow and return the updated details
+	 * 
+	 * @param microFlowName
+	 *            - the Microflow name
+	 * @param bf_serviceHeader
+	 *            - the BF function request header
+	 * @param bf_serviceData
+	 *            - the function data complex type
+	 * 
+	 * @return a ReturnDataBF object containing both header and data tags from the end step of the Microflow
+	 */
+	public ReturnDataBF callDefaultUserExit(String microFlowName, ServiceRqHeader bf_serviceHeader, Object bf_serviceData)
+	{
+		// call the MFExecuter
+		HashMap output = callMFExecuter(microFlowName, bf_serviceHeader, bf_serviceData);
+
+		// return the data
+		Object outputServiceData = output.get(PARM_OUT_FUNC_DATA);
+		ServiceRsHeader outputServiceHeader = (ServiceRsHeader) output.get(PARM_OUT_FUNC_HEADER);
+
+		return new ReturnDataBF(outputServiceHeader, outputServiceData);
+	}
+
+	/**
+	 * Call the validate user exit Microflow and return the list of errors
+	 * 
+	 * @param microFlowName
+	 *            - the Microflow name
+	 * @param bf_serviceHeader
+	 *            - the BF service header
+	 * @param bf_serviceData
+	 *            - the service data complex type
+	 * 
+	 * @return a ReturnDataBF object containing both header and data tags from the end step of the Microflow
+	 */
+	public ReturnDataBF callValidateUserExit(String microFlowName, ServiceRqHeader bf_serviceHeader, Object bf_serviceData)
+	{
+		// call the MFExecuter
+		HashMap output = callMFExecuter(microFlowName, bf_serviceHeader, bf_serviceData);
+
+		// return the data
+		Object outputServiceData = output.get(PARM_OUT_FUNC_DATA);
+		ServiceRsHeader outputServiceHeader = (ServiceRsHeader) output.get(PARM_OUT_FUNC_HEADER);
+
+		return new ReturnDataBF(outputServiceHeader, outputServiceData);
+	}
+
+	/**
+	 * Call the update user exit microflow and return the list of errors
+	 * 
+	 * @param microFlowName
+	 *            - the Microflow name
+	 * @param bf_serviceHeader
+	 *            - the BF function request header
+	 * @param bf_serviceData
+	 *            - the function data complex type
+	 * 
+	 * @return a ReturnDataBF object containing both header and data tags from the end step of the Microflow
+	 */
+	public ReturnDataBF callUpdateUserExit(String microFlowName, ServiceRqHeader bf_serviceHeader, Object bf_serviceData)
+	{
+		// call the MFExecuter
+		HashMap output = callMFExecuter(microFlowName, bf_serviceHeader, bf_serviceData);
+
+		// return the data
+		Object outputServiceData = output.get(PARM_OUT_FUNC_DATA);
+		ServiceRsHeader outputServiceHeader = (ServiceRsHeader) output.get(PARM_OUT_FUNC_HEADER);
+
+		return new ReturnDataBF(outputServiceHeader, outputServiceData);
+	}
+
+	/**
+	 * Call the previous screen user exit microflow and the previous screen to display
+	 * 
+	 * @param microFlowName
+	 *            - the Microflow name
+	 * @param bf_serviceHeader
+	 *            - the BF function request header
+	 * @param bf_serviceData
+	 *            - the function data complex type
+	 * 
+	 * @return the number of the previous screen to display
+	 */
+	public String callPrevScrnUserExit(String microFlowName, ServiceRqHeader bf_serviceHeader, Object bf_serviceData)
+	{
+		// call the MFExecuter
+		HashMap output = callMFExecuter(microFlowName, bf_serviceHeader, bf_serviceData);
+
+		// return the data
+		ServiceRsHeader outputServiceHeader = (ServiceRsHeader) output.get(PARM_OUT_FUNC_HEADER);
+
+		return outputServiceHeader.getUiControlRs().getNextScrn();
+	}
+
+	/**
+	 * Call the next screen user exit Microflow and the next screen to display
+	 * 
+	 * @param microFlowName
+	 *            - the Microflow name
+	 * @param bf_serviceHeader
+	 *            - the BF function request header
+	 * @param bf_serviceData
+	 *            - the function data complex type
+	 * 
+	 * @return the number of the next screen to display
+	 */
+	public String callNextScrnUserExit(String microFlowName, ServiceRqHeader bf_serviceHeader, Object bf_serviceData)
+	{
+		// call the MFExecuter
+		HashMap output = callMFExecuter(microFlowName, bf_serviceHeader, bf_serviceData);
+
+		// retrieve the next screen
+		ServiceRsHeader outputServiceHeader = (ServiceRsHeader) output.get(PARM_OUT_FUNC_HEADER);
+
+		return outputServiceHeader.getUiControlRs().getNextScrn();
+	}
+
+	/**
+	 * Return the user id in the case required for BankFusion
+	 * 
+	 * @param userId
+	 *            The Equation user (in upper case)
+	 * @return the user id in the appropriate case
+	 */
+	public static String rtvUserId(String userId)
+	{
+		String result = userId;
+		if (!EquationCommonContext.CASE_UPPER.equals(EquationCommonContext
+						.getConfigProperty(EquationCommonContext.BANKFUSION_USER_CASE_PROPERTY)))
+		{
+			result = result.toLowerCase();
+		}
+		return result;
+	}
+
+	/**
+	 * Calls BF to validate credentials (i.e. against CAS)
+	 * 
+	 * This is used for ad-hoc credential validation e.g. during supervisor override
+	 * 
+	 * @param user
+	 * @param password
+	 * @return boolean indicating success
+	 */
+	public boolean validateCredentials(String user, String password)
+	{
+		boolean result = true;
+		try
+		{
+			IServiceManager serviceManager = ServiceManagerFactory.getInstance().getServiceManager();
+			ISecurityService securityService = (ISecurityService) serviceManager.getServiceForName("SecurityService");
+
+			result = securityService.validateCredentials(user, password);
+		}
+		catch (Exception e)
+		{
+			// TODO: Distinguish between authentication errors and genuine exceptions
+			e.printStackTrace();
+			logger.error("Authentication failed ", e);
+			result = false;
+		}
+		return result;
+	}
+
+	/**
+	 * Obtain a Service Ticket from BF
+	 * 
+	 * This is used to generate a Service Ticket to pass out to a third party.
+	 * 
+	 * @param userLocator
+	 *            the BankFusion userLocator, which will be a CAS TGT token
+	 * @return String containing the service ticket. This will be null if an error occurred
+	 */
+	public static String getServiceTicket(String userLocator)
+	{
+		String result = null;
+		try
+		{
+			CASAuthenticationProvider instance = CASAuthenticationProvider.getBFCasTokenProvider();
+			String casRestletURL = BankFusionPropertySupport.getProperty(BankFusionPropertySupport.BANKFUSION_PROPERTY_FILE_NAME,
+							"CAS_RESTLET_URL", null);
+			String serviceURLForCAS = BankFusionPropertySupport.getProperty(
+							BankFusionPropertySupport.BANKFUSION_PROPERTY_FILE_NAME, "SERVICE_URL_FOR_CAS", null);
+			result = instance.getServiceTicket(casRestletURL, userLocator, serviceURLForCAS);
+		}
+		catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error("Failed to get Service Ticket", e);
+			result = null;
+		}
+		return result;
+	}
+
+	/**
+	 * Return the field value of the field name of a complex data type using reflection. If the getter method for the field does not
+	 * exist an empty string will be returned.
+	 * 
+	 * @param bf_functionData
+	 *            - the complex data type
+	 * @param methodName
+	 *            - the method name
+	 * 
+	 * @return the field value
+	 */
+	public static Object getFieldObject(Object bf_functionData, String methodName)
+	{
+		try
+		{
+			Method method = bf_functionData.getClass().getDeclaredMethod(methodName);
+			Object fieldValue = (Object) method.invoke(bf_functionData);
+			return fieldValue;
+		}
+		catch (Exception e)
+		{
+			return null;
+		}
+	}
+
+}

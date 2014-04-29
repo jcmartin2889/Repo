@@ -1,0 +1,56 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCase;
+
+/**
+ * @author perkinj1
+ */
+public class ANC_DO_NO_USE extends EquationTestCase
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: ANC_DO_NO_USE.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	private EquationStandardTransaction transaction;
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		/*
+		 * Get an empty transaction class you'll need to enter the name of the transaction concatenated with the WMENU1 option id.
+		 */
+		transaction = getEquationStandardTransaction("G01ARRANC");
+	}
+	public void testAdd() throws Exception
+	{
+		/*
+		 * Set the transaction type
+		 */
+		transaction.setMode("A");
+		/*
+		 * Set the transaction fields
+		 */
+		transaction.setFieldValue("GZCUS", "555679"); // Customer mnemonic
+		transaction.setFieldValue("GZCLC", "   "); // customer location
+		transaction.setFieldValue("GZCTP", "EA"); // type
+		transaction.setFieldValue("GZCPNC", "555679"); // customer number
+		transaction.setFieldValue("GZCUN", "Full name"); // full name
+		transaction.setFieldValue("GZDAS", "SHORT"); // short name
+		transaction.setFieldValue("GZBRNM", "LOND"); // Default branch
+		transaction.setFieldValue("GZCRB1", "00"); // Tax reference 1
+		transaction.setFieldValue("GZCRB2", "00"); // Tax reference 2
+		/*
+		 * See if it works
+		 */
+		assertTestStandardTransaction(transaction, true);
+	}
+}

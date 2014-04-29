@@ -1,0 +1,279 @@
+package com.misys.equation.function.el;
+
+import java.io.StringReader;
+
+import javax.el.ExpressionFactory;
+import javax.el.ValueExpression;
+
+import org.apache.el.ExpressionFactoryImpl;
+import org.apache.el.parser.ELParser;
+import org.apache.el.parser.Token;
+
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.function.beans.FunctionData;
+import com.misys.equation.function.useraccess.UserAccessFields;
+
+/**
+ * Class that encapsulates the standard execution of EL scripts
+ */
+public class ELRuntime
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(ELRuntime.class);
+
+	// Value type
+	// NOTE: Defaulted to zero. Value type suffix will now be used for different values
+	// instead of these variables.
+	public static final int INPUT_VALUE = 0;
+	public static final int DB_VALUE = 0;
+	public static final int REALTYPE_VALUE = 0;
+
+	// Value type suffix
+	public static final String INPUT_SFX = "$INP";
+	public static final String DATABASE_SFX = "$DB";
+	public static final String OUTPUT_SFX = "$OUT";
+	public static final String REAL_SFX = "$REAL";
+
+	public static final String SUFFIX_CONNECTOR = "$";
+
+	private static ExpressionFactory factory = new ExpressionFactoryImpl();
+	private static ELContextImpl elContext = new ELContextImpl();
+
+	/**
+	 * The ELParserConstants.IDENTIFIER value changes depending on the version of WebSphere. To allow the code to be compatible with
+	 * WAS 7 and WAS 8, the correct value must be derived at run time. A fixed expression is parsed during initialisation and the
+	 * value assigned to the identifier is stored in this constant. Use ELRuntime.IDENTIFIER instead of
+	 * ELParserConstants.IDENTIFIER.
+	 */
+	public static final int IDENTIFIER;
+	static
+	{
+		// This string has 3 tokens: '${', 'FIELD_NAME', '}'
+		// The 'FIELD_NAME' token will have a type of IDENTIFIER
+		String dummyExpression = "${FIELD_NAME}";
+
+		ELParser parser = new ELParser(new StringReader(dummyExpression));
+		Token token = parser.getNextToken();
+		while (!token.image.equals(""))
+		{
+			if (token.image.equals("FIELD_NAME"))
+			{
+				break;
+			}
+			token = parser.getNextToken();
+		}
+		IDENTIFIER = token.kind;
+	}
+
+	/**
+	 * Return the field value
+	 * 
+	 * @param functionData
+	 *            - the Function Data
+	 * @param inputType
+	 *            - determine which value from the function data
+	 * 
+	 * @return the value
+	 */
+	private static Object getValue(String fieldName, FunctionData functionData, int inputType)
+	{
+		if (UserAccessFields.isFieldExists(fieldName))
+		{
+			return functionData.rtvUserAccessFields().getFieldValue(fieldName);
+		}
+		if (fieldName.lastIndexOf(SUFFIX_CONNECTOR) > 0)
+		{
+			int index = fieldName.lastIndexOf(SUFFIX_CONNECTOR);
+			String type = fieldName.substring(index);
+
+			if (type.equals(DATABASE_SFX))
+			{
+				return functionData.rtvFieldDbValue(getBareId(fieldName));
+			}
+			else if (type.equals(REAL_SFX))
+			{
+				return functionData.rtvFieldValueAsRealType(getBareId(fieldName));
+			}
+			else if (type.equals(OUTPUT_SFX))
+			{
+				return functionData.rtvFieldOutputValue(getBareId(fieldName));
+			}
+			else if (type.equals(INPUT_SFX))
+			{
+				return functionData.rtvFieldInputValue(getBareId(fieldName));
+			}
+		}
+		return functionData.rtvFieldInputValue(fieldName);
+	}
+	/**
+	 * Executes an EL script that returns a Boolean value
+	 * <p>
+	 * Callers need to check for ParseExceptions being thrown and deal with them accordingly
+	 * 
+	 * @param expression
+	 *            - The EL Expression (without surrounding ${ })
+	 * @param functionData
+	 *            - the Function Data
+	 * @param inputType
+	 *            - determine which value from the function data
+	 * 
+	 * @return a boolean value
+	 */
+	public static boolean runBooleanScript(String expression, FunctionData functionData, int inputType)
+	{
+		String isValidValueExpressionText = "${" + expression + "}";
+
+		ELParser parser = new ELParser(new StringReader(isValidValueExpressionText));
+		Token token = parser.getNextToken();
+		while (!token.image.equals(""))
+		{
+			if (token.kind == IDENTIFIER)
+			{
+				Object fieldValue = getValue(token.image.toUpperCase(), functionData, inputType);
+				elContext.bind(token.image, fieldValue);
+			}
+			token = parser.getNextToken();
+		}
+		ValueExpression isValidValueExpression = factory.createValueExpression(elContext, isValidValueExpressionText, Object.class);
+		Boolean isValid = (Boolean) isValidValueExpression.getValue(elContext);
+		return isValid.booleanValue();
+	}
+
+	/**
+	 * Executes an EL script that returns a String value
+	 * <p>
+	 * Callers need to check for ParseExceptions being thrown and deal with them accordingly
+	 * 
+	 * @param expression
+	 *            - The EL Expression (without surrounding ${ })
+	 * @param functionData
+	 *            - the Function Data
+	 * @param inputType
+	 *            - determine which value from the function data
+	 * 
+	 * @return a string value (or null)
+	 */
+	public static String runStringScript(String expression, FunctionData functionData, int inputType)
+	{
+		String result = null;
+		String expressionText = "${" + expression + "}";
+
+		ELParser parser = new ELParser(new StringReader(expressionText));
+		Token token = parser.getNextToken();
+		while (!token.image.equals(""))
+		{
+			if (token.kind == IDENTIFIER)
+			{
+				Object fieldValue = getValue(token.image.toUpperCase(), functionData, inputType);
+				elContext.bind(token.image, fieldValue);
+			}
+			token = parser.getNextToken();
+		}
+		ValueExpression valueExpression = factory.createValueExpression(elContext, expressionText, Object.class);
+		Object objectValue = valueExpression.getValue(elContext);
+		if (objectValue != null)
+		{
+			result = objectValue.toString();
+		}
+		return result;
+	}
+
+	/**
+	 * Executes an EL expression that returns a Boolean value
+	 * <p>
+	 * If an exception is thrown when running the expression, it will be logged, and the defaultValue value will be returned.
+	 * 
+	 * @param expression
+	 *            - The EL Expression (without surrounding ${ })
+	 * @param functionData
+	 *            - the Function Data
+	 * @param id
+	 *            - the field id where this expression belongs to
+	 * @param expressionId
+	 *            - the expression id where this expression belongs to
+	 * @param defaultValue
+	 *            the value to return if an exception occurs when running the script. May be null.
+	 * @param inputType
+	 *            - determine which value from the function data
+	 * 
+	 * @return a boolean value
+	 */
+	public static boolean runBooleanScript(String expression, FunctionData functionData, String id, String expressionId,
+					boolean defaultValue, int inputType)
+	{
+		try
+		{
+			// no expression
+			if (expression.trim().length() == 0)
+			{
+				return defaultValue;
+			}
+			return runBooleanScript(expression, functionData, inputType);
+		}
+		catch (Exception e)
+		{
+			LOG.error("Error running " + expressionId + " script expression [" + expression + "] for the reference object [" + id
+							+ "]");
+			LOG.error(e);
+			return defaultValue;
+		}
+	}
+
+	/**
+	 * Executes an EL script that returns a String value (or null)
+	 * <p>
+	 * If an exception is thrown when running the expression, it will be logged, and the defaultValue value will be returned. *
+	 * 
+	 * @param expression
+	 *            The EL Expression (without surrounding ${ }).
+	 * @param functionData
+	 *            - the Function Data
+	 * @param id
+	 *            - the field id where this expression belongs to
+	 * @param expressionId
+	 *            - the expression id where this expression belongs to. This is used when outputting log information
+	 * @param defaultValue
+	 *            the value to return if an exception occurs when running the script. May be null.
+	 * @param inputType
+	 *            - determine which value from the function data
+	 * 
+	 * @return a String value, which may be null if the the expression returned null, or if the defaultValue parameter was null and
+	 *         an exception occurred
+	 */
+	public static String runStringScript(String expression, FunctionData functionData, String id, String expressionId,
+					String defaultValue, int inputType)
+	{
+		String result = defaultValue;
+		try
+		{
+			// no expression
+			if (expression.trim().length() == 0)
+			{
+				return defaultValue;
+			}
+			result = runStringScript(expression, functionData, inputType);
+		}
+		catch (Exception e)
+		{
+			LOG.error("Error running " + expressionId + " script expression [" + expression + "] for the reference object [" + id
+							+ "]");
+			LOG.error(e);
+		}
+		return result;
+	}
+
+	/**
+	 * Get the root field name
+	 * 
+	 * @param fieldName
+	 *            the field name
+	 */
+	public static String getBareId(String fieldName)
+	{
+		return fieldName = fieldName.substring(0, fieldName.lastIndexOf(SUFFIX_CONNECTOR));
+	}
+
+}

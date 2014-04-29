@@ -1,0 +1,192 @@
+package com.misys.equation.common.ant.builder.core;
+
+import java.lang.reflect.Field;
+
+import org.apache.log4j.Logger;
+
+public class EquationLogger
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EquationLogger.java 7606 2010-06-01 17:04:23Z MACDONP1 $";
+	private Logger LOG;
+	private Object currentInstance;
+	private String version;
+
+	public EquationLogger(Class<?> currentInstance)
+	{
+		this.currentInstance = currentInstance;
+		initLogger();
+		getVersionFromRevision(currentInstance);
+	}
+
+	private void getVersionFromRevision(Class<?> currentInstance)
+	{
+		Class<?> clazz = currentInstance;
+
+		try
+		{
+			Field field = clazz.getField("_revision");
+			if (field != null)
+			{
+				version = getFormattedVersion((String) field.get(clazz));
+			}
+			else
+			{
+				version = "";
+			}
+		}
+		catch (Exception exception)
+		{
+			error("", exception);
+		}
+
+	}
+
+	private void initLogger()
+	{
+
+		LOG = Logger.getLogger(currentInstance.getClass());
+	}
+
+	// ******** info *******//
+
+	public void info(String message, Throwable exception)
+	{
+
+		LOG.info(getFormattedMessage(message), exception);
+
+	}
+
+	public void info(Throwable exception)
+	{
+
+		LOG.info(getFormattedMessage("Logging exception."), exception);
+	}
+
+	public void info(String message)
+	{
+
+		LOG.info(getFormattedMessage(message));
+
+	}
+
+	// ******** debug *******//
+
+	public void debug(String message, Throwable exception)
+	{
+
+		LOG.debug(getFormattedMessage(message), exception);
+
+	}
+
+	public void debug(Throwable exception)
+	{
+
+		LOG.debug(getFormattedMessage("Logging exception."), exception);
+	}
+
+	public void debug(String message)
+	{
+
+		LOG.debug(getFormattedMessage(message));
+
+	}
+
+	// ******** error *******//
+
+	public void error(String message, Throwable exception)
+	{
+
+		LOG.error(getFormattedMessage(message), exception);
+
+	}
+
+	public void error(Throwable exception)
+	{
+
+		LOG.error(getFormattedMessage("Logging exception."), exception);
+	}
+
+	public void error(String message)
+	{
+
+		LOG.error(getFormattedMessage(message));
+
+	}
+
+	// ******** fatal *******//
+
+	public void fatal(String message, Throwable exception)
+	{
+		LOG.fatal(getFormattedMessage(message), exception);
+	}
+
+	public void fatal(Throwable exception)
+	{
+		LOG.warn(getFormattedMessage("Logging exception."), exception);
+	}
+
+	public void fatal(String message)
+	{
+		LOG.fatal(getFormattedMessage(message));
+	}
+
+	// ******** Warnings *******//
+
+	public void warn(String message, Throwable exception)
+	{
+		LOG.warn(getFormattedMessage(message), exception);
+	}
+
+	public void warn(Throwable exception)
+	{
+		LOG.warn(getFormattedMessage("Logging exception."), exception);
+	}
+
+	public void warn(String message)
+	{
+		LOG.warn(getFormattedMessage(message));
+	}
+
+	private String getFormattedMessage(String message)
+	{
+		StringBuilder formattedMessage = new StringBuilder(version);
+
+		formattedMessage.append(" Message: ");
+		formattedMessage.append(message);
+		return formattedMessage.toString();
+	}
+
+	public boolean isWarnEnabled()
+	{
+		return true;
+	}
+	public boolean isInfoEnabled()
+	{
+
+		return LOG.isInfoEnabled();
+	}
+	public boolean isDebugEnabled()
+	{
+		return LOG.isDebugEnabled();
+	}
+	public boolean isErrorEnabled()
+	{
+		return true;
+	}
+	public boolean isFatalEnabled()
+	{
+		return true;
+	}
+	public String getFormattedVersion(String version)
+	{
+		// public static final String _revision = "$Id: EquationLogger.java 7606 2010-06-01 17:04:23Z MACDONP1 $";
+		int versionStart = version.indexOf(",v ");
+		int versionEnd = version.indexOf(" ", versionStart + 5);
+
+		String result = new StringBuilder("Version:").append(version.substring(versionStart + 2, versionEnd)).toString();
+
+		return result;
+	}
+}

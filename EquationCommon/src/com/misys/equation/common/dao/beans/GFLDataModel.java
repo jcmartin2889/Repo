@@ -1,0 +1,99 @@
+package com.misys.equation.common.dao.beans;
+
+public class GFLDataModel extends AbsRecord
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: GFLDataModel.java 10168 2010-12-18 16:55:12Z WRIGHTP1 $";
+
+	private static final long serialVersionUID = 3483549204108810351L;
+
+	// private final static String RECORD_NAME = "OM40LF";
+
+	private String fxSelectable;
+	private String fxLadderDate;
+	private long fxPayTotal;
+	private long fxReceiveTotal;
+	private long fxSumTotal;
+	private long fxAggregate;
+
+	/**
+	 * Default constructor
+	 */
+	public GFLDataModel()
+	{
+		super();
+		// setEqFileName(RECORD_NAME);
+	}
+
+	public GFLDataModel(String fxSelectable, String fxLadderDate, long fxPayTotal, long fxReceiveTotal, long fxSumTotal,
+					long fxAggregate)
+	{
+		super();
+		this.fxSelectable = fxSelectable;
+		this.fxLadderDate = fxLadderDate;
+		this.fxPayTotal = fxPayTotal;
+		this.fxReceiveTotal = fxReceiveTotal;
+		this.fxSumTotal = fxSumTotal;
+		this.fxAggregate = fxAggregate;
+	}
+
+	public String getFxSelectable()
+	{
+		return fxSelectable;
+	}
+
+	public void setFxSelectable(String fxSelectable)
+	{
+		this.fxSelectable = fxSelectable;
+	}
+
+	public String getFxLadderDate()
+	{
+		return fxLadderDate;
+	}
+
+	public void setFxLadderDate(String fxLadderDate)
+	{
+		this.fxLadderDate = fxLadderDate;
+	}
+
+	public long getFxPayTotal()
+	{
+		return fxPayTotal;
+	}
+
+	public void setFxPayTotal(long fxPayTotal)
+	{
+		this.fxPayTotal = fxPayTotal;
+	}
+
+	public long getFxReceiveTotal()
+	{
+		return fxReceiveTotal;
+	}
+
+	public void setFxReceiveTotal(long fxReceiveTotal)
+	{
+		this.fxReceiveTotal = fxReceiveTotal;
+	}
+
+	public long getFxSumTotal()
+	{
+		return fxSumTotal;
+	}
+
+	public void setFxSumTotal(long fxSumTotal)
+	{
+		this.fxSumTotal = fxSumTotal;
+	}
+
+	public long getFxAggregate()
+	{
+		return fxAggregate;
+	}
+
+	public void setFxAggregate(long fxAggregate)
+	{
+		this.fxAggregate = fxAggregate;
+	}
+}

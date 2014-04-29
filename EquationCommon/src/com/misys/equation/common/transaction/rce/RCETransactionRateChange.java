@@ -1,0 +1,188 @@
+package com.misys.equation.common.transaction.rce;
+
+import com.misys.equation.common.conversion.InputParameterConversion;
+
+public class RCETransactionRateChange implements IRCETransactionEvent
+{
+
+	//This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: RCETransactionRateChange.java 17435 2013-10-15 14:16:27Z lima12 $";
+
+	/** Determine if date is in yyyymmddDateFormat */
+	private boolean yyyymmddDateFormat = false;
+
+	/** Rate change date */
+	private int changeDate;
+
+	/** Actual rate */
+	private String actualRate;
+
+	/** Base rate */
+	private String baseRate;
+
+	/** Differential rate */
+	private String differentialRate;
+
+	/** Margin rate */
+	private String marginRate;
+
+	/** Delete rate change */
+	private boolean delete;
+
+	/**
+	 * Determine if date is in yyyymmdd format (true) or cyymmdd format (false)
+	 * 
+	 * @return true if date is in yyyymmdd format (true) or cyymmdd format (false)
+	 */
+	public boolean isYyyymmddDateFormat()
+	{
+		return yyyymmddDateFormat;
+	}
+
+	/**
+	 * Set if date is in yyyymmdd format (true) or cyymmdd format (false)
+	 * 
+	 * If date is in yyyymmdd format, then the date is automatically converted into cyymmdd by its getter method
+	 * 
+	 * @param yyyymmddDateFormat
+	 *            - true if date is in yyyymmdd format (true) or cyymmdd format (false)
+	 */
+	public void setYyyymmddDateFormat(boolean yyyymmddDateFormat)
+	{
+		this.yyyymmddDateFormat = yyyymmddDateFormat;
+	}
+
+	/**
+	 * Return the rate change date
+	 * 
+	 * @return the rate change date
+	 */
+	public int getChangeDate()
+	{
+		if (yyyymmddDateFormat)
+		{
+			return InputParameterConversion.convertDate(changeDate);
+		}
+		else
+		{
+			return changeDate;
+		}
+	}
+
+	/**
+	 * Set the rate change date
+	 * 
+	 * @param changeDate
+	 *            - the rate change date
+	 */
+	public void setChangeDate(int changeDate)
+	{
+		this.changeDate = changeDate;
+	}
+
+	/**
+	 * Return the actual rate
+	 * 
+	 * @return the actual rate
+	 */
+	public String getActualRate()
+	{
+		return actualRate;
+	}
+
+	/**
+	 * Set the actual rate
+	 * 
+	 * @param actualRate
+	 *            - the actual rate
+	 */
+	public void setActualRate(String actualRate)
+	{
+		this.actualRate = actualRate;
+	}
+
+	/**
+	 * Return the base rate
+	 * 
+	 * @return the base rate
+	 */
+	public String getBaseRate()
+	{
+		return baseRate;
+	}
+
+	/**
+	 * Set the base rate
+	 * 
+	 * @param baseRate
+	 *            - the base rate
+	 */
+	public void setBaseRate(String baseRate)
+	{
+		this.baseRate = baseRate;
+	}
+
+	/**
+	 * Return the differential rate
+	 * 
+	 * @return the differential rate
+	 */
+	public String getDifferentialRate()
+	{
+		return differentialRate;
+	}
+
+	/**
+	 * Set the differential rate
+	 * 
+	 * @param differentialRate
+	 *            - the differential rate
+	 */
+	public void setDifferentialRate(String differentialRate)
+	{
+		this.differentialRate = differentialRate;
+	}
+
+	/**
+	 * Return the margin rate
+	 * 
+	 * @return the margin rate
+	 */
+	public String getMarginRate()
+	{
+		return marginRate;
+	}
+
+	/**
+	 * Set the margin rate
+	 * 
+	 * @param marginRate
+	 *            - the margin rate
+	 */
+	public void setMarginRate(String marginRate)
+	{
+		this.marginRate = marginRate;
+	}
+
+	/**
+	 * Determine if principal increase to be deleted or added/maintained
+	 * 
+	 * @return true if principal increase to be deleted
+	 */
+	public boolean isDelete()
+	{
+		return delete;
+	}
+
+	/**
+	 * Set if principal increase to be deleted or added/maintained
+	 * 
+	 * @param delete
+	 *            - true if principal increase to be deleted
+	 */
+	public void setDelete(boolean delete)
+	{
+		this.delete = delete;
+	}
+
+}

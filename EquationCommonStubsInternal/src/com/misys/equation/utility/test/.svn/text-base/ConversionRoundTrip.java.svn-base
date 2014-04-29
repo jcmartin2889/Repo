@@ -1,0 +1,55 @@
+package com.misys.equation.utility.test;
+
+import junit.framework.TestCase;
+
+import com.ibm.as400.access.AS400Text;
+import com.misys.equation.common.test.TestEnvironment;
+import com.misys.equation.common.utilities.EquationLogger;
+
+/**
+ * Test class to investigate conversion round tripping
+ * 
+ * @author perkinj1
+ * 
+ */
+public class ConversionRoundTrip extends TestCase
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	/**
+	 * Logger for this class
+	 */
+	private static final EquationLogger LOG = new EquationLogger(TestEnvironment.class);
+
+	/**
+	 * 
+	 */
+	public void testOkay()
+	{
+		int ccsid = 0;
+		try
+		{
+			ccsid = 420;
+			String roundTrip = "يعاهلاعسعاشثعاشعصثقعش";
+			canRoundTrip(roundTrip, ccsid);
+
+			ccsid = 37;
+			roundTrip = "!£$%^&*()123456789efayvufwea";
+			canRoundTrip(roundTrip, ccsid);
+		}
+		catch (Exception e)
+		{
+			LOG.error(e);
+		}
+	}
+
+	private void canRoundTrip(String text, int ccsid)
+	{
+		String start = text.trim();
+		AS400Text as400Text = new AS400Text(start.length(), ccsid);
+		byte[] bytes = as400Text.toBytes(text);
+		String returned = (String) as400Text.toObject(bytes);
+		assertEquals("Cannot round trip: ", start, returned.trim());
+	}
+
+}

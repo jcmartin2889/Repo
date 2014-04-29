@@ -1,0 +1,40 @@
+package com.misys.equation.common.test.enquiry;
+
+import com.misys.equation.common.access.EquationStandardEnquiry;
+import com.misys.equation.common.test.EquationTestCase;
+
+/**
+ * AAE - Address Enquiry
+ * 
+ * @author Alex Lim
+ * 
+ */
+public class AAE extends EquationTestCase // Address Enquiry
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: AAE.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	private EquationStandardEnquiry enquiry;
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		/*
+		 * Get the enquiry class you'll need to enter the name of the list enquiry program e.g. H71EER
+		 */
+		enquiry = getEquationStandardEnquiry("H60EER");
+	}
+	public void testRetrieve() throws Exception
+	{
+		/*
+		 * Set the transaction fields
+		 */
+		enquiry.setFieldValue("HZAB", "0543"); // Account branch (4A)
+		enquiry.setFieldValue("HZAN", "123467"); // Basic part of account number (6A)
+		enquiry.setFieldValue("HZAS", "008"); // Account suffix (3A)
+		enquiry.setFieldValue("HZPRIM", " "); // Address type (1A)
+		/*
+		 * See if it works
+		 */
+		assertTestStandardEnquiry(enquiry, true);
+	}
+}

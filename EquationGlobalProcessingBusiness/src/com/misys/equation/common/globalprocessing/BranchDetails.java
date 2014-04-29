@@ -1,0 +1,206 @@
+package com.misys.equation.common.globalprocessing;
+
+import java.io.Serializable;
+
+import com.misys.equation.common.dao.beans.CARecordDataModel;
+import com.misys.equation.common.dao.beans.LU1RecordDataModel;
+
+public class BranchDetails implements Serializable
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: BranchDetails.java 9210 2010-09-17 15:31:21Z deroset $";
+	/** */
+	private static final long serialVersionUID = -83519769828430727L;
+
+	private String id;
+	private String branchMnemonic;
+	private String branchNumber;
+	private String branchDescription;
+	/** TODO changed these statuses to ENUMs when finalized. */
+	private String branchLinkStatus;
+	private String branchCycleStatus;
+	private String branchOperationalStatus;
+	private String branchDownloadStatus;
+	private String branchCycleStatusOverridden;
+	private String branchCashierVersion;
+
+	/**
+	 * Default constructor - required for bean deserialisation
+	 */
+	public BranchDetails()
+	{
+	}
+
+	public BranchDetails(CARecordDataModel caDataModel, LU1RecordDataModel lu1DataModel)
+	{
+		setId(caDataModel.getBranchMnemonic());
+		setBranchMnemonic(caDataModel.getBranchMnemonic());
+		setBranchDescription(caDataModel.getBranchName());
+		setBranchNumber(caDataModel.getBranchNumber());
+
+		if (lu1DataModel != null)
+		{
+			setBranchLinkStatus(lu1DataModel.getLinkStatus());
+			setBranchCashierVersion(lu1DataModel.getCashierVersion());
+			setBranchCycleStatus(lu1DataModel.getCycleStatus());
+			setBranchCycleStatusOverridden(lu1DataModel.getCycleStatusOverridden());
+			setBranchDownloadStatus(lu1DataModel.getDownloadStatus());
+			setBranchOperationalStatus(lu1DataModel.getOperationalStatus());
+		}
+	}
+
+	public String getId()
+	{
+		return id;
+	}
+
+	public void setId(String id)
+	{
+		this.id = id;
+	}
+
+	public String getBranchNumber()
+	{
+		return branchNumber;
+	}
+
+	public void setBranchNumber(String branchNumber)
+	{
+		this.branchNumber = branchNumber;
+	}
+
+	public String getBranchDescription()
+	{
+		return branchDescription;
+	}
+
+	public void setBranchDescription(String branchDescription)
+	{
+		this.branchDescription = branchDescription;
+	}
+
+	/**
+	 * @return the branchStatus
+	 */
+	public String getBranchLinkStatus()
+	{
+		return branchLinkStatus;
+	}
+
+	/**
+	 * @param branchStatus
+	 *            the branchStatus to set
+	 */
+	public void setBranchLinkStatus(String branchStatus)
+	{
+		this.branchLinkStatus = branchStatus;
+	}
+
+	/**
+	 * @return the branchMnemonic
+	 */
+	public String getBranchMnemonic()
+	{
+		return branchMnemonic;
+	}
+
+	/**
+	 * @param branchMnemonic
+	 *            the branchMnemonic to set
+	 */
+	public void setBranchMnemonic(String branchMnemonic)
+	{
+		this.branchMnemonic = branchMnemonic;
+	}
+
+	/**
+	 * @return the branchCycleStatus
+	 */
+	public String getBranchCycleStatus()
+	{
+		return branchCycleStatus;
+	}
+
+	/**
+	 * @param branchCycleStatus
+	 *            the branchCycleStatus to set
+	 */
+	public void setBranchCycleStatus(String branchCycleStatus)
+	{
+		this.branchCycleStatus = branchCycleStatus;
+	}
+
+	/**
+	 * @return the branchOperationalStatus
+	 */
+	public String getBranchOperationalStatus()
+	{
+		return branchOperationalStatus;
+	}
+
+	/**
+	 * @param branchOperationalStatus
+	 *            the branchOperationalStatus to set
+	 */
+	public void setBranchOperationalStatus(String branchOperationalStatus)
+	{
+		this.branchOperationalStatus = branchOperationalStatus;
+	}
+
+	/**
+	 * @return the branchDownloadStatus
+	 */
+	public String getBranchDownloadStatus()
+	{
+		return branchDownloadStatus;
+	}
+
+	/**
+	 * @param branchDownloadStatus
+	 *            the branchDownloadStatus to set
+	 */
+	public void setBranchDownloadStatus(String branchDownloadStatus)
+	{
+		this.branchDownloadStatus = branchDownloadStatus;
+	}
+
+	/**
+	 * @return the branchCycleStatusOverridden
+	 */
+	public String getBranchCycleStatusOverridden()
+	{
+		return branchCycleStatusOverridden;
+	}
+
+	/**
+	 * @param branchCycleStatusOverridden
+	 *            the branchCycleStatusOverridden to set
+	 */
+	public void setBranchCycleStatusOverridden(String branchCycleStatusOverridden)
+	{
+		this.branchCycleStatusOverridden = branchCycleStatusOverridden;
+	}
+
+	/**
+	 * @return the branchCashierVersion
+	 */
+	public String getBranchCashierVersion()
+	{
+		return branchCashierVersion;
+	}
+
+	/**
+	 * @param branchCashierVersion
+	 *            the branchCashierVersion to set
+	 */
+	public void setBranchCashierVersion(String branchCashierVersion)
+	{
+		this.branchCashierVersion = branchCashierVersion;
+	}
+
+	@Override
+	public String toString()
+	{
+		return this.getId() + " - " + this.getBranchNumber() + " - " + this.getBranchDescription();
+	}
+}

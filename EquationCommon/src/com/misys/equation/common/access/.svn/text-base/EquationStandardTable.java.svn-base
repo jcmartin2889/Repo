@@ -1,0 +1,425 @@
+package com.misys.equation.common.access;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.internal.eapi.core.EQMessage;
+import com.misys.equation.common.utilities.EqDataType;
+
+/**
+ * This class provides methods for setting Equation table fields before the transaction is executed and for getting fields after the
+ * transaction is executed - tableName, index, key fields and mode are required.
+ */
+public class EquationStandardTable implements IEquationStandardObject
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	private static final long serialVersionUID = 1L;
+
+	private EquationDataStructureData tableData;
+	private String tableName;
+	private String indexName;
+	private String keys;
+	private List<EQMessage> errorList = new ArrayList<EQMessage>();
+	private List<EQMessage> warningList = new ArrayList<EQMessage>();
+	private byte[] beforeImage;
+	private boolean valid = true;
+	private boolean exists = false;
+	private String mode = "";
+	private String id = "";
+
+	private String fieldsForSelect = null;
+
+	/**
+	 * Construct a standard transaction with default journal name
+	 * 
+	 * @param tableName
+	 *            - the table name
+	 * @param indexName
+	 *            - the index or logical file name
+	 * @param keys
+	 *            - list of keys delimited by colon
+	 * @param equationStandardSession
+	 *            - the Equation standard session
+	 * 
+	 * @throws EQException
+	 * @equation.external
+	 */
+	public EquationStandardTable(String tableName, String indexName, String keys, EquationStandardSession equationStandardSession)
+					throws EQException
+	{
+		setTableName(tableName);
+		setIndexName(indexName);
+		setKeys(keys);
+		initialiseTable(equationStandardSession);
+	}
+
+	/**
+	 * Set the name of the table being used
+	 * 
+	 * @param tableName
+	 *            - Table name
+	 */
+	private void setTableName(String tableName)
+	{
+		if (this.id.equals("") || this.tableName.equals(id))
+		{
+			id = tableName;
+		}
+		this.tableName = tableName;
+	}
+
+	/**
+	 * Return the name of the table being used
+	 * 
+	 * @return the name of the table being used
+	 */
+	public String getTableName()
+	{
+		return tableName;
+	}
+
+	/**
+	 * Initialise the GZ journal data structure
+	 * 
+	 * @throws EQException
+	 */
+	private void initialiseTable(EquationStandardSession equationStandardSession) throws EQException
+	{
+		tableData = new EquationDataStructureData(equationStandardSession.getEquationDataStructure(tableName));
+	}
+
+	/**
+	 * Set the table field name
+	 * 
+	 * @param fieldName
+	 *            - field name
+	 * @param fieldValue
+	 *            - field value
+	 * @equation.external
+	 */
+	public void setFieldValue(String fieldName, String fieldValue)
+	{
+		tableData.setFieldValue(fieldName, fieldValue);
+	}
+
+	/**
+	 * Set the table fields
+	 * 
+	 * @param bytes
+	 *            - the table fields in bytes
+	 */
+	public void setBytes(byte[] bytes)
+	{
+		tableData.setBytes(bytes);
+	}
+
+	/**
+	 * Return the table fields in bytes
+	 * 
+	 * @return the table fields in bytes
+	 */
+	public byte[] getBytes()
+	{
+		return tableData.getBytes();
+	}
+
+	/**
+	 * Return the String representation
+	 * 
+	 * @return the String representation
+	 */
+	@Override
+	public String toString()
+	{
+		StringBuffer serialisation = new StringBuffer(tableData.toString());
+		return serialisation.toString();
+	}
+
+	/**
+	 * Return the field value of the GZ field
+	 * 
+	 * @param fieldName
+	 *            - field name in GZ file
+	 * @equation.external
+	 */
+	public String getFieldValue(String fieldName)
+	{
+		return tableData.getFieldValue(fieldName);
+	}
+
+	/**
+	 * Return the list of errors
+	 * 
+	 * @return - the list of errors
+	 * @equation.external
+	 */
+	public List<EQMessage> getErrorList()
+	{
+		return errorList;
+	}
+
+	/**
+	 * Set the list of errors
+	 * 
+	 * @param errorList
+	 *            - the list of errors
+	 */
+	public void setErrorList(List<EQMessage> errorList)
+	{
+		this.errorList = errorList;
+	}
+
+	/**
+	 * Return the list of warnings
+	 * 
+	 * @return the list of warnings
+	 * @equation.external
+	 */
+	public List<EQMessage> getWarningList()
+	{
+		return warningList;
+	}
+
+	/**
+	 * Set the list of warnings
+	 * 
+	 * @param warningList
+	 *            - the list of warnings
+	 */
+	public void setWarningList(ArrayList<EQMessage> warningList)
+	{
+		this.warningList = warningList;
+	}
+
+	/**
+	 * Return the table data
+	 * 
+	 * @return the table data
+	 */
+	public EquationDataStructureData getTableData()
+	{
+		return tableData;
+	}
+
+	/**
+	 * Return the the before image
+	 * 
+	 * @return the before image
+	 */
+	public byte[] getBeforeImage()
+	{
+		// if(beforeImage==null){
+		// beforeImage= this.getBytes();
+		// }
+		return beforeImage;
+	}
+
+	/**
+	 * Set the before image
+	 * 
+	 * @param beforeImage
+	 *            the before image
+	 */
+	public void setBeforeImage(byte[] beforeImage)
+	{
+
+		if (beforeImage == null)
+		{
+			this.beforeImage = null;
+		}
+		else
+		{
+			this.beforeImage = new byte[beforeImage.length];
+			System.arraycopy(beforeImage, 0, this.beforeImage, 0, beforeImage.length);
+		}
+
+	}
+
+	/**
+	 * Return the list of messages
+	 * 
+	 * @return the list of messages
+	 * @equation.external
+	 */
+	public List<EQMessage> getMessages()
+	{
+		if (getValid())
+		{
+			return getWarningList();
+		}
+		else
+		{
+			return getErrorList();
+		}
+	}
+
+	/**
+	 * Return the id of this transaction
+	 * 
+	 * @return the id of this transaction
+	 */
+	public String getId()
+	{
+		return id;
+	}
+
+	/**
+	 * Set the id of this transaction
+	 * 
+	 * @param id
+	 *            - the id of this transaction
+	 */
+	public void setId(String id)
+	{
+		this.id = id;
+	}
+
+	/**
+	 * Return whether the table operation has encountered an error or not
+	 * 
+	 * @return true if table is valid
+	 * @equation.external
+	 */
+	public boolean getValid()
+	{
+		return valid;
+	}
+
+	/**
+	 * Set whether the table is valid or not
+	 * 
+	 * @param valid
+	 *            - true if table is valid
+	 */
+	public void setValid(boolean valid)
+	{
+		this.valid = valid;
+	}
+
+	/**
+	 * Set the mode
+	 * 
+	 * @param mode
+	 *            - the function mode
+	 */
+	public void setMode(String mode)
+	{
+		this.mode = mode;
+	}
+
+	/**
+	 * Return the mode
+	 * 
+	 * @return the mode
+	 */
+	public String getMode()
+	{
+		return mode;
+	}
+
+	/**
+	 * Return the index of logical file name
+	 * 
+	 * @return the index of logical file name
+	 */
+	public String getIndexName()
+	{
+		return indexName;
+	}
+
+	/**
+	 * Set the index of logical file name
+	 * 
+	 * @param indexName
+	 *            - the index of logical file name
+	 */
+	public void setIndexName(String indexName)
+	{
+		this.indexName = indexName;
+	}
+
+	/**
+	 * Return the list of keys
+	 * 
+	 * @return the list of keys
+	 */
+	public String getKeys()
+	{
+		return keys;
+	}
+
+	/**
+	 * Set the list of keys
+	 * 
+	 * @param keys
+	 *            - the list of keys
+	 */
+	public void setKeys(String keys)
+	{
+		this.keys = keys;
+	}
+
+	/**
+	 * Determine whether the record exists or not
+	 * 
+	 * @return true if the record exists
+	 */
+	public boolean exists()
+	{
+		return exists;
+	}
+
+	/**
+	 * Set whether the record exists or not
+	 * 
+	 * @param exists
+	 *            - true if the record exists
+	 */
+	public void setExists(boolean exists)
+	{
+		this.exists = exists;
+	}
+
+	/**
+	 * Return the list of fields for SELECT statement
+	 * 
+	 * @return the list of fields for SELECT statement
+	 */
+	public String getFieldsForSelect()
+	{
+		return fieldsForSelect;
+	}
+
+	/**
+	 * Set the list of fields for SELECT statement
+	 * 
+	 * @param fieldsForSelect
+	 *            - the list of fields separated by :
+	 */
+	public void setFieldsForSelect(String fieldsForSelect)
+	{
+		this.fieldsForSelect = fieldsForSelect;
+	}
+
+	/**
+	 * Return the list of fields as a set
+	 * 
+	 * @return the list of fields as a set
+	 */
+	public Set<String> rtvFields()
+	{
+		String[] fields = this.fieldsForSelect.split(EqDataType.VALUESSEP);
+		Set<String> set = new TreeSet<String>();
+		for (String field : fields)
+		{
+			set.add(field);
+		}
+		return set;
+	}
+
+}

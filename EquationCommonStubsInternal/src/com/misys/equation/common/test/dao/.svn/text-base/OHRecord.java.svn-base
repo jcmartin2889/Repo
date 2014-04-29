@@ -1,0 +1,148 @@
+package com.misys.equation.common.test.dao;
+
+import com.misys.equation.common.dao.IOHRecordDao;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.dao.beans.OHRecordDataModel;
+import com.misys.equation.common.test.EquationTestCaseDao;
+
+/**
+ * This is a unit-test which will test OHIRecord services.
+ * 
+ * @author deroset
+ * 
+ */
+public class OHRecord extends EquationTestCaseDao
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	public OHRecord()
+	{
+
+	}
+
+	/**
+	 * 
+	 * This method is going to retrieve the Dao from the bean repository and set it as local attribute.
+	 */
+	@Override
+	protected void setDao()
+	{
+		dao = daoFactory.getOHDao(session, dataModel);
+	}
+
+	/**
+	 * This method will test if the record has been already inserted in the dataBase.
+	 */
+	@Override
+	public void isRecord(boolean assertValue)
+	{
+		boolean result;
+
+		result = checkIfThisRecordIsInTheDB();
+		if (assertValue)
+		{
+			assertTrue(result);
+		}
+		else
+		{
+			assertFalse(result);
+		}
+
+	}
+
+	/**
+	 * This method is going to check the getRecord dao's service.<br>
+	 * The obtained result should be the same than the preset in the dao data-model.
+	 * 
+	 */
+	@Override
+	public OHRecordDataModel getRecord()
+	{
+
+		OHRecordDataModel OHRecord = null;
+		OHRecord = ((IOHRecordDao) dao).getOHRecord();
+		assertDataModel(OHRecord);
+		return OHRecord;
+	}
+
+	/**
+	 * This method will test the update dao's service.
+	 */
+	@Override
+	public void updateRecord()
+	{
+
+		OHRecordDataModel OHRecord = null;
+
+		this.getMyModel().setJournalFile("Updated");
+		dao.updateRecord();
+		OHRecord = getRecord();
+		assertEquals(this.getMyModel().getJournalFile(), OHRecord.getJournalFile());
+	}
+
+	@Override
+	protected void assertDataModel(AbsRecord dataModel)
+	{
+
+		OHRecordDataModel record = (OHRecordDataModel) dataModel;
+
+		assertEquals(getMyModel().getDateMaintained(), record.getDateMaintained());
+		assertEquals(getMyModel().getJournalFile(), record.getJournalFile());
+		assertEquals(getMyModel().getFileName(), record.getFileName());
+		assertEquals(getMyModel().getCrossUnit(), record.getCrossUnit());
+		assertEquals(getMyModel().getLibraryType(), record.getLibraryType());
+		assertEquals(getMyModel().getFileType(), record.getFileType());
+		assertEquals(getMyModel().getMarketSec(), record.getMarketSec());
+		assertEquals(getMyModel().getOfflineProc(), record.getOfflineProc());
+		assertEquals(getMyModel().getLogicalFile(), record.getLogicalFile());
+		assertEquals(getMyModel().getParameterFile(), record.getParameterFile());
+		assertEquals(getMyModel().getFileSharing(), record.getFileSharing());
+		assertEquals(getMyModel().getBusinesHourJourn(), record.getBusinesHourJourn());
+		assertEquals(getMyModel().getEodJourn(), record.getEodJourn());
+		assertEquals(getMyModel().getCommitControl(), record.getCommitControl());
+		assertEquals(getMyModel().getFileBlocking(), record.getFileBlocking());
+
+	}
+
+	@Override
+	protected boolean checkIfThisRecordIsInTheDB()
+	{
+		boolean result;
+		result = ((IOHRecordDao) dao).checkIfThisOHRecordIsInTheDB();
+		return result;
+	}
+
+	@Override
+	protected void setDataModel()
+	{
+		OHRecordDataModel record = new OHRecordDataModel("TEMPF", "FIL", "PF");
+		record.setLibrary(kFilLibName);
+		this.dataModel = record;
+
+	}
+
+	/**
+	 * This method is going to return a casted data model.
+	 * 
+	 * @return a casted data model
+	 */
+	public OHRecordDataModel getMyModel()
+	{
+
+		OHRecordDataModel OHRecordDataModel = null;
+
+		if (dataModel instanceof OHRecordDataModel)
+		{
+
+			OHRecordDataModel = (OHRecordDataModel) dataModel;
+
+		}
+		else
+		{
+			throw new IllegalArgumentException("The set data-model does not correspond to the expected one.");
+		}
+
+		return OHRecordDataModel;
+	}
+}

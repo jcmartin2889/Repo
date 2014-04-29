@@ -1,0 +1,74 @@
+/*******************************************************************************
+ *  User Defined Styles
+ * --------------------
+ *  
+ *  The styles defined affects the color and border 
+ *   
+ *  To change the color:
+ *     color: blue;                                  
+ *     color: #00ff00;
+ *     color: rgb(255,0,255);
+ *                                                     
+ *  To change the background color:
+ *     background-color: <see color>
+ *                                  
+ *  To change the background image:
+ *     background-image: url("../images/bar24lightorange.gif");
+ *                                  
+ *  To change the line style
+ *     margin-left: 10px 
+ *	   margin-right: 10px
+ *     border-style: <none || dotted || dashed || solid || double || groove || inset || ridge || outset ||>
+ *     color: <see color>
+ *	   border-top: 1px solid white;
+ *	   border-bottom: 1px solid #0099ff;
+ *
+ *
+ *  ------------------------------------------------------------------------------------------------                                
+ *  To change repeating group table style
+ *
+ *     The repeating group table style must specify the background-color, the default value for this is
+ *
+ *        .<tableStyle> 
+ *	      {
+ *           background-color: buttonface;
+ *        }
+ *
+ *     To add border, define the following and choose one of the 4 border styles
+ *
+ *        table.<tableStyle> td
+ *        {
+ *           border: 1px solid groove;
+ *           border: 1px solid outset;
+ *           border: 1px solid inset;
+ *           border: 1px solid ridge;
+ *        }
+ *
+ *     To change the style for the grand total, the grand total style must specify the background-color.
+ *
+ *        .<grandTotalStyle> 
+ *	      {
+ *           background-color: buttonface;
+ *        }
+ *  ------------------------------------------------------------------------------------------------                                
+ *	To extend a pre-existing style defined in EqUI.css then this can also be done inside this CSS. for
+ *  example to change (in this case remove) the background image for the startup splash you could inject
+ *  the following....
+ *	.welcomeBackground
+ *	{
+ *		background-image: none; 
+ *	}
+ *  or...
+ * 	.welcomeBackground
+ *	{
+ *		background-image: url("../images/myImage.jpg"); 
+ *	}
+ *  *NOTE* If you are changing existing styles, it is your responsibility to validate that they 
+ *         continue to work as expected in subsequent releases. 
+ *  
+ *  ------------------------------------------------------------------------------------------------                                
+ *******************************************************************************/
+@media screen , print 
+{
+	
+}

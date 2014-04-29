@@ -1,0 +1,91 @@
+package com.misys.equation.common.access;
+
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EquationLogger;
+
+/**
+ * This class provides another method of accessing P/V modules
+ */
+public class EquationData
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EquationData.java 12552 2012-03-01 13:24:13Z perkinj1 $";
+
+	private String data;
+	private String errorMessage = "";
+	private static final EquationLogger LOG = new EquationLogger(EquationData.class);
+
+	/**
+	 * Construct an empty EqData
+	 */
+	public EquationData()
+	{
+	}
+
+	/**
+	 * @param session
+	 *            the Equation standard session
+	 * @param service
+	 *            - the program name
+	 * @param decode
+	 *            - the decode
+	 * @param dsccn
+	 *            - the DSCCN
+	 * @param blankAllowed
+	 *            - blank allowed?
+	 * @param newCode
+	 *            - new code?
+	 */
+	public EquationData(EquationStandardSession session, String service, String decode, String dsccn, String blankAllowed,
+					String newCode) throws EQException
+	{
+		LOG.debug("EqData dsccn = " + dsccn);
+		EquationStandardValidation eqStandardValidation = new EquationStandardValidation(decode, service, dsccn, blankAllowed,
+						newCode);
+		eqStandardValidation = session.executeValidate(eqStandardValidation);
+		data = eqStandardValidation.getDataOutput();
+		errorMessage = eqStandardValidation.getError();
+	}
+
+	/**
+	 * Return the error message
+	 * 
+	 * @return the error message
+	 */
+	public String getErrorMessage()
+	{
+		return errorMessage;
+	}
+
+	/**
+	 * Set the error message
+	 * 
+	 * @param errorMessage
+	 *            - the error message
+	 */
+	public void setErrorMessage(String errorMessage)
+	{
+		this.errorMessage = errorMessage;
+	}
+
+	/**
+	 * Return the data
+	 * 
+	 * @return the data
+	 */
+	public String getData()
+	{
+		return data;
+	}
+
+	/**
+	 * Set the data
+	 * 
+	 * @param data
+	 *            - the data
+	 */
+	public void setData(String data)
+	{
+		this.data = data;
+	}
+}

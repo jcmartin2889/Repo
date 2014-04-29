@@ -1,0 +1,137 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseFully;
+
+/**
+ * Equation test cases for Add/Maintain Retail Loan Type
+ */
+public class LTM extends EquationTestCaseFully
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	String programName = "N93FRR";
+	String optionId = "LTM";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		retrieveBeforeCancel = false;
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZLNP", "KWY"); // Loan type (3A)
+		transaction.setFieldValue("GZMPT", "02"); // Main loan product type  (2A)
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZLPD", "EQ4-Test"); // Loan type description (35A)
+		transaction.setFieldValue("GZYQCK", "N"); // Quick loan allowed (1A)
+		transaction.setFieldValue("GZCCY", "GBP"); // Currency mnemonic (3A)
+		transaction.setFieldValue("GZLACT", "L1"); // Loan account type (2A)
+		transaction.setFieldValue("GZCACT", "R1"); // Contingent loan account type (2A)
+		transaction.setFieldValue("GZINTT", "2"); // Interest rate type for this deal type (1A)
+		transaction.setFieldValue("GZGLR", "N"); // Generate loan reference (1A)
+		transaction.setFieldValue("GZPIA", "N"); // Principal increase (1A)
+		transaction.setFieldValue("GZMIF", "12"); // Number of months interest is forecast for (3P,0)
+		transaction.setFieldValue("GZMBD", "N"); // Margin % of base/diff (1A)
+		transaction.setFieldValue("GZIDB", "0"); // Interest days basis (1A)
+		transaction.setFieldValue("GZCRL", "N"); // Constant repayment loan (1A)
+		transaction.setFieldValue("GZCLBA", "N"); // Constant loans use basis A (1A)
+		transaction.setFieldValue("GZCPI", "N"); // Capitalise interest (1A)
+		transaction.setFieldValue("GZDIF", "N"); // First amount can differ (1A)
+		transaction.setFieldValue("GZRL78", "N"); // Rule of 78ths loan? (1A)
+		transaction.setFieldValue("GZNFEL", "N"); // Normal front end loaded loan? (1A)
+		transaction.setFieldValue("GZADDC", "N"); // Add on charges? (1A)
+		transaction.setFieldValue("GZINCC", "N"); // Inc charges in int calc? (1A)
+
+		transaction.setFieldValue("GZWIIP", "3"); // When is interest posted for this deal type (1A)
+		transaction.setFieldValue("GZICAL", "1"); // Interest calculated on (1A)
+		transaction.setFieldValue("GZIRVW", "N"); // Interest reviews (1A)
+		transaction.setFieldValue("GZARTC", "2"); // Application of rate change for this deal type (1A)
+		transaction.setFieldValue("GZADI", "N"); // Additional days interest (1A)
+		transaction.setFieldValue("GZMOVB", "N"); // Move backwrds if non-bus day (1A)
+		transaction.setFieldValue("GZCOMT", "N"); // Commitment required? (1A)
+		transaction.setFieldValue("GZICRL", "N"); // Interest treatment for CRLs (1A)
+		transaction.setFieldValue("GZRPY", "2"); // Repay if insufficient funds (1A)
+		transaction.setFieldValue("GZPRPY", "Y"); // Partial repayment (1A)
+		transaction.setFieldValue("GZSHLD", "N"); // Start of day holds? (1A)
+		transaction.setFieldValue("GZMRTY", "00"); // Months for daily retry (2A)
+		transaction.setFieldValue("GZDDC", "N"); // Separate DD claims (1A)
+		transaction.setFieldValue("GZRSD", "N"); // Repayments at SOD (1A)
+		transaction.setFieldValue("GZNDA", "N"); // Narrative on deal account postings ? (1A)
+		transaction.setFieldValue("GZSCHC", "2"); // Schedule recalculation control (1A)
+		transaction.setFieldValue("GZEPA", "0"); // Early payment allocation method (1A)
+
+		transaction.setFieldValue("GZTCDA", "301"); // Loan account (3A)
+		transaction.setFieldValue("GZTCDB", "625"); // Loan start (3A)
+		transaction.setFieldValue("GZTCDC", "095"); // Loan cancellation - debit (3A)
+		transaction.setFieldValue("GZTCDD", "595"); // Loan cancellation - credit (3A)
+		transaction.setFieldValue("GZTCDE", "638"); // Auto principal repay - loan (3A)
+		transaction.setFieldValue("GZTCDF", "338"); // Auto principal repay - fund (3A)
+		transaction.setFieldValue("GZTCDG", "632"); // Manual principal repay-loan (3A)
+		transaction.setFieldValue("GZTCDO", "595"); // Principal reduction - loan (3A)
+		transaction.setFieldValue("GZTCDH", "333"); // Manual principal repay-fund (3A)
+		transaction.setFieldValue("GZTCDI", "634"); // Auto interest repay - loan (3A)
+		transaction.setFieldValue("GZTCDJ", "336"); // Auto interest repay - fund (3A)
+		transaction.setFieldValue("GZTCDK", "635"); // Manual interest repay-loan (3A)
+		transaction.setFieldValue("GZTCDL", "331"); // Manual interest repay-fund (3A)
+
+		transaction.setFieldValue("GZACC", "N"); // Amortised cost calculation required? (1A)
+		transaction.setFieldValue("GZPCAL", "3"); // Penalty calculation basis (1A)
+
+		transaction.setFieldValue("GZEARL", "Y"); // Limit early loan repayments (1A)
+		transaction.setFieldValue("GZSLA", "Y"); // Sundry loans allowed (1A)
+		transaction.setFieldValue("GZRPYI", "N"); // Repayment increments (1A)
+		transaction.setFieldValue("GZINS", "N"); // Insurance required (1A)
+		transaction.setFieldValue("GZCLT", "N"); // Collateral required (1A)
+	}
+
+	/**
+	 * Setup the mandatory fields (maintain mode)
+	 */
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZLPD", "EQ4-Test maint"); // Loan type description (35A)
+		transaction.setFieldValue("GZGLR", "Y"); // Generate loan reference (1A)
+	}
+}

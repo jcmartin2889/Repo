@@ -1,0 +1,100 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseFully;
+
+/**
+ * Equation test cases for Maintain function
+ */
+public class CIW extends EquationTestCaseFully
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: CIW.java 11003 2011-05-19 14:03:48Z MACDONP1 $";
+	String programName = "K44FRR";
+	String optionId = "CIW";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		retrieveBeforeCancel = false;
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZREF", "EQ4CIWREF"); // Reference (16A)
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	@Override
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZCDE", "001"); // Clearing code (3A)
+		transaction.setFieldValue("GZAB1", "0543"); // Debit account branch (4A)
+		transaction.setFieldValue("GZAN1", "012008"); // Debit basic Ac number (6A)
+		transaction.setFieldValue("GZAS1", "050"); // Debit account suffix (3A)
+		transaction.setFieldValue("GZAB2", "0000"); // Credit account branch (4A)
+		transaction.setFieldValue("GZAN2", "000001"); // Credit basic Ac number (6A)
+		transaction.setFieldValue("GZAS2", "001"); // Credit account suffix (3A)
+		transaction.setFieldValue("GZAMA1", "1000000"); // Debit amount (15P,0)
+		transaction.setFieldValue("GZTC1", "010"); // Debit transaction code (3A)
+		transaction.setFieldValue("GZTC2", "510"); // Credit transaction code (3A)
+		transaction.setFieldValue("GZVF1", "1000105"); // Debit value date (7S,0)
+		transaction.setFieldValue("GZVF2", "1000105"); // Credit value date (7S,0)
+		transaction.setFieldValue("GZDRF1", "Debit related ref"); // Debit related reference (20A)
+		transaction.setFieldValue("GZDRF2", "Credit related ref"); // Credit related reference (20A)
+		transaction.setFieldValue("GZNR11", "Debit narrative 1"); // Debit narrative line 1 (35A)
+		transaction.setFieldValue("GZNR21", "Credit narrative 1"); // Credit narrative line 1 (35A)
+		transaction.setFieldValue("GZNR12", "Debit narrative 2"); // Debit narrative line 2 (35A)
+		transaction.setFieldValue("GZAPPD", "1"); // Accounting level (1A)
+	}
+
+	/**
+	 * Setup the mandatory fields (maintain mode)
+	 */
+	@Override
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZAMA1", "2000000"); // Debit amount (15P,0)
+	}
+
+}

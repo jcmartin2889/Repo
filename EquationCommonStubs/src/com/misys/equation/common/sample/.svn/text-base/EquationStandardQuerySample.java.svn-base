@@ -1,0 +1,128 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.sample;
+
+import java.net.UnknownHostException;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationPVData;
+import com.misys.equation.common.access.EquationStandardQuery;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationStandardValidation;
+import com.misys.equation.common.internal.eapi.core.EQException;
+
+/**
+ * An query sample for illustration of basic query processing steps - list data is not supported
+ */
+public class EquationStandardQuerySample
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	public static void main(String[] args) throws Exception
+	{
+		EquationStandardQuerySample querySample = new EquationStandardQuerySample();
+		querySample.process();
+	}
+	public boolean process()
+	{
+		boolean continueProcessing = true;
+		try
+		{
+			// Get a connection to the iSeries. A QZDASONIT job is created and a session identifier is returned.
+			EquationStandardSession session = EquationContextSample.getContext().getSampleSession();
+
+			// If customer name specified, generate next available suffix based on
+			// branch, customer number and account type suffix range
+			calculateNextAccountSuffix(session);
+
+			// Log off the session
+			EquationCommonContext.getContext().logOffSession(session.getSessionIdentifier());
+		}
+		catch (UnknownHostException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		catch (EQException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+		return continueProcessing;
+	}
+	/**
+	 * Process an SQL Query for calculation of next account suffix
+	 * 
+	 * @param session
+	 * @return status
+	 * @throws UnknownHostException
+	 * @throws EQException
+	 */
+	private String calculateNextAccountSuffix(EquationStandardSession session) throws UnknownHostException, EQException
+	{
+		String result = "";
+
+		// Get account type suffix range
+		EquationStandardValidation validation = processC5R55RValidation(session);
+
+		// Run SQL query to get next available suffix
+		String branch = "9132";
+		String basic = "234567";
+		String suffixRangeStart = validation.getFieldValue("$C5LVS").trim();
+		String suffixRangeEnd = validation.getFieldValue("$C5HVS").trim();
+
+		String sql = "with rs as (select rownumber() over() as rownum,cast(scas as integer ) as suffix from scpf  where scab= '"
+						+ branch + "' and scan= '" + basic + "' and scas >= '" + suffixRangeStart + "' and scas <= '"
+						+ suffixRangeEnd + "') select cast( coalesce( right(concat('00',trim(cast((max(rownum+(cast('"
+						+ suffixRangeStart + "' as decimal)-1))+1) as char(3)))),3),'" + suffixRangeStart
+						+ "') as char(3)) as AS from rs where (rownum+(cast('" + suffixRangeStart + "' as decimal)-1))=suffix ";
+
+		System.out.println("*SQL* [" + sql + "]");
+		EquationStandardQuery query = new EquationStandardQuery(sql, session);
+		session.retrieveEquationQuery(query);
+		result = query.getFieldValue("AS");
+		System.out.println("SQL return value [" + result + "]");
+		return result;
+	}
+	/**
+	 * Process an C5R55R validation with hardcoded values
+	 * 
+	 * @param session
+	 * @return status of posted ASI transaction
+	 * @throws UnknownHostException
+	 * @throws EQException
+	 */
+	private EquationStandardValidation processC5R55RValidation(EquationStandardSession session) throws UnknownHostException,
+					EQException
+	{
+		// Transaction variables
+		String decode = " ";
+		String pvModule = "C5R55R";
+		String blanksAllowed = "N";
+		String newCode = "N";
+
+		// Get a transaction
+		EquationStandardValidation validation;
+
+		EquationPVData equationPVData = new EquationPVData(session.getUnit().getPVMetaData(pvModule), session.getCcsid());
+		equationPVData.setFieldValue("$C5ATP", "CA");
+		validation = new EquationStandardValidation(decode, pvModule, equationPVData, blanksAllowed, newCode);
+		// Execute the Equation validation
+		validation = session.executeValidate(validation);
+		System.out.println("PVDATA: " + validation.getDataOutput());
+
+		return validation;
+	}
+
+}

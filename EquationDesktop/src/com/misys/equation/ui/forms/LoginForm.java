@@ -1,0 +1,258 @@
+package com.misys.equation.ui.forms;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.struts.action.ActionErrors;
+import org.apache.struts.action.ActionForm;
+import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.ActionMessage;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.function.context.EquationFunctionContext;
+import com.misys.equation.ui.context.EquationDesktopContext;
+
+public class LoginForm extends ActionForm
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: LoginForm.java 16593 2013-06-24 15:32:19Z perkinj1 $";
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String userId;
+	private String passWord;
+	private String unitName;
+	private String systemName;
+	private String optId;
+	private String optParm;
+	private String workstationId;
+	// need to initialise isClassic to 0, otherwise it will be null...
+	private String isClassic = "0";
+
+	// These are for the Equation contextual data areas with EBA information
+	// Customer = cus, clc
+	// Account = abc, anc, ans, ean
+	// Branch = brnm
+	// Deal = brnm, dlp, dlr
+	private String ctxtCus = "";
+	private String ctxtClc = "";
+	private String ctxtBrnm = "";
+	private String ctxtAbc = "";
+	private String ctxtAnc = "";
+	private String ctxtAns = "";
+	private String ctxtEan = "";
+	private String ctxtDlp = "";
+	private String ctxtDlr = "";
+
+	// debug mode
+	private String debug;
+
+	// Flag to bypass workstationId validation
+	String forceWorkstationId = "false";
+
+	public void setUserId(String userId)
+	{
+		this.userId = userId.trim();
+	}
+	public void setPassWord(String passWord)
+	{
+		this.passWord = passWord.trim();
+	}
+	public void setSystemName(String systemName)
+	{
+		this.systemName = systemName.trim().toUpperCase();
+	}
+	public void setUnitName(String unitName)
+	{
+		this.unitName = unitName.trim().toUpperCase();
+	}
+	public void setIsClassic(String isClassic)
+	{
+		this.isClassic = isClassic.trim().toUpperCase();
+	}
+	public void setOptId(String optId)
+	{
+		this.optId = optId.toUpperCase();
+	}
+	public void setOptParm(String optParm)
+	{
+		this.optParm = optParm;
+	}
+	public void setCtxtAbc(String ctxtAbc)
+	{
+		this.ctxtAbc = ctxtAbc;
+	}
+	public void setCtxtAnc(String ctxtAnc)
+	{
+		this.ctxtAnc = ctxtAnc;
+	}
+	public void setCtxtAns(String ctxtAns)
+	{
+		this.ctxtAns = ctxtAns;
+	}
+	public void setCtxtBrnm(String ctxtBrnm)
+	{
+		this.ctxtBrnm = ctxtBrnm;
+	}
+	public void setCtxtClc(String ctxtClc)
+	{
+		this.ctxtClc = ctxtClc;
+	}
+	public void setCtxtCus(String ctxtCus)
+	{
+		this.ctxtCus = ctxtCus;
+	}
+	public void setCtxtDlp(String ctxtDlp)
+	{
+		this.ctxtDlp = ctxtDlp;
+	}
+	public void setCtxtDlr(String ctxtDlr)
+	{
+		this.ctxtDlr = ctxtDlr;
+	}
+	public void setCtxtEan(String ctxtEan)
+	{
+		this.ctxtEan = ctxtEan;
+	}
+	public void setDebug(String debug)
+	{
+		this.debug = debug;
+	}
+	public String getUserId()
+	{
+		return userId;
+	}
+	public String getPassWord()
+	{
+		return passWord;
+	}
+	public String getSystemName()
+	{
+		return systemName;
+	}
+	public String getUnitName()
+	{
+		return unitName;
+	}
+	/**
+	 * @return "0" or "1"
+	 */
+	public String getIsClassic()
+	{
+		return isClassic;
+	}
+	public String getOptId()
+	{
+		return optId;
+	}
+	public String getOptParm()
+	{
+		return optParm;
+	}
+	public String getCtxtAbc()
+	{
+		return ctxtAbc;
+	}
+	public String getCtxtAnc()
+	{
+		return ctxtAnc;
+	}
+	public String getCtxtAns()
+	{
+		return ctxtAns;
+	}
+	public String getCtxtBrnm()
+	{
+		return ctxtBrnm;
+	}
+	public String getCtxtClc()
+	{
+		return ctxtClc;
+	}
+	public String getCtxtCus()
+	{
+		return ctxtCus;
+	}
+	public String getCtxtDlp()
+	{
+		return ctxtDlp;
+	}
+	public String getCtxtDlr()
+	{
+		return ctxtDlr;
+	}
+	public String getCtxtEan()
+	{
+		return ctxtEan;
+	}
+	public String getDebug()
+	{
+		return debug;
+	}
+	public String getWorkstationId()
+	{
+		return workstationId;
+	}
+	public void setWorkstationId(String workstationId)
+	{
+		this.workstationId = workstationId;
+	}
+	public String getForceWorkstationId()
+	{
+		return forceWorkstationId;
+	}
+	public void setForceWorkstationId(String forceWorkstationId)
+	{
+		this.forceWorkstationId = forceWorkstationId;
+	}
+
+	@Override
+	public ActionErrors validate(ActionMapping mapping, HttpServletRequest request)
+	{
+		// Now all the value have been set, check for Equation credentials, and if so, force
+		// user and password to uppercase.
+		if (EquationFunctionContext.getContext().isEquationAuthentication() || isClassic.equals("1"))
+		{
+			if (userId != null)
+			{
+				userId = userId.toUpperCase();
+			}
+			if (passWord != null)
+			{
+				passWord = passWord.toUpperCase();
+			}
+		}
+
+		ActionErrors ae = new ActionErrors();
+		if (userId == null || userId.equals(""))
+		{
+			ae.add("userId", new ActionMessage("error.no.userId"));
+		}
+		if (passWord == null || passWord.equals(""))
+		{
+			ae.add("passWord", new ActionMessage("error.no.passWord"));
+		}
+		if (systemName == null || systemName.equals(""))
+		{
+			ae.add("systemName", new ActionMessage("error.no.systemName"));
+		}
+		if (unitName == null || unitName.equals(""))
+		{
+			ae.add("unitName", new ActionMessage("error.no.unitName"));
+		}
+		if (isClassic.equals("1") && !EquationCommonContext.isWebFacing())
+		{
+			ae.add("isClassic", new ActionMessage("error.no.classic"));
+		}
+		if (workstationId != null && !workstationId.equals("")) // validate workstationId is unique
+		{
+			String workstationIdUnique = EquationCommonContext.getConfigProperty("eq.workstationId.unique");
+			if (workstationIdUnique != null && workstationIdUnique.equals("true") && !forceWorkstationId.equals("true")
+							&& !EquationDesktopContext.getContext().isValidWorkstationId(systemName, unitName, workstationId))
+			{
+				ae.add("workstationId", new ActionMessage("error.workstation.notAllowed"));
+			}
+		}
+		return ae;
+	}
+}

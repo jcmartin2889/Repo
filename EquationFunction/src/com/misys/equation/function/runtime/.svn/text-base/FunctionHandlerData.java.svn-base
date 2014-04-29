@@ -1,0 +1,890 @@
+package com.misys.equation.function.runtime;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import bf.com.misys.eqf.types.header.ServiceRqHeader;
+import bf.com.misys.eqf.types.header.TaskRqHeader;
+
+import com.misys.equation.bankfusion.lrp.bean.TaskDetail;
+import com.misys.equation.bankfusion.lrp.engine.TaskEngineToolbox;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationUser;
+import com.misys.equation.common.access.IEquationStandardObject;
+import com.misys.equation.common.dao.DaoFactory;
+import com.misys.equation.common.dao.beans.AAIRecordDataModel;
+import com.misys.equation.common.dao.beans.GBRecordDataModel;
+import com.misys.equation.common.files.JournalHeader;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.Enhancement;
+import com.misys.equation.common.utilities.EqDataType;
+import com.misys.equation.function.beans.Function;
+import com.misys.equation.function.beans.FunctionData;
+import com.misys.equation.function.beans.NextAction;
+import com.misys.equation.function.context.EquationFunctionContext;
+import com.misys.equation.function.tools.XMLToolbox;
+
+public class FunctionHandlerData
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	// FunctionHandler owning this
+	private FunctionHandler functionHandler;
+
+	// Dao factory
+	private DaoFactory daoFactory;
+
+	// Equation user
+	private EquationUser equationUser;
+
+	// Function information
+	private FunctionInfo functionInfo;
+
+	// Option ID of the main function
+	private String optionId;
+	private boolean legacyOption;
+	private GBRecordDataModel gbRecord;
+
+	// AAI record
+	private AAIRecordDataModel aaiRecord;
+
+	// Function screens
+	private ScreenSetHandler screenSetHandler;
+
+	// Function key pressed
+	private FunctionKeys functionKeys;
+
+	// Function message manager
+	private FunctionMsgManager functionMsgManager;
+
+	// Function Session
+	private FunctionSession functionSession;
+	private FunctionSession functionSuperSession;
+
+	// Security level
+	private SecurityLevel securityLevel;
+
+	// Journal header
+	private JournalHeader journalHeader;
+
+	// Function Adaptor handler
+	private FunctionAdaptorHandler functionAdaptorHandler;
+
+	// Adaptor handler for the Layout (UI)
+	private LayoutAdaptorHandler layoutAdaptorHandler;
+
+	// Context string
+	private FunctionContextHandler contextHandler;
+
+	// Context string
+	private FunctionContextHandler globalProcessingContextHandler;
+
+	// Function debug info
+	private FunctionDebugInfo functionDebugInfo;
+
+	// Allowed to save template
+	private boolean allowedSaveTemplate;
+
+	// Keys are populated upon initialisation so auto retrieve details
+	private boolean keysPopulated;
+
+	// Child function handler for drill down
+	private FunctionHandler parentFunctionHandler;
+	private FunctionHandler childFunctionHandler;
+
+	// Update made successfully - this is set to True only if update has been made
+	private boolean updateMade;
+
+	// Repeating group in process (allowing parent to determine which repeating group is currently in process)
+	private String drillDownRepeatingGroup; // this is populated only when processing specific repeating group for drill down
+	private boolean drillDownUpdateMade; // this is set to true only if a drill down function made an update
+
+	// Last group and selection (allowing parent to determine which repeating group and row was processed last)
+	private String lastRepeatingGroup;
+	private int lastRepeatingRow;
+
+	// Repeating group (allowing child to determines the parent's repeating group and row
+	private String currentRepeatingGroup;
+	private int currentRepeatingRow;
+	private String currentDrillDownContext;
+
+	// Global processing unit
+	private String gpUnit;
+	private String gpSystem;
+
+	// Message on exit?
+	private boolean messageOnCancelUserExit;
+	private int functionKeyPressOnCancel;
+
+	// Expected service mode. If specified, this should matched with what the system has derived. During external
+	// input/recovery/online input, it passes the desired FCT.
+	private String serviceMode;
+
+	// The task details for LRP
+	private TaskDetail taskDetail;
+	private TaskRqHeader taskRqHeader;
+	private String referToUserId;
+	private String reason;
+
+	// Completed task - on update, this gets populated to be used by HTMLToolbox
+	// in order to inform EquationDesktop that this task has been completed and
+	// must be removed from the workload list
+	private String completedTask = "";
+	// next action is used to store keys needed to launch a menu option with context or to launch a referral.
+	// next action will normally be null unless there is drill down in UXP to a WebFacing function.
+	// function.jsp will use nextAction values and set newAction to null after doing launch of process in new page.
+	private NextAction nextAction;
+
+	// Service Rq Header
+	private ServiceRqHeader serviceRqHeader;
+
+	// Additional response filter
+	private Set<String> responseFilters;
+
+	/**
+	 * Construct the default Function Handler Data based on the Equation user and Function Info
+	 */
+	public FunctionHandlerData(FunctionHandler fh, EquationUser eqUser, FunctionInfo functionInfo)
+	{
+		setupOnce(fh, eqUser, functionInfo);
+	}
+
+	/**
+	 * Setup upon instantiation
+	 * 
+	 * @param eqUser
+	 *            - the Equation user
+	 * @param functionInfo
+	 *            - the Function Info
+	 */
+	public void setupOnce(FunctionHandler fh, EquationUser eqUser, FunctionInfo functionInfo)
+	{
+		this.functionHandler = fh;
+		this.daoFactory = new DaoFactory();
+		this.equationUser = eqUser;
+		this.functionInfo = functionInfo;
+		this.optionId = "";
+		this.gbRecord = null;
+		this.aaiRecord = null;
+		this.screenSetHandler = new ScreenSetHandler(this);
+		this.functionKeys = new FunctionKeys();
+		this.functionMsgManager = new FunctionMsgManager();
+		this.functionSession = null;
+		this.functionSuperSession = null;
+		this.securityLevel = null;
+		this.journalHeader = null;
+		this.functionAdaptorHandler = new FunctionAdaptorHandler();
+		this.layoutAdaptorHandler = new LayoutAdaptorHandler();
+		this.contextHandler = new FunctionContextHandler();
+		this.globalProcessingContextHandler = new FunctionContextHandler();
+		this.functionDebugInfo = new FunctionDebugInfo();
+		this.allowedSaveTemplate = false;
+		this.parentFunctionHandler = null;
+		this.drillDownRepeatingGroup = "";
+		this.drillDownUpdateMade = false;
+		this.currentDrillDownContext = "";
+		this.lastRepeatingGroup = "";
+		this.lastRepeatingRow = 0;
+		this.currentRepeatingGroup = "";
+		this.currentRepeatingRow = 0;
+		this.responseFilters = new HashSet<String>();
+	}
+
+	/**
+	 * Setup new transaction
+	 * 
+	 * @param optionId
+	 *            - the option Id
+	 * @param screenSet
+	 *            - the screen set type to generate
+	 */
+	public void setup(String optionId, int screenSetType) throws EQException
+	{
+		this.optionId = optionId;
+		this.journalHeader = null;
+		this.functionMsgManager.clearAllMessages();
+		this.securityLevel = new SecurityLevel(SecurityLevel.CHCKR_NONE, equationUser.getUserId());
+		this.functionSuperSession = null;
+		this.aaiRecord = null;
+		this.keysPopulated = false;
+		this.childFunctionHandler = null;
+		this.updateMade = false;
+		this.messageOnCancelUserExit = false;
+		this.functionKeyPressOnCancel = FunctionKeys.KEY_ENT;
+		this.taskDetail = null;
+		this.taskRqHeader = null;
+		this.reason = "";
+		this.referToUserId = "";
+		this.responseFilters.clear();
+
+		// get the Equation standard session
+		EquationStandardSession equationSession = equationUser.getSession();
+
+		// get the GB record
+		gbRecord = equationUser.getEquationUnit().getRecords().getGBRecord(optionId);
+		legacyOption = equationUser.getEquationUnit().isLegacyOption(optionId);
+
+		// load the CTS
+		XMLToolbox.getXMLToolbox().getFunction(equationSession, EquationFunctionContext.MISYS_REFERENCE_SERVICE_ID,
+						equationUser.getEquationUnit().isDevelopmentUnit());
+
+		// setup the main function screen
+		this.screenSetHandler.clear();
+		int id = this.screenSetHandler.generateScreenSet(optionId, screenSetType);
+		ScreenSet screenSetMain = screenSetHandler.rtvScreenSet(id);
+		Function function = screenSetMain.getFunction();
+
+		// check AAI record
+		if (function.checkEfcEnabled() && equationUser.getEquationUnit().isEnhancementInstalled(Enhancement.K451))
+		{
+			// load key details
+			FunctionCommonData mapData = new FunctionCommonData(equationSession, screenSetMain.getFunction(), function
+							.getUpdateAPI(Function.EFC_FIELDSET), screenSetMain.getFunctionData(), screenSetMain
+							.getFunctionAdaptor(), this);
+			// no mapping to EFC then assume there is no EFC
+			if (mapData.isDataExist())
+			{
+				aaiRecord = equationUser.getEquationUnit().getRecords().getAAIRecord(optionId);
+			}
+		}
+		if (aaiRecord == null)
+		{
+			aaiRecord = new AAIRecordDataModel(optionId);
+			aaiRecord.setSupEFC(EqDataType.NO);
+		}
+
+		// enquiry?
+		if (function.isAllowedEnq() && !function.rtvPrimaryInputFieldSet().containsKeyFields())
+		{
+			screenSetMain.setMode(IEquationStandardObject.FCT_ENQ);
+			securityLevel.setEnquireMode(true);
+			screenSetMain.getFunctionData().chgFieldDbValue(FunctionData.FLD_FCT, screenSetMain.rtvMode());
+		}
+
+		// setup the CRM function immediately after (only if CRM mapping has been defined and user is authorised to it)
+		if (function.containsAPIFieldSet(Function.CRM_FIELDSET) && !equationUser.getLimitOverride().equals(EqDataType.NO)
+						&& equationUser.getEquationUnit().isEnhancementInstalled(Enhancement.K324))
+		{
+			id = this.screenSetHandler.addFunctionScreenCRM(screenSetMain);
+		}
+		else
+		{
+			screenSetHandler.addFunctionScreenDummy();
+		}
+
+		// setup the AC2 function immediately after (only if EFC is available)
+		if (aaiRecord.getSupEFC().equals(EqDataType.YES))
+		{
+			id = this.screenSetHandler.addFunctionScreenAC2(aaiRecord.getEvent(), screenSetMain);
+		}
+	}
+	/**
+	 * Remove a drill down child function
+	 * 
+	 * @return the deleted function handler child
+	 */
+	public FunctionHandler removeDrillDownChild()
+	{
+		FunctionHandler fh = childFunctionHandler;
+		childFunctionHandler = null;
+		return fh;
+	}
+
+	/**
+	 * Return the last drill down child
+	 */
+	public FunctionHandler rtvLastDrillDownChild()
+	{
+		FunctionHandler child = childFunctionHandler;
+		FunctionHandler nextchild = null;
+		while (child != null)
+		{
+			nextchild = child.getFhd().getChildFunctionHandler();
+			if (nextchild == null)
+			{
+				return child;
+			}
+			else
+			{
+				child = nextchild;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Return the top most parent
+	 */
+	public FunctionHandler rtvTopDrillDownParent()
+	{
+		FunctionHandler parent = parentFunctionHandler;
+		FunctionHandler olderparent = null;
+		while (parent != null)
+		{
+			olderparent = parent.getFhd().getParentFunctionHandler();
+			if (olderparent == null)
+			{
+				return parent;
+			}
+			else
+			{
+				parent = olderparent;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Get the <code>DaoFactory</code>
+	 * 
+	 * @return the <code>DaoFactory</code>
+	 */
+	public DaoFactory getDaoFactory()
+	{
+		return daoFactory;
+	}
+
+	/**
+	 * Set the <code>DaoFactory</code>
+	 * 
+	 * @param daoFactory
+	 *            - the <code>DaoFactory</code> to set for this FunctionHandlerData
+	 */
+	public void setDaoFactory(DaoFactory daoFactory)
+	{
+		this.daoFactory = daoFactory;
+	}
+
+	/**
+	 * Get the <code>EquationUser</code>
+	 * 
+	 * @return - the <code>EquationUser</code>
+	 */
+	public EquationUser getEquationUser()
+	{
+		return equationUser;
+	}
+
+	/**
+	 * Set the <code>EquationUser</code>
+	 * 
+	 * @param eqUser
+	 *            - the <code>EquationUser</code> to set
+	 */
+	public void setEquationUser(EquationUser eqUser)
+	{
+		this.equationUser = eqUser;
+	}
+
+	/**
+	 * Get the <code>FunctionInfo</code>
+	 * 
+	 * @return - the <code>FunctionInfo</code>
+	 */
+	public FunctionInfo getFunctionInfo()
+	{
+		return functionInfo;
+	}
+
+	/**
+	 * Set the <code>FunctionInfo</code>
+	 * 
+	 * @param functionInfo
+	 *            - the <code>FunctionInfo</code> to set
+	 */
+	public void setFunctionInfo(FunctionInfo functionInfo)
+	{
+		this.functionInfo = functionInfo;
+	}
+
+	/**
+	 * Get the option ID
+	 * 
+	 * @return the option ID
+	 */
+	public String getOptionId()
+	{
+		return optionId;
+	}
+
+	/**
+	 * Set the option ID
+	 * 
+	 * @param optionId
+	 *            - the optionId to set
+	 */
+	public void setOptionId(String optionId)
+	{
+		this.optionId = optionId;
+	}
+
+	public boolean isLegacyOption()
+	{
+		return legacyOption;
+	}
+
+	public void setLegacyOption(boolean legacyOption)
+	{
+		this.legacyOption = legacyOption;
+	}
+
+	public GBRecordDataModel getGbRecord()
+	{
+		return gbRecord;
+	}
+
+	public void setGbRecord(GBRecordDataModel gbRecord)
+	{
+		this.gbRecord = gbRecord;
+	}
+
+	public ScreenSetHandler getScreenSetHandler()
+	{
+		return screenSetHandler;
+	}
+
+	public void setScreenSetHandler(ScreenSetHandler screenSetHandler)
+	{
+		this.screenSetHandler = screenSetHandler;
+	}
+
+	public FunctionKeys getFunctionKeys()
+	{
+		return functionKeys;
+	}
+
+	public void setFunctionKeys(FunctionKeys functionKeys)
+	{
+		this.functionKeys = functionKeys;
+	}
+
+	public FunctionMsgManager getFunctionMsgManager()
+	{
+		return functionMsgManager;
+	}
+
+	public void setFunctionMsgManager(FunctionMsgManager functionMsgManager)
+	{
+		this.functionMsgManager = functionMsgManager;
+	}
+
+	public FunctionSession getFunctionSession()
+	{
+		return functionSession;
+	}
+
+	public void setFunctionSession(FunctionSession functionSession)
+	{
+		this.functionSession = functionSession;
+	}
+
+	public FunctionSession getFunctionSuperSession()
+	{
+		return functionSuperSession;
+	}
+
+	public void setFunctionSuperSession(FunctionSession functionSuperSession)
+	{
+		this.functionSuperSession = functionSuperSession;
+	}
+
+	public SecurityLevel getSecurityLevel()
+	{
+		return securityLevel;
+	}
+
+	public void setSecurityLevel(SecurityLevel securityLevel)
+	{
+		this.securityLevel = securityLevel;
+	}
+
+	public JournalHeader getJournalHeader()
+	{
+		return journalHeader;
+	}
+
+	public void setJournalHeader(JournalHeader journalHeader)
+	{
+		this.journalHeader = journalHeader;
+	}
+
+	public FunctionAdaptorHandler getFunctionAdaptorHandler()
+	{
+		return functionAdaptorHandler;
+	}
+
+	public void setFunctionAdaptorHandler(FunctionAdaptorHandler functionAdaptorHandler)
+	{
+		this.functionAdaptorHandler = functionAdaptorHandler;
+	}
+
+	public LayoutAdaptorHandler getLayoutAdaptorHandler()
+	{
+		return layoutAdaptorHandler;
+	}
+
+	public void setLayoutAdaptorHandler(LayoutAdaptorHandler layoutAdaptorHandler)
+	{
+		this.layoutAdaptorHandler = layoutAdaptorHandler;
+	}
+
+	public FunctionContextHandler getContextHandler()
+	{
+		return contextHandler;
+	}
+
+	public void setContextHandler(FunctionContextHandler contextHandler)
+	{
+		this.contextHandler = contextHandler;
+	}
+
+	public FunctionContextHandler getGlobalProcessingContextHandler()
+	{
+		return globalProcessingContextHandler;
+	}
+
+	public void setGlobalProcessingContextHandler(FunctionContextHandler globalProcessingContextHandler)
+	{
+		this.globalProcessingContextHandler = globalProcessingContextHandler;
+	}
+
+	public FunctionDebugInfo getFunctionDebugInfo()
+	{
+		return functionDebugInfo;
+	}
+
+	public void setFunctionDebugInfo(FunctionDebugInfo functionDebugInfo)
+	{
+		this.functionDebugInfo = functionDebugInfo;
+	}
+
+	public boolean isAllowedSaveTemplate()
+	{
+		return allowedSaveTemplate;
+	}
+
+	public void setAllowedSaveTemplate(boolean allowedSaveTemplate)
+	{
+		this.allowedSaveTemplate = allowedSaveTemplate;
+	}
+
+	public AAIRecordDataModel getAaiRecord()
+	{
+		return aaiRecord;
+	}
+
+	public void setAaiRecord(AAIRecordDataModel aaiRecord)
+	{
+		this.aaiRecord = aaiRecord;
+	}
+
+	public boolean isKeysPopulated()
+	{
+		return keysPopulated;
+	}
+
+	public void setKeysPopulated(boolean keysPopulated)
+	{
+		this.keysPopulated = keysPopulated;
+	}
+
+	public FunctionHandler getParentFunctionHandler()
+	{
+		return parentFunctionHandler;
+	}
+
+	public void setParentFunctionHandler(FunctionHandler parentFunctionHandler)
+	{
+		this.parentFunctionHandler = parentFunctionHandler;
+	}
+
+	public FunctionHandler getChildFunctionHandler()
+	{
+		return childFunctionHandler;
+	}
+
+	public void setChildFunctionHandler(FunctionHandler childFunctionHandler)
+	{
+		this.childFunctionHandler = childFunctionHandler;
+	}
+
+	public boolean isUpdateMade()
+	{
+		return updateMade;
+	}
+
+	public void setUpdateMade(boolean updateMade)
+	{
+		this.updateMade = updateMade;
+	}
+
+	protected FunctionHandler getFunctionHandler()
+	{
+		return functionHandler;
+	}
+
+	public String getDrillDownRepeatingGroup()
+	{
+		return drillDownRepeatingGroup;
+	}
+
+	public void setDrillDownRepeatingGroup(String drillDownRepeatingGroup)
+	{
+		this.drillDownRepeatingGroup = drillDownRepeatingGroup;
+	}
+
+	public boolean isDrillDownUpdateMade()
+	{
+		return drillDownUpdateMade;
+	}
+
+	public void setDrillDownUpdateMade(boolean drillDownUpdateMade)
+	{
+		this.drillDownUpdateMade = drillDownUpdateMade;
+	}
+
+	public String getLastRepeatingGroup()
+	{
+		return lastRepeatingGroup;
+	}
+
+	public void setLastRepeatingGroup(String lastRepeatingGroup)
+	{
+		this.lastRepeatingGroup = lastRepeatingGroup;
+	}
+
+	public int getLastRepeatingRow()
+	{
+		return lastRepeatingRow;
+	}
+
+	public void setLastRepeatingRow(int lastRepeatingRow)
+	{
+		this.lastRepeatingRow = lastRepeatingRow;
+	}
+
+	public String getCurrentRepeatingGroup()
+	{
+		return currentRepeatingGroup;
+	}
+
+	public void setCurrentRepeatingGroup(String currentRepeatingGroup)
+	{
+		this.currentRepeatingGroup = currentRepeatingGroup;
+	}
+
+	public int getCurrentRepeatingRow()
+	{
+		return currentRepeatingRow;
+	}
+
+	public void setCurrentRepeatingRow(int currentRepeatingRow)
+	{
+		this.currentRepeatingRow = currentRepeatingRow;
+	}
+
+	public String getCurrentDrillDownContext()
+	{
+		return currentDrillDownContext;
+	}
+
+	public void setCurrentDrillDownContext(String currentDrillDownContext)
+	{
+		this.currentDrillDownContext = currentDrillDownContext;
+	}
+
+	// Global processing
+	public String getGpUnit()
+	{
+		return gpUnit;
+	}
+
+	public void setGpUnit(String gpUnit)
+	{
+		this.gpUnit = gpUnit;
+	}
+
+	// Global processing
+	public String getGpSystem()
+	{
+		return gpSystem;
+	}
+
+	public void setGpSystem(String gpSystem)
+	{
+		this.gpSystem = gpSystem;
+	}
+
+	public boolean isMessageOnCancelUserExit()
+	{
+		return messageOnCancelUserExit;
+	}
+
+	public void setMessageOnCancelUserExit(boolean messageOnCancelUserExit)
+	{
+		this.messageOnCancelUserExit = messageOnCancelUserExit;
+	}
+
+	public int getFunctionKeyPressOnCancel()
+	{
+		return functionKeyPressOnCancel;
+	}
+
+	public void setFunctionKeyPressOnCancel(int functionKeyPressOnCancel)
+	{
+		this.functionKeyPressOnCancel = functionKeyPressOnCancel;
+	}
+
+	public String getServiceMode()
+	{
+		return serviceMode;
+	}
+
+	public void setServiceMode(String serviceMode)
+	{
+		this.serviceMode = serviceMode;
+	}
+
+	public TaskDetail getTaskDetail()
+	{
+		return taskDetail;
+	}
+
+	public void setTaskDetail(TaskDetail taskDetail)
+	{
+		this.taskDetail = taskDetail;
+	}
+
+	public TaskRqHeader getTaskRqHeader()
+	{
+		return taskRqHeader;
+	}
+
+	public void setTaskRqHeader(TaskRqHeader taskRqHeader)
+	{
+		this.taskRqHeader = taskRqHeader;
+	}
+
+	/**
+	 * Determine if the current transaction is an LRP task or not
+	 * 
+	 * @return true if the current transaction is an LRP task or not
+	 */
+	public boolean isLRPTask()
+	{
+		return (taskDetail != null);
+	}
+
+	/**
+	 * Determine if this is an LRP AUTH task
+	 * 
+	 * @return true if this is an LRP AUTH task
+	 */
+	public boolean isLRPAuthTask()
+	{
+		if (isLRPTask() && taskRqHeader != null
+						&& taskRqHeader.getBasicDetail().getTaskType().equals(TaskEngineToolbox.TASK_TYPE_AUTH))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Determine if this is an ENTRY task
+	 * 
+	 * @return true if this is an ENTRY task
+	 */
+	public boolean isLRPEntryTask()
+	{
+		if (isLRPTask() && taskRqHeader != null
+						&& taskRqHeader.getBasicDetail().getTaskType().equals(TaskEngineToolbox.TASK_TYPE_DATA_ENTRY))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	public String getReferToUserId()
+	{
+		return referToUserId;
+	}
+
+	public void setReferToUserId(String referToUserId)
+	{
+		this.referToUserId = referToUserId;
+	}
+
+	public String getReason()
+	{
+		return reason;
+	}
+
+	public void setReason(String reason)
+	{
+		this.reason = reason;
+	}
+
+	public String getCompletedTask()
+	{
+		return completedTask;
+	}
+
+	public void setCompletedTask(String completedTask)
+	{
+		this.completedTask = completedTask;
+	}
+
+	public NextAction getNextAction()
+	{
+		return nextAction;
+	}
+
+	public void setNextAction(NextAction nextAction)
+	{
+		this.nextAction = nextAction;
+	}
+
+	/**
+	 * Return the Service Request Header
+	 * 
+	 * @return the Service Request Header
+	 */
+	public ServiceRqHeader getServiceRqHeader()
+	{
+		return serviceRqHeader;
+	}
+
+	/**
+	 * Set the Service Request Header
+	 * 
+	 * @param serviceRqHeader
+	 *            - the Service Request Header
+	 */
+	public void setServiceRqHeader(ServiceRqHeader serviceRqHeader)
+	{
+		this.serviceRqHeader = serviceRqHeader;
+	}
+
+	/**
+	 * Add additional response filter
+	 */
+	public void addResponseFilter(String responseFilter)
+	{
+		this.responseFilters.add(responseFilter);
+	}
+
+	/**
+	 * Return the additional response filters
+	 * 
+	 * @return the additional response filters
+	 */
+	public Set<String> getResponseFilters()
+	{
+		return responseFilters;
+	}
+
+}

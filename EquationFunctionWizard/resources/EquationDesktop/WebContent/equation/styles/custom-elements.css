@@ -1,0 +1,17 @@
+
+
+.radio {
+	width: 19px;
+	height: 16px;
+	padding: 0 0px 0 0;
+	background: url(../images/radio.png) no-repeat;
+	display: block;
+	clear: left;
+	float: left;
+}
+
+input.styled { 
+	display: none; 
+}
+
+

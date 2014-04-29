@@ -1,0 +1,32 @@
+package com.misys.equation.utility.test;
+
+import com.misys.equation.common.access.EquationDataStructureData;
+import com.misys.equation.common.test.EquationTestCase;
+
+public class Dajobctle extends EquationTestCase
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	public void test()
+	{
+		// Have a bash...
+		try
+		{
+			EquationDataStructureData data = user.getDsjobctle();
+			System.out.println("OID=" + data.getFieldValue("$OID"));
+			System.out.println("ETK=" + data.getFieldValue("$ETK"));
+			System.out.println("DMMDF=" + data.getFieldValue("$DMMDF"));
+			System.out.println("YACST=" + data.getFieldValue("$YACST"));
+			System.out.println("YRTL=" + data.getFieldValue("$YRTL"));
+			System.out.println("$RPFMT=" + data.getFieldValue("$RPFMT"));
+			System.out.println("$RDFMT=" + data.getFieldValue("$RDFMT"));
+			System.out.println("ETN=" + data.getFieldValue("$ETN"));
+			System.out.println(data);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+}

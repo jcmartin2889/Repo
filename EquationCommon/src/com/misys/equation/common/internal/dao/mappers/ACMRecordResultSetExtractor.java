@@ -1,0 +1,51 @@
+package com.misys.equation.common.internal.dao.mappers;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.springframework.jdbc.core.ResultSetExtractor;
+
+import com.misys.equation.common.dao.beans.ACMRecordDataModel;
+
+/**
+ * This is a helper class used by Sp framework to populate the data model.<br>
+ * This class will extract data from the <code>ResultSet</code> and create a data model.
+ * 
+ * @author deroset
+ * 
+ */
+
+public class ACMRecordResultSetExtractor implements ResultSetExtractor
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: ACMRecordResultSetExtractor.java 5018 2009-10-02 12:54:54Z lima12 $";
+	/**
+	 * This class will extract data from the <code>ResultSet</code> and create a data model.
+	 * 
+	 * @param the
+	 *            passed <code>ResultSet</code> which contains the data.
+	 * @return a <code>ACMRecordDataModel</code> data model.
+	 */
+	public Object extractData(ResultSet resultSet) throws SQLException
+	{
+
+		ACMRecordDataModel record = new ACMRecordDataModel();
+
+		record.setTypeName(resultSet.getString(1).trim());
+		record.setDescription(resultSet.getString(2).trim());
+		record.setDataType(resultSet.getString(3).trim());
+		record.setUpperCase(resultSet.getBoolean(4));
+		record.setLength(resultSet.getInt(5));
+		record.setDecimals(resultSet.getInt(6));
+		record.setInitialValue(resultSet.getString(7).trim());
+		record.setMaxLength(resultSet.getBigDecimal(8));
+		record.setMinLength(resultSet.getBigDecimal(9));
+		record.setValidValues(resultSet.getString(10).trim());
+		record.setRegEx(resultSet.getString(11).trim());
+		record.setPromptProgram(resultSet.getString(12).trim());
+		record.setValidationProgram(resultSet.getString(13).trim());
+
+		return record;
+	}
+
+}

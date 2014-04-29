@@ -1,0 +1,96 @@
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseFully;
+
+/**
+ * Equation test cases for Maintain Account Types
+ */
+public class MAT extends EquationTestCaseFully
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: MAT.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	String programName = "I09FRR";
+	String optionId = "MAT";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		retrieveBeforeCancel = false;
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZATP", "EQ"); // Account type
+		transaction.setFieldValue("GZACS", "M"); // Account structure
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	@Override
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZATD", "Equation 4.0"); // Account type description
+		transaction.setFieldValue("GZII0A", "N"); // Interest bearing account type?
+
+		transaction.setFieldValue("GZHBN", "19"); // To range
+		transaction.setFieldValue("GZICI", "N"); // Ignore currency overrides for credit interest?
+
+		transaction.setFieldValue("GZIDI", "N"); // Ignore currency overrides for debit interest?
+		transaction.setFieldValue("GZLBN", "10"); // From range
+
+		transaction.setFieldValue("GZPMIC", "N"); // Post minimum interest - credit?
+		transaction.setFieldValue("GZPMID", "N"); // Post minimum interest - debit?
+
+		transaction.setFieldValue("GZAPRC", "N"); // Calculate credit interest APR rate
+		transaction.setFieldValue("GZAPRD", "N"); // Calculate debit interest APR rate
+		transaction.setFieldValue("GZIN10", "N"); // Funding/Repayment (1A)
+
+		transaction.setFieldValue("GZIIFD", "N"); // Include interest frequency date ?
+		transaction.setFieldValue("GZIBFD", "N"); // Post interest before frequency date?
+		transaction.setFieldValue("GZVAFD", "N"); // Interest value dated before frequency date?
+
+		transaction.setFieldValue("GZILS", "001Y"); // Interval since last statement
+
+	}
+
+	/**
+	 * Setup the mandatory fields (maintain mode)
+	 */
+	@Override
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZATD", "Equation 4.0 maintained"); // Account type description
+		transaction.setFieldValue("GZHBN", "18"); // To range
+
+	}
+
+}

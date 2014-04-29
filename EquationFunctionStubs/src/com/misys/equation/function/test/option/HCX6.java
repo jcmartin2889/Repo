@@ -1,0 +1,55 @@
+package com.misys.equation.function.test.option;
+
+import com.misys.equation.common.access.IEquationStandardObject;
+import com.misys.equation.function.test.helper.FunctionGenerator;
+import com.misys.equation.function.test.run.FunctionToolboxStub;
+
+public class HCX6 extends TestOptionStub
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: HCX6.java 7138 2010-05-04 14:59:54Z lima12 $";
+
+	public HCX6()
+	{
+		try
+		{
+			setUp();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] inputParameters)
+	{
+		HCX6 test = new HCX6();
+		test.test();
+	}
+
+	public void test()
+	{
+		// Have a bash...
+		try
+		{
+			printStartStatus(this.getClass().getSimpleName());
+			HCX2 hcx2 = new HCX2();
+			FunctionGenerator fg = hcx2.test("HC6", "Maintain Hold Code", IEquationStandardObject.FCT_MNT, false);
+
+			fg.getFunction().setAllowedAdd(false);
+			fg.getFunction().setAllowedMaint(true);
+			fg.getFunction().setAllowedDel(false);
+
+			// Write to DB
+			FunctionToolboxStub.writeToDB(unit, fg.getFunctionBean(), fg.getLayoutBean(), null, null);
+
+			// print
+			printCompleteStatus(fg, this.getClass().getSimpleName(), printXML);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+}

@@ -1,0 +1,130 @@
+package com.misys.equation.common.search.results;
+
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
+import com.misys.equation.common.search.criteria.OptionSearchCriteria;
+
+public class OptionSearchResult extends OptionSearchCriteria implements ISearchResult, ISelectedSearchResult
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: OptionSearchResult.java 9725 2010-11-08 12:34:45Z MACDONP1 $";
+
+	private final String unit;
+	private final String system;
+	private final long id;
+	private final Date timeStamp;
+
+	public OptionSearchResult(final String optionId, final String optionTitle, final String unit, final String system,
+					final Date timeStamp)
+	{
+		super(optionId, optionTitle);
+		this.unit = unit;
+		this.system = system;
+		this.id = -1;
+		this.timeStamp = timeStamp;
+	}
+
+	public OptionSearchResult(final String optionId, final String optionTitle, final String unit, final String system,
+					final long id, final Date timeStamp)
+	{
+		super(optionId, optionTitle);
+		this.unit = unit;
+		this.system = system;
+		this.id = id;
+		this.timeStamp = timeStamp;
+	}
+
+	public OptionSearchResult(final Map<PropertyType, String> properties)
+	{
+		super(properties.get(PropertyType.OPT_ID), properties.get(PropertyType.OPT_TITLE));
+		this.unit = properties.get(PropertyType.UNIT);
+		this.system = properties.get(PropertyType.SYSTEM);
+		this.id = Long.parseLong(properties.get(PropertyType.ID));
+		this.timeStamp = new Date(Long.parseLong(properties.get(PropertyType.TIME_STAMP)));
+	}
+
+	public String getUnit()
+	{
+		return unit;
+	}
+
+	public String getSystem()
+	{
+		return system;
+	}
+
+	public Date getTimeStamp()
+	{
+		return timeStamp;
+	}
+
+	/**
+	 * This method returns a map representing the tuples to be inserted into the database as properties for the key data for the
+	 * selected search result.
+	 * 
+	 * @return Map<String, String> - properties for the key data for the selected search result
+	 */
+	public Map<String, String> getKeyDataToBeRecorded()
+	{
+		final Map<String, String> map = new HashMap<String, String>();
+		map.put(PropertyType.OPT_ID.toString(), getOptionId());
+		map.put(PropertyType.OPT_TITLE.toString(), getOptionTitle());
+		return map;
+	}
+
+	/**
+	 * This method return the string to be displayed in the tree view.
+	 * 
+	 * @return String - String to display
+	 */
+	public String getSelectedResultKeyString()
+	{
+		final StringBuffer sb = new StringBuffer();
+		final Date date = getTimeStamp();
+		Locale locale = Locale.getDefault();
+		DateFormat dateFormatter = DateFormat.getDateInstance(DateFormat.SHORT, locale);
+		DateFormat timeFormatter = DateFormat.getTimeInstance(DateFormat.DEFAULT, locale);
+		sb.append(dateFormatter.format(date));
+		sb.append(" ");
+		sb.append(timeFormatter.format(date));
+		sb.append(" - ");
+		sb.append(getUnit());
+		sb.append(" - ");
+		sb.append(getOptionId());
+		sb.append(" - ");
+		sb.append(getOptionTitle());
+		return sb.toString().toUpperCase();
+	}
+
+	public long getId()
+	{
+		return id;
+	}
+
+	public int compareTo(ISelectedSearchResult comparable)
+	{
+		if (comparable.getTimeStamp().getTime() == getTimeStamp().getTime())
+		{
+			return 0;
+		}
+		else if (comparable.getTimeStamp().getTime() < getTimeStamp().getTime())
+		{
+			return -1;
+		}
+		else if (comparable.getTimeStamp().getTime() > getTimeStamp().getTime())
+		{
+			return 1;
+		}
+		return 0;
+	}
+
+	public String getSelectedResultLink()
+	{
+		final StringBuffer sb = new StringBuffer();
+		return sb.toString();
+	}
+}

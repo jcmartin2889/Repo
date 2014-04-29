@@ -1,0 +1,861 @@
+package com.misys.equation.function.tools;
+
+import java.util.ArrayList;
+import java.util.Hashtable;
+
+import com.misys.equation.function.beans.Element;
+import com.misys.equation.function.beans.Function;
+import com.misys.equation.function.beans.InputField;
+import com.misys.equation.function.beans.XSDStructure;
+import com.misys.equation.function.beans.valid.MessageContainer;
+import com.misys.equation.function.language.LanguageResources;
+import com.misys.equation.problems.ProblemLocation;
+
+public class XSDStructureHelper
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	/**
+	 * Return the request XSD structure
+	 * 
+	 * @param function
+	 *            - the function
+	 * 
+	 * @return the request XSD structure
+	 */
+	public static XSDStructure getRequest(Function function)
+	{
+		return function.getXsdStructureRequest();
+	}
+
+	/**
+	 * Return the request XSD structure
+	 * 
+	 * @param function
+	 *            - the function
+	 * 
+	 * @return the request XSD structure
+	 */
+	public static XSDStructure getResponse(Function function)
+	{
+		return function.getXsdStructureResponse();
+	}
+
+	/**
+	 * Remove field from the XSD request/response
+	 * 
+	 * @param function
+	 *            - the function
+	 * @param id
+	 *            - the id to be deleted
+	 */
+	public static void removeFieldFromXSD(Function function, String id)
+	{
+		XSDStructure xsdStructureRequest = getRequest(function);
+		XSDStructure xsdStructureResponse = getResponse(function);
+
+		// remove from xsd mapping
+		if (xsdStructureRequest != null)
+		{
+			xsdStructureRequest.removeField(id, true);
+			xsdStructureRequest.removeComplexTypeFieldMapping(id);
+		}
+		if (xsdStructureResponse != null)
+		{
+			xsdStructureResponse.removeField(id, true);
+			xsdStructureResponse.removeComplexTypeFieldMapping(id);
+		}
+
+	}
+
+	/**
+	 * Remove repeating group from the XSD request/response
+	 * 
+	 * @param function
+	 *            - the function
+	 * @param id
+	 *            - the repeating group id to be deleted
+	 */
+	public static void removeRepeatingGroupFromXSD(Function function, String id)
+	{
+		removeFieldFromXSD(function, XSDStructure.getGroupName(id, true));
+	}
+
+	/**
+	 * Append field to the XSD request/response
+	 * 
+	 * @param function
+	 *            - the function
+	 * @param inputField
+	 *            - the input field
+	 */
+	public static void appendFieldToXSD(Function function, InputField inputField)
+	{
+		XSDStructure xsdStructureRequest = getRequest(function);
+		XSDStructure xsdStructureResponse = getResponse(function);
+
+		if (xsdStructureRequest != null)
+		{
+			xsdStructureRequest.appendField(inputField, true);
+		}
+		if (xsdStructureResponse != null)
+		{
+			xsdStructureResponse.appendField(inputField, false);
+		}
+	}
+
+	/**
+	 * Append field to the XSD request/response
+	 * 
+	 * @param function
+	 *            - the function
+	 * @param id
+	 *            - the group id
+	 */
+	public static void appendRepeatingGroupToXSD(Function function, String id)
+	{
+		XSDStructure xsdStructureRequest = getRequest(function);
+		XSDStructure xsdStructureResponse = getResponse(function);
+
+		if (xsdStructureRequest != null)
+		{
+			xsdStructureRequest.appendGroup(id, "", true, null);
+		}
+		if (xsdStructureResponse != null)
+		{
+			xsdStructureResponse.appendGroup(id, "", true, null);
+		}
+	}
+
+	/**
+	 * Append field to a group in the XSD request/response
+	 * 
+	 * @param function
+	 *            - the function
+	 * @param inputField
+	 *            - the input field
+	 * @param groupId
+	 *            - the group id where this field is to be appended
+	 * @param groupLabel
+	 *            - the group label (if auto created)
+	 * @param autoCreate
+	 *            - true if the group should be auto created or not
+	 * @param repeatingGroup
+	 *            - true if this is a repeating group
+	 */
+	public static void appendFieldToGroupXSD(Function function, InputField inputField, String groupId, String groupLabel,
+					boolean autoCreate, boolean repeatingGroup)
+	{
+		XSDStructure xsdStructureRequest = getRequest(function);
+		XSDStructure xsdStructureResponse = getResponse(function);
+
+		String gid = XSDStructure.getGroupName(groupId, repeatingGroup);
+
+		if (xsdStructureRequest != null)
+		{
+			XSDStructure xsd = xsdStructureRequest.findField(gid, true, false);
+
+			// Auto create if needed?
+			if (xsd == null && autoCreate)
+			{
+				xsd = xsdStructureRequest.appendGroup(groupId, groupLabel, repeatingGroup, null);
+			}
+
+			// Add the field
+			if (xsd != null)
+			{
+				xsd.appendField(inputField, true);
+			}
+		}
+
+		if (xsdStructureResponse != null)
+		{
+			XSDStructure xsd = xsdStructureResponse.findField(gid, true, false);
+
+			// Auto create if needed?
+			if (xsd == null && autoCreate)
+			{
+				xsd = xsdStructureResponse.appendGroup(groupId, groupLabel, repeatingGroup, null);
+			}
+
+			// Add the field
+			if (xsd != null)
+			{
+				xsd.appendField(inputField, true);
+			}
+		}
+	}
+
+	/**
+	 * Set the XSD parent
+	 * 
+	 * @param function
+	 *            - the function
+	 */
+	public static void setupXSDParent(Function function)
+	{
+		XSDStructure xsdStructureRequest = getRequest(function);
+		XSDStructure xsdStructureResponse = getResponse(function);
+
+		if (xsdStructureRequest != null)
+		{
+			xsdStructureRequest.setupParent();
+		}
+		if (xsdStructureResponse != null)
+		{
+			xsdStructureResponse.setupParent();
+		}
+	}
+
+	/**
+	 * Set the XSD parent
+	 * 
+	 * @param function
+	 *            - the function - the Function
+	 * @param functionComplexType
+	 *            - the function containing the complex type definition
+	 * @param functionComplextypeXsdLink
+	 *            - the XSDStructureLink of funtionComplexType
+	 */
+	public static void setupXSDWebServiceName(Function function, Function functionComplexType,
+					XSDStructureLink functionComplextypeXsdLink)
+	{
+		XSDStructure xsdStructureRequest = getRequest(function);
+		XSDStructure xsdStructureResponse = getResponse(function);
+
+		if (xsdStructureRequest != null)
+		{
+			xsdStructureRequest.setupWebServiceNameRuntime(function, true, functionComplexType, functionComplextypeXsdLink);
+		}
+		if (xsdStructureResponse != null)
+		{
+			xsdStructureResponse.setupWebServiceNameRuntime(function, false, functionComplexType, functionComplextypeXsdLink);
+		}
+	}
+
+	/**
+	 * Rename field in the XSD request/response
+	 * 
+	 * @param function
+	 *            - the function
+	 * @param inputField
+	 *            - the input field
+	 * 
+	 * @return
+	 */
+	public static void renameField(Function function, String oldId, String newId)
+	{
+		XSDStructure xsdStructureRequest = getRequest(function);
+		XSDStructure xsdStructureResponse = getResponse(function);
+
+		if (xsdStructureRequest != null)
+		{
+			xsdStructureRequest.renameField(oldId, true, newId, null);
+			xsdStructureRequest.renameComplexTypeServiceField(oldId, newId);
+		}
+		if (xsdStructureResponse != null)
+		{
+			xsdStructureResponse.renameField(oldId, true, newId, null);
+			xsdStructureResponse.renameComplexTypeServiceField(oldId, newId);
+		}
+	}
+
+	/**
+	 * Rename repeating group in the XSD request/response
+	 * 
+	 * @param function
+	 *            - the function
+	 * @param inputField
+	 *            - the input field
+	 * 
+	 * @return
+	 */
+	public static void renameRepeatingGroup(Function function, String oldId, String newId)
+	{
+		XSDStructure xsdStructureRequest = getRequest(function);
+		XSDStructure xsdStructureResponse = getResponse(function);
+
+		String olds = XSDStructure.getGroupName(oldId, true);
+		String news = XSDStructure.getGroupName(newId, true);
+
+		if (xsdStructureRequest != null)
+		{
+			xsdStructureRequest.renameField(olds, true, news, null);
+		}
+		if (xsdStructureResponse != null)
+		{
+			xsdStructureResponse.renameField(olds, true, news, null);
+		}
+	}
+
+	/**
+	 * Determine if the web service name is unique across the Request XSD
+	 * 
+	 * @param function
+	 *            - the Function
+	 * @param webServiceFieldTypeName
+	 *            a <code>String</code> containing the xsd web service type name of the field to check
+	 * @param ignorePath
+	 *            - ignore the field path matching with this id
+	 * 
+	 * @return the duplicate XSD structure if it is not unique
+	 */
+	public static XSDStructure isUniqueWebServiceNameInRequest(Function function, String webServiceFieldTypeName, String ignorePath)
+	{
+		XSDStructure request = getRequest(function);
+
+		XSDStructure xsd = null;
+		if (request != null)
+		{
+			xsd = request.chkUniqueWebServiceName(function, webServiceFieldTypeName, ignorePath, true);
+		}
+
+		return xsd;
+	}
+	/**
+	 * Determine if the service field id is unique across the Request XSD
+	 * 
+	 * @param function
+	 *            - the Function
+	 * @param serviceFieldName
+	 *            a <code>String</code> containing the xsd service field id of the field to check
+	 * @param ignorePath
+	 *            - ignore the field path matching with this id
+	 * 
+	 * @return the duplicate XSD structure if it is not unique
+	 */
+	public static XSDStructure isUniqueComplexFieldServiceIdInRequest(Function function, String serviceFieldId, String ignorePath)
+	{
+		XSDStructure request = getRequest(function);
+
+		XSDStructure xsd = null;
+		if (request != null)
+		{
+			xsd = request.chkUniqueComplexFieldServiceId(function, serviceFieldId, ignorePath, true);
+		}
+
+		return xsd;
+	}
+	/**
+	 * Determine if the web service name is unique across the Response XSD
+	 * 
+	 * @param function
+	 *            - the Function
+	 * @param webServiceFieldTypeName
+	 *            a <code>String</code> containing the xsd web service type name of the field to check
+	 * @param ignorePath
+	 *            - ignore the field path matching with this id
+	 * 
+	 * @return the duplicate XSD structure if it is not unique
+	 */
+	public static XSDStructure isUniqueWebServiceNameInResponse(Function function, String webServiceFieldTypeName, String ignorePath)
+	{
+		XSDStructure response = getResponse(function);
+
+		XSDStructure xsd = null;
+		if (response != null)
+		{
+			xsd = response.chkUniqueWebServiceName(function, webServiceFieldTypeName, ignorePath, false);
+		}
+
+		return xsd;
+	}
+
+	/**
+	 * Determine if the id is in the Request XSD
+	 * 
+	 * @param function
+	 *            - the function
+	 * @param id
+	 *            - the id
+	 * @return true if the id is in the Request XSD
+	 */
+	public static boolean isPartRequest(Function function, String id)
+	{
+		XSDStructure request = getRequest(function);
+
+		if (request != null)
+		{
+			XSDStructure xsd = request.findField(id, true, false);
+			if (xsd != null)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Determine if the id is in the Request XSD
+	 * 
+	 * @param function
+	 *            - the function
+	 * @param id
+	 *            - the id
+	 * @return true if the id is in the Request XSD
+	 */
+	public static boolean isPartResponse(Function function, String id)
+	{
+		XSDStructure response = getResponse(function);
+
+		if (response != null)
+		{
+			XSDStructure xsd = response.findField(id, true, false);
+			if (xsd != null)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Validate bean
+	 * 
+	 * @param function
+	 *            - the function bean
+	 * @param messageContainer
+	 *            - the message container
+	 */
+	public static void validateBean(Function function, MessageContainer messageContainer)
+	{
+		XSDStructure request = getRequest(function);
+		XSDStructure response = getResponse(function);
+
+		validateBeanXSD(request, messageContainer, function, true);
+		validateBeanXSD(response, messageContainer, function, false);
+
+		validateComplexType(request, function, messageContainer, true);
+		validateComplexType(response, function, messageContainer, false);
+
+		validateWebServiceName(request, function, messageContainer, true);
+		validateWebServiceName(response, function, messageContainer, false);
+	}
+
+	/**
+	 * Validate the XSD detail
+	 * 
+	 * @param xsd
+	 *            - the XSD
+	 * @param messageContainer
+	 *            - the message container
+	 * @param function
+	 *            - the Function bean
+	 * @param request
+	 *            - true if Request XSD
+	 */
+	public static void validateBeanXSD(XSDStructure xsd, MessageContainer messageContainer, Function function, boolean request)
+	{
+		// validate this xsd
+		String problemLocationKey = xsd.rtvWebServiceName(function, request);
+		ProblemLocation problemLocation = new ProblemLocation(XSDStructure.class.getSimpleName(), problemLocationKey);
+
+		validateMinMax(xsd, messageContainer, problemLocation);
+		validateGroup(xsd, messageContainer, problemLocation);
+
+		// validate the childs
+		for (XSDStructure x : xsd.getSubFields())
+		{
+			validateBeanXSD(x, messageContainer, function, request);
+		}
+	}
+
+	/**
+	 * Validate the min/max
+	 * 
+	 * @param xsd
+	 *            - the XSD to be validated
+	 * @param messageContainer
+	 *            - the message container
+	 * @param problemLocation
+	 *            - the problem location
+	 */
+	public static void validateMinMax(XSDStructure xsd, MessageContainer messageContainer, ProblemLocation problemLocation)
+	{
+		// repeating group only
+		if (!xsd.chkRepeatingGroup())
+		{
+			return;
+		}
+
+		// Max occur must be >= Min occur
+		if (xsd.getMaxOccur() > 0 && xsd.getMaxOccur() < xsd.getMinOccur())
+		{
+			String msg = "Language.MaxOccurenceMustBeGreaterThanEqualToMinOccurence";
+
+			if (problemLocation == null)
+			{
+				messageContainer.addErrorMessage(LanguageResources.getString(msg));
+			}
+			else
+			{
+				messageContainer.addErrorMessageId(msg, LanguageResources.getString(msg), problemLocation);
+			}
+		}
+	}
+
+	/**
+	 * Validate the group
+	 * 
+	 * @param xsd
+	 *            - the XSD to be validated
+	 * @param messageContainer
+	 *            - the message container
+	 * @param problemLocationKey
+	 *            - the problem location key
+	 */
+	public static void validateGroup(XSDStructure xsd, MessageContainer messageContainer, ProblemLocation problemLocation)
+	{
+		// validate group or repeating group only
+		if (xsd.chkField())
+		{
+			return;
+		}
+
+		// Must have at least one field (but not for the Response/Request)
+		if (xsd.rtvParent() != null && xsd.getSubFields().size() == 0)
+		{
+			String msg = "Language.XSDGroupMustHaveAtLeastOneItem";
+			if (problemLocation == null)
+			{
+				messageContainer.addErrorMessage(LanguageResources.getString(msg));
+			}
+			else
+			{
+				messageContainer.addErrorMessageId(msg, LanguageResources.getString(msg), problemLocation);
+			}
+		}
+	}
+	/**
+	 * Validate the complex type group
+	 * 
+	 * @param xsd
+	 *            - the XSD to be validated
+	 * @param function
+	 *            - the function
+	 * @param messageContainer
+	 *            - the message container
+	 * @param request
+	 *            - is in the request XSD
+	 */
+	public static void validateComplexType(XSDStructure xsd, Function function, MessageContainer messageContainer, boolean request)
+	{
+		String problemLocationKey = xsd.rtvWebServiceName(function, request);
+		ProblemLocation problemLocation = new ProblemLocation(XSDStructure.class.getSimpleName(), problemLocationKey);
+		// Must have complex type fields mapped to service fields
+		if (xsd.chkComplexTypeField() && (xsd.getServiceFieldId() == null || xsd.getServiceFieldId().trim().equals("")))
+		{
+
+			if (problemLocation == null)
+			{
+
+				messageContainer.addErrorMessageId("Language.XSDComplexTypeFieldMustBeMapped", new String[] { xsd
+								.rtvPathWithoutXsdStructureLabels() }, null);
+			}
+			else
+			{
+				messageContainer.addErrorMessageId("Language.XSDComplexTypeFieldMustBeMapped", new String[] { xsd
+								.rtvPathWithoutXsdStructureLabels() }, problemLocation);
+			}
+		}
+		// Service field must exist
+		if (xsd.chkComplexTypeField() && (xsd.getServiceFieldId() != null && xsd.getServiceFieldId().trim().length() > 0))
+
+		{
+
+			if (!function.containsField(xsd.getServiceFieldId().trim()))
+			{
+				if (problemLocation == null)
+				{
+
+					messageContainer.addErrorMessageId("Language.XSDComplexTypeServiceFieldNotExists", new String[] {
+									xsd.rtvPathWithoutXsdStructureLabels(), xsd.getServiceFieldId() }, null);
+				}
+				else
+				{
+					messageContainer.addErrorMessageId("Language.XSDComplexTypeServiceFieldNotExists", new String[] {
+									xsd.rtvPathWithoutXsdStructureLabels(), xsd.getServiceFieldId() }, problemLocation);
+				}
+			}
+			// For requests fields can only be mapped once
+			if (request)
+			{
+				XSDStructure duplicateXsd = XSDStructureHelper.isUniqueComplexFieldServiceIdInRequest(function, xsd
+								.getServiceFieldId(), xsd.rtvPath());
+
+				if (duplicateXsd != null)
+				{
+
+					if (problemLocation == null)
+					{
+
+						messageContainer.addErrorMessageId("Language.XSDComplexTypeServiceFieldAlreadyMapped", new String[] {
+										xsd.rtvPathWithoutXsdStructureLabels(), xsd.getServiceFieldId() }, null);
+					}
+					else
+					{
+						messageContainer.addErrorMessageId("Language.XSDComplexTypeServiceFieldAlreadyMapped", new String[] {
+										xsd.rtvPathWithoutXsdStructureLabels(), xsd.getServiceFieldId() }, problemLocation);
+					}
+
+				}
+
+			}
+		}
+		// Service field must not be used unless this is a complex type service field
+		if (!xsd.chkComplexTypeField() && xsd.getServiceFieldId() != null && xsd.getServiceFieldId().trim().length() > 0)
+		{
+			if (!function.containsField(xsd.getServiceFieldId()))
+			{
+				if (problemLocation == null)
+				{
+
+					messageContainer.addErrorMessageId("Language.XSDComplexTypeServiceFieldInvalid", new String[] {
+									xsd.rtvPathWithoutXsdStructureLabels(), xsd.getServiceFieldId() }, null);
+				}
+				else
+				{
+					messageContainer.addErrorMessageId("Language.XSDComplexTypeServiceFieldInvalid", new String[] {
+									xsd.rtvPathWithoutXsdStructureLabels(), xsd.getServiceFieldId() }, problemLocation);
+				}
+			}
+		}
+
+		for (XSDStructure subfield : xsd.getSubFields())
+		{
+			validateComplexType(subfield, function, messageContainer, request);
+		}
+	}
+
+	/**
+	 * Validate for duplicate web service name in both Request and Response
+	 * 
+	 * @param xsd
+	 *            - the XSD to be validated
+	 * @param function
+	 *            - the function
+	 * @param messageContainer
+	 *            - the message container
+	 * @param request
+	 *            - is in the request XSD
+	 */
+	public static void validateWebServiceName(XSDStructure xsd, Function function, MessageContainer messageContainer,
+					boolean request)
+	{
+		String problemLocationKey = xsd.rtvWebServiceName(function, request);
+		ProblemLocation problemLocation = new ProblemLocation(XSDStructure.class.getSimpleName(), problemLocationKey);
+		String webServiceName = xsd.rtvWebServiceName(function, request);
+
+		if (webServiceName.trim().length() == 0 || webServiceName.equals(Element.DEFAULT_TEXT_VALUE))
+		{
+			String msg = "Language.WebServiceTypeNameMustNotBeBlank";
+
+			messageContainer.addErrorMessageId(msg, xsd.rtvPathWithoutXsdStructureLabels(), problemLocation);
+		}
+
+		// must not start with a number
+		else if (!XSDToolbox.isValidForXSDMustStartWithAToZ(webServiceName))
+		{
+			String msg = "Language.XSDGroupLabelMustStartWithAtoZ";
+
+			messageContainer.addErrorMessageId(msg, xsd.rtvPathWithoutXsdStructureLabels(), problemLocation);
+		}
+		validateWebServiceNameUnique(xsd, function, messageContainer, request);
+
+	}
+
+	/**
+	 * Validate for duplicate web service name in both Request and Response
+	 * 
+	 * @param xsd
+	 *            - the XSD to be validated
+	 * @param function
+	 *            - the function
+	 * @param messageContainer
+	 *            - the message container
+	 * @param request
+	 *            - is in the request XSD
+	 */
+	public static void validateWebServiceNameUnique(XSDStructure xsd, Function function, MessageContainer messageContainer,
+					boolean request)
+	{
+		// Check the web service name must be unique
+
+		String problemLocationKey = xsd.rtvWebServiceName(function, request);
+		ProblemLocation problemLocation = new ProblemLocation(XSDStructure.class.getSimpleName(), problemLocationKey);
+		String webServiceName = xsd.rtvWebServiceName(function, request);
+
+		XSDStructure duplicateXsd = null;
+
+		// If a group or repeating group then group must be unique in both request and response
+		if ((xsd.chkGroup() && !xsd.chkComplexTypeGroup()) || xsd.chkRepeatingGroup())
+		{
+			duplicateXsd = XSDStructureHelper.isUniqueWebServiceNameInRequest(function, webServiceName, xsd.rtvPath());
+			if (duplicateXsd == null)
+			{
+				duplicateXsd = XSDStructureHelper.isUniqueWebServiceNameInResponse(function, webServiceName, xsd.rtvPath());
+			}
+		}
+		if (duplicateXsd == null)
+		{
+
+			duplicateXsd = xsd.chkUniqueWebServiceNameInParent(function, webServiceName, xsd.rtvPath(), request);
+		}
+
+		if (duplicateXsd != null)
+		{
+			if (problemLocation == null)
+			{
+
+				messageContainer.addErrorMessageId("Language.WebServiceTypeNameNotUniqueXSDTab", new String[] {
+								xsd.rtvPathWithoutXsdStructureLabels(), webServiceName }, null);
+			}
+			else
+			{
+				messageContainer.addErrorMessageId("Language.WebServiceTypeNameNotUniqueXSDTab", new String[] {
+								xsd.rtvPathWithoutXsdStructureLabels(), webServiceName }, problemLocation);
+			}
+
+		}
+		// if the parent web service names does not have to be unique the children also do not need to be unique
+		for (XSDStructure subfield : xsd.getSubFields())
+		{
+			validateWebServiceNameUnique(subfield, function, messageContainer, request);
+		}
+
+	}
+	/**
+	 * Return the list
+	 * 
+	 * @param function
+	 *            - the function
+	 */
+	public static Hashtable<String, XSDStructure> getRequestXSDMap(Function function)
+	{
+		XSDStructure xsdStructureRequest = getRequest(function);
+
+		if (xsdStructureRequest != null)
+		{
+			return xsdStructureRequest.rtvAsMap();
+		}
+
+		return null;
+	}
+
+	/**
+	 * Return the list
+	 * 
+	 * @param function
+	 *            - the function
+	 */
+	public static Hashtable<String, XSDStructure> getResponseXSDMap(Function function)
+	{
+		XSDStructure xsdStructureResponse = getResponse(function);
+
+		if (xsdStructureResponse != null)
+		{
+			return xsdStructureResponse.rtvAsMap();
+		}
+
+		return null;
+	}
+
+	/**
+	 * Set the XSD parent
+	 * 
+	 * @param function
+	 *            - the function
+	 */
+	public static void setupXSDInputField(Function function)
+	{
+		XSDStructure xsdStructureRequest = getRequest(function);
+		XSDStructure xsdStructureResponse = getResponse(function);
+
+		if (xsdStructureRequest != null)
+		{
+			xsdStructureRequest.setupInputFieldRunTime(function);
+		}
+		if (xsdStructureResponse != null)
+		{
+			xsdStructureResponse.setupInputFieldRunTime(function);
+		}
+	}
+
+	/**
+	 * Return the list
+	 * 
+	 * @param function
+	 *            - the function
+	 */
+	public static ArrayList<XSDStructure> getRequestClassLoadingHierarchy(Function function)
+	{
+		XSDStructure xsdStructureRequest = getRequest(function);
+
+		if (xsdStructureRequest != null)
+		{
+			return xsdStructureRequest.rtvClassLoadingHierarchy();
+		}
+
+		return null;
+	}
+
+	/**
+	 * Return the list
+	 * 
+	 * @param function
+	 *            - the function
+	 */
+	public static ArrayList<XSDStructure> getResponseClassLoadingHierarchy(Function function)
+	{
+		XSDStructure xsdStructureResponse = getResponse(function);
+
+		if (xsdStructureResponse != null)
+		{
+			return xsdStructureResponse.rtvClassLoadingHierarchy();
+		}
+
+		return null;
+	}
+
+	/**
+	 * Search for the id in either Request or Response
+	 * 
+	 * @param function
+	 *            - the function
+	 * @param id
+	 *            - the id to be search
+	 * @param recursive
+	 *            - true to find the field regardless where it is down the hierarchy<br>
+	 *            - false to find the field only if it is directly one-level down below the hierarchy
+	 * @param includeComplexTypes
+	 *            - true if complex type service field mappings should be checked
+	 * 
+	 * @return the XSD structure of the id
+	 */
+	public static XSDStructure findXSD(Function function, String id, boolean recursive, boolean includeComplexTypes)
+	{
+		XSDStructure xsd = null;
+
+		// Check in Request
+		if (function.getXsdStructureRequest() != null)
+		{
+			xsd = function.getXsdStructureRequest().findField(id, recursive, includeComplexTypes);
+			if (xsd != null)
+			{
+				return xsd;
+			}
+		}
+
+		// Check in Response
+		if (function.getXsdStructureResponse() != null)
+		{
+			xsd = function.getXsdStructureResponse().findField(id, recursive, includeComplexTypes);
+		}
+
+		return xsd;
+
+	}
+}

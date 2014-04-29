@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunctionStubs/SVNKIT%20Example
+END
+SVNCommitEventHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunctionStubs/SVNKIT%20Example/SVNCommitEventHandler.java
+END
+SVNInfoHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunctionStubs/SVNKIT%20Example/SVNInfoHandler.java
+END
+SVNWCEventHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunctionStubs/SVNKIT%20Example/SVNWCEventHandler.java
+END
+TestSVNConnection.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunctionStubs/SVNKIT%20Example/TestSVNConnection.java
+END
+SVNStatusHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunctionStubs/SVNKIT%20Example/SVNStatusHandler.java
+END
+SVNUpdateEventHandler.java
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunctionStubs/SVNKIT%20Example/SVNUpdateEventHandler.java
+END
+WorkingCopy.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationFunctionStubs/SVNKIT%20Example/WorkingCopy.java
+END

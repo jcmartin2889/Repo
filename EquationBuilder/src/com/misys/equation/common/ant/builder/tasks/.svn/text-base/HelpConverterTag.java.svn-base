@@ -1,0 +1,116 @@
+package com.misys.equation.common.ant.builder.tasks;
+
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Task;
+
+import com.misys.equation.common.ant.builder.helpconverter.AuthorItToEclipseConverter;
+
+/**
+ * This class is a ant tag which wrap the helper converter process.
+ * 
+ * @author deroset
+ */
+public class HelpConverterTag extends Task
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	// This is the directory which contains all input files.
+	private String docSource;
+	// This is the output directory.
+	private String docOutputProject;
+	// This is the help files xref directory (Function Wizard Project).
+	private String helpFilesXrefProject;
+	// This is the helper converter version.
+	private String version;
+	// This is the directory that contain all helper converter resources files.
+	private String resources;
+
+	private AuthorItToEclipseConverter authorItToEclipseConverter;
+
+	/**
+	 * This method will set all parameters and perform the helper converter processes.
+	 */
+	@Override
+	public void execute() throws BuildException
+	{
+		authorItToEclipseConverter = AuthorItToEclipseConverter.getInstance();
+		authorItToEclipseConverter.setDestination(docOutputProject);
+		authorItToEclipseConverter.setHelpFilesXrefProject(helpFilesXrefProject);
+		authorItToEclipseConverter.setSource(docSource);
+		authorItToEclipseConverter.setVersion(version);
+		authorItToEclipseConverter.setResources(resources);
+		authorItToEclipseConverter.process();
+	}
+
+	// -------------------------GETTER AND SETTERS ----------------------------------//
+
+	public String getResources()
+	{
+		return resources;
+	}
+
+	/**
+	 * This method will set the resources path.
+	 * 
+	 * @param resources
+	 *            this the directory
+	 */
+	public void setResources(String resources)
+	{
+		this.resources = resources;
+	}
+
+	public String getDocSource()
+	{
+		return docSource;
+	}
+
+	public void setDocSource(String docSource)
+	{
+		this.docSource = docSource;
+	}
+
+	public String getDocOutputProject()
+	{
+		return docOutputProject;
+	}
+
+	public void setDocOutputProject(String docOutputProject)
+	{
+		this.docOutputProject = docOutputProject;
+	}
+	public String getHelpFilesXrefProject()
+	{
+		return helpFilesXrefProject;
+	}
+
+	public void setHelpFilesXrefProject(String project)
+	{
+		helpFilesXrefProject = project;
+	}
+	public String getVersion()
+	{
+		return version;
+	}
+
+	public void setVersion(String version)
+	{
+		this.version = version;
+	}
+
+	/**
+	 * This method will be used to debug the HelpConverter.
+	 * 
+	 * @param args
+	 */
+	public static void main(String[] args)
+	{
+		AuthorItToEclipseConverter authorItToEclipseConverter = AuthorItToEclipseConverter.getInstance();
+
+		authorItToEclipseConverter.setDestination(args[0].toString());
+		authorItToEclipseConverter.setSource(args[1]);
+		authorItToEclipseConverter.setVersion(args[2]);
+		authorItToEclipseConverter.setResources(args[3]);
+		authorItToEclipseConverter.process();
+	}
+}

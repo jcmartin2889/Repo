@@ -1,0 +1,79 @@
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseMaintain;
+
+/**
+ * Equation test cases for Add/Maintain Cheque Deposit - Items
+ */
+public class SMR extends EquationTestCaseMaintain
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	String programName = "S14MRR";
+	String optionId = "SMR";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZSIT", "XXXX"); // Stock item type (4A)
+		transaction.setFieldValue("GZCCY", "XX"); // Currency (3A)
+		transaction.setFieldValue("GZSRF", "XXXXX"); // Source reference (35A)
+	}
+
+	/**
+	 * Setup an existing key fields
+	 */
+	@Override
+	public void setupExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZSIT", "HERR"); // Stock item type (4A)
+		transaction.setFieldValue("GZCCY", "USD"); // Currency (3A)
+		transaction.setFieldValue("GZSRF", "Herring"); // Source reference (35A)
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	@Override
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZSTS", "M"); // Status (1A)
+	}
+	@Override
+	public void test00700Maint_RetrievalMaintain_ExistingRecord() throws Exception
+	{
+		// Cannot maintain the same record twice in succession.
+	}
+}

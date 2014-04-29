@@ -1,0 +1,87 @@
+package com.misys.equation.common.test;
+
+import java.awt.Frame;
+
+import javax.swing.JOptionPane;
+
+public class TestCaseDialog
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: TestCaseDialog.java 4438 2009-08-12 13:15:30Z weddelc1 $";
+	String optionId = "";
+	String functionMode = "";
+	String programName = "";
+	String jrnFile = "";
+
+	public TestCaseDialog()
+	{
+		// String inst1 = "Enter the option id and function mode: \n";
+		// String inst2 = "OR Enter the option id, function mode, program name, journal file: \n";
+		// String inst3 = "(separated by :)";
+		String inst1 = "Enter the journal file";
+		Frame frame = new Frame();
+		String s = "";
+		while (s.trim().equals(""))
+		{
+			s = JOptionPane.showInputDialog(frame, inst1, "Fields generator", JOptionPane.PLAIN_MESSAGE);
+			if (s == null)
+			{
+				s = "";
+				break;
+			}
+		}
+
+		jrnFile = s.toUpperCase();
+		// String[] inputs = s.split(":");
+		// if (inputs.length > 1)
+		// optionId = inputs[0];
+		// if (inputs.length > 2)
+		// functionMode = inputs[1];
+		// if (inputs.length > 3)
+		// programName = inputs[2];
+		// if (inputs.length > 4)
+		// jrnFile = inputs[3];
+		frame.dispose();
+	}
+
+	/**
+	 * Return the option id
+	 * 
+	 * @return the option id
+	 */
+	public String getOptionId()
+	{
+		return optionId;
+	}
+
+	/**
+	 * Return the function mode
+	 * 
+	 * @return the function mode
+	 */
+	public String getFunctionMode()
+	{
+		return functionMode;
+	}
+
+	/**
+	 * Return the program name
+	 * 
+	 * @return the program name
+	 */
+	public String getProgramName()
+	{
+		return programName;
+	}
+
+	/**
+	 * Return the journal file
+	 * 
+	 * @return the journal file
+	 */
+	public String getJrnFile()
+	{
+		return jrnFile;
+	}
+
+}

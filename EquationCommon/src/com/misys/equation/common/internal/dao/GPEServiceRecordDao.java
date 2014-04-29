@@ -1,0 +1,155 @@
+package com.misys.equation.common.internal.dao;
+
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+
+import com.misys.equation.common.dao.IGPEServiceRecordDao;
+import com.misys.equation.common.dao.beans.AbsRecord;
+
+public class GPEServiceRecordDao extends AbsEquationDao implements IGPEServiceRecordDao
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: GPEServiceRecordDao.java 13723 2012-07-02 09:55:17Z whittap1 $";
+	@Override
+	protected Hashtable<String, AbsRecord> createHashtableRecordModel(List<AbsRecord> records)
+	{
+		throw new NoSuchMethodError("");
+	}
+
+	@Override
+	protected String getFields()
+	{
+		throw new NoSuchMethodError("");
+	}
+
+	@Override
+	protected String getParameterizedFields()
+	{
+		throw new NoSuchMethodError("");
+	}
+
+	@Override
+	protected Object[] getParameterizedFieldsValues()
+	{
+		throw new NoSuchMethodError("");
+	}
+
+	@Override
+	protected String getParameters()
+	{
+		throw new NoSuchMethodError("");
+	}
+
+	@Override
+	protected String getWhereConditionBaseOnIdRecord()
+	{
+		throw new NoSuchMethodError("");
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Map<String, Object>> getBalances(String unit, String system)
+	{
+		List<Map<String, Object>> balances = null;
+
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT GJCCY, SUM(GJBAL) AS OPENINGBALANCE, '");
+		sql.append(unit);
+		sql.append("' AS UNIT, '");
+		sql.append(system);
+		sql.append("' AS SYSTEM ");
+		sql.append("FROM GJ03LF ");
+		sql.append("WHERE GJVST = '1' ");
+		sql.append("GROUP BY GJCCY");
+
+		balances = getJdbcTemplate().queryForList(sql.toString());
+
+		return balances;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Map<String, Object>> getOvernightPositions(String yDate, String pDate, String unit, String system)
+	{
+		List<Map<String, Object>> overnightPositions = null;
+
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT GJCCY, (SUM(OPNWP) - SUM(OPNWR)) AS TOTALPOSFORCURRENCY, '");
+		sql.append(unit);
+		sql.append("' AS UNIT, '");
+		sql.append(system);
+		sql.append("' AS SYSTEM ");
+		sql.append("FROM GJ03LF AS A, OP01LF AS B ");
+		sql.append("WHERE A.GJNST = B.OPNST ");
+		sql.append("AND A.GJVST = '1' AND A.GJBAL <> 0 ");
+		sql.append("AND B.OPDTE > '");
+		sql.append(yDate);
+		sql.append("' AND B.OPDTE < '");
+		sql.append(pDate);
+		sql.append("' GROUP BY GJCCY");
+
+		overnightPositions = getJdbcTemplate().queryForList(sql.toString());
+
+		return overnightPositions;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Map<String, Object>> getOvernightPostings(String yDate, String pDate, String unit, String system)
+	{
+		List<Map<String, Object>> overnightPostings = null;
+
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT GJCCY, SUM(SAAMA) AS POSTBAL, '");
+		sql.append(unit);
+		sql.append("' AS UNIT, '");
+		sql.append(system);
+		sql.append("' AS SYSTEM ");
+		sql.append("FROM GJ03LF AS A, SA18LF AS B ");
+		sql.append("WHERE A.GJABF = B.SAAB AND A.GJANF = B.SAAN AND A.GJASF = B.SAAS ");
+		sql.append("AND A.GJVST = '1' AND A.GJBAL <> 0 ");
+		sql.append("AND B.SAPOD = '");
+		sql.append(pDate);
+		sql.append("' AND B.SAVFR > '");
+		sql.append(yDate);
+		sql.append("' AND B.SAVFR < '");
+		sql.append(pDate);
+		sql.append("' GROUP BY GJCCY");
+
+		overnightPostings = getJdbcTemplate().queryForList(sql.toString());
+
+		return overnightPostings;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Map<String, Object>> getPositionsByDate(String maxDate, String unit, String system)
+	{
+		List<Map<String, Object>> positionsByDate = null;
+
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT GJCCY, OPDTE, (SUM(OPNWR) - SUM(OPNWP)) AS POS, '");
+		sql.append(unit);
+		sql.append("' AS UNIT, '");
+		sql.append(system);
+		sql.append("' AS SYSTEM ");
+		sql.append("FROM GJ03LF AS A, OP01LF AS B ");
+		sql.append("WHERE A.GJNST = B.OPNST ");
+		sql.append("AND A.GJVST = '1' ");
+		sql.append("AND B.OPDTE <= '");
+		sql.append(maxDate);
+		sql.append("' GROUP BY GJCCY, OPDTE");
+
+		positionsByDate = getJdbcTemplate().queryForList(sql.toString());
+
+		return positionsByDate;
+	}
+
+	public List<AbsRecord> getRecordBy(String whereClause)
+	{
+		throw new NoSuchMethodError("");
+	}
+
+	public List<AbsRecord> getRecords()
+	{
+		throw new NoSuchMethodError("");
+	}
+}

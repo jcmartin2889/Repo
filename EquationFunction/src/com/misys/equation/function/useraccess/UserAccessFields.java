@@ -1,0 +1,197 @@
+package com.misys.equation.function.useraccess;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationLogin;
+import com.misys.equation.common.access.EquationUser;
+import com.misys.equation.function.runtime.FunctionHandlerData;
+import com.misys.equation.function.tools.FunctionRuntimeToolbox;
+
+/**
+ * This class will contain pre-defined user access fields.
+ * 
+ * It determines whether a field name is a valid pre-defined field and returns the appropriate field value found in the
+ * FunctionHandlerData for a specific pre-defined field
+ * 
+ */
+public class UserAccessFields
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: UserAccessFields.java 11258 2011-06-22 03:06:12Z yzobdabu $";
+
+	// NOTE: If any new pre-defined fields are added, please ensure that the Service Composer User Guide is updated to include these
+	// new pre-defined fields
+	/** Pre-defined field name for EQ User Id */
+	public static final String EQ_USER_ID = "EQ_USER_ID";
+
+	/** Pre-defined field name for EQ User Password */
+	public static final String EQ_USER_PWD = "EQ_USER_PWD";
+
+	/** Pre-defined field name for EQ User Branch */
+	public static final String EQ_USER_BRANCH = "EQ_USER_BRANCH";
+
+	/** List of pre-defined user access fields */
+	private static Map<String, String> userAccessFields = null;
+
+	/** Default Length of User Access Fields */
+	private static int DEFAULT_USER_ACCESS_FIELD_MAX_LENGTH = 50;
+
+	/** The FunctionHandlerData */
+	private final FunctionHandlerData fhd;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param fhd
+	 */
+	public UserAccessFields(FunctionHandlerData fhd)
+	{
+		this.fhd = fhd;
+	}
+
+	/**
+	 * Retrieve the field value from the function handler data based on the user pre-defined field names
+	 * 
+	 * @param fieldName
+	 * @return field value
+	 */
+	public String getFieldValue(String fieldName)
+	{
+		// If fhd is null or the equation user is not initialized return empty string
+		if (fhd == null || fhd.getEquationUser() == null)
+		{
+			return "";
+		}
+
+		String fieldValue = null;
+		EquationUser eqUser = fhd.getEquationUser();
+		if (EQ_USER_ID.equalsIgnoreCase(fieldName))
+		{
+			// Get the user Id
+			fieldValue = eqUser.getUserId();
+		}
+		else if (EQ_USER_PWD.equalsIgnoreCase(fieldName))
+		{
+			// Get the user password, we need the mapper to encrypt the password
+			fieldValue = getUserPassword();
+		}
+		else if (EQ_USER_BRANCH.equalsIgnoreCase(fieldName))
+		{
+			// Get the input branch
+			fieldValue = eqUser.getInputBranch();
+		}
+		else
+		{
+			fieldValue = "";
+		}
+
+		return fieldValue;
+	}
+	/**
+	 * Returns the User Id
+	 * 
+	 * @return User Id
+	 */
+	public String getUserId()
+	{
+		if (fhd == null || fhd.getEquationUser() == null)
+		{
+			return "";
+		}
+
+		return fhd.getEquationUser().getUserId();
+	}
+
+	/**
+	 * Returns the User Password
+	 * 
+	 * @return User Password
+	 */
+	public String getUserPassword()
+	{
+		if (fhd == null || fhd.getEquationUser() == null)
+		{
+			return "";
+		}
+
+		EquationLogin eqLogin = EquationCommonContext.getContext().getEquationLogin(fhd.getFunctionInfo().getSessionId());
+		if (eqLogin == null)
+		{
+			return "";
+		}
+
+		return FunctionRuntimeToolbox.getPassword(fhd.getEquationUser().getUserId(), eqLogin);
+
+	}
+	/**
+	 * Returns the User Branch
+	 * 
+	 * @return User Branch
+	 */
+	public String getUserBranch()
+	{
+		if (fhd == null || fhd.getEquationUser() == null)
+		{
+			return "";
+		}
+
+		return fhd.getEquationUser().getInputBranch();
+	}
+
+	/**
+	 * Checks if the field name is a pre-defined user access field
+	 * 
+	 * @param fieldName
+	 * @return true if field exists, otherwise false
+	 */
+	public static boolean isFieldExists(String fieldName)
+	{
+		if (userAccessFields == null)
+		{
+			userAccessFields = new HashMap<String, String>();
+
+			Class<?> userAccessFieldClass = UserAccessFields.class;
+			for (Field field : userAccessFieldClass.getFields())
+			{
+				if (field.getModifiers() == Modifier.PUBLIC + Modifier.STATIC + Modifier.FINAL
+								&& !field.getName().equals("_revision"))
+				{
+					userAccessFields.put(field.getName(), "");
+				}
+			}
+		}
+
+		if (userAccessFields.containsKey(fieldName.trim()))
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Returns the maximum length of the field
+	 * 
+	 * @param fieldName
+	 * @return
+	 */
+	public static int getMaximumLengthSC(String fieldName)
+	{
+		// This is use by Service Composer when validating script expression. SC auto-generates a dummy binding string when
+		// validating the script expression, and the length of this binding string will corresponds to the length return by this
+		// method:
+		//
+		// For date or numeric field value, this will return the actual date field length (e.g. 7) or the maximum number of digit
+		// that it can accommodate (or the maximum number of digit of 20, whichever is less).
+		// For alpha-numeric field value, if the value can be more than 50, then you should return the actual field length value.
+		// For other, use your discretion if you need to return the actual maximum field length value.
+
+		return DEFAULT_USER_ACCESS_FIELD_MAX_LENGTH;
+	}
+
+}

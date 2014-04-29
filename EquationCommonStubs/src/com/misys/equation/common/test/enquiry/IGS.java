@@ -1,0 +1,45 @@
+package com.misys.equation.common.test.enquiry;
+
+import com.misys.equation.common.access.EquationStandardListEnquiry;
+import com.misys.equation.common.test.EquationTestCase;
+
+/**
+ * 
+ */
+public class IGS extends EquationTestCase // Subtotal Breakdown Enquiry
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: IGS.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	private EquationStandardListEnquiry listEnquiry;
+
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+
+		/*
+		 * Get the enquiry class - you'll need to enter the name of the enquiry program e.g. H68EER
+		 */
+		listEnquiry = getEquationStandardListEnquiry("N67DER");
+	}
+
+	public void testRetrieve() throws Exception
+	{
+		/*
+		 * Set up the key fields required for the enquiry
+		 */
+		listEnquiry.setFieldValue("HZCUS", "ATLANT"); // Customer mnemonic (6A)
+		listEnquiry.setFieldValue("HZCLC", "IND"); // Customer location (3A)
+		listEnquiry.setFieldValue("HZPC", "RG011"); // Profit category (5A)
+		listEnquiry.setFieldValue("HZPSTD", "0990101"); // Period start date (7S,0)
+		listEnquiry.setFieldValue("HZPETD", "1001231"); // Period end date (7S,0)
+		listEnquiry.setFieldValue("HZPRT", "4"); // Profit type (1A)
+		listEnquiry.setFieldValue("HZMODE", "C"); // Customer/Group mode (1A)
+		listEnquiry.setFieldValue("HZPSTR", "CORP"); // Profit structure (5A)
+
+		/*
+		 * See if it works
+		 */
+		assertTestStandardListEnquiry(listEnquiry, true);
+	}
+}

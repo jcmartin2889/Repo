@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="resources"/>
+	<classpathentry kind="src" path="gensrc"/>
+	<classpathentry kind="src" path="bin"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/EquationCommon"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/EquationFunction"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/EquationBankFusionStubs"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/EquationCommonStubs"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/EquationBankFusionClient"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/EquationBankFusionServer"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ExternalJars"/>
+	<classpathentry kind="lib" path="/ExternalJars/lib/wmq_libs/com.ibm.mqjms.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

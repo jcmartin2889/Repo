@@ -1,0 +1,94 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseFully;
+
+/**
+ * Equation test cases for Add/Maintain DD Origination
+ */
+public class ADO extends EquationTestCaseFully
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	String programName = "Q71FRR";
+	String optionId = "ADO";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		retrieveBeforeCancel = true;
+
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZCUS", "B00002"); // Customer mnemonic (6A)
+		transaction.setFieldValue("GZCLC", "001"); // Customer location (3A)
+		transaction.setFieldValue("GZREF", "C"); // Originators reference (20A)
+		transaction.setFieldValue("GZLNP", "CAP "); // Loan type (3A)
+		transaction.setFieldValue("GZLNR", "CAP4"); // Loan reference (13A)
+		transaction.setFieldValue("GZBRNM", "CUTE"); // Branch mnemonic (4A)
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	@Override
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZPSC", "112233"); // Payers bank sort code (9A)
+		transaction.setFieldValue("GZPAN", "RJL-001"); // Payers a/c at bank (34A)
+		transaction.setFieldValue("GZPNM", "RJL ACC"); // Payers account name (35A)
+		transaction.setFieldValue("GZSTS", "1"); // Instruction status (1A)
+	}
+
+	/**
+	 * Setup the mandatory fields (maintain mode)
+	 */
+	@Override
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+		// use status to hold or delete instruction
+		transaction.setFieldValue("GZSTS", "2"); // Instruction status (1A)
+		transaction.setFieldValue("GZREZN", "ADM"); // Reason for hold (3A)
+
+	}
+
+}

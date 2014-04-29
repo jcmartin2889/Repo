@@ -1,0 +1,213 @@
+package com.misys.equation.function.runtime;
+
+import com.misys.equation.common.utilities.EqDataType;
+import com.misys.equation.common.utilities.Toolbox;
+import com.misys.equation.function.language.LanguageResources;
+
+public class FunctionPrinterFormatter
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	// column position
+	private final static int MAX_COL = 132;
+	private final static int COL_TEXT = 1;
+	private final static int COL_AFT_IN = 31;
+	private final static int COL_AFT_OUT = COL_AFT_IN + 10;
+	private final static int COL_BEF_IN = 82;
+	private final static int COL_BEF_OUT = COL_BEF_IN + 10;
+
+	// empty line
+	private final static String NEWLINE = Toolbox.pad("", MAX_COL);
+
+	// generate a string buffer
+	private StringBuffer line = new StringBuffer(NEWLINE);
+
+	/**
+	 * Default constructor
+	 */
+	public FunctionPrinterFormatter()
+	{
+	}
+
+	/**
+	 * Return the line
+	 * 
+	 * @return the line
+	 */
+	public String markEOL()
+	{
+		String str = line.toString();
+		line.replace(0, MAX_COL, NEWLINE);
+		return str;
+	}
+
+	/**
+	 * Clear the line
+	 * 
+	 */
+	public void clearLine()
+	{
+		line.replace(0, MAX_COL, NEWLINE);
+	}
+
+	/**
+	 * Print the string
+	 * 
+	 * @param str
+	 *            - a string
+	 */
+	public void print(String str)
+	{
+		int length = str.length();
+
+		// Maximum of 132 only
+		if (length > MAX_COL)
+		{
+			str = str.substring(0, MAX_COL);
+			length = str.length();
+		}
+
+		line.replace(0, length, str);
+	}
+
+	/**
+	 * Print the field title
+	 * 
+	 * @param str
+	 *            - field title
+	 */
+	public void printFieldTitle(String origStr)
+	{
+		String str = origStr.replaceAll(EqDataType.CHARACTER_RETURN, "");
+		int length = str.length();
+		// maximum of this length only
+		if (length > COL_AFT_IN)
+		{
+			length = COL_AFT_IN;
+		}
+
+		line.replace(COL_TEXT, COL_TEXT + length, str.substring(0, length));
+	}
+
+	/**
+	 * Print the function title
+	 * 
+	 * @param str
+	 *            - function title
+	 */
+	public void printRecordName(String recordName, String recordDesc)
+	{
+		String str = LanguageResources.getString("FunctionPrinter.RecordFormatLine") + "  " + recordName + " " + recordDesc;
+		int length = str.length();
+		line.replace(COL_TEXT, COL_TEXT + length, str);
+	}
+
+	/**
+	 * Print the column header
+	 * 
+	 * @param afterImage
+	 *            - true - if displaying the after image
+	 * @param beforeImage
+	 *            - true - if displaying the before image
+	 */
+	public void printColumnHeader(boolean afterImage, boolean beforeImage)
+	{
+		// print the field name title
+		printFieldTitle(LanguageResources.getString("FunctionPrinter.FieldName"));
+
+		// The first column can be after or before image
+		if (beforeImage && !afterImage)
+		{
+			printAfterImage(LanguageResources.getString("FunctionPrinter.BeforeImage"), "");
+		}
+		else
+		{
+			printAfterImage(LanguageResources.getString("FunctionPrinter.AfterImage"), "");
+		}
+
+		// The second column is always for before image
+		if (beforeImage && afterImage)
+		{
+			printBeforeImage(LanguageResources.getString("FunctionPrinter.BeforeImage"), "");
+		}
+	}
+	/**
+	 * Print the after image detail
+	 * 
+	 * @param str1
+	 *            - input value
+	 * @param str2
+	 *            - output value
+	 */
+	public void printAfterImage(String str1, String str2)
+	{
+		printField(COL_AFT_IN, str1, COL_AFT_OUT, str2);
+	}
+
+	/**
+	 * Print the before image detail
+	 * 
+	 * @param str1
+	 *            - input value
+	 * @param str2
+	 *            - output value
+	 */
+	public void printBeforeImage(String str1, String str2)
+	{
+		printField(COL_BEF_IN, str1, COL_BEF_OUT, str2);
+	}
+
+	/**
+	 * Print the input value and output value field
+	 * 
+	 * @param startIdx1
+	 *            - start index of the field input value
+	 * @param str1
+	 *            - input value
+	 * @param startIdx2
+	 *            - start index of the field output value
+	 * @param str2
+	 *            - output value
+	 */
+	private void printField(int startIdx1, String str1, int startIdx2, String str2)
+	{
+		int length = str1.length();
+		line.replace(startIdx1, startIdx1 + length, str1);
+
+		// determine start position of the output text
+		int outputIdx = startIdx2;
+		if (startIdx1 + length > outputIdx)
+		{
+			outputIdx = startIdx1 + length + 1;
+		}
+
+		// determine length of the output text
+		length = str2.length();
+
+		// if it exceeds the maximum column, then truncate it
+		if (outputIdx + length >= MAX_COL)
+		{
+			length = MAX_COL - outputIdx;
+		}
+
+		// exceed length?
+		if (length <= 0)
+		{
+			return;
+		}
+
+		// output the output text
+		line.replace(outputIdx, outputIdx + length, str2.substring(0, length));
+	}
+
+	/**
+	 * Return text for not found
+	 * 
+	 * @return the text for journal not found
+	 */
+	public String rtvJournalNotFound()
+	{
+		return Toolbox.pad(LanguageResources.getString("FunctionPrinter.NoJournalFound"), MAX_COL);
+	}
+}

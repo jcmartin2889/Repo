@@ -1,0 +1,331 @@
+package com.misys.equation.common.dao.beans;
+
+/**
+ * WE2Record data-model.
+ * 
+ * @author yzobdabu
+ * 
+ */
+public class WE2RecordDataModel extends AbsRecord
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private static final long serialVersionUID = 1L;
+
+	private final static String RECORD_NAME = "WE2PF";
+
+	// Table fields
+	private String taskId = ""; // WE2TSK
+	private String sessionId = ""; // WE2SID
+	private String userId = ""; // WE2UID
+	private String optionId = ""; // WE2OID
+	private String transactionId = ""; // WE2TID
+	private String linkedTaskId = ""; // WE2LTK
+	private String linkedSessionId = "";// WE2LSD
+	private String linkedUserId = ""; // WE2LUD
+	private String linkedOptionId = ""; // WE2LOD
+	private String linkedTransactionId = ""; // WE2LTD
+
+	/**
+	 * Construct an empty WE2 record
+	 */
+	public WE2RecordDataModel()
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+	}
+
+	/**
+	 * Construct a WE2 record with the Task Id (WE2TSK)
+	 * 
+	 * @param taskId
+	 *            - the task id
+	 */
+	public WE2RecordDataModel(String taskId)
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+
+		this.taskId = taskId;
+
+	}
+
+	/**
+	 * Construct a WE2 record with the Session Id (WE2SID), User Id (WE2UID), Option Id (WE2OID), Transaction Id (WE2TID)
+	 * 
+	 * @param sessionId
+	 *            - the session Id
+	 * @param userId
+	 *            - the user Id
+	 * @param optionId
+	 *            - the option Id
+	 * @param transactionId
+	 *            - the transaction Id
+	 */
+	public WE2RecordDataModel(String sessionId, String userId, String optionId, String transactionId)
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+
+		this.sessionId = sessionId;
+		this.userId = userId;
+		this.optionId = optionId;
+		this.transactionId = transactionId;
+	}
+
+	/**
+	 * Construct a WE2 record with the Linked Task Id (WE2LTK)
+	 * 
+	 * @param linkedTaskId
+	 *            - the task id
+	 * @param linked
+	 *            - not used
+	 */
+	public WE2RecordDataModel(String linkedTaskId, boolean linked)
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+
+		this.linkedTaskId = linkedTaskId;
+
+	}
+
+	/**
+	 * Construct a WE2 record with the Linked Session Id (WE2LSD), Linked User Id (WE2LUD), Linked Option Id (WE2LOD), Linked
+	 * Transaction Id (WE2LTD)
+	 * 
+	 * @param sessionId
+	 *            - the session Id
+	 * @param userId
+	 *            - the user Id
+	 * @param optionId
+	 *            - the option Id
+	 * @param transactionId
+	 *            - the transaction Id
+	 * @param linked
+	 *            - not used
+	 * 
+	 */
+	public WE2RecordDataModel(String linkedSessionId, String linkedUserId, String linkedOptionId, String linkedTransactionId,
+					boolean linked)
+	{
+		super();
+		setEqFileName(RECORD_NAME);
+
+		this.linkedSessionId = linkedSessionId;
+		this.linkedUserId = linkedUserId;
+		this.linkedOptionId = linkedOptionId;
+		this.linkedTransactionId = linkedTransactionId;
+	}
+
+	/**
+	 * Return the task Id (WE2TSK)
+	 * 
+	 * @return the task id
+	 */
+	public String getTaskId()
+	{
+		return taskId;
+	}
+
+	/**
+	 * Set the task id (WE2TSK)
+	 * 
+	 * @param taskId
+	 *            - the task id
+	 */
+	public void setTaskId(String taskId)
+	{
+		this.taskId = taskId;
+	}
+
+	/**
+	 * Return the session id (WE2SID)
+	 * 
+	 * @return the session id
+	 */
+	public String getSessionId()
+	{
+		return sessionId;
+	}
+
+	/**
+	 * Set the session id (WE2SID)
+	 * 
+	 * @param sessionId
+	 *            - the session id
+	 */
+	public void setSessionId(String sessionId)
+	{
+		this.sessionId = sessionId;
+	}
+
+	/**
+	 * Return the user id (WE2UID)
+	 * 
+	 * @return the user id
+	 */
+	public String getUserId()
+	{
+		return userId;
+	}
+
+	/**
+	 * Return the user id (WE2UID)
+	 * 
+	 * @param userId
+	 *            - the user id
+	 */
+	public void setUserId(String userId)
+	{
+		this.userId = userId;
+	}
+
+	/**
+	 * Return the option id (WE2OID)
+	 * 
+	 * @return the option id
+	 */
+	public String getOptionId()
+	{
+		return optionId;
+	}
+
+	/**
+	 * Return the option id (WE2OID)
+	 * 
+	 * @param optionId
+	 *            - the option id
+	 */
+	public void setOptionId(String optionId)
+	{
+		this.optionId = optionId;
+	}
+
+	/**
+	 * Return the transaction id (WE2TID)
+	 * 
+	 * @return the transaction id
+	 */
+	public String getTransactionId()
+	{
+		return transactionId;
+	}
+
+	/**
+	 * Set the transaction Id (WE2TID)
+	 * 
+	 * @param transactionId
+	 *            - the transaction id
+	 */
+	public void setTransactionId(String transactionId)
+	{
+		this.transactionId = transactionId;
+	}
+
+	/**
+	 * Return the linked task id (WE2LTK)
+	 * 
+	 * @return the linked task id
+	 */
+	public String getLinkedTaskId()
+	{
+		return linkedTaskId;
+	}
+
+	/**
+	 * Set the linked task id (WE2LTK)
+	 * 
+	 * @param linkedTaskId
+	 *            - the linked task id
+	 */
+	public void setLinkedTaskId(String linkedTaskId)
+	{
+		this.linkedTaskId = linkedTaskId;
+	}
+
+	/**
+	 * Return the linked session id (WE2LSD)
+	 * 
+	 * @return the linked session id
+	 */
+	public String getLinkedSessionId()
+	{
+		return linkedSessionId;
+	}
+
+	/**
+	 * Set the linked session id (WE2LSD)
+	 * 
+	 * @param linkedSessionId
+	 *            - the linked session id
+	 */
+	public void setLinkedSessionId(String linkedSessionId)
+	{
+		this.linkedSessionId = linkedSessionId;
+	}
+
+	/**
+	 * Return the linked user id (WE2LUD)
+	 * 
+	 * @return the linked user id
+	 */
+	public String getLinkedUserId()
+	{
+		return linkedUserId;
+	}
+
+	/**
+	 * Set the linked user id (WE2LUD)
+	 * 
+	 * @param linkedUserId
+	 *            - the linked user id
+	 */
+	public void setLinkedUserId(String linkedUserId)
+	{
+		this.linkedUserId = linkedUserId;
+	}
+
+	/**
+	 * Return the linked option id (WE2LOD)
+	 * 
+	 * @return the linked option id
+	 */
+	public String getLinkedOptionId()
+	{
+		return linkedOptionId;
+	}
+
+	/**
+	 * Set the linked option id (WE2LOD)
+	 * 
+	 * @param linkedOptionId
+	 *            - the linked option id
+	 */
+	public void setLinkedOptionId(String linkedOptionId)
+	{
+		this.linkedOptionId = linkedOptionId;
+	}
+
+	/**
+	 * Return the linked transaction id (WE2LTD)
+	 * 
+	 * @return the linked transaction id
+	 */
+	public String getLinkedTransactionId()
+	{
+		return linkedTransactionId;
+	}
+
+	/**
+	 * Set linked transaction id (WE2LTD)
+	 * 
+	 * @param linkedTransactionId
+	 *            - the linked transaction id
+	 */
+	public void setLinkedTransactionId(String linkedTransactionId)
+	{
+		this.linkedTransactionId = linkedTransactionId;
+	}
+
+}

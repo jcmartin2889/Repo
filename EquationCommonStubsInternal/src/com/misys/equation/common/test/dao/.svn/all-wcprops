@@ -1,0 +1,215 @@
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/repos/bfeq_src/!svn/ver/17760/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao
+END
+ACMRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/ACMRecord.java
+END
+TestCustomGAURecordStub.java
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/TestCustomGAURecordStub.java
+END
+OHRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/OHRecord.java
+END
+HPRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/HPRecord.java
+END
+TestCustomNE1RecordStub.java
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/TestCustomNE1RecordStub.java
+END
+JTRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/JTRecord.java
+END
+OC2Record.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/OC2Record.java
+END
+GARecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/GARecord.java
+END
+TestCLDRecordConcurrenceStub.java
+K 25
+svn:wc:ra_dav:version-url
+V 160
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/TestCLDRecordConcurrenceStub.java
+END
+HeaderRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/HeaderRecord.java
+END
+HARecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/HARecord.java
+END
+WARecordOtherConnection.java
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/WARecordOtherConnection.java
+END
+QZRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/QZRecord.java
+END
+ACHRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/ACHRecord.java
+END
+XVRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/XVRecord.java
+END
+WE2Record.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/WE2Record.java
+END
+OCRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/OCRecord.java
+END
+ACNRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/ACNRecord.java
+END
+WEYRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/WEYRecord.java
+END
+WARecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/WARecord.java
+END
+C8Record.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/C8Record.java
+END
+WERecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/WERecord.java
+END
+INORDRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/INORDRecord.java
+END
+GAXRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/GAXRecord.java
+END
+INORHRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/INORHRecord.java
+END
+TestCLDRecordConcurrenceThread.java
+K 25
+svn:wc:ra_dav:version-url
+V 162
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/TestCLDRecordConcurrenceThread.java
+END
+GAZRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/GAZRecord.java
+END
+SessionRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/SessionRecord.java
+END
+GBRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/GBRecord.java
+END
+ACERecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/ACERecord.java
+END
+HBRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/HBRecord.java
+END
+AAIRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/AAIRecord.java
+END
+CHRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/CHRecord.java
+END
+GDRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/GDRecord.java
+END
+IPVRecord.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/repos/bfeq_src/!svn/ver/17760/branches/BFEQ_Branch_3-1/EquationCommonStubsInternal/src/com/misys/equation/common/test/dao/IPVRecord.java
+END

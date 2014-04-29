@@ -1,0 +1,252 @@
+/*
+ * 
+ */
+package com.misys.equation.common.utilities;
+
+import java.beans.IntrospectionException;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+
+import org.apache.commons.betwixt.io.BeanReader;
+import org.apache.commons.betwixt.io.BeanWriter;
+import org.apache.commons.betwixt.schema.Schema;
+import org.apache.commons.betwixt.schema.SchemaTranscriber;
+import org.apache.commons.betwixt.strategy.HyphenatedNameMapper;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.internal.eapi.core.EQRuntimeException;
+
+/**
+ * 
+ */
+public class EqBeanFactory
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EqBeanFactory.java 11234 2011-06-21 06:28:55Z yzobdabu $";
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(EqBeanFactory.class);
+	/** UTF-8 Charset name. Used when encoding/decoding XML */
+	private static final String UTF8_CHARSET = "UTF-8";
+	private static EqBeanFactory singletonEqBeanFactory;
+	private StringWriter outputWriter;
+	/**
+	 * A betwixt mapping document for processing Layout de-serialization.
+	 * <p>
+	 * This handles the polymorphic processing of the DisplayItemList collection which can contain either DisplayAttributes or
+	 * DisplayGroup items.
+	 * 
+	 */
+	private static final String LAYOUT_MAPPING = "<?xml version='1.0'?>" + "<betwixt-config>"
+					+ "  <class name='com.misys.equation.function.beans.DisplayAttributesSet'>"
+					+ "    <element name='DisplayAttributesSet'>"
+					+ "       <element name='displayItems' property='displayItems' updater='setDisplayItems'/>"
+					+ "     <addDefaults/>" + "     </element>" + "  </class>"
+
+					+ "  <class name='com.misys.equation.function.beans.DisplayAttributes'>"
+					+ "    <element name='DisplayAttributes'>" + "    <addDefaults/>" + " </element>" + "  </class>"
+
+					+ "  <class name='com.misys.equation.function.beans.DisplayLabel'>" + "    <element name='DisplayLabel'>"
+					+ "    <addDefaults/>" + " </element>" + "  </class>"
+
+					+ "  <class name='com.misys.equation.function.beans.DisplayGroup'>" + "    <element name='DisplayGroup'>"
+					+ "      <element name='displayItems' property='displayItems' updater='setDisplayItems'/>"
+					+ "    <addDefaults/>" + " </element>" + "  </class>"
+
+					+ "  <class name='com.misys.equation.function.beans.DisplayButtonLink'>"
+					+ "    <element name='DisplayButtonLink'>" + "    <addDefaults/>" + " </element>" + "  </class>"
+
+					+ "</betwixt-config>";
+
+	/*
+	 * Constructor
+	 */
+	private EqBeanFactory()
+	{
+	}
+	/*
+	 * Get the singleton context
+	 */
+	public static synchronized EqBeanFactory getEqBeanFactory()
+	{
+		if (singletonEqBeanFactory == null)
+		{
+			singletonEqBeanFactory = new EqBeanFactory();
+		}
+		return singletonEqBeanFactory;
+	}
+	/*
+	 * Protect against cloning
+	 */
+	@Override
+	public Object clone() throws CloneNotSupportedException
+	{
+		throw new CloneNotSupportedException();
+		// that'll teach 'em
+	}
+	private BeanReader getBeanReader()
+	{
+		BeanReader beanReader = new BeanReader();
+		beanReader.getXMLIntrospector().getConfiguration().setAttributesForPrimitives(true);
+		beanReader.getBindingConfiguration().setMapIDs(false);
+		return beanReader;
+	}
+	private BeanWriter getBeanWriter()
+	{
+		outputWriter = new StringWriter();
+		BeanWriter beanWriter = new BeanWriter(outputWriter);
+		beanWriter.getXMLIntrospector().getConfiguration().setAttributesForPrimitives(true);
+		beanWriter.getBindingConfiguration().setMapIDs(false);
+		beanWriter.enablePrettyPrint();
+		beanWriter.setInitialIndentLevel(0);
+		return beanWriter;
+	}
+
+	public synchronized Object deserialiseXMLAsBean(String beanAsXML, Class beanClass) throws EQException
+	{
+		Object bean = null;
+		StringReader xmlStringReader = new StringReader(beanAsXML);
+		bean = deserialiseXMLAsBean(xmlStringReader, beanClass);
+		return bean;
+	}
+	/**
+	 * Deserialises a bean from XML from the supplied reader
+	 * 
+	 * @param reader
+	 *            A reader
+	 * @param beanClass
+	 *            the Class of the bean to create
+	 * @return Object - the deserialised Bean object
+	 * @throws EQException
+	 */
+	public synchronized Object deserialiseXMLAsBean(Reader reader, Class<?> beanClass) throws EQException
+	{
+		Object bean = null;
+		try
+		{
+			BeanReader beanReader = getBeanReader();
+			if (beanClass.getSimpleName().equals("Layout"))
+			{
+				// Special processing for layouts to handle the
+				// polymorphic collection
+				StringReader mapping = new StringReader(LAYOUT_MAPPING);
+				beanReader.registerMultiMapping(new InputSource(mapping));
+			}
+			beanReader.registerBeanClass(beanClass.getSimpleName(), beanClass);
+			bean = beanReader.parse(reader);
+		}
+		catch (IntrospectionException e)
+		{
+			throw new EQException(e);
+		}
+		catch (IOException e)
+		{
+			throw new EQException(e);
+		}
+		catch (SAXException e)
+		{
+			throw new EQException(e);
+		}
+
+		// If the XML is invalid (e.g. top level element is incorrect, then can get a
+		// null result:
+		if (bean == null)
+		{
+			throw new RuntimeException("Failed to deserialise " + beanClass.getSimpleName() + " from the xml file");
+		}
+		return bean;
+	}
+
+	// TODO is it OK ?!
+	public synchronized String serialiseBeanAsXML(Object bean) throws EQException
+	{
+		String beanXML = "";
+		try
+		{
+			getBeanWriter().write(bean.getClass().getSimpleName(), bean);
+			beanXML = outputWriter.toString().trim();
+		}
+		catch (IntrospectionException e)
+		{
+			throw new EQException(e);
+		}
+		catch (IOException e)
+		{
+			throw new EQException(e);
+		}
+		catch (SAXException e)
+		{
+			throw new EQException(e);
+		}
+		return beanXML;
+	}
+	public String serialiseBeanAsXSD(Object bean)
+	{
+		String xsd = "";
+		try
+		{
+			SchemaTranscriber transcriber = new SchemaTranscriber();
+			transcriber.getXMLIntrospector().getConfiguration().setElementNameMapper(new HyphenatedNameMapper());
+			transcriber.getXMLIntrospector().getConfiguration().setAttributeNameMapper(new HyphenatedNameMapper());
+			transcriber.getXMLIntrospector().getConfiguration().setAttributesForPrimitives(true);
+			transcriber.getXMLIntrospector().getConfiguration().setWrapCollectionsInElement(false);
+			Schema schema = transcriber.generate(bean.getClass());
+			StringWriter out = new StringWriter();
+			out.write("< ?xml version='1.0'? >");
+			BeanWriter writer = new BeanWriter(out);
+			writer.setBindingConfiguration(transcriber.createSchemaBindingConfiguration());
+			writer.getXMLIntrospector().setConfiguration(transcriber.createSchemaIntrospectionConfiguration());
+			writer.write(schema);
+			xsd = out.getBuffer().toString();
+		}
+		catch (IntrospectionException e)
+		{
+			LOG.error("serialiseBeanAsXSD", e);
+		}
+		catch (IOException e)
+		{
+			LOG.error("serialiseBeanAsXSD", e);
+		}
+		catch (SAXException e)
+		{
+			LOG.error("serialiseBeanAsXSD", e);
+		}
+		return xsd;
+	}
+
+	/**
+	 * This method de-serialises a bean from the supplied File object.
+	 * 
+	 * @param file
+	 *            A File containing the XML to deserialise. The file contents must be in UTF-8.
+	 * @param clazz
+	 *            The expected bean class
+	 * @return The bean object
+	 */
+	public static Object getBean(File file, Class<?> clazz)
+	{
+		Object result = null;
+		Reader reader;
+		try
+		{
+			InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), UTF8_CHARSET);
+			reader = new BufferedReader(inputStreamReader);
+
+			EqBeanFactory beanFactory = EqBeanFactory.getEqBeanFactory();
+			result = beanFactory.deserialiseXMLAsBean(reader, clazz);
+		}
+		catch (Exception e)
+		{
+			LOG.error("getBean", e);
+			throw new EQRuntimeException(e);
+		}
+		return result;
+	}
+}

@@ -1,0 +1,121 @@
+package com.misys.equation.common.dao.beans;
+
+import java.util.Map;
+
+public class GFETotalPerDateDataModel extends AbsRecord
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: GFETotalPerDateDataModel.java 10556 2011-02-25 13:23:15Z WRIGHTP1 $";
+	/**
+	 * Serial UID
+	 */
+	private static final long serialVersionUID = -5372958223809553063L;
+
+	private String currency;
+	private long overnightPosition;
+	private long netForwardPosition;
+	private long netPositionToYesterday;
+	private Map<String, Long> netDailyPositions;
+	private long netPositionToDate;
+	private long openPosition;
+	private long forwardPosition;
+
+	public GFETotalPerDateDataModel(String currency, Map<String, Long> days)
+	{
+		this.currency = currency;
+		this.netDailyPositions = days;
+	}
+
+	public GFETotalPerDateDataModel(String currency, long overnightPosition, long netForwardPosition, long netPositionToYesterday,
+					long[] netDailyPositions, long netPositionToDate, long openPosition, long forwardPosition)
+	{
+		super();
+		this.currency = currency;
+		this.overnightPosition = overnightPosition;
+		this.netForwardPosition = netForwardPosition;
+		this.netPositionToYesterday = netPositionToYesterday;
+		this.netPositionToDate = netPositionToDate;
+		this.openPosition = openPosition;
+		this.forwardPosition = forwardPosition;
+	}
+
+	public String getCurrency()
+	{
+		return currency;
+	}
+
+	public void setCurrency(String currency)
+	{
+		this.currency = currency;
+	}
+
+	public long getOvernightPosition()
+	{
+		return overnightPosition;
+	}
+
+	public void setOvernightPosition(long overnightPosition)
+	{
+		this.overnightPosition = overnightPosition;
+	}
+
+	public long getNetForwardPosition()
+	{
+		return netForwardPosition;
+	}
+
+	public void setNetForwardPosition(long netForwardPosition)
+	{
+		this.netForwardPosition = netForwardPosition;
+	}
+
+	public long getNetPositionToYesterday()
+	{
+		return netPositionToYesterday;
+	}
+
+	public void setNetPositionToYesterday(long netPositionToYesterday)
+	{
+		this.netPositionToYesterday = netPositionToYesterday;
+	}
+
+	public Map<String, Long> getNetDailyPositions()
+	{
+		return netDailyPositions;
+	}
+
+	public void setNetDailyPositions(Map<String, Long> netDailyPositions)
+	{
+		this.netDailyPositions = netDailyPositions;
+	}
+
+	public long getNetPositionToDate()
+	{
+		return netPositionToDate;
+	}
+
+	public void setNetPositionToDate(long netPositionToDate)
+	{
+		this.netPositionToDate = netPositionToDate;
+	}
+
+	public long getOpenPosition()
+	{
+		return openPosition;
+	}
+
+	public void setOpenPosition(long openPosition)
+	{
+		this.openPosition = openPosition;
+	}
+
+	public long getForwardPosition()
+	{
+		return forwardPosition;
+	}
+
+	public void setForwardPosition(long forwardPosition)
+	{
+		this.forwardPosition = forwardPosition;
+	}
+}

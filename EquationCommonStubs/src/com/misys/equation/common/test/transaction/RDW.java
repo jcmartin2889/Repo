@@ -1,0 +1,102 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseAddMore;
+
+/**
+ * Equation test cases for Maintain function
+ */
+public class RDW extends EquationTestCaseAddMore
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: RDW.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	String programName = "J42ARR";
+	String optionId = "RDW";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZDLP", "XXX"); // Deal type (3A)
+		transaction.setFieldValue("GZDLR", "EQ4-XXX-99"); // Deal reference (13A)
+		transaction.setFieldValue("GZBRNM", "LOND"); // Branch mnemonic (4A)
+		transaction.setFieldValue("GZEXT", "N"); // External? (1A)
+	}
+
+	/**
+	 * Setup an existing key fields
+	 */
+	@Override
+	public void setupExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZDLP", "RT2"); // Deal type (3A)
+		transaction.setFieldValue("GZDLR", "RDS-BACK-4-2"); // Deal reference (13A)
+		transaction.setFieldValue("GZBRNM", "LOND"); // Branch mnemonic (4A)
+		transaction.setFieldValue("GZEXT", "N"); // External? (1A)
+	}
+
+	/**
+	 * Setup the mandatory fields
+	 */
+	@Override
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZCCD1", "AD"); // Charge code 1 (2A)
+		transaction.setFieldValue("GZPAM1", "1500"); // Charge amount 1 (15P,0)
+		transaction.setFieldValue("GZPRTC", "N"); // Print confirmation now? (1A)
+		transaction.setFieldValue("GZPSIF", "N"); // Pay separate interest (1A)
+		transaction.setFieldValue("GZCCY1", "USD"); // Principal withdrawal currency (3A)
+		transaction.setFieldValue("GZCWF1", "N"); // Principal cash withdrawal? (1A)
+		transaction.setFieldValue("GZAB", "1000"); // Withdrawal amount transfer a/c branch (4A)
+		transaction.setFieldValue("GZAN", "500078"); // Withdrawal amount transfer a/c basic number (6A)
+		transaction.setFieldValue("GZAS", "001"); // Withdrawal amount transfer a/c suffix (3A)
+		/*
+		 * A bug in J42ARR means that the following fields must be specified for external input. There are retrieved from OT record
+		 * in J42AVR but then 'lost' in J42ARR.
+		 */
+		 //transaction.setFieldValue("GZPCCY", "USD"); // Deal currency (3A)
+		 //transaction.setFieldValue("GZSDTE", "0991204"); // Start date (7S,0)
+		 //transaction.setFieldValue("GZMDT", "1000104"); // Maturity date (7S,0)
+	}
+
+}

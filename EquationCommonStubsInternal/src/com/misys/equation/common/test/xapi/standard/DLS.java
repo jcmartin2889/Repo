@@ -1,0 +1,89 @@
+/*
+ * This sample code is provided by Misys for illustrative purposes only.
+ * 
+ * These examples have not been thoroughly tested under all conditions.
+ * 
+ * Misys, therefore, cannot guarantee or imply reliability, serviceability, or function of these programs.
+ * 
+ * All programs contained herein are provided to you "AS IS" without any warranties of any kind. The implied warranties of
+ * non-infringement, merchantability and fitness for a particular purpose are expressly disclaimed.
+ */
+package com.misys.equation.common.test.xapi.standard;
+
+import com.misys.equation.common.access.EquationStandardListEnquiry;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.test.TestEnvironment;
+
+// *************************************************************************************************
+/**
+ * 
+ * 
+ */
+// *************************************************************************************************
+public class DLS
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: DLS.java 11310 2011-06-27 12:20:21Z ESTHER.WILLIAMS $";
+	String inputBrnmStr = "0001";
+	String customerMnemonic = "ATLANT";
+	String customerLocation = "IND";
+	EquationStandardSession session;
+	long startTime = System.currentTimeMillis();
+	long currentTime = startTime;
+	// *********************************************************************************************
+	/**
+	 * 
+	 */
+	// *********************************************************************************************
+	private DLS()
+	{
+		try
+		{
+			session = TestEnvironment.getTestEnvironment().getStandardSession();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+	public static void main(String[] inputParameters)
+	{
+		DLS test = new DLS();
+		test.test();
+	}
+	// *********************************************************************************************
+	/**
+	 * 
+	 */
+	// *********************************************************************************************
+	public void test()
+	{
+		// Have a bash...
+		try
+		{
+			// Get us an empty customer transaction class
+			EquationStandardListEnquiry dealSummaryEnquiry = new EquationStandardListEnquiry("DLSDER", session);
+			// Set some transaction fields up
+
+			/* dealSummaryEnquiry.setFieldValue("HZCPNC","123467"); */
+
+			dealSummaryEnquiry.setFieldValue("HZCUS", customerMnemonic);
+			dealSummaryEnquiry.setFieldValue("HZCLC", customerLocation);
+
+			/*
+			 * dealSummaryEnquiry.setFieldValue("HZBBNR","    "); dealSummaryEnquiry.setFieldValue("HZCCYR","USD");
+			 * dealSummaryEnquiry.setFieldValue("HZCEDR","2"); dealSummaryEnquiry.setFieldValue("HZCUN","Atlantic Industrial PLC");
+			 * dealSummaryEnquiry.setFieldValue("HZCUNA",""); dealSummaryEnquiry.setFieldValue("HZCTP","AB");
+			 */
+			dealSummaryEnquiry = session.executeListEnquiry(dealSummaryEnquiry);
+
+			System.out.println(dealSummaryEnquiry.toString());
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.toString());
+			// Rollback any transactions for the unit
+		}
+	}
+}

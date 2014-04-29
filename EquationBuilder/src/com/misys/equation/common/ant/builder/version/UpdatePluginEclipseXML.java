@@ -1,0 +1,431 @@
+package com.misys.equation.common.ant.builder.version;
+
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.StringWriter;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import com.misys.equation.common.ant.builder.core.EquationLogger;
+import com.misys.equation.common.ant.builder.helpers.FileHelper;
+
+/**
+ * 
+ * @author DeRoset
+ *
+ */
+public class UpdatePluginEclipseXML
+{
+	
+	// This attribute is used to store cvs version information.
+		public static final String _revision = "$Id: UpdatePluginEclipseXML.java 12460 2012-01-13 14:24:55Z deroset $";
+		/**
+		 * Logger for this class
+		 */
+		private static final EquationLogger LOG = new EquationLogger(UpdatePluginEclipseXML.class);
+		private static UpdatePluginEclipseXML  currentInstance;
+		private String newEQVersionNumber;
+		private String previousEQVesionNumber;
+		//This is the path of the plugin.xml file.
+		private String pluginXmlFilePath=null;
+		//This is the plugin.xml file File instance.
+		private File pluginXmlFile;
+		private Document xmlDocument=null;
+		
+		
+		/**
+		 * private default constructor. 
+		 */
+		private UpdatePluginEclipseXML()
+		{
+
+		}
+		
+		/**
+		 * This method will return the only instance of <code>UpdatePluginEclipseXML</code>
+		 * @param newEQVersionNumber this is the new EQ version number that will be set in the jar name.
+		 * @param previousEQVesionNumber this is the old EQ version number to be updated.
+		 * @return the only instance of <code>UpdatePluginEclipseXML</code>
+		 */
+		public static UpdatePluginEclipseXML getInstance(String newEQVersionNumber,String previousEQVesionNumber)
+		{
+
+			synchronized (FileHelper.class)
+			{
+				if (currentInstance == null)
+				{
+					currentInstance = new UpdatePluginEclipseXML();
+					currentInstance.setNewEQVersionNumber(newEQVersionNumber);
+					currentInstance.setPreviousEQVesionNumber(previousEQVesionNumber);
+				}
+			}
+			return currentInstance;
+		}
+		
+
+		
+		public void processEclipsePluginXML(){
+			
+			loadProperties(pluginXmlFilePath);
+			iterateXmlFile();
+			writeXMLFile();
+		}
+		
+		
+		/**
+		 * This method will load the eclipse xml plugin file  in a <code>UpdatePluginEclipseXML</code> instance.
+		 * @param pluginXmlfilePath this is the file path to be loaded. 
+		 */
+		private void  loadProperties(String pluginXmlfilePath) {
+			
+			
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			
+			try {
+				pluginXmlFile = new File(pluginXmlfilePath);
+				DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+				xmlDocument= docBuilder.parse(pluginXmlFile);
+				
+			}catch (ParserConfigurationException parserConfigurationException) {
+				
+				if (LOG.isErrorEnabled())
+				{
+					LOG.error(new StringBuilder("There was a problem performing docFactory.newDocumentBuilder()").append(pluginXmlfilePath).toString(),parserConfigurationException);
+				}
+				
+			}catch (Exception exception) {
+				
+				if (LOG.isErrorEnabled())
+				{
+					LOG.error(new StringBuilder("There was a problem opening the file:"  ).append(pluginXmlfilePath).toString(),exception);
+				}
+			}
+		
+		}
+		
+		
+		/**
+		 * This method will iterate the eclipse plugin xml file and add the new version number.</br>
+		 *  It will update the version attribute in the following xml and add a new <project-facet-version> with the old version number 
+		 *   
+		 *   xml tags to be updated.
+		 *   <extension point="org.eclipse.wst.common.project.facet.core.facets"> 
+		 *   <project-facet-version facet="equation.desktop.facet" version="newEqVersionNumber"> .
+		 *   	<action id="equation.desktop.install" type="INSTALL" version="newEqVersionNumber"/>
+		 *   	...
+		 *   <project-facet-version/>
+		 *   <extension/> 
+		 *   <extension point="org.eclipse.wst.common.project.facet.core.runtimes"> 
+		 *   	<supported>
+		 * 	      <facet id="equation.desktop.facet" version="newEqVersionNumber"/>
+		 *   	<supported/>
+		 *   <extension/>
+		 *   
+		 */
+		private void iterateXmlFile(){
+			
+			Node currentExtensionNode=null;
+			NamedNodeMap extensionAttributes=null; 
+			Node pointAttribute=null;
+			String currentPointValue=null;
+			
+			Node rootElement = xmlDocument.getFirstChild();
+			Node pluginNode = rootElement.getNextSibling();
+			NodeList extensionNodeLIst =pluginNode.getChildNodes();
+									
+			for(int index=0; index<extensionNodeLIst.getLength(); index++){
+		      
+		     currentExtensionNode = extensionNodeLIst.item(index); 
+		     		     
+		     if (currentExtensionNode.getNodeName() == "extension") {
+		         
+		    	  extensionAttributes = currentExtensionNode.getAttributes();
+		    	  pointAttribute=extensionAttributes.getNamedItem("point");
+		    	  currentPointValue=pointAttribute.getNodeValue();
+		    	  
+		    	  //This line check if the current extension is the facets of type.
+		    	  //<extension point="org.eclipse.wst.common.project.facet.core.facets">
+		    	  if(currentPointValue.contains("org.eclipse.wst.common.project.facet.core.facets")){
+		    		 
+		    		  processExtensionProjectFacetNodes(currentExtensionNode);
+		    	  }
+		    	  
+		    	  
+		    	  //This line check if the current extension is the facets of type.
+		    	  //<extension point="org.eclipse.wst.common.project.facet.core.runtimes">
+		    	  if(currentPointValue.contains("org.eclipse.wst.common.project.facet.core.runtimes")){
+		    		 
+		    		  processExtensionProjectFacetCoreRuntimesNodes(currentExtensionNode);
+		    	  }
+		      }
+		    
+			}
+
+			StringBuilder message = new StringBuilder();
+			message.append(currentExtensionNode.getNodeName());
+			message.append("\r\t");
+			message.append(pointAttribute.getNodeName());
+			message.append("=");
+			message.append(pointAttribute.getNodeValue());
+			message.append("\r\t");
+			System.out.println(message.toString());
+		}
+		
+		/**
+		 * 
+		 * @param currentExtensionNode this is a node representation of the current <extension> tag.
+		 */
+		private void processExtensionProjectFacetCoreRuntimesNodes(Node currentExtensionNode){
+			
+			
+			Node currentExtensionChildNode=null;
+			Node facetNode=null;
+			
+			NamedNodeMap facetNodeAttributes=null;
+			Node facetNodeAttribute=null;
+			
+			
+			NodeList projectFacetVersionNodeList =currentExtensionNode.getChildNodes();
+			
+			for(int index=0; index< projectFacetVersionNodeList.getLength(); index++){
+				
+				currentExtensionChildNode = projectFacetVersionNodeList.item(index); 
+				
+				if (currentExtensionChildNode.getNodeName() == "supported"){					
+					
+					facetNode=	currentExtensionChildNode.getFirstChild();
+					facetNodeAttributes = facetNode.getNextSibling().getAttributes();
+					facetNodeAttribute=facetNodeAttributes.getNamedItem("version");
+					facetNodeAttribute.setNodeValue(newEQVersionNumber);
+				}	
+			}
+		}
+		
+		/**
+		 * This method will process the current <extension point="org.eclipse.wst.common.project.facet.core.facets"> and update its contents.
+		 * @param currentExtensionNode this is a node representation of the current <extension> tag. 
+		 */
+		private void processExtensionProjectFacetNodes(Node currentExtensionNode){
+			
+			Node currentProjectFacetVersion=null;
+			NamedNodeMap facetAttributes=null; 
+			Node facetVersionAttribute=null;
+			String currentFacetVersionValue=null;
+			Element newProjectFacetVersion=null;
+			
+			NodeList projectFacetVersionNodeList =currentExtensionNode.getChildNodes();
+			
+			for(int index=0; index< projectFacetVersionNodeList.getLength(); index++){
+				
+				currentProjectFacetVersion = projectFacetVersionNodeList.item(index); 
+				
+				if (currentProjectFacetVersion.getNodeName() == "project-facet-version"){
+					
+					facetAttributes = currentProjectFacetVersion.getAttributes();
+					facetVersionAttribute=facetAttributes.getNamedItem("version");
+			    	currentFacetVersionValue=facetVersionAttribute.getNodeValue();
+					
+			    	
+			    	//if the current facet version is not the latest version, jump to the next one.
+			    	if(!currentFacetVersionValue.equals(previousEQVesionNumber)){
+						continue;
+					}else{
+						
+						//The facet version is the latest version. The current <project-facet-version> has to be updated.
+						//and the a new one will be created for the old version.
+				    	
+						//update current <project-facet-version>.
+						updateCurrentProjectFacetVersion(currentProjectFacetVersion);
+						//it creates new <project-facet-version> for the previous version.
+						newProjectFacetVersion= createANewProjectFacetVersionNode();
+				    					    	
+					}
+			    	
+				}
+				
+			}			
+			currentExtensionNode.insertBefore(newProjectFacetVersion, currentProjectFacetVersion.getPreviousSibling());
+	    	
+	    	
+		}
+		
+		/**
+		 * This method will update the current <project-facet-version>, it implies: </b>
+		 *  1) update the <project-facet-version> version number
+		 *  2) update each  <action> version.
+		 * @param currentProjectFacetVersion this the current <project-facet-version> instance.
+		 */
+		private void updateCurrentProjectFacetVersion(Node currentProjectFacetVersion){
+			
+			NodeList projectFacetChildNodeList =null;
+			Node currentProjectFacetChildNode=null;
+			NamedNodeMap actionAttributes=null;
+			Node facetVersionAttribute=null;
+			
+			
+			projectFacetChildNodeList =currentProjectFacetVersion.getChildNodes();
+			currentProjectFacetVersion.getAttributes().getNamedItem("version").setNodeValue(newEQVersionNumber);
+			
+			for(int index=0; index< projectFacetChildNodeList.getLength(); index++){
+				
+				currentProjectFacetChildNode = projectFacetChildNodeList.item(index); 
+				
+				if (currentProjectFacetChildNode.getNextSibling() == null) {
+					continue;
+				}
+				
+				if (currentProjectFacetChildNode.getNextSibling().getNodeName() == "action"){
+					
+					actionAttributes = currentProjectFacetChildNode.getNextSibling().getAttributes();
+					facetVersionAttribute=actionAttributes.getNamedItem("version");
+					facetVersionAttribute.setNodeValue(newEQVersionNumber);
+				}
+			}
+		}
+		
+		/**
+		 * This method will create a <project-facet-version> with the previous EQ version number.
+		 * @return this is the new <project-facet-version> instance. 
+		 */
+		private Element createANewProjectFacetVersionNode()
+		{
+			Element newProjectFacetVersion=null;
+			
+			newProjectFacetVersion= xmlDocument.createElement("project-facet-version");
+	    	newProjectFacetVersion.setAttribute("facet","equation.desktop.facet");
+	    	newProjectFacetVersion.setAttribute("version",previousEQVesionNumber);
+	    	return newProjectFacetVersion;
+		}
+		
+		/**
+		 * This method will write the eclipse plugin xml file with the latest version. 
+		 */
+		private void writeXMLFile(){
+			
+			Transformer transformer=null;
+			StreamResult result=null;
+			String xmlString =null;
+			OutputStream outputStream=null;
+			byte buffer[] =null;
+			
+			try
+			{
+				
+				//set up a transformer
+				TransformerFactory transfac = TransformerFactory.newInstance();
+				transformer = transfac.newTransformer();
+				transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+				//initialize StreamResult with File object to save to file
+				result = new StreamResult(new StringWriter());
+				
+				DOMSource source = new DOMSource(xmlDocument);
+				transformer.transform(source, result);
+				xmlString = result.getWriter().toString();
+				buffer = xmlString.getBytes();
+				outputStream = new FileOutputStream(pluginXmlFile);
+				
+				for(int index=0;index<buffer .length;index++) {
+				   
+					outputStream.write(buffer[index]);
+				}		
+				buffer = null;
+				
+			}
+			catch (Exception exception)
+			{
+				
+				if (LOG.isErrorEnabled())
+				{
+					LOG.error(new StringBuilder("There was a problem writing the file:"  ).append(pluginXmlFilePath).toString(),exception);
+				}
+			}finally{
+				
+				closeInputStream(outputStream);
+			}
+			
+			
+			System.out.println(xmlString);
+		}
+		
+		/**
+		 * This method will close the current input/outputStream.
+		 * @param this is the recourse to be closed.
+		 */
+		private void closeInputStream(Closeable resorseTobeClosed)
+		{
+			try {
+				
+				if(resorseTobeClosed!=null){
+					
+					resorseTobeClosed.close();
+				}
+				
+				
+			} catch (IOException iOException) {
+				
+				if (LOG.isErrorEnabled())
+				{
+					LOG.error(new StringBuilder("There was a problem trying to close "  ).append(pluginXmlFilePath).toString(),iOException);
+				}			
+			}
+			
+		}
+		
+		
+		
+		/***getter and setters ***/
+		
+		public String getNewEQVersionNumber() {
+			
+			return newEQVersionNumber;
+		}
+
+		public void setNewEQVersionNumber(String newEQVersionNumber) {
+			
+			this.newEQVersionNumber = newEQVersionNumber;
+		}
+
+		public String getPreviousEQVesionNumber() {
+			
+			return previousEQVesionNumber;
+		}
+
+		public void setPreviousEQVesionNumber(String previousEQVesionNumber) {
+			
+			this.previousEQVesionNumber = previousEQVesionNumber;
+		}
+		
+		
+		public void setPluginXmlFilePath(String pluginXmlFilePath)
+		{
+			this.pluginXmlFilePath = pluginXmlFilePath;
+		}
+
+		
+		public static void main(String[] args)
+		{
+			
+			String xmlPath="C:\\Thor\\workspaces\\Equation-workspace\\EquationBuilder\\resources\\test\\plugin.xml";
+			
+			UpdatePluginEclipseXML updateClassPathVersionFile= UpdatePluginEclipseXML.getInstance("1.2.2","1.2.1");
+			updateClassPathVersionFile.setPluginXmlFilePath(xmlPath);
+			updateClassPathVersionFile.processEclipsePluginXML();
+		}
+}

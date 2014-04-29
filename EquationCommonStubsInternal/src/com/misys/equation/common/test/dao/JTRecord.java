@@ -1,0 +1,125 @@
+package com.misys.equation.common.test.dao;
+
+import com.misys.equation.common.dao.IJTRecordDao;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.dao.beans.JTRecordDataModel;
+import com.misys.equation.common.test.EquationTestCaseDao;
+
+/**
+ * This is a unit-test which will test JTIRecord services.
+ * 
+ * @author deroset
+ * 
+ */
+public class JTRecord extends EquationTestCaseDao
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: JTRecord.java 11310 2011-06-27 12:20:21Z ESTHER.WILLIAMS $";
+	public JTRecord()
+	{
+
+	}
+
+	/**
+	 * 
+	 * This method is going to retrieve the Dao from the bean repository and set it as local attribute.
+	 */
+	@Override
+	protected void setDao()
+	{
+		dao = daoFactory.getJTDao(session, dataModel);
+	}
+
+	/**
+	 * This method will test if the record has been already inserted in the dataBase.
+	 */
+	@Override
+	public void isRecord(boolean assertValue)
+	{
+		boolean result;
+
+		result = checkIfThisRecordIsInTheDB();
+		if (assertValue)
+		{
+			assertTrue(result);
+		}
+		else
+		{
+			assertFalse(result);
+		}
+	}
+
+	/**
+	 * This method is going to check the getRecord dao's service.<br>
+	 * The obtained result should be the same than the preset in the dao data-model.
+	 * 
+	 */
+	@Override
+	public JTRecordDataModel getRecord()
+	{
+		JTRecordDataModel JTRecord = null;
+		JTRecord = ((IJTRecordDao) dao).getJTRecord();
+		assertDataModel(JTRecord);
+		return JTRecord;
+	}
+
+	/**
+	 * This method will test the update dao's service.
+	 */
+	@Override
+	public void updateRecord()
+	{
+		JTRecordDataModel JTRecord = null;
+
+		this.getMyModel().setReportDescription("New Report Description");
+		dao.updateRecord();
+		JTRecord = getRecord();
+		assertEquals(this.getMyModel().getReportDescription(), JTRecord.getReportDescription());
+	}
+
+	@Override
+	protected void assertDataModel(AbsRecord dataModel)
+	{
+		JTRecordDataModel record = (JTRecordDataModel) dataModel;
+		assertEquals(getMyModel().getReportMnemonic(), record.getReportMnemonic());
+		assertEquals(getMyModel().getRunPhase(), record.getRunPhase());
+		assertEquals(getMyModel().getReportDescription(), record.getReportDescription());
+	}
+
+	@Override
+	protected boolean checkIfThisRecordIsInTheDB()
+	{
+		boolean result;
+		result = ((IJTRecordDao) dao).checkIfThisJTRecordIsInTheDB();
+		return result;
+	}
+
+	@Override
+	protected void setDataModel()
+	{
+		JTRecordDataModel record = new JTRecordDataModel("A22RPR");
+		record.setLibrary(kFilLibName);
+		this.dataModel = record;
+	}
+
+	/**
+	 * This method is going to return a casted data model.
+	 * 
+	 * @return a casted data model
+	 */
+	public JTRecordDataModel getMyModel()
+	{
+
+		JTRecordDataModel JTRecordDataModel = null;
+		if (dataModel instanceof JTRecordDataModel)
+		{
+			JTRecordDataModel = (JTRecordDataModel) dataModel;
+		}
+		else
+		{
+			throw new IllegalArgumentException("The set data-model does not correspond to the expected one.");
+		}
+		return JTRecordDataModel;
+	}
+}

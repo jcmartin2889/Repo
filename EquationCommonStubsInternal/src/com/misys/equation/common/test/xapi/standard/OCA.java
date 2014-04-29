@@ -1,0 +1,99 @@
+/*
+ * This sample code is provided by Misys for illustrative purposes only.
+ * 
+ * These examples have not been thoroughly tested under all conditions.
+ * 
+ * Misys, therefore, cannot guarantee or imply reliability, serviceability, or function of these programs.
+ * 
+ * All programs contained herein are provided to you "AS IS" without any warranties of any kind. The implied warranties of
+ * non-infringement, merchantability and fitness for a particular purpose are expressly disclaimed.
+ */
+package com.misys.equation.common.test.xapi.standard;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.TestEnvironment;
+import com.misys.equation.common.utilities.Toolbox;
+
+// *************************************************************************************************
+/**
+ * 
+ * 
+ */
+// *************************************************************************************************
+public class OCA
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: OCA.java 11310 2011-06-27 12:20:21Z ESTHER.WILLIAMS $";
+	String inputBrnmStr = "LOND";
+	String branchNumber = "9132";
+	String accountBasicNumber = "234567";
+	String accountSuffix = "   ";
+	String customerMnemonic = "ACCS";
+	String customerLocation = "DTA";
+	String accountType = "CA";
+	String accountCurrency = "GBP";
+	String accountOpenDate = "1000229";
+	String accountShortName = "Test Account";
+	EquationStandardSession session;
+	long startTime = System.currentTimeMillis();
+	long currentTime = startTime;
+	// *********************************************************************************************
+	/**
+	 * 
+	 */
+	// *********************************************************************************************
+	private OCA()
+	{
+		try
+		{
+			session = TestEnvironment.getTestEnvironment().getStandardSession();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+	public static void main(String[] inputParameters)
+	{
+		OCA test = new OCA();
+		test.test();
+	}
+	// *********************************************************************************************
+	/**
+	 * 
+	 */
+	// *********************************************************************************************
+	public void test()
+	{
+		// Have a bash...
+		try
+		{
+			// Get a new transaction for a sundry item
+			EquationStandardTransaction openCustomerAccount = new EquationStandardTransaction("H38ARROCA", session);
+			// Set the transaction type
+			openCustomerAccount.setMode("A");
+			// Set the fields required for the sundry item
+			openCustomerAccount.setFieldValue("GZAB", branchNumber);
+			openCustomerAccount.setFieldValue("GZAN", accountBasicNumber);
+			openCustomerAccount.setFieldValue("GZAS", accountSuffix);
+			openCustomerAccount.setFieldValue("GZCCY", accountCurrency);
+			openCustomerAccount.setFieldValue("GZACT", accountType);
+			openCustomerAccount.setFieldValue("GZOAD", accountOpenDate);
+			openCustomerAccount.setFieldValue("GZSHN", accountShortName);
+			session.addEquationTransaction(openCustomerAccount);
+			// Apply the transaction
+			session.applyTransactions();
+			session.commitTransactions();
+			Toolbox.printMessages(openCustomerAccount.getErrorList());
+			Toolbox.printMessages(openCustomerAccount.getWarningList());
+			System.out.println("finished!");
+		}
+		catch (Exception e)
+		{
+			System.out.println(e.toString());
+			// Rollback any transactions for the unit
+		}
+	}
+}

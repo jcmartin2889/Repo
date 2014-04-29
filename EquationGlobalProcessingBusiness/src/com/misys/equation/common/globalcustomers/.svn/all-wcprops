@@ -1,0 +1,95 @@
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalcustomers
+END
+GlobalCustomerEnquiry.java
+K 25
+svn:wc:ra_dav:version-url
+V 165
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalcustomers/GlobalCustomerEnquiry.java
+END
+GASCustomerDetails.java
+K 25
+svn:wc:ra_dav:version-url
+V 162
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalcustomers/GASCustomerDetails.java
+END
+MaintainGlobalCustomer.java
+K 25
+svn:wc:ra_dav:version-url
+V 166
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalcustomers/MaintainGlobalCustomer.java
+END
+GlobalAccountBalancePerBranch.java
+K 25
+svn:wc:ra_dav:version-url
+V 173
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalcustomers/GlobalAccountBalancePerBranch.java
+END
+GlobalAccountBalanceBean.java
+K 25
+svn:wc:ra_dav:version-url
+V 168
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalcustomers/GlobalAccountBalanceBean.java
+END
+GlobalBalanceCalculator.java
+K 25
+svn:wc:ra_dav:version-url
+V 167
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalcustomers/GlobalBalanceCalculator.java
+END
+GlobalAccountBalance.java
+K 25
+svn:wc:ra_dav:version-url
+V 164
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalcustomers/GlobalAccountBalance.java
+END
+GlobalBalancePerCustomerBean.java
+K 25
+svn:wc:ra_dav:version-url
+V 172
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalcustomers/GlobalBalancePerCustomerBean.java
+END
+GlobalBean.java
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalcustomers/GlobalBean.java
+END
+SystemAccountBean.java
+K 25
+svn:wc:ra_dav:version-url
+V 161
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalcustomers/SystemAccountBean.java
+END
+GlobalCustomersImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 163
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalcustomers/GlobalCustomersImpl.java
+END
+GlobalCustomersAccess.java
+K 25
+svn:wc:ra_dav:version-url
+V 165
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalcustomers/GlobalCustomersAccess.java
+END
+UniversalCustomerBasicInformationBean.java
+K 25
+svn:wc:ra_dav:version-url
+V 181
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalcustomers/UniversalCustomerBasicInformationBean.java
+END
+GlobalCustomersFacade.java
+K 25
+svn:wc:ra_dav:version-url
+V 165
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalcustomers/GlobalCustomersFacade.java
+END
+CustomerDetailsBean.java
+K 25
+svn:wc:ra_dav:version-url
+V 163
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationGlobalProcessingBusiness/src/com/misys/equation/common/globalcustomers/CustomerDetailsBean.java
+END

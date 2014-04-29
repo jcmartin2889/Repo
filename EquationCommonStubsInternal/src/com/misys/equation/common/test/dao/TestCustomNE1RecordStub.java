@@ -1,0 +1,171 @@
+package com.misys.equation.common.test.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import com.misys.equation.common.dao.INE1RecordDao;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.dao.beans.NE1RecordDataModel;
+import com.misys.equation.common.test.EquationTestCaseDao;
+
+/**
+ * This is a unit-test which will test $tablePrefixIRecord services.
+ * 
+ * @author deroset
+ * 
+ */
+public class TestCustomNE1RecordStub extends EquationTestCaseDao
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: TestCustomNE1RecordStub.java 13724 2012-07-02 09:55:51Z whittap1 $";
+	/**
+	 * This is the unique class id used for serialisation.
+	 */
+	private static final long serialVersionUID = 1272538474934l;
+
+	public TestCustomNE1RecordStub()
+	{
+
+	}
+
+	/**
+	 * This is method is going to set part of the kFilLibName.<br>
+	 * This method can be overwritten if another library needs to be used.<br>
+	 * <code>kFilLibName=  kFilLibName + unitName</code>
+	 */
+	@Override
+	public void setKLibName()
+	{
+		setKLibName("");
+	}
+
+	/**
+	 * This method is going to retrieve the Dao from the bean repository and set it as local attribute.
+	 */
+	@Override
+	protected void setDao()
+	{
+		dao = daoFactory.getNE1Dao(session, dataModel);
+	}
+
+	/**
+	 * This method will test if the record has been already inserted in the dataBase.
+	 */
+	@Override
+	public void isRecord(boolean assertValue)
+	{
+		boolean result;
+
+		result = checkIfThisRecordIsInTheDB();
+		if (assertValue)
+		{
+			assertTrue(result);
+		}
+		else
+		{
+			assertFalse(result);
+		}
+	}
+	/**
+	 * This method is going to check the getRecord dao's service.<br>
+	 * The obtained result should be the same than the preset in the dao data-model.
+	 */
+	@Override
+	public NE1RecordDataModel getRecord()
+	{
+		NE1RecordDataModel record = null;
+		record = ((INE1RecordDao) dao).getNE1Record();
+		assertDataModel(record);
+		return record;
+	}
+
+	/**
+	 * This method will test the update dao's service.
+	 */
+	@Override
+	public void updateRecord()
+	{
+		NE1RecordDataModel record = null;
+		this.getMyModel().setExternalAcNumber("String_TEST");
+		dao.updateRecord();
+		record = getRecord();
+		assertEquals(this.getMyModel().getExternalAcNumber(), record.getExternalAcNumber());
+	}
+
+	@Override
+	protected void assertDataModel(AbsRecord dataModel)
+	{
+		NE1RecordDataModel record = (NE1RecordDataModel) dataModel;
+		assertEquals(getMyModel().getExternalAcNumber(), record.getExternalAcNumber());
+		assertEquals(getMyModel().getAccountBranch(), record.getAccountBranch());
+		assertEquals(getMyModel().getBasicNumber(), record.getBasicNumber());
+		assertEquals(getMyModel().getAccountSuffix(), record.getAccountSuffix());
+		assertEquals(getMyModel().getIban(), record.getIban());
+
+	}
+
+	@Override
+	protected boolean checkIfThisRecordIsInTheDB()
+	{
+		boolean result;
+		result = ((INE1RecordDao) dao).checkIfThisNE1RecordIsInTheDB();
+		return result;
+	}
+
+	@Override
+	protected void setDataModel()
+	{
+		NE1RecordDataModel record = new NE1RecordDataModel("Stri", "String", "Str");
+		record.setExternalAcNumber("String_TEST");
+		record.setIban("String_TEST");
+
+		record.setLibrary(getKLibName());
+		this.dataModel = record;
+	}
+
+	/**
+	 * This method is going to return a cast data model.
+	 * 
+	 * @return a cast data model
+	 */
+	public NE1RecordDataModel getMyModel()
+	{
+		NE1RecordDataModel record = null;
+
+		if (dataModel instanceof NE1RecordDataModel)
+		{
+			record = (NE1RecordDataModel) dataModel;
+		}
+		else
+		{
+			throw new IllegalArgumentException("The set data-model does not correspond to the expected one.");
+		}
+		return record;
+	}
+
+	/**
+	 * This method will test the <code>getIbanAndEXtAccount()</code> method.
+	 */
+	public void testGetIbanAndEXtAccount()
+	{
+		List<Map<String, Object>> globalCustomerIds = null;
+		String iban = null;
+		String extAccount = null;
+
+		String branch = "0543";
+		String basicNumber = "132733";
+		String suffix = "030";
+
+		globalCustomerIds = ((INE1RecordDao) dao).getIbanAndEXtAccount(branch, basicNumber, suffix);
+
+		for (Map<String, Object> listOrderedMap : globalCustomerIds)
+		{
+			extAccount = (String) listOrderedMap.get("NEEAN");
+			iban = (String) listOrderedMap.get("NEIBAN");
+
+		}
+		assertNotNull(iban);
+		assertNotNull(extAccount);
+	}
+
+}

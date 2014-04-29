@@ -1,0 +1,656 @@
+package com.misys.equation.common.ant.builder.helpText.backEnd;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Hashtable;
+import java.util.List;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcDaoSupport;
+import org.springframework.jdbc.datasource.SingleConnectionDataSource;
+
+import com.misys.equation.common.ant.builder.core.EquationLogger;
+import com.misys.equation.common.ant.builder.helpText.models.AbsRecord;
+
+/**
+ * @author deroset This class is a Dao abstraction which is going to have all abstract Dao features and behaviours
+ */
+public abstract class AbsEquationDao extends SimpleJdbcDaoSupport implements IDao
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: AbsEquationDao.java 10495 2011-02-18 14:45:23Z MACDONP1 $";
+
+	private AbsRecord record;
+
+	public final EquationLogger LOG = new EquationLogger(this.getClass());
+
+	// this attribute will ensure a unique data base connection per dao.
+	protected SingleConnectionDataSource currentConnectionContainer;
+	private boolean autocommitable = false;
+
+	public AbsEquationDao()
+	{
+
+	}
+
+	/**
+	 * Given that the connection will set by the application not by Spring <code>checkDaoConfig()</code> will not perform
+	 * <code>DataSorce</code> validations.
+	 * 
+	 */
+	@Override
+	protected void checkDaoConfig()
+	{
+
+	}
+
+	/**
+	 * This method is going to initialise the database connection and ensure that it is unique.
+	 * 
+	 * @param this is the <code>ConnectionWrapper</code> which will provide the connection attached to this session.
+	 */
+	public void initialiseDao(Connection connection)
+	{
+		Connection singleConn = null;
+
+		try
+		{
+			// The connection wrapper will provide connection which was previously attached to this session.
+			singleConn = connection;
+			currentConnectionContainer = new SingleConnectionDataSource(singleConn, true);
+			currentConnectionContainer.setAutoCommit(singleConn.getAutoCommit());
+		}
+		catch (SQLException sQLException)
+		{
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error("There was an error getting the connection from the data-source", sQLException);
+			}
+		}
+		setDataSource(currentConnectionContainer);
+		setJdbcTemplate(new JdbcTemplate(currentConnectionContainer));
+	}
+
+	/**
+	 * Return the file name
+	 */
+	protected String getTableName()
+	{
+		String library = record.getLibrary();
+		String eqFileName = record.getEqFileName();
+
+		if (library == null)
+		{
+			return eqFileName;
+		}
+		else
+		{
+			return new StringBuilder(library).append("/").append(eqFileName).toString();
+		}
+	}
+
+	/**
+	 * This method is going execute a Sql query using the filter criteria.
+	 * 
+	 * @param whereClause
+	 *            this is the <code>String</code> that represent the sql filter.
+	 * 
+	 * @param rowMapper
+	 *            this is the mapper which will populate the data-model
+	 * 
+	 * @return a <code>List</code> which contains a records
+	 */
+	protected List<AbsRecord> getRecordBy(String whereClause, RowMapper rowMapper)
+	{
+		StringBuilder sqlBuilder = new StringBuilder(1024);
+		List<AbsRecord> dataModels = null;
+
+		sqlBuilder.append("SELECT ");
+		sqlBuilder.append(getFields());
+		sqlBuilder.append("FROM ");
+		sqlBuilder.append(getTableName());
+		// Only add the where clause if there is one:
+		if (whereClause != null && whereClause.length() > 0)
+		{
+			sqlBuilder.append(" WHERE ");
+			sqlBuilder.append(whereClause);
+		}
+		JdbcTemplate select = getJdbcTemplate();
+
+		if (LOG.isDebugEnabled())
+		{
+			LOG.debug(new StringBuilder("The executed sql is: ").append(sqlBuilder.toString()).toString());
+		}
+
+		dataModels = select.query(sqlBuilder.toString(), rowMapper);
+		return dataModels;
+	}
+
+	/**
+	 * This method is going execute a Sql query using the filter criteria.<br>
+	 * The result will be a <code>HashTable<String,AbsRecord> </code> which use the key records as hashtable's key. <br>
+	 * 
+	 * <code>HashTable<String,AbsRecord> createHashtableRecordModel(List<AbsRecord> records)</code> has to be implemented. <br>
+	 * 
+	 * <code>HashTable<String,AbsRecord> createHashtableRecordModel(List<AbsRecord> records)</code> has to be implemented. <br>
+	 * 
+	 * @param whereClause
+	 *            this is the <code>String</code> that represent the sql filter.
+	 * 
+	 * @return a <code>HashTable<String,AbsRecord></code> which contains a records
+	 */
+	public Hashtable<String, AbsRecord> getHashtableRecordBy(String whereClause)
+	{
+		List results = getRecordBy(whereClause);
+		return createHashtableRecordModel(results);
+	}
+
+	/**
+	 * This method is going execute a Sql query using the filter criteria.<br>
+	 * The result will be a <code>HashTable<String,AbsRecord> </code> which use the key records as hashtable's key. <br>
+	 * 
+	 * <code>HashTable<String,AbsRecord> createHashtableRecordModel(List<AbsRecord> records)</code> has to be implemented. <br>
+	 * 
+	 * <code>HashTable<String,AbsRecord> createHashtableRecordModel(List<AbsRecord> records)</code> has to be implemented. <br>
+	 * 
+	 * @return a <code>HashTable<String,AbsRecord></code> which contains a records
+	 */
+	public Hashtable<String, AbsRecord> getHashtableRecordBy()
+	{
+		List results = getRecordBy(getWhereConditionBaseOnIdRecord());
+		return createHashtableRecordModel(results);
+	}
+
+	/**
+	 * This method will return a count on a db table<br>
+	 * The Sql <code>SELECT COUNT(*)</code> query will be executed.
+	 * 
+	 * @return the result of the count statement
+	 */
+	public int getRecordCount()
+	{
+		StringBuilder sqlBuilder = new StringBuilder(1024);
+		int result = 0;
+
+		sqlBuilder.append("SELECT COUNT(*) FROM ");
+		sqlBuilder.append(getTableName());
+		JdbcTemplate select = getJdbcTemplate();
+
+		if (LOG.isDebugEnabled())
+		{
+			LOG.debug(new StringBuilder("The executed sql is: ").append(sqlBuilder.toString()).toString());
+		}
+
+		result = select.queryForInt(sqlBuilder.toString());
+		return result;
+	}
+
+	/**
+	 * This method will check if the current record was already set in the database. <br>
+	 * The Sql <code>SELECT COUNT(*)</code> query will be executed.
+	 * 
+	 * @param sqlWhereStatement
+	 *            - the WHERE clause of the SQL statement
+	 * 
+	 * @return true if the SQL statement returns a count >= 1
+	 */
+	public boolean checkIfThisRecordIsInTheDB(String sqlWhereStatement)
+	{
+		StringBuilder sqlBuilder = new StringBuilder(1024);
+		int result = 0;
+
+		sqlBuilder.append("SELECT COUNT(*) FROM ");
+		sqlBuilder.append(getTableName());
+		sqlBuilder.append(" WHERE ");
+		sqlBuilder.append(sqlWhereStatement);
+		JdbcTemplate select = getJdbcTemplate();
+
+		if (LOG.isDebugEnabled())
+		{
+
+			LOG.debug(new StringBuilder("The executed sql is: ").append(sqlBuilder.toString()).toString());
+		}
+
+		result = select.queryForInt(sqlBuilder.toString());
+		return result != 0;
+	}
+
+	/**
+	 * This method is going to update the record using the data-model values. <br>
+	 * Bear in mind since this method is invoked the current <code>Dao</code> instance will be related to the data-model passed as
+	 * parameter. <br>
+	 * please use <code>setRecord(AbsRecord record)</code>to set other data-model.
+	 * 
+	 * @param record
+	 *            this the record to be deleted.
+	 */
+	public void deleteRecord(AbsRecord record)
+	{
+		setRecord(record);
+		deleteRecord();
+	}
+
+	/**
+	 * This method is going to delete a new the record using the data-model values.
+	 */
+	public void deleteRecord()
+	{
+		StringBuilder sqlBuilder = new StringBuilder(1024);
+		JdbcTemplate updateTemplate;
+
+		sqlBuilder.append("DELETE FROM ");
+		sqlBuilder.append(getTableName());
+		sqlBuilder.append(" WHERE ");
+		sqlBuilder.append(getWhereConditionBaseOnIdRecord());
+		updateTemplate = getJdbcTemplate();
+
+		if (LOG.isDebugEnabled())
+		{
+
+			LOG.debug(new StringBuilder("The executed sql is: ").append(sqlBuilder.toString()).toString());
+		}
+		updateTemplate.update(sqlBuilder.toString());
+
+		if (isAutocommitable())
+		{
+			commit();
+		}
+	}
+
+	/**
+	 * This method is going to add a new the record using the data-model values. <br>
+	 * Bear in mind since this method is invoked the current <code>Dao</code> instance will be related to the data-model passed as
+	 * parameter. <br>
+	 * please use <code>setRecord(AbsRecord record)</code>to set other data-model.
+	 * 
+	 * @param record
+	 *            this the record to be inserted.
+	 */
+	public void insertRecord(AbsRecord record)
+	{
+		setRecord(record);
+		insertRecord();
+	}
+
+	/**
+	 * This method is going to add a new the record using the data-model values.
+	 */
+	public void insertRecord()
+	{
+		StringBuilder sqlBuilder = new StringBuilder(1024);
+		JdbcTemplate updateTemplate;
+
+		sqlBuilder.append("INSERT INTO ");
+		sqlBuilder.append(getTableName());
+		sqlBuilder.append(" ( ");
+		sqlBuilder.append(getFields());
+		sqlBuilder.append(" ) VALUES( ");
+		sqlBuilder.append(getParameters());
+		sqlBuilder.append(" )");
+		updateTemplate = getJdbcTemplate();
+
+		if (LOG.isDebugEnabled())
+		{
+
+			LOG.debug(new StringBuilder("The executed sql is: ").append(sqlBuilder.toString()).toString());
+		}
+		updateTemplate.update(sqlBuilder.toString(), getParameterizedFieldsValues());
+
+		if (isAutocommitable())
+		{
+			commit();
+		}
+	}
+
+	/**
+	 * This method is going to update the record using the data-model values. <br>
+	 * Bear in mind since this method is invoked the current <code>Dao</code> instance will be related to the data-model passed as
+	 * parameter. <br>
+	 * please use <code>setRecord(AbsRecord record)</code>to set other data-model.
+	 * 
+	 * @param record
+	 *            this the record to be updated.
+	 */
+	public void updateRecord(AbsRecord record)
+	{
+		setRecord(record);
+		updateRecord();
+	}
+
+	/**
+	 * This method is going to update the record using the data-model values.
+	 */
+	public void updateRecord()
+	{
+		StringBuilder sqlBuilder = new StringBuilder(1024);
+		JdbcTemplate updateTemplate;
+
+		sqlBuilder.append("UPDATE ");
+		sqlBuilder.append(getTableName());
+		sqlBuilder.append(" SET ");
+		sqlBuilder.append(getParameterizedFields());
+		sqlBuilder.append(" WHERE ");
+		sqlBuilder.append(getWhereConditionBaseOnIdRecord());
+		updateTemplate = getJdbcTemplate();
+
+		if (LOG.isDebugEnabled())
+		{
+
+			LOG.debug(new StringBuilder("The executed sql is: ").append(sqlBuilder.toString()).toString());
+		}
+		updateTemplate.update(sqlBuilder.toString(), getParameterizedFieldsValues());
+
+		if (isAutocommitable())
+		{
+			commit();
+		}
+	}
+
+	/**
+	 * This method will check if the current record has already been inserted in the database.<br>
+	 * if the record has already been inserted in the data base it will be updated.In other case it will be inserted. <br>
+	 * Bear in mind since this method is invoked the current <code>Dao</code> instance will be related to the data-model passed as
+	 * parameter. <br>
+	 * please use <code>setRecord(AbsRecord record)</code>to set other data-model.
+	 * 
+	 * @param record
+	 *            this the record to be evaluated.
+	 */
+	public void insertOrUpdateRecord(AbsRecord record)
+	{
+		setRecord(record);
+		insertOrUpdateRecord();
+	}
+
+	/**
+	 * This method will check if the current record has already been inserted in the database.<br>
+	 * if the record has already been inserted in the data base it will be updated.In other case it will be inserted.
+	 */
+	public void insertOrUpdateRecord()
+	{
+		if (checkIfThisRecordIsInTheDB(getWhereConditionBaseOnIdRecord()))
+		{
+			updateRecord();
+		}
+		else
+		{
+			insertRecord();
+		}
+	}
+
+	/**
+	 * This is a helper method used to execute Sql statement.
+	 * 
+	 * @param sqlStatement
+	 *            this Sql statement to be executed.
+	 */
+	protected void executeStatement(String sqlStatement)
+	{
+		JdbcTemplate updateTemplate;
+		updateTemplate = getJdbcTemplate();
+
+		if (LOG.isDebugEnabled())
+		{
+
+			LOG.debug(new StringBuilder("The executed sql is: ").append(sqlStatement).toString());
+		}
+		updateTemplate.update(sqlStatement);
+
+		if (isAutocommitable())
+		{
+			commit();
+		}
+	}
+
+	/**
+	 * This method is going to end the journaling.
+	 * 
+	 * @param unitName
+	 *            this is the unit name.
+	 * @return false if the error is <code>CPF7032</code>, it means that the journal file has already been closed.
+	 */
+	public boolean endJournal(String unitName)
+	{
+		String sqlStatement = null;
+		StringBuilder command = null;
+		JournalStoreProcedure journalStoreProcedure = new JournalStoreProcedure();
+
+		journalStoreProcedure.setUnitName(unitName);
+		command = new StringBuilder("ENDJRNPF ");
+		command.append(getTableName());
+
+		command.append(" JRN(");
+		command.append(journalStoreProcedure.getDefaultJournalFullPath());
+		command.append(")");
+
+		sqlStatement = SQLToolbox.getQcmdexcString(command.toString());
+
+		JdbcTemplate select = getJdbcTemplate();
+
+		if (LOG.isDebugEnabled())
+		{
+			LOG.debug(new StringBuilder("The executed sql is: ").append(sqlStatement).toString());
+		}
+		try
+		{
+			select.execute(sqlStatement);
+		}
+		catch (Exception exception)
+		{
+			return journalStoreProcedure.processJournalError(exception, sqlStatement, "CPF7032");
+		}
+		return true;
+	}
+
+	/**
+	 * This method is going to start the journaling.
+	 * <p>
+	 * This uses STRJRNPF command options to journal both images (before and after) and to omit file open/close journal entries -
+	 * IMAGES(*BOTH) OMTJRNE(*OPNCLO). These options are the same as used by Equation (UTV08R)
+	 * 
+	 * @param unitName
+	 *            this is the unit name.
+	 * @return false if the error is <code>CPF7030</code>, it means that the file was already journalled.
+	 */
+	public boolean startJournal(String unitName)
+	{
+		String sqlStatement = null;
+		StringBuilder command = null;
+		JournalStoreProcedure journalStoreProcedure = new JournalStoreProcedure();
+
+		journalStoreProcedure.setUnitName(unitName);
+		command = new StringBuilder("STRJRNPF FILE( ");
+		command.append(getTableName());
+		command.append(") ");
+
+		command.append("JRN(");
+		command.append(journalStoreProcedure.getDefaultJournalFullPath());
+		command.append(") IMAGES(*BOTH) OMTJRNE(*OPNCLO)");
+
+		sqlStatement = SQLToolbox.getQcmdexcString(command.toString());
+
+		JdbcTemplate select = getJdbcTemplate();
+
+		if (LOG.isDebugEnabled())
+		{
+			LOG.debug(new StringBuilder("The executed sql is: ").append(sqlStatement).toString());
+		}
+
+		try
+		{
+			select.execute(sqlStatement);
+		}
+		catch (Exception exception)
+		{
+			return journalStoreProcedure.processJournalError(exception, sqlStatement, "CPF7030");
+		}
+		return true;
+	}
+
+	/**
+	 * This method is going to commit the current transaction. The preset connection will be used. <br>
+	 * <code>currentConnection.commit()</code> will be executed.
+	 */
+	public void commit()
+	{
+		Connection connection = null;
+		try
+		{
+			connection = currentConnectionContainer.getConnection();
+			connection.commit();
+		}
+		catch (SQLException sQLException)
+		{
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error("There was problem commiting the current transaction ", sQLException);
+			}
+		}
+	}
+
+	/**
+	 * This method is going to close the current connection. The preset connectiontion will be used. <br>
+	 * <code>currentConnection.destroy()</code> will be executed.
+	 */
+	public void destroy()
+	{
+		currentConnectionContainer.destroy();
+	}
+
+	// ---------- getter and setters------------//
+	public AbsRecord getRecord()
+	{
+		return record;
+	}
+
+	public void setRecord(AbsRecord record)
+	{
+		this.record = record;
+	}
+
+	public boolean isAutocommitable()
+	{
+		return autocommitable;
+	}
+
+	public void setAutocommitable(boolean autocommitable)
+	{
+		this.autocommitable = autocommitable;
+	}
+
+	// ------- abstract methods-----------------///
+	/**
+	 * Returns a list of the filed's name
+	 * 
+	 * @return a list of the filed's name
+	 */
+	protected abstract String getFields();
+
+	/**
+	 * Returns a list of name and ? pairs in the format of:
+	 * <p>
+	 * field1=?, field2=?, field3=?, ...
+	 * </p>
+	 * 
+	 * @return a list of name and ? pairs
+	 */
+	protected abstract String getParameterizedFields();
+
+	/**
+	 * This method will return a <code>String</code> which represents and sql where condition base on the record id.<br>
+	 * For example <code>id = getDataModel.getId()</code>
+	 * 
+	 * @return a <code>String</code> which represents and sql filter.
+	 */
+	protected abstract String getWhereConditionBaseOnIdRecord();
+
+	/**
+	 * This method create an array that contains the fields values and Its types. <br>
+	 * It will be used by jdbc <code>PreparedStatement</code>
+	 * 
+	 * @return An array that contains the fields values and Its types.
+	 */
+	protected abstract Object[] getParameterizedFieldsValues();
+
+	/**
+	 * Returns a list of the filed's parameters
+	 * 
+	 * @return a list of the filed's parameters
+	 */
+	protected abstract String getParameters();
+
+	/**
+	 * This method will iterate all records passed as parameters and a creates <code>HashTable</code><key, record >.<br>
+	 * 
+	 * 
+	 * @param records
+	 *            this is the list of records
+	 * @return <code>HashTable</code><key, record >.<br>
+	 */
+	protected abstract Hashtable<String, AbsRecord> createHashtableRecordModel(List<AbsRecord> records);
+
+	// /--------------Journal Store procedure---------------------///
+
+	/**
+	 * This is a inner class that represents and manages the journal file.
+	 */
+	public class JournalStoreProcedure
+	{
+		private String unitName = null;
+
+		public JournalStoreProcedure()
+		{
+
+		}
+		/**
+		 * Return the default Equation journal
+		 * 
+		 */
+		private String getDefaultJournal()
+		{
+			return "KJR" + unitName;
+		}
+
+		/**
+		 * Return the default full path Equation journal
+		 * 
+		 */
+		public String getDefaultJournalFullPath()
+		{
+			return "K@JR" + unitName + "/" + getDefaultJournal();
+		}
+
+		public void setUnitName(String unitName)
+		{
+			this.unitName = unitName;
+		}
+
+		/**
+		 * This method is going to handle journal errors.
+		 * 
+		 * @param exception
+		 *            this is the current error.
+		 * @param sqlStatement
+		 *            this is the previously executed sql statement.
+		 * @return false if the error is <code>CPF7032</code>, it means that the journal file has already been closed or opened.
+		 */
+		public boolean processJournalError(Exception exception, String sqlStatement, String journalCode)
+		{
+			String message = exception.getCause().getMessage();
+			if ((message.indexOf(journalCode)) == -1)
+			{
+				return false;
+			}
+
+			if (AbsEquationDao.this.LOG.isErrorEnabled())
+			{
+
+				LOG.error("Error CPF7032 it means that the journal file has already been closed or opened.");
+
+				LOG.error(new StringBuilder("The executed command is: ").append(sqlStatement).toString(), exception);
+			}
+			return true;
+		}
+	}
+}

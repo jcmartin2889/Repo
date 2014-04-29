@@ -1,0 +1,89 @@
+package com.misys.equation.function.test.run;
+
+import com.misys.equation.common.files.JournalHeader;
+import com.misys.equation.function.beans.FunctionData;
+import com.misys.equation.function.runtime.FunctionHandler;
+import com.misys.equation.function.tools.SupervisorToolbox;
+
+/**
+ * FunctionHandler Stub 1
+ * 
+ * This is how to use the Function Handler with validate and update processing done separately
+ * 
+ */
+public class FunctionHandlerStub20MFF extends FunctionHandlerStubTestCase
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	public FunctionHandlerStub20MFF()
+	{
+		try
+		{
+			setUp();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] inputParameters)
+	{
+		FunctionHandlerStub20MFF test = new FunctionHandlerStub20MFF();
+		test.test();
+	}
+
+	public boolean test()
+	{
+		// Have a bash...
+		FunctionHandler functionHandler = null;
+		try
+		{
+			System.out.println("------------------------------- 1");
+			functionHandler = FunctionToolboxStub.getFunctionHandler(user, "SESSIONID", "");
+			if (!functionHandler.doNewTransaction("MFF", ""))
+			{
+				FunctionToolboxStub
+								.printMessages(functionHandler.getFhd().getFunctionMsgManager().getOtherMessages().getMessages());
+				return false;
+			}
+			FunctionData functionData = functionHandler.getFhd().getScreenSetHandler().rtvScrnSetCurrent().getFunctionData();
+			functionData.chgFieldInputValue("KEY1", "WARN");
+
+			functionHandler.applyTransaction();
+			FunctionToolboxStub.printMessages(functionHandler.rtvFunctionMessages().getMessages());
+
+			// retrieve journal header
+			JournalHeader journalHeader = functionHandler.getFhd().getJournalHeader();
+			System.out.println(journalHeader);
+			return (journalHeader != null);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+		finally
+		{
+			if (functionHandler != null)
+			{
+				if (functionHandler.getFhd().getFunctionSession() != null)
+				{
+					SupervisorToolbox.removeSession(functionHandler.getFhd().getFunctionSession(), functionHandler.getFhd()
+									.getEquationUser().getEquationUnit());
+				}
+			}
+			cleanUp();
+		}
+	}
+
+	public void testStub13RL3()
+	{
+		FunctionHandlerStub20MFF stub = new FunctionHandlerStub20MFF();
+		boolean success = stub.test();
+		assertEquals(true, success);
+	}
+
+}

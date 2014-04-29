@@ -1,0 +1,184 @@
+package com.misys.equation.function.test.option;
+
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.function.beans.APIFieldSet;
+import com.misys.equation.function.beans.DisplayAttributes;
+import com.misys.equation.function.beans.DisplayAttributesSet;
+import com.misys.equation.function.beans.InputField;
+import com.misys.equation.function.beans.InputFieldSet;
+import com.misys.equation.function.test.helper.DisplayFieldSetWrapper;
+import com.misys.equation.function.test.helper.FunctionGenerator;
+import com.misys.equation.function.test.run.FunctionToolboxStub;
+import com.misys.equation.function.tools.FunctionToolbox;
+import com.misys.equation.function.tools.MappingToolbox;
+
+public class MCX extends TestOptionStub
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: MCX.java 7138 2010-05-04 14:59:54Z lima12 $";
+
+	public MCX()
+	{
+		try
+		{
+			setUp();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] inputParameters)
+	{
+		MCX test = new MCX();
+		test.test();
+	}
+
+	private DisplayFieldSetWrapper addRecord1(FunctionGenerator fg) throws EQException
+	{
+		// input filed
+		DisplayFieldSetWrapper fieldSetWrapper = fg.addFieldSet("PRIMARY", "Record 1 of MCX", "Description 1 of MCX");
+		InputFieldSet inputFieldSet = fieldSetWrapper.getInputFieldSet();
+		DisplayAttributesSet attributeSet = fieldSetWrapper.getDisplayAttributesSet();
+
+		// input field
+		InputField inputField;
+		DisplayAttributes displayAttributes;
+
+		// add all the fields in this section ---------------------------------------
+
+		// Customer mnemonic
+		inputField = FunctionToolbox.getInputField("CUS", "Customer", "This is the customer mnemonic", "A", "6", "");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		inputField.setKey(true);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setPrompt("JVR01R");
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Customer location
+		inputField = FunctionToolbox.getInputField("CLC", "Customer location", "This is the customer location", "A", "3", "");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		inputField.setKey(true);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setPrompt("GFR70R");
+		displayAttributes.setKeepWithPrevious(true);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+		FunctionToolbox.addPVFieldSet(inputField, FunctionToolbox.getPVFieldSet(session, "GFR70R", "", false, ""));
+
+		// Customer full name
+		inputField = FunctionToolbox.getInputField("FNAME", "Customer full name", "This is the Customer full name", "A", "35", "");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Customer short name
+		inputField = FunctionToolbox
+						.getInputField("SNAME", "Customer short name", "This is the Customer short name", "A", "35", "");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+
+		// Customer branch
+		inputField = FunctionToolbox.getInputField("BRNM", "Default branch", "This is the default branch", "A", "4", "");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(attributeSet, displayAttributes);
+		FunctionToolbox.addPVFieldSet(inputField, FunctionToolbox.getPVFieldSet(session, "CAR73R", "", false, ""));
+
+		return fieldSetWrapper;
+	}
+
+	private void addLoadAPI(FunctionGenerator fg) throws EQException
+	{
+
+		// note: getLoadAPIFieldSet it is used for input transaction.
+		// note: getPVFieldSet it is used for validate module.
+		// note: getEnquiryFieldSet it is used for enquire.
+		// note: getTableFieldSet it is used for data base table.
+
+		APIFieldSet apiFieldSet = FunctionToolbox.getLoadAPIFieldSet(session, "LID", "MCD", "G01M", "GZG011",
+						"Maintain Customer Details", "M", true);
+		fg.addLoadAPIFieldSet("REC1", apiFieldSet);
+
+		// PV
+		// PVFieldSet pvFieldSet = FunctionToolbox.getPVFieldSet(session, "GFR70R", "", false, "N", MappingToolbox
+		// .getFullLoadFieldSetPath("REC1", "LID"));
+		// fg.setLoadPVFieldSet("REC1", pvFieldSet);
+	}
+
+	private void addUpdateAPI(FunctionGenerator fg) throws EQException
+	{
+		// note: getLoadAPIFieldSet it is used for input transaction.
+		// note: getPVFieldSet it is used for validate module.
+		// note: getEnquiryFieldSet it is used for enquire.
+		// note: getTableFieldSet it is used for data base table.
+		APIFieldSet apiFieldSet = FunctionToolbox.getAPIFieldSet(session, "LID", "MCD", "G01M", "Maintain Customer Details", "M");
+		fg.addUpdateAPIFieldSet(apiFieldSet);
+	}
+
+	private void addMappings(FunctionGenerator fg) throws EQException
+	{
+		// add validate mapping
+		fg.addValidateMappingToPV("REC1", "CUS", "REC1", "CLC", "GFR70R", "$GFCUS");
+		fg.addValidateMappingToPV("REC1", "CLC", "REC1", "CLC", "GFR70R", "$GFCLC");
+		fg.addValidateMappingFromPV("REC1", "CLC", "GFR70R", "$GFCUS", "REC1", "CUS", MappingToolbox.TYPE_PRIMITIVE);
+		fg.addValidateMappingFromPV("REC1", "CLC", "GFR70R", "$GFCLC", "REC1", "CLC", MappingToolbox.TYPE_PRIMITIVE);
+		fg.addValidateMappingFromPV("REC1", "CLC", "GFR70R", "$GFCUN", "REC1", "CUS", MappingToolbox.TYPE_OUTPUT);
+
+		// add update mapping
+		fg.addUpdateMapping("REC1", "CUS", "LID", "GZCUS");
+		fg.addUpdateMapping("REC1", "CLC", "LID", "GZCLC");
+		fg.addUpdateMapping("REC1", "FNAME", "LID", "GZCUN");
+		fg.addUpdateMapping("REC1", "SNAME", "LID", "GZDAS");
+		fg.addUpdateMapping("REC1", "BRNM", "LID", "GZBRNM");
+
+		// add load PV
+		fg.addLoadMappingToPVLoad("REC1", "CUS", "REC1", "GFR70R", "$GFCUS");
+		fg.addLoadMappingToPVLoad("REC1", "CLC", "REC1", "GFR70R", "$GFCLC");
+
+		// add load mapping
+		fg.addLoadMappingToLoad("REC1", "CUS", "REC1", "LID", "GZCUS");
+		fg.addLoadMappingToLoad("REC1", "CLC", "REC1", "LID", "GZCLC");
+		fg.addLoadMappingFromLoad("REC1", "LID", "GZCUS", "REC1", "CUS", MappingToolbox.TYPE_PRIMITIVE);
+		fg.addLoadMappingFromLoad("REC1", "LID", "GZCLC", "REC1", "CLC", MappingToolbox.TYPE_PRIMITIVE);
+		fg.addLoadMappingFromLoad("REC1", "LID", "GZCUN", "REC1", "FNAME", MappingToolbox.TYPE_PRIMITIVE);
+		fg.addLoadMappingFromLoad("REC1", "LID", "GZDAS", "REC1", "SNAME", MappingToolbox.TYPE_PRIMITIVE);
+		fg.addLoadMappingFromLoad("REC1", "LID", "GZBRNM", "REC1", "BRNM", MappingToolbox.TYPE_PRIMITIVE);
+	}
+
+	public FunctionGenerator test()
+	{
+		// Have a bash...
+		try
+		{
+			printStartStatus(this.getClass().getSimpleName());
+			FunctionGenerator fg = new FunctionGenerator("MCX", "Label of MCX", "Desc of MCX", "com.misys.equation.screens",
+							"com.misys.equation.screens.layout");
+			addRecord1(fg);
+			addLoadAPI(fg);
+			addUpdateAPI(fg);
+			addMappings(fg);
+
+			// Write to DB
+			FunctionToolboxStub.writeToDB(unit, fg, false);
+
+			// print
+			printCompleteStatus(fg, this.getClass().getSimpleName(), printXML);
+
+			// Return function generator
+			return fg;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+}

@@ -1,0 +1,182 @@
+package com.misys.equation.function.test.option;
+
+import java.io.File;
+
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.function.beans.APIFieldSet;
+import com.misys.equation.function.beans.DisplayAttributes;
+import com.misys.equation.function.beans.DisplayAttributesSet;
+import com.misys.equation.function.beans.DisplayLabel;
+import com.misys.equation.function.beans.Field;
+import com.misys.equation.function.beans.FieldSet;
+import com.misys.equation.function.beans.Function;
+import com.misys.equation.function.beans.InputField;
+import com.misys.equation.function.beans.InputFieldSet;
+import com.misys.equation.function.beans.PVFieldSet;
+import com.misys.equation.function.test.helper.DisplayFieldSetWrapper;
+import com.misys.equation.function.test.helper.FunctionGenerator;
+import com.misys.equation.function.test.run.FunctionToolboxStub;
+import com.misys.equation.function.tools.FunctionToolbox;
+import com.misys.equation.function.tools.MappingToolbox;
+
+public class COM extends TestOptionStub
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: COM.java 8739 2010-08-19 10:59:04Z lima12 $";
+
+	public COM()
+	{
+		try
+		{
+			setUp();
+		}
+		catch (Exception e)
+		{
+			System.out.println(e);
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] inputParameters)
+	{
+		COM test = new COM();
+		test.test();
+	}
+
+	private void workFields(FunctionGenerator fg) throws EQException
+	{
+		FunctionToolbox.addWorkField(fg.getFunction(), "wfAB", "EAN", "", "A", "4", "");
+		FunctionToolbox.addWorkField(fg.getFunction(), "wfAN", "EAN", "", "A", "6", "");
+		FunctionToolbox.addWorkField(fg.getFunction(), "wfAS", "EAN", "", "A", "3", "");
+		FunctionToolbox.addWorkField(fg.getFunction(), "wfCUS", "EAN", "", "A", "6", "");
+		FunctionToolbox.addWorkField(fg.getFunction(), "wfCLC", "EAN", "", "A", "3", "");
+		FunctionToolbox.addWorkField(fg.getFunction(), "wfSDT", "EAN", "", "D", "7", "");
+		FunctionToolbox.addWorkField(fg.getFunction(), "wfMDT", "EAN", "", "D", "7", "");
+		FunctionToolbox.addWorkField(fg.getFunction(), "wfCCY", "EAN", "", "A", "3", "");
+	}
+
+	private DisplayFieldSetWrapper addRecord1(FunctionGenerator fg) throws EQException
+	{
+		// add the record
+		DisplayFieldSetWrapper fieldSetWrapper = fg.addFieldSet("PRIMARY", "Loan details", "Description record 1");
+		InputFieldSet inputFieldSet = fieldSetWrapper.getInputFieldSet();
+		DisplayAttributesSet displayAttributeSet = fieldSetWrapper.getDisplayAttributesSet();
+
+		// input field
+		InputField inputField;
+		DisplayAttributes displayAttributes;
+		PVFieldSet pvFieldSet;
+		DisplayLabel displayLabel;
+
+		// add all the fields in this section ---------------------------------------
+
+		// Loan type
+		inputField = FunctionToolbox.getInputField("CMR", "Commitment", "This is the commitment", "A", "13", "");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setPrompt("LCR01R");
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(displayAttributeSet, displayAttributes);
+		FunctionToolbox.addPVFieldSet(inputField, FunctionToolbox.getPVFieldSet(session, "LCR01R", "", true, ""));
+
+		// Currency
+		inputField = FunctionToolbox.getInputField("CCY", "Currency", "This is the currency", "A", "3", "");
+		inputField.setDefaultValue("GBP");
+		inputField.setInitialValue("GBP");
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		displayAttributes.setPrompt("C8R01R");
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(displayAttributeSet, displayAttributes);
+		FunctionToolbox.addPVFieldSet(inputField, FunctionToolbox.getPVFieldSet(session, "C8R01R", "", true, "N"));
+
+		// Amount
+		inputField = FunctionToolbox.getInputField("DLA", "Amount", "This is the loan amount", "P", "15", "0");
+		inputField.setInitialValue("10T");
+		inputField.setMandatory(InputField.MANDATORY_YES);
+		displayAttributes = FunctionToolbox.getInputFieldAttribute(inputField);
+		FunctionToolbox.addInputField(inputFieldSet, inputField);
+		FunctionToolbox.addDisplayAttributes(displayAttributeSet, displayAttributes);
+		pvFieldSet = FunctionToolbox.addPVFieldSet(inputField, FunctionToolbox.getPVFieldSet(session, "GWV30R", "", true, "N"));
+		pvFieldSet.getPVField("$NDPAM").setValidateAssignment(Field.ASSIGNMENT_CODE);
+		pvFieldSet.getPVField("$NODIG").setValidateAssignment(Field.ASSIGNMENT_CODE);
+
+		return fieldSetWrapper;
+	}
+
+	public void addUpdateAPI(FunctionGenerator fg) throws EQException
+	{
+		APIFieldSet apiFieldSet;
+
+		apiFieldSet = fg.getFunction().addReservedFieldSet(Function.CRM_FIELDSET, "Description of CRM");
+		apiFieldSet.setExecuteMode(FieldSet.EXECUTE_CODE);
+		apiFieldSet.getAPIField("HHAMC").setUpdateAssignment(Field.ASSIGNMENT_CODE);
+		apiFieldSet.getAPIField("HHFCT").setUpdateAssignment(Field.ASSIGNMENT_CODE);
+		fg.addUpdateMapping("PRIMARY", "CMR", Function.CRM_FIELDSET, "HHCMR");
+		fg.addUpdateMapping("PRIMARY", "wfAB", Function.CRM_FIELDSET, "HHAB");
+		fg.addUpdateMapping("PRIMARY", "wfAN", Function.CRM_FIELDSET, "HHAN");
+		fg.addUpdateMapping("PRIMARY", "wfAS", Function.CRM_FIELDSET, "HHAS");
+		fg.addUpdateMapping("PRIMARY", "wfCCY", Function.CRM_FIELDSET, "HHCY1");
+		fg.addUpdateMapping("PRIMARY", "wfCUS", Function.CRM_FIELDSET, "HHCUS");
+		fg.addUpdateMapping("PRIMARY", "wfCLC", Function.CRM_FIELDSET, "HHCLC");
+		fg.addUpdateMapping("PRIMARY", "wfSDT", Function.CRM_FIELDSET, "HHSDT");
+		fg.addUpdateMapping("PRIMARY", "wfMDT", Function.CRM_FIELDSET, "HHMDT");
+
+		apiFieldSet = fg.getFunction().addReservedFieldSet(Function.EFC_FIELDSET, "Description of EFC");
+		apiFieldSet.setExecuteMode(FieldSet.EXECUTE_CODE);
+		apiFieldSet.getAPIField("ENEW").setUpdateAssignment(Field.ASSIGNMENT_CODE);
+		fg.addUpdateMapping("PRIMARY", "CMR", Function.EFC_FIELDSET, "ECMR");
+		fg.addUpdateMapping("PRIMARY", "DLA", Function.EFC_FIELDSET, "EDAMT");
+		fg.addUpdateMapping("PRIMARY", "CCY", Function.EFC_FIELDSET, "EDCCY");
+	}
+
+	private void addMappings(FunctionGenerator fg) throws EQException
+	{
+		// Validate mapping for receiving account GWR76R
+		fg.addValidateMappingToPV("PRIMARY", "CMR", "PRIMARY", "CMR", "LCR01R", "$LCCMR");
+		fg.addValidateMappingFromPV("PRIMARY", "CMR", "LCR01R", "$LCCMR", "PRIMARY", "CMR", MappingToolbox.TYPE_PRIMITIVE);
+		fg.addValidateMappingFromPV("PRIMARY", "CMR", "LCR01R", "$LCABC", "PRIMARY", "wfAB", MappingToolbox.TYPE_WORK);
+		fg.addValidateMappingFromPV("PRIMARY", "CMR", "LCR01R", "$LCANC", "PRIMARY", "wfAN", MappingToolbox.TYPE_WORK);
+		fg.addValidateMappingFromPV("PRIMARY", "CMR", "LCR01R", "$LCASC", "PRIMARY", "wfAS", MappingToolbox.TYPE_WORK);
+		fg.addValidateMappingFromPV("PRIMARY", "CMR", "LCR01R", "$LCCUS", "PRIMARY", "wfCUS", MappingToolbox.TYPE_WORK);
+		fg.addValidateMappingFromPV("PRIMARY", "CMR", "LCR01R", "$LCCLC", "PRIMARY", "wfCLC", MappingToolbox.TYPE_WORK);
+		fg.addValidateMappingFromPV("PRIMARY", "CMR", "LCR01R", "$LCDTA", "PRIMARY", "wfSDT", MappingToolbox.TYPE_WORK);
+		fg.addValidateMappingFromPV("PRIMARY", "CMR", "LCR01R", "$LCDTF", "PRIMARY", "wfMDT", MappingToolbox.TYPE_WORK);
+		fg.addValidateMappingFromPV("PRIMARY", "CMR", "LCR01R", "$LCCCY", "PRIMARY", "wfCCY", MappingToolbox.TYPE_WORK);
+		fg.addValidateMappingFromPV("PRIMARY", "CMR", "LCR01R", "$LCCCY", "PRIMARY", "CCY", MappingToolbox.TYPE_PRIMITIVE);
+
+		// Validate mapping for deal amount GWV30R
+		fg.addValidateMappingToPV("PRIMARY", "CCY", "PRIMARY", "DLA", "GWV30R", "$CCYAM");
+		fg.addValidateMappingToPV("PRIMARY", "DLA", "PRIMARY", "DLA", "GWV30R", "$INPAM");
+		fg.addValidateMappingFromPV("PRIMARY", "DLA", "GWV30R", "$NUMAM", "PRIMARY", "DLA", MappingToolbox.TYPE_PRIMITIVE);
+		fg.addValidateMappingFromPV("PRIMARY", "DLA", "GWV30R", "$EDTAM", "PRIMARY", "DLA", MappingToolbox.TYPE_OUTPUT);
+	}
+
+	public void test()
+	{
+		// Have a bash...
+		try
+		{
+			printStartStatus(this.getClass().getSimpleName());
+			FunctionGenerator fg = new FunctionGenerator("COM", "Commitment testing", "Description of Commitment testing",
+							"com.misys.equation.screens", "com.misys.equation.screens.layout");
+			workFields(fg);
+			addRecord1(fg);
+			addMappings(fg);
+			addUpdateAPI(fg);
+
+			fg.getFunction().setApplyDuringExtInput(true);
+			fg.getFunction().setApplyDuringRecovery(true);
+
+			// Write to DB
+			File serviceClass = new File(workSpace + "com\\misys\\equation\\screens\\COM.class");
+			FunctionToolboxStub.writeToDB(unit, fg.getFunctionBean(), fg.getLayoutBean(), serviceClass, null);
+
+			// print
+			printCompleteStatus(fg, this.getClass().getSimpleName(), printXML);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+}

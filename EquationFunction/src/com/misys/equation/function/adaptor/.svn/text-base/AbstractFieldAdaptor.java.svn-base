@@ -1,0 +1,149 @@
+package com.misys.equation.function.adaptor;
+
+import com.misys.equation.function.runtime.UserData;
+
+public abstract class AbstractFieldAdaptor extends AbstractAdaptor implements IFieldAdaptor
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/**
+	 * Determine if the field is mandatory or not. This user exit is invoked whenever the field is being syntax validated
+	 * 
+	 * <pre>
+	 * To access the User Data, use the following methods of the User Data class:
+	 * 
+	 * rtvDbValue(fieldname) 
+	 * - to retrieve the primitive value of the field
+	 * 
+	 * rtvInputValue(fieldname) 
+	 * - to retrieve the input value of the field
+	 * 
+	 * rtvOutputValue(fieldname) 
+	 * - to retrieve the output value of the field
+	 * 
+	 * </pre>
+	 * 
+	 * @param userData
+	 *            - the user data
+	 * 
+	 * @return true if the field is mandatory
+	 */
+	public boolean isMandatory(UserData userData)
+	{
+		return false;
+	}
+
+	/**
+	 * Determine if the field is valid or not. This user exit is invoked whenever the field is being application validated
+	 * 
+	 * <pre>
+	 * To generate messages, use any of the following methods of this class:
+	 * 
+	 * addMessage(KSM id) 
+	 * - generate the message identified by the message id from the KSMMSGF file
+	 * 
+	 * addMessage(KSM id, Parameter 1, Parameter 2, Parameter 3) 
+	 * - generate the message identified by the message id from the KSMMSGF file 
+	 *   with the specified replacement text
+	 * 
+	 * addError(Error message)
+	 * - generate the specified message as an error message
+	 * 
+	 * addWarning(Warning)
+	 * - generate the specified message as a warning message
+	 * 
+	 * addInfo(Info)
+	 * - generate the specified message as an informational message
+	 * 
+	 * </pre>
+	 * 
+	 * @param userData
+	 *            - the user data
+	 * 
+	 * @return true if the field is valid
+	 */
+	public boolean isValid(UserData userData)
+	{
+		return true;
+	}
+
+	/**
+	 * Return the primitive value of the field. This allows the bank to overwrite the primitive value of the field. The returned
+	 * value must be a valid primitive value. Return NULL if the returned value is to be ignored.
+	 * 
+	 * This user exit is invoked whenever the field is being syntax validated.
+	 * 
+	 * @param userData
+	 *            - the User Data
+	 * 
+	 * @return the primitive value of the field (or null if the value is to be ignored)
+	 */
+	public String getPrimitiveValue(UserData userData)
+	{
+		return null;
+	}
+
+	/**
+	 * Return the output value of the field. This allows the bank to overwrite the output value of the field. Return NULL if the
+	 * returned value is to be ignored
+	 * 
+	 * This user exit is invoked whenever the field is being syntax validated.
+	 * 
+	 * @param userData
+	 *            - the User Data
+	 * 
+	 * @return the output value of the field (or null if the value is to be ignored)
+	 */
+	public String getOutputValue(UserData userData)
+	{
+		return null;
+	}
+
+	/**
+	 * Return the input value of the field. This allows the bank to overwrite the input value of the field. Return NULL if the
+	 * returned value is to be ignored
+	 * 
+	 * This user exit is invoked whenever the field is being syntax validated.
+	 * 
+	 * @param userData
+	 *            - the User Data
+	 * 
+	 * @return the input value of the field (or null if the value is to be ignored)
+	 */
+	public String getInputValue(UserData userData)
+	{
+		return null;
+	}
+
+	/**
+	 * Return the initial value of the field. This allows the bank to overwrite the initial value of the field. Return NULL if the
+	 * returned value is to be ignored
+	 * 
+	 * @param userData
+	 *            - the User Data
+	 * 
+	 * @return the initial value of the field (or null if the value is to be ignored)
+	 */
+
+	public String initialValue(UserData userData)
+	{
+		return null;
+	}
+
+	/**
+	 * Return the default value of the field. This allows the bank to overwrite the default value of the field. Return NULL if the
+	 * returned value is to be ignored
+	 * 
+	 * @param userData
+	 *            - the User Data
+	 * 
+	 * @return the default value of the field (or null if the value is to be ignored)
+	 */
+
+	public String defaultValue(UserData userData)
+	{
+		return null;
+	}
+
+}

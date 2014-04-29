@@ -1,0 +1,582 @@
+package com.misys.equation.ui.helpers;
+
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+
+import com.ibm.as400.access.AS400;
+import com.ibm.as400.access.PrintObject;
+import com.ibm.as400.access.PrintObjectInputStream;
+import com.ibm.as400.access.PrintParameterList;
+import com.ibm.as400.access.SpooledFile;
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationUser;
+import com.misys.equation.common.utilities.Toolbox;
+import com.misys.equation.ui.pdfFonts.LangFont;
+import com.misys.equation.ui.pdfFonts.LangFontHelper;
+
+public class EqSpooledFileToPDF
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EqSpooledFileToPDF.java 12433 2012-01-06 17:06:53Z lima12 $";
+
+	// EBCDIC Codes
+	public static final byte PP = 0x34; // Presentation Position
+	public static final byte HP = (byte) 0xC0;// Horizontal position
+	public static final byte VP = (byte) 0xC4;// Vertical position
+	public static final byte HO = (byte) 0xC8;// horizontal offset
+	public static final byte NULL = 0x00; // NULL
+	public static final byte DC3 = 0x0C; // Device control off
+	public static final byte CR = 0x0D; // Carriage return
+	public static final byte NL = 0x15; // New line
+	public static final byte LF = 0x25; // Line feed
+	public static final byte SI = 0x0E; // switch into DBCS
+	public static final byte SO = 0x0F; // switch out of DBCS
+	public static final byte SP = 0x40; // space
+	public static final byte FF = 0x0C; // form feed
+
+	private final AS400 eqAS400;
+	private final String spooledName, jobName, jobUser, jobNumber;
+	private final int splfNumber;
+	private SpooledFile splf;
+	private LangFont langFont;
+	private final EquationUser eqUser;
+	private int ccsid;
+
+	// When testing, test against the following spooled files:
+	// 1. The spooled files in ATBSAVF/ERR492530 in Slough1
+	// 2. TH Transaction History spooled file
+	// 3. JRC Journal Report spooled file
+	// 4. QPJOBLOG spooled file
+	// 5. QPPGDMP spooled file
+	// 6. P51CRPR Report
+	// 7. R85ARCR Report
+
+	/**
+	 * Wrapper for the input stream to allow buffering
+	 * 
+	 */
+	public class SpooledFileInputStream
+	{
+		private final int max_bytes = 40960;
+		private final PrintObjectInputStream splfInputStream;
+		private final byte[] splfInputStreamBuffer;
+		private int currentStreamIndex;
+		private int maximumStreamIndex;
+
+		/**
+		 * Construct a new input stream buffer
+		 * 
+		 * @param splfInputStream
+		 */
+		public SpooledFileInputStream(PrintObjectInputStream splfInputStream)
+		{
+			this.splfInputStream = splfInputStream;
+			splfInputStreamBuffer = new byte[max_bytes];
+			currentStreamIndex = 0;
+			maximumStreamIndex = 0;
+		}
+
+		/**
+		 * Bypass the unnecessary bytes from the spooled file stream
+		 * 
+		 * @throws Exception
+		 */
+		public void bypass() throws Exception
+		{
+			// Bypass the first 132 bytes
+			splfInputStream.read(new byte[132]);
+		}
+
+		/**
+		 * Read the next byte
+		 * 
+		 * @return the next byte
+		 * 
+		 * @throws Exception
+		 */
+		public Byte readNextByte() throws Exception
+		{
+			// no details in the buffer or way pass the buffer, then read next chunks
+			if (maximumStreamIndex == 0 || currentStreamIndex >= maximumStreamIndex)
+			{
+				maximumStreamIndex = splfInputStream.read(splfInputStreamBuffer);
+
+				// no data read
+				if (maximumStreamIndex == -1)
+				{
+					return null;
+				}
+
+				// return the first byte
+				currentStreamIndex = 1;
+				return splfInputStreamBuffer[0];
+			}
+
+			// just return the next byte in the buffer
+			else
+			{
+				// note, use post operation as it should read from the current index then increment it
+				return splfInputStreamBuffer[currentStreamIndex++];
+			}
+		}
+
+		/**
+		 * Close the input stream
+		 */
+		public void close()
+		{
+			try
+			{
+				splfInputStream.close();
+			}
+			catch (Exception e)
+			{
+				EquationCommonContext.getContext().getLOG().error(e);
+			}
+		}
+
+	}
+
+	/**
+	 * Constructor to create a PDF version of the spooled file
+	 * 
+	 * @param xeqAS400
+	 *            - the AS400
+	 * @param xspooledName
+	 *            - the spooled file name
+	 * @param xjobName
+	 *            - the job name
+	 * @param xjobUser
+	 *            - the job user
+	 * @param xjobNumber
+	 *            - the job number
+	 * @param xsplfNumber
+	 *            - the spooled file number
+	 * @param xeqUser
+	 *            - the Equation user
+	 */
+	public EqSpooledFileToPDF(AS400 xeqAS400, String xspooledName, String xjobName, String xjobUser, String xjobNumber,
+					int xsplfNumber, EquationUser xeqUser)
+	{
+		eqAS400 = xeqAS400;
+		spooledName = xspooledName;
+		jobName = xjobName;
+		jobUser = xjobUser;
+		jobNumber = xjobNumber;
+		splfNumber = xsplfNumber;
+		eqUser = xeqUser;
+		ccsid = eqAS400.getCcsid();
+	}
+
+	/**
+	 * Open the spooled file
+	 * 
+	 * @throws Exception
+	 */
+	private void openSplf() throws Exception
+	{
+		splf = new SpooledFile(eqAS400, spooledName, splfNumber, jobName, jobUser, jobNumber);
+	}
+
+	/**
+	 * Close the PDF
+	 * 
+	 * @throws Exception
+	 */
+	private void closePDF() throws Exception
+	{
+		langFont.close();
+	}
+
+	/**
+	 * Open the PDF
+	 * 
+	 * @param byteoutputstream
+	 *            - this is the stream to write the PDF into
+	 * 
+	 * @throws Exception
+	 */
+	private void openPDF(OutputStream byteoutputstream) throws Exception
+	{
+		langFont = LangFontHelper.getLangFont(eqUser.getLanguageId(), eqUser.isLanguageRTL());
+		langFont.setSize(splf.getStringAttribute(SpooledFile.ATTR_MEASMETHOD), splf.getFloatAttribute(SpooledFile.ATTR_PAGEWIDTH),
+						splf.getFloatAttribute(SpooledFile.ATTR_PAGELEN));
+		langFont.openOutputStream(byteoutputstream);
+	}
+
+	/**
+	 * Create the PDF
+	 * 
+	 * @param byteoutputstream
+	 *            - this is the stream to write the PDF into
+	 * @param fromPage
+	 *            - the starting page number to load. 0 to display all
+	 * @param toPage
+	 *            - the last page number to load.
+	 * 
+	 * @throws Exception
+	 */
+	public void createPDF(OutputStream byteoutputstream, int fromPage, int toPage) throws Exception
+	{
+		openSplf();
+		openPDF(byteoutputstream);
+		loadSpooledFile(fromPage, toPage);
+		closePDF();
+	}
+
+	/**
+	 * Load the spooled file
+	 * 
+	 * @param fromPage
+	 *            - the starting page number to load. 0 to display all
+	 * @param toPage
+	 *            - the last page number to load.
+	 * 
+	 * @throws Exception
+	 */
+	private void loadSpooledFile(int fromPage, int toPage) throws Exception
+	{
+		StringBuilder splfStringBuffer = new StringBuilder();
+		int currentPage = 1;
+		int currentColumn = 0;
+		int currentRow = 0;
+
+		// these values are populated when the next character must appear prior to the
+		// current column. This happens when the order in the printer file definition
+		// is not in ascending column order
+		int adjustedColumn = -1;
+		int adjustedRow = 0;
+
+		// Set transformation rule
+		PrintParameterList prtParam = new PrintParameterList();
+		prtParam.setParameter(PrintObject.ATTR_MFGTYPE, "*WSCST");
+		prtParam.setParameter(PrintObject.ATTR_WORKSTATION_CUST_OBJECT, "/QSYS.LIB/QWPDEFAULT.WSCST");
+
+		// Set input stream
+		// PrintObjectTransformedInputStream splfInputStream = splf.getTransformedInputStream(prtParam);
+		SpooledFileInputStream spooledFileInputStream = new SpooledFileInputStream(splf.getInputStream());
+		spooledFileInputStream.bypass();
+
+		// Initialise the output stream
+		boolean translate = false;
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+		// Read each character
+		Byte oneByte = spooledFileInputStream.readNextByte();
+
+		while (oneByte != null)
+		{
+			try
+			{
+				byte b = oneByte;
+
+				// If we don't have a null and we are translating then lets get to it...
+				if (b != NULL && b != PP && translate)
+				{
+					if (b == NL)
+					{
+						if (adjustedColumn == -1)
+						{
+							currentRow = currentRow + skipRows(1, byteArrayOutputStream);
+							currentColumn = 0;
+						}
+						else
+						{
+							adjustedRow++;
+						}
+					}
+					else if (b == CR)
+					{
+						// do not add to the buffer, as this will
+						// increase the number of lines
+					}
+					else if (b == FF)
+					{
+						// do not add to the buffer, as this will
+						// appear as an invalid character
+					}
+					else
+					{
+						byteArrayOutputStream.write(b);
+						if (adjustedColumn == -1)
+						{
+							currentColumn++;
+						}
+					}
+				}
+
+				// Do we have a positional marker?
+				if (b == PP)
+				{
+					// reset the translate flag
+					translate = false;
+
+					// flush out the buffer...
+					if (byteArrayOutputStream.size() > 0)
+					{
+						String splfString = "";
+
+						// only process required page
+						if (fromPage == 0 || (currentPage >= fromPage && currentPage <= toPage))
+						{
+							splfString = Toolbox.convertAS400TextIntoCCSID(byteArrayOutputStream.toByteArray(),
+											byteArrayOutputStream.size(), ccsid);
+
+							// adjusted column not specified
+							if (adjustedColumn == -1)
+							{
+								splfStringBuffer.append(splfString);
+							}
+
+							// adjusted column specified
+							else
+							{
+								int start = splfStringBuffer.length() - adjustedColumn;
+								int len = splfString.length();
+								if (len <= adjustedColumn)
+								{
+									replace(splfStringBuffer, start, start + len, splfString);
+								}
+								else
+								{
+									int len2 = splfStringBuffer.length() - start;
+									replace(splfStringBuffer, start, splfStringBuffer.length(), splfString.substring(0, len2));
+									splfStringBuffer.append(splfString.substring(len2));
+									currentColumn = currentColumn + splfString.length() - len2;
+								}
+							}
+						}
+
+						// reset byte array
+						byteArrayOutputStream.reset();
+
+						// adjusted row?
+						if (adjustedRow > 0)
+						{
+							currentRow = currentRow + skipRows(adjustedRow, byteArrayOutputStream);
+							currentColumn = 0;
+						}
+					}
+
+					// reset next column
+					adjustedColumn = -1;
+					adjustedRow = 0;
+
+					// move to next byte
+					oneByte = spooledFileInputStream.readNextByte();
+					b = oneByte;
+
+					// Vertical positioning
+					if (b == VP)
+					{
+						// move to next byte, and read the row number
+						oneByte = spooledFileInputStream.readNextByte();
+						b = oneByte;
+						int rowValue = adjustByte(b);
+
+						// next page?
+						if (rowValue < currentRow)
+						{
+							String splfString = "";
+
+							// only process required page
+							if (fromPage == 0 || (currentPage >= fromPage && currentPage <= toPage))
+							{
+								splfString = Toolbox.convertAS400TextIntoCCSID(byteArrayOutputStream.toByteArray(),
+												byteArrayOutputStream.size(), ccsid);
+								splfStringBuffer.append(splfString);
+								langFont.write(splfStringBuffer.toString());
+								splfStringBuffer = new StringBuilder();
+								byteArrayOutputStream.reset();
+
+								// exceed the required page already?
+								if (fromPage != 0 && (currentPage + 1) > toPage)
+								{
+									break;
+								}
+
+								langFont.nextPage();
+							}
+							currentRow = 0;
+							currentColumn = 0;
+							currentPage++;
+						}
+
+						// skip number of rows
+						currentRow = currentRow + skipRows(rowValue - currentRow, byteArrayOutputStream);
+						currentColumn = 0;
+
+						// Set us ready to start translating
+						translate = true;
+					}
+
+					// horizontal positioning
+					if (b == HP)
+					{
+						// move to next byte, and read the column number
+						oneByte = spooledFileInputStream.readNextByte();
+						b = oneByte;
+						int columnValue = adjustByte(b);
+
+						// determine if the next string will be appended to the end the string or need to go back
+						if (currentColumn < columnValue)
+						{
+							adjustedColumn = -1;
+						}
+						else
+						{
+							adjustedColumn = currentColumn - (columnValue - 1);
+						}
+
+						// number of spaces
+						int spaces = columnValue - currentColumn - 1;
+
+						// skip number of spaces
+						currentColumn = currentColumn + skipColumns(spaces, byteArrayOutputStream);
+
+						// Set us ready to start translating
+						translate = true;
+					}
+
+					// horizontal offset
+					if (b == HO)
+					{
+						// move to next byte, and read the number of spaces
+						oneByte = spooledFileInputStream.readNextByte();
+						b = oneByte;
+						int columnValue = adjustByte(b);
+
+						// skip number of spaces
+						currentColumn = currentColumn + skipColumns(columnValue - 1, byteArrayOutputStream);
+
+						// Set us ready to start translating
+						translate = true;
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				EquationCommonContext.getContext().getLOG().error(e);
+				throw e;
+			}
+			finally
+			{
+				// read next byte
+				oneByte = spooledFileInputStream.readNextByte();
+			}
+		}
+
+		// Close the input stream
+		spooledFileInputStream.close();
+
+		// Write to PDF
+		String splfString = Toolbox.convertAS400TextIntoCCSID(byteArrayOutputStream.toByteArray(), byteArrayOutputStream.size(),
+						ccsid);
+		splfStringBuffer.append(splfString);
+		langFont.write(splfStringBuffer.toString());
+	}
+
+	/**
+	 * Adjust the byte into integer
+	 * 
+	 * @param b
+	 *            - the byte read from the spooled file
+	 * 
+	 * @return the integer equivalent
+	 */
+	private int adjustByte(byte b)
+	{
+		int byteValue = Byte.valueOf(b).intValue();
+		if (byteValue < 0)
+		{
+			byteValue = byteValue + 256;
+		}
+		return byteValue;
+	}
+
+	/**
+	 * Add lines into the byte array
+	 * 
+	 * @param rows
+	 *            - the number of rows
+	 * @param byteArrayOutputStream
+	 *            - the byte array
+	 * 
+	 * @return the number of rows added
+	 * 
+	 * @throws Exception
+	 */
+	private int skipRows(int rows, ByteArrayOutputStream byteArrayOutputStream) throws Exception
+	{
+		// nothing to add
+		if (rows <= 0)
+		{
+			return 0;
+		}
+
+		// skip number of rows
+		for (int j = 0; j < rows; j++)
+		{
+			byteArrayOutputStream.write(new byte[] { CR, LF });
+		}
+
+		return rows;
+	}
+
+	/**
+	 * Add spaces into the byte array
+	 * 
+	 * @param columns
+	 *            - the number of spaces
+	 * @param byteArrayOutputStream
+	 *            - the byte array
+	 * 
+	 * @return the number of spaces added
+	 * 
+	 * @throws Exception
+	 */
+	private int skipColumns(int columns, ByteArrayOutputStream byteArrayOutputStream) throws Exception
+	{
+		// nothing to add
+		if (columns <= 0)
+		{
+			return 0;
+		}
+
+		// skip number of spaces
+		for (int j = 0; j < columns; j++)
+		{
+			byteArrayOutputStream.write(SP);
+		}
+
+		return columns;
+	}
+
+	/**
+	 * Copy a string into the buffer at the specified start/end index. If the string copy is a blank space, then do not override the
+	 * buffer
+	 * 
+	 * @param buffer
+	 *            - the String buffer
+	 * @param start
+	 *            - the start index
+	 * @param end
+	 *            - the end index (excluding)
+	 * @param str
+	 *            - the String to copy
+	 */
+	private void replace(StringBuilder buffer, int start, int end, String str)
+	{
+		int j = 0;
+		for (int i = start; i < end; i++)
+		{
+			String c = str.substring(j, j + 1);
+			if (!c.equals(" "))
+			{
+				buffer.replace(i, i + 1, c);
+			}
+			j++;
+		}
+	}
+
+}

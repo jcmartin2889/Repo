@@ -1,0 +1,111 @@
+package com.misys.equation.function.tools;
+
+import com.misys.equation.function.beans.APIFieldSet;
+
+/**
+ * This class encapsulates the details for a Repeating API.
+ * <p>
+ * These details are used to specify whether and how this API is 'joined' to another API. repeating group id, which will be the same
+ * as the API Id, unless this API is being 'joined' to another API, in which case the joined to API Id will be used.
+ */
+public class RepeatingDetails
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/**
+	 * Whether and how this API is joined to another API See {@link APIFieldSet#RPTGRP_LOAD_DEFAULT},
+	 * {@link APIFieldSet#RPTGRP_LOAD_CHAIN} or {@link APIFieldSet#RPTGRP_LOAD_SQL_AGGREGATE}
+	 */
+	private int joinType;
+	/**
+	 * repeating group id, which will be the same as the API Id, unless this API is being 'joined' to another API, in which case the
+	 * joined to API Id will be used.
+	 */
+	private String repeatingGroupId;
+
+	/** A colon delimited String of fields in this API that will be used for joining */
+	private String joinAPIFields;
+
+	/** A column delimited String of InputFields (or hard-coded values?) that are used to 'map' values from */
+	private String inputFields;
+
+	/**
+	 * Default constructor
+	 */
+	public RepeatingDetails()
+	{
+		joinType = APIFieldSet.RPTGRP_LOAD_DEFAULT;
+		repeatingGroupId = "";
+		joinAPIFields = "";
+		inputFields = "";
+	}
+
+	/**
+	 * @return the joinType
+	 */
+	public int getJoinType()
+	{
+		return joinType;
+	}
+
+	/**
+	 * @param joinType
+	 *            the joinType to set
+	 */
+	public void setJoinType(int joinType)
+	{
+		this.joinType = joinType;
+	}
+
+	/**
+	 * @return the repeatingGroupId
+	 */
+	public String getRepeatingGroupId()
+	{
+		return repeatingGroupId;
+	}
+
+	/**
+	 * @param repeatingGroupId
+	 *            the repeatingGroupId to set
+	 */
+	public void setRepeatingGroupId(String repeatingGroupId)
+	{
+		this.repeatingGroupId = repeatingGroupId;
+	}
+
+	/**
+	 * @return the joinAPIFields
+	 */
+	public String getJoinAPIFields()
+	{
+		return joinAPIFields;
+	}
+
+	/**
+	 * @param joinAPIFields
+	 *            the joinAPIFields to set
+	 */
+	public void setJoinAPIFields(String joinAPIFields)
+	{
+		this.joinAPIFields = joinAPIFields;
+	}
+
+	/**
+	 * @return the inputFields
+	 */
+	public String getInputFields()
+	{
+		return inputFields;
+	}
+
+	/**
+	 * @param inputFields
+	 *            the inputFields to set
+	 */
+	public void setInputFields(String inputFields)
+	{
+		this.inputFields = inputFields;
+	}
+}

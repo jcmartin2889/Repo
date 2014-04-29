@@ -1,0 +1,215 @@
+package com.misys.equation.common.access;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.transaction.Status;
+import javax.transaction.SystemException;
+import javax.transaction.UserTransaction;
+
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.internal.eapi.core.EQRuntimeException;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.dataaccess.connectionpooling.impl.JndiConnectionPool;
+
+/**
+ * This class wraps and implements an XA UserTransaction manager. JNDI lookup of the UserTransaction instance will change based on
+ * the Web Server.
+ * 
+ * @author williae1
+ * 
+ */
+public class EquationTransactionManager implements UserTransaction
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	// Log
+	private static final EquationLogger LOG = new EquationLogger(EquationTransactionManager.class);
+
+	private UserTransaction utx;
+
+	/**
+	 * @throws EQException
+	 */
+	public EquationTransactionManager() throws EQException
+	{
+		try
+		{
+			InitialContext initialContext = new InitialContext();
+
+			if (JndiConnectionPool.isAWebSphereApplicationServer())
+			{
+				// WebSphere
+				utx = (UserTransaction) initialContext.lookup("java:comp/UserTransaction");
+			}
+			else
+			{
+				if (JndiConnectionPool.isAJBossApplicationServer())
+				{
+					// THIS DOES NOT WORK. Caste exception ServerVMClientUserTransaction*.*
+					// JBOSS
+					utx = (UserTransaction) initialContext.lookup("UserTransaction");
+				}
+			}
+		}
+		catch (NamingException e)
+		{
+			LOG.error("Transaction Manager could not be found.", e);
+			throw new RuntimeException(e);
+		}
+
+	}
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.transaction.UserTransaction#begin()
+	 */
+	public void begin()
+	{
+		try
+		{
+			if (LOG.isInfoEnabled())
+			{
+				LOG.info("Beginning an XA transaction.  UserTransaction status beforehand: " + utx.getStatus());
+			}
+			utx.begin();
+		}
+		catch (Exception e)
+		{
+			LOG.error("Transaction begin failed.", e);
+			throw new EQRuntimeException(e);
+		}
+
+	}
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.transaction.UserTransaction#commit()
+	 */
+	public void commit() throws SecurityException, IllegalStateException
+	{
+		try
+		{
+			if (LOG.isInfoEnabled())
+			{
+				LOG.info("Committing an XA transaction.  UserTransaction status beforehand: " + utx.getStatus());
+			}
+
+			utx.commit();
+		}
+		catch (Exception e)
+		{
+			LOG.error("Transaction commit failed.", e);
+			throw new EQRuntimeException(e);
+		}
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.transaction.UserTransaction#rollback()
+	 */
+	public void rollback() throws IllegalStateException
+	{
+		try
+		{
+			if (LOG.isInfoEnabled())
+			{
+				LOG.info("Rolling back an XA transaction.  UserTransaction status beforehand: " + utx.getStatus());
+			}
+			utx.rollback();
+		}
+		catch (Exception e)
+		{
+			LOG.error("Transaction rollback failed.", e);
+			throw new EQRuntimeException(e);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.transaction.UserTransaction#getStatus()
+	 */
+	public int getStatus() throws SystemException
+	{
+		return utx.getStatus();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.transaction.UserTransaction#setRollbackOnly()
+	 */
+	public void setRollbackOnly() throws IllegalStateException
+	{
+		try
+		{
+			if (LOG.isInfoEnabled())
+			{
+				LOG.info("Setting XA transaction status to rollback only.  UserTransaction status beforehand " + utx.getStatus());
+			}
+
+			utx.setRollbackOnly();
+		}
+		catch (SystemException e)
+		{
+			LOG.error("setRollbackOnly failed.", e);
+			throw new RuntimeException(e);
+		}
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.transaction.UserTransaction#setTransactionTimeout(int)
+	 */
+	public void setTransactionTimeout(int arg0) throws SystemException
+	{
+		utx.setTransactionTimeout(arg0);
+
+	}
+
+	/**
+	 * This method will check if a transaction is currently started.
+	 * 
+	 * @return true if a transaction is currently started.
+	 * 
+	 * @throws Exception
+	 */
+	public boolean isTransactionStarted()
+	{
+		try
+		{
+			int status = utx.getStatus();
+			return (status != Status.STATUS_NO_TRANSACTION);
+		}
+		catch (SystemException e)
+		{
+			LOG.error("Transaction Manager status could not be determined.", e);
+			throw new RuntimeException(e);
+		}
+	}
+	/**
+	 * This method will check if a transaction is flagged for rollback.
+	 * 
+	 * @return true if a transaction is flagged for rollback.
+	 * 
+	 * @throws Exception
+	 */
+	public boolean isMarkedForRollback()
+	{
+		try
+		{
+			int status = utx.getStatus();
+			return (status == Status.STATUS_MARKED_ROLLBACK);
+		}
+		catch (SystemException e)
+		{
+			LOG.error("Transaction Manager status could not be determined.", e);
+			throw new RuntimeException(e);
+		}
+	}
+}

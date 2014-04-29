@@ -1,0 +1,620 @@
+package com.misys.equation.bf;
+
+import bf.com.misys.eqf.types.header.EqMessage;
+import bf.com.misys.eqf.types.header.ExtensionDataRq;
+import bf.com.misys.eqf.types.header.JournalKey;
+import bf.com.misys.eqf.types.header.RqHeader;
+import bf.com.misys.eqf.types.header.RsHeader;
+import bf.com.misys.eqf.types.header.ServiceResponse;
+import bf.com.misys.eqf.types.header.ServiceRsHeader;
+import bf.com.misys.eqf.types.header.UiControlRq;
+import bf.com.misys.eqf.types.header.UiControlRs;
+
+import com.misys.bf.autogen.AbstractEQ_CMN_ServiceHandler;
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationTransactionManager;
+import com.misys.equation.common.access.EquationUnit;
+import com.misys.equation.common.access.EquationUser;
+import com.misys.equation.common.access.IEquationStandardObject;
+import com.misys.equation.common.files.JournalHeader;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.internal.eapi.core.EQXAException;
+import com.misys.equation.common.utilities.EqDataType;
+import com.misys.equation.common.utilities.EqTimingTest;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.function.beans.Function;
+import com.misys.equation.function.beans.FunctionData;
+import com.misys.equation.function.context.EquationFunctionContext;
+import com.misys.equation.function.language.LanguageResources;
+import com.misys.equation.function.runtime.ConversionRules;
+import com.misys.equation.function.runtime.FunctionAPI;
+import com.misys.equation.function.runtime.FunctionBankFusion;
+import com.misys.equation.function.runtime.FunctionHandler;
+import com.misys.equation.function.runtime.FunctionMessages;
+import com.misys.equation.function.runtime.ScreenSet;
+import com.misys.equation.function.tools.FunctionRuntimeToolbox;
+import com.misys.equation.function.tools.IdempotencyToolbox;
+import com.trapedza.bankfusion.core.BankFusionException;
+import com.trapedza.bankfusion.servercommon.commands.BankFusionEnvironment;
+
+/**
+ * BankFusion Activity Step implementation to invoke an EQ4 service.
+ * <p>
+ * All service specific Microflows invoke this generic BankFusion ActivityStep, which performs the actual invocation of the EQ4
+ * Service.
+ */
+public class EQ_CMN_ServiceHandler extends AbstractEQ_CMN_ServiceHandler
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(EQ_CMN_ServiceHandler.class);
+
+	/** The primary function */
+	private Function primaryFunction = null;
+
+	/** The message id on input */
+	private String correlationId = "";
+
+	/**
+	 * Constructor that takes an instance of a BankFusionEnvironment
+	 * <p>
+	 * Note that although the AbstractFunctionHandlerActivityStep class implements this method, it is necessary to implement this
+	 * method in this class too, otherwise a java.lang.NoSuchMethodException will be thrown. Also, although the Abstract class
+	 * version of this method has JavaDoc indicating that the no-arg constructor should be used instead, this appears not to yet be
+	 * the case (this is the constructor currently called).
+	 * 
+	 * @param env
+	 * @throws BankFusionException
+	 */
+	public EQ_CMN_ServiceHandler(BankFusionEnvironment env) throws BankFusionException
+	{
+		super(env);
+		if (LOG.isInfoEnabled())
+		{
+			LOG.info("Constructor(BankFusionEnvironment), instance [" + System.identityHashCode(this) + "]");
+		}
+	}
+
+	/**
+	 * Main processing. This performs the actual service invocation
+	 * 
+	 * @param env
+	 *            a BankFusionEnvironment
+	 */
+	@Override
+	public void process(BankFusionEnvironment env)
+	{
+		EqTimingTest.printStartTime("EQ_CMN_ServiceHandler.process()", "");
+		String dataSourceName = null;
+		String sessionId = null;
+		try
+		{
+			// call super constructor
+			super.process(env);
+
+			// initialise header if NULL
+			FunctionBankFusion functionBankFusion = new FunctionBankFusion();
+			functionBankFusion.initialiseServiceRqHeader(getF_IN_ServiceHeader());
+			functionBankFusion.printServiceRqHeader(getF_IN_ServiceHeader());
+
+			// retrieve information
+			ExtensionDataRq userExtensionDataRq = getF_IN_ServiceHeader().getUserExtensionData();
+			ExtensionDataRq misysExtensionDataRq = getF_IN_ServiceHeader().getMisysExtensionData();
+			RqHeader rqHeader = getF_IN_ServiceHeader().getRqHeader();
+			String systemId = rqHeader.getSystemId();
+			String unitId = rqHeader.getUnitId();
+			EquationUnit unit = EquationCommonContext.getContext().getEquationSystem(systemId).getUnit(unitId);
+			String userId = rqHeader.getUserId();
+			// Get the iSeries user if different from the connection user.
+			LOG.info(LanguageResources.getFormattedString("EQ_CMN_ServiceHandler.Passed.UserId", userId));
+			if (userId == null || userId.equals(""))
+			{
+				userId = env.getUserSession().getUserId();
+				LOG.info(LanguageResources.getFormattedString("EQ_CMN_ServiceHandler.Updated.UserId", userId));
+			}
+			String equationIseriesProfile = null;
+			if (userId.length() > 0)
+			{
+				if (rqHeader.getUserIdType().equals("1") || EquationCommonContext.getContext().isCASAuthentication())
+				{
+					equationIseriesProfile = EquationFunctionContext.getContext().getiSeriesUserForBFUser(unit, userId);
+				}
+				else
+				{
+					equationIseriesProfile = userId.toUpperCase();
+				}
+				LOG.info(LanguageResources.getFormattedString("EQ_CMN_ServiceHandler.Updated2.UserId", equationIseriesProfile));
+			}
+			else
+			{
+				equationIseriesProfile = "";
+			}
+			String optionId = getF_IN_ServiceHeader().getOptionId();
+			sessionId = rqHeader.getSessionId();
+			String sessionType = rqHeader.getSessionType();
+			// Get the data source. Use default data source from equationConfiguration.properties if one is not supplied in request.
+			dataSourceName = rqHeader.getDataSourceName();
+			if (sessionType != null && sessionType.equals("1") && (dataSourceName == null || dataSourceName.length() == 0))
+			{
+				dataSourceName = EquationCommonContext.getContext().getDefaultDataSourceName();
+
+				if (dataSourceName == null || dataSourceName.length() == 0)
+				{
+					// fatal error:
+					throw new EQException("Data source name not found.");
+				}
+			}
+			String mode = getF_IN_ServiceHeader().getServiceMode();
+
+			// retrieve the correlation id
+			correlationId = rqHeader.getMessageId();
+
+			// overwrite option id based on the user extension
+			String primaryOptionid = optionId;
+			optionId = Toolbox.getOptionIdFromExtensionData(optionId, userExtensionDataRq, misysExtensionDataRq);
+
+			UiControlRq uiControl = getF_IN_ServiceHeader().getUiControlRq();
+			String uiMode = uiControl == null ? "" : uiControl.getUiMode();
+
+			// default the output parameter to the input parameter
+			setF_OUT_OutputServiceData(getF_IN_ServiceData());
+
+			ScreenSet mainScreenSet = null;
+			Function function = null;
+			primaryFunction = null;
+			FunctionData functionData = null;
+
+			if (LOG.isInfoEnabled())
+			{
+				LOG.info("Getting a system [" + systemId + "], a unit [" + unitId + "] and a user ["
+								+ env.getUserSession().getUserId() + "], instance [" + System.identityHashCode(this)
+								+ "], option [" + optionId + "]");
+			}
+			sessionId = ActivityStepToolbox.getSession(systemId, unitId, env, equationIseriesProfile, sessionType, dataSourceName);
+
+			// create the function handler
+			String fhname = "";
+			// The function handler name in UI mode is currently specified in the Reference field
+			// for UI mode in order to differentiate the base transaction and a pop-up transaction.
+			// To allow BankFusion callers to still specify the Reference field, this
+			// determination of the function handler name is now only performed if the uiMode is
+			// not blank; this should never be supplied if in non-UI mode.
+			if (uiMode.length() > 0)
+			{
+				fhname = getF_IN_ServiceHeader().getReference().trim(); // TODO: change the getReference()
+				LOG.debug("Getting a function handler for option " + optionId + "; fh[ " + fhname + "]");
+			}
+			FunctionHandler functionHandler = EquationFunctionContext.getContext().getFunctionHandler(sessionId, fhname);
+			functionHandler.getFhd().setServiceRqHeader(getF_IN_ServiceHeader());
+
+			// Setup the conversion rules
+			ConversionRules conversionRules = FunctionRuntimeToolbox.getConversionRules(getF_IN_ServiceHeader(), functionHandler
+							.getFhd());
+			conversionRules.cvtToEquationFormat();
+			conversionRules.cvtToRequest();
+
+			// Desktop - If Dummy Validate Microflow was called then perform validate process
+			if (uiMode.equals("V"))
+			{
+				functionHandler.validateFkey(new Integer(uiControl.getCkey()).intValue(), uiControl.getFldValidate(), uiControl
+								.getTransactionId());
+
+				mainScreenSet = functionHandler.getFhd().getScreenSetHandler().rtvScreenSetMain();
+				function = mainScreenSet.getFunction();
+				primaryFunction = mainScreenSet.getPrimaryFunction();
+				functionData = mainScreenSet.getFunctionData();
+
+				// Set the output function header
+				setOutputServiceHeader(functionHandler, functionBankFusion, conversionRules);
+			}
+
+			// Desktop - If Dummy Update Microflow was called then perform update process
+			else if (uiMode.equals("U"))
+			{
+				int nextProcess = functionHandler.actionFkey(new Integer(uiControl.getCkey()).intValue(), uiControl.getReason(),
+								uiControl.getLoadFieldSet(), uiControl.getLoadField());
+
+				mainScreenSet = functionHandler.getFhd().getScreenSetHandler().rtvScreenSetMain();
+				function = mainScreenSet.getFunction();
+				primaryFunction = mainScreenSet.getPrimaryFunction();
+				functionData = mainScreenSet.getFunctionData();
+
+				// Set the output function header and update with nextProcess information.
+				setOutputServiceHeader(functionHandler, functionBankFusion, conversionRules);
+				ServiceRsHeader outHeader = getF_OUT_OutputServiceHeader();
+				UiControlRs uiControlRs = outHeader.getUiControlRs();
+				uiControlRs.setNextProcess(nextProcess);
+				outHeader.setUiControlRs(uiControlRs);
+				// checkXAStatus(functionHandler.getFhd().isUpdateMade());
+			}
+			// Online Input / External Input - Retrieve
+			else if (uiMode.equals("R"))
+			{
+				mainScreenSet = functionHandler.getFhd().getScreenSetHandler().rtvScreenSetMain();
+				function = mainScreenSet.getFunction();
+				primaryFunction = mainScreenSet.getPrimaryFunction();
+				functionData = mainScreenSet.getFunctionData();
+
+				functionHandler.applyLoadAPI(functionHandler);
+
+				// Set the output function header and update with nextProcess information.
+				setOutputServiceHeader(functionHandler, functionBankFusion, conversionRules);
+			}
+
+			// Online Input / External Input - Update
+			else if (uiMode.equals("A"))
+			{
+				mainScreenSet = functionHandler.getFhd().getScreenSetHandler().rtvScreenSetMain();
+				function = mainScreenSet.getFunction();
+				primaryFunction = mainScreenSet.getPrimaryFunction();
+				functionData = mainScreenSet.getFunctionData();
+
+				FunctionAPI functionAPI = new FunctionAPI(functionHandler.getFhd(), !mode.equals("D"), functionHandler.getFhd()
+								.getFunctionInfo().isCommitProcessing(), false);
+				functionAPI.applyTransaction(functionData);
+				functionHandler.getFhd().getFunctionMsgManager().getFunctionMessages().insertMessages(
+								functionAPI.getFunctionMessages());
+
+				// Set the output function header and update with nextProcess information.
+				setOutputServiceHeader(functionHandler, functionBankFusion, conversionRules);
+			}
+
+			// Non-desktop mode
+			else
+			{
+				EquationStandardSession session = EquationCommonContext.getContext().getEquationUser(sessionId)
+								.getSessionForNonUpdate();
+				if (session.getUnit().isIPVPFInstalled())
+				{
+					ServiceResponse serviceResponse = IdempotencyToolbox.retrieveProcessing(session, getF_IN_ServiceHeader());
+					if (serviceResponse != null)
+					{
+						setF_OUT_OutputServiceHeader(serviceResponse.getHeader());
+						setF_OUT_OutputServiceData(serviceResponse.getData());
+						return;
+					}
+				}
+
+				// clear messages
+				functionHandler.getFhd().getFunctionMsgManager().clearAllMessages();
+
+				// setup details in function handler based on the parameters
+				functionHandler.getFhd().getFunctionInfo().setGenerateWarningInfo(
+								getF_IN_ServiceHeader().getRqHeader().getOverrides().getOverrideType().equals(EqDataType.NO));
+				functionHandler.getFhd().setServiceMode(mode);
+
+				// setup the option
+				LOG.debug("Initialising function handler for option " + optionId);
+				boolean valid = functionHandler.doNewTransaction(optionId, "");
+				if (!valid)
+				{
+					setF_OUT_OutputServiceData(FunctionRuntimeToolbox.loadDefaultResponse(null, primaryOptionid, null,
+									functionHandler, getF_OUT_OutputServiceData()));
+					ServiceRsHeader outHeader = Toolbox.setupReturnMessaage(functionHandler.getFhd().getFunctionMsgManager()
+									.getOtherMessages(), functionHandler.getFhd().getScreenSetHandler());
+					setF_OUT_OutputServiceHeader(outHeader);
+					return;
+				}
+
+				// option id has been overridden?
+				if (!optionId.equals(getF_IN_ServiceHeader().getOptionId()))
+				{
+					valid = functionHandler.validateLinkService(getF_IN_ServiceHeader().getOptionId());
+					if (!valid)
+					{
+						setF_OUT_OutputServiceData(FunctionRuntimeToolbox.loadDefaultResponse(null, primaryOptionid, null,
+										functionHandler, getF_OUT_OutputServiceData()));
+						ServiceRsHeader outHeader = Toolbox.setupReturnMessaage(functionHandler.getFhd().getFunctionMsgManager()
+										.getOtherMessages(), functionHandler.getFhd().getScreenSetHandler());
+						setF_OUT_OutputServiceHeader(outHeader);
+						return;
+					}
+				}
+
+				// Map the Bankfusion parameter data into Function data
+				mainScreenSet = functionHandler.getFhd().getScreenSetHandler().rtvScreenSetMain();
+				function = mainScreenSet.getFunction();
+				primaryFunction = mainScreenSet.getPrimaryFunction();
+				functionData = mainScreenSet.getFunctionData();
+
+				// Setup the conversion rules
+				conversionRules = FunctionRuntimeToolbox.getConversionRules(getF_IN_ServiceHeader(), functionHandler.getFhd());
+				conversionRules.cvtToEquationFormat();
+				conversionRules.cvtToRequest();
+
+				functionBankFusion.loadToFunctionData(primaryFunction, functionData, getF_IN_ServiceData(), false, conversionRules);
+				Toolbox.loadExtensionData(mainScreenSet, userExtensionDataRq, misysExtensionDataRq, conversionRules);
+
+				// any errors?
+				if (conversionRules.getFunctionMessages().getMsgSev() == FunctionMessages.MSG_ERROR)
+				{
+					setF_OUT_OutputServiceData(FunctionRuntimeToolbox.loadDefaultResponse(primaryFunction, primaryFunction.getId(),
+									conversionRules, functionHandler, getF_OUT_OutputServiceData()));
+					ServiceRsHeader outHeader = Toolbox.setupReturnMessaage(conversionRules.getFunctionMessages(), functionHandler
+									.getFhd().getScreenSetHandler());
+					setF_OUT_OutputServiceHeader(outHeader);
+					return;
+				}
+
+				if (LOG.isDebugEnabled())
+				{
+					LOG.debug("Function data \n" + functionData);
+				}
+
+				// If Equation service contains keys, then perform retrieval
+				if (mainScreenSet.isKeyFieldExists())
+				{
+					LOG.debug("Loading key");
+					functionHandler.applyRetrieveTransaction();
+
+					// If an input service, then reload data
+					if (!function.isAllowedEnq() && !mode.equals(IEquationStandardObject.FCT_RTV))
+					{
+						// reload the Bankfusion data into Function data
+						functionBankFusion.loadToFunctionData(primaryFunction, functionData, getF_IN_ServiceData(), false,
+										conversionRules);
+						Toolbox.loadExtensionData(mainScreenSet, userExtensionDataRq, misysExtensionDataRq, conversionRules);
+					}
+				}
+
+				// No error yet and for non-enquiry only
+				if (functionHandler.rtvMsgSev() != FunctionMessages.MSG_ERROR && !function.isAllowedEnq())
+				{
+					// retrieval
+					if (mode.equals(IEquationStandardObject.FCT_RTV))
+					{
+						LOG.debug("Applying transaction retrieve");
+						// do nothing, retrieval happens above
+					}
+
+					// validate
+					else if (mode.equals(IEquationStandardObject.FCT_VAL))
+					{
+						LOG.debug("Applying transaction validate");
+						functionHandler.applyValidateTransaction();
+					}
+
+					// Delete?
+					else if (mode.equals(IEquationStandardObject.FCT_DEL))
+					{
+						LOG.debug("Applying transaction delete");
+						functionHandler.applyTransactionDelete();
+						// checkXAStatus(functionHandler.getFhd().isUpdateMade());
+					}
+
+					// Maintain or Update
+					else
+					{
+						LOG.debug("Applying transaction");
+						functionHandler.applyTransaction();
+						// checkXAStatus(functionHandler.getFhd().isUpdateMade());
+					}
+				}
+
+				// Set the output function header
+				setOutputServiceHeader(functionHandler, functionBankFusion, conversionRules);
+			}
+
+			// make sure output is converted back to user format
+			conversionRules.cvtToUserFormat();
+			conversionRules.cvtToResponse();
+			conversionRules.setFieldFilter(rqHeader.getResponseFilter());
+			conversionRules.addFieldFilter(functionHandler.getFhd().getResponseFilters());
+
+			// Set the output parameter data
+			if (conversionRules.isGenerics())
+			{
+				Object bf_functionData = conversionRules.loadResponseClasses();
+				if (bf_functionData != null)
+				{
+					if (!conversionRules.isExcludedAll())
+					{
+						bf_functionData = functionBankFusion.getBankFusionDataType(primaryFunction, functionData, bf_functionData,
+										false, conversionRules);
+						setF_OUT_OutputServiceData(bf_functionData);
+					}
+				}
+			}
+			else
+			{
+				Object bf_functionData;
+				// filter excluded, just return empty class
+				if (conversionRules.isExcludedAll())
+				{
+					bf_functionData = getNewInstanceBankFusionData();
+				}
+				else
+				{
+					bf_functionData = functionBankFusion.getBankFusionDataType(primaryFunction, functionData,
+									getNewInstanceBankFusionData(), false, conversionRules);
+				}
+				setF_OUT_OutputServiceData(bf_functionData);
+			}
+
+			checkXAStatus(functionHandler);
+
+			// logging
+			if (LOG.isInfoEnabled())
+			{
+				LOG.info("Activity step completed, instance [" + System.identityHashCode(this) + "]");
+			}
+		}
+		catch (Exception e)
+		{
+			LOG.error("process()", e);
+
+			if (e instanceof BankFusionException)
+			{
+				throw (BankFusionException) e;
+			}
+			else
+			{
+				throw new BankFusionException(e);
+			}
+		}
+		finally
+		{
+			if (dataSourceName != null && dataSourceName.length() > 0)
+			{
+
+				EquationUser eu = EquationCommonContext.getContext().getEquationUser(sessionId);
+				EquationStandardSession session = eu.getSession();
+				if (session != null)
+				{
+					// remove handles to session
+					EquationFunctionContext.getContext().logOffSessionUserPool(session.getSessionIdentifier());
+					// return the session to the pool
+					FunctionRuntimeToolbox.returnEquationSessionToPool(dataSourceName, session);
+				}
+
+			}
+			EqTimingTest.printTime("EQ_CMN_ServiceHandler.process()", "");
+		}
+	}
+	/**
+	 * Set the output service header
+	 * 
+	 * @param functionHandler
+	 *            - the Function Handler
+	 * @param conversionRules
+	 *            - the conversion rule to convert between user format and Equation format
+	 */
+	private void setOutputServiceHeader(FunctionHandler functionHandler, FunctionBankFusion functionBankFusion,
+					ConversionRules conversionRules)
+	{
+		// Prepare the output header
+		ServiceRsHeader outHeader = new ServiceRsHeader();
+		functionBankFusion.initialiseServiceRsHeader(outHeader);
+		RsHeader rsHeader = outHeader.getRsHeader();
+
+		// Return any messages to the caller in the Function Header:
+		if (functionHandler.rtvMsgSev() != FunctionMessages.MSG_NONE)
+		{
+			if (LOG.isDebugEnabled())
+			{
+				LOG.debug(functionHandler.rtvFunctionMessages().toString());
+			}
+			rsHeader.getStatus().setEqMessages(
+							functionBankFusion.rtvMessagesAsMessageArray(functionHandler.rtvFunctionMessages().getMessages(),
+											functionHandler.getFhd().getScreenSetHandler()));
+			/**
+			 * This specifies the status of the transaction: 'S'-Success 'E'-Error 'I'-Success with Info Messages 'W'-Warning
+			 * (non-overridden warnings exist) 'F'-Failure
+			 */
+			rsHeader.getStatus().setOverallStatus(
+							FunctionRuntimeToolbox.cvtOverallStatus(new Integer(functionHandler.rtvFunctionMessages().getMsgSev())
+											.intValue()));
+		}
+		else
+		{
+			EqMessage[] newMessages = new EqMessage[0];
+			rsHeader.getStatus().setEqMessages(newMessages);
+			rsHeader.getStatus().setOverallStatus(FunctionRuntimeToolbox.cvtOverallStatus(-1));
+		}
+		// set the output Session Id
+		rsHeader.setSessionId(functionHandler.getFhd().getFunctionInfo().getSessionId());
+
+		// set the output Journal Key
+		JournalHeader journalHeader = functionHandler.getFhd().getJournalHeader();
+		if (journalHeader != null)
+		{
+			JournalKey journalKey = new JournalKey();
+			journalKey.setCcLinkTime(new Integer(journalHeader.getCcLinkTime()).toString());
+			journalKey.setCcSequence(new Integer(journalHeader.getCcLinkSeq()).toString());
+			journalKey.setCreateDate(new Integer(journalHeader.getCreateDate()).toString());
+			journalKey.setDayInMonth(new Integer(journalHeader.getJrnDay()).toString());
+			journalKey.setJobNumber(new Integer(journalHeader.getJobNumber()).toString());
+			journalKey.setProgramRoot(journalHeader.getProgramRoot());
+			journalKey.setRecoveryStatus(journalHeader.getRecovStat());
+			journalKey.setSequence(new Integer(journalHeader.getJrnSequence()).toString());
+			journalKey.setTime(new Integer(journalHeader.getJrnTime()).toString());
+			journalKey.setTransactionType(journalHeader.getFunctionMode());
+			journalKey.setWorkstationId(journalHeader.getWorkstationID());
+			outHeader.setJournalKey(journalKey);
+		}
+
+		ScreenSet mainScreenSet = functionHandler.getFhd().getScreenSetHandler().rtvScreenSetMain();
+		Toolbox.outputExtensionData(mainScreenSet, getF_IN_ServiceHeader(), outHeader, conversionRules);
+
+		// set the output header
+		setF_OUT_OutputServiceHeader(outHeader);
+
+		// set the workstation id
+		outHeader.getJournalKey().setWorkstationId(functionHandler.getFhd().getFunctionInfo().getWorkStationId());
+
+		// set the correlation id
+		rsHeader.setCorrelationId(correlationId);
+
+		// set the version
+		rsHeader.setBuid(EquationCommonContext.PLUGIN_VERSION);
+		if (primaryFunction != null)
+		{
+			rsHeader.setVersion(primaryFunction.getXsdVersion());
+		}
+
+		// set checksum
+		outHeader.setChecksum(mainScreenSet.getFunctionData().getChecksum());
+		// Set output Enquiry details if they exist
+		outHeader.getEnquiryRs().setPagingInformation(mainScreenSet.getFunctionData().rtvHeaderResponseData("EnquiryPagingData"));
+		outHeader.getEnquiryRs().setTotalPages(
+						new Integer(mainScreenSet.getFunctionData().rtvHeaderResponseDataAsInt("EnquiryTotalPages")));
+	}
+
+	/**
+	 * Create a new instance of the BankFusion complex data type
+	 * 
+	 * @return the BankFusion complex data type
+	 */
+	private Object getNewInstanceBankFusionData()
+	{
+		Object bf_functionData = null;
+		try
+		{
+			LOG.debug("Instantiating the bf function data object ");
+			bf_functionData = getF_IN_ServiceData().getClass().newInstance();
+		}
+		catch (Exception e)
+		{
+			LOG.error("getNewInstanceBankFusionData", e);
+			// Use the input parameter as an instance of the class
+			bf_functionData = getF_IN_ServiceData();
+		}
+
+		// return the output object
+		return bf_functionData;
+	}
+
+	/**
+	 * Check XA Status and force rollback if required
+	 * 
+	 * @throws EQException
+	 * 
+	 */
+	private void checkXAStatus(FunctionHandler functionHandler) throws EQException
+	{
+		// Only try to create transaction manager if XA is supposed to be used
+		if (EquationCommonContext.getContext().isXAUsed())
+		{
+			// If we have an XA error then throw a BankFusion Exception now
+			EquationTransactionManager txnManager = new EquationTransactionManager();
+
+			if (txnManager != null && txnManager.isMarkedForRollback())
+			{
+				if (functionHandler.rtvMsgSev() != FunctionMessages.MSG_NONE)
+				{
+					EQXAException exception = new EQXAException(functionHandler.rtvFunctionMessages().rtvMessagesAsStringArray());
+					throw new BankFusionException(exception);
+				}
+				else
+				{
+					EQXAException exception = new EQXAException("XA Rollback Required");
+					throw new BankFusionException(exception);
+				}
+			}
+		}
+	}
+
+}

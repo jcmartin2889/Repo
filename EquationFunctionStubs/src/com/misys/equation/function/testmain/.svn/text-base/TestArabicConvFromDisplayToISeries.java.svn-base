@@ -1,0 +1,88 @@
+package com.misys.equation.function.testmain;
+
+import com.ibm.as400.access.AS400Text;
+import com.ibm.as400.access.BidiStringType;
+import com.misys.equation.common.utilities.Toolbox;
+
+public class TestArabicConvFromDisplayToISeries
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	public static void main(String[] inputParameters)
+	{
+		TestArabicConvFromDisplayToISeries test = new TestArabicConvFromDisplayToISeries();
+		test.test();
+	}
+
+	private void test()
+	{
+		// Have a bash...
+		try
+		{
+			String convBefore = "ش  لا ؤ 123 456 شلاؤيثبللاه";
+			AS400Text text = new AS400Text(35, 420);
+			byte[] b = new byte[35];
+			String s2;
+			text = new AS400Text(35, 420);
+			b = new byte[35];
+			System.out.println("=" + Toolbox.convertTextIntoAS400TextCCSID(convBefore, 35, 420, BidiStringType.ST9));
+
+			text.toBytes(convBefore, b, 0, BidiStringType.DEFAULT);
+			System.out.println("DFLT: " + Toolbox.cvtBytesToHexString(b));
+			s2 = (String) text.toObject(b);
+			System.out.println(s2);
+
+			text.toBytes(convBefore, b, 0, BidiStringType.NONE);
+			System.out.println("NONE: " + Toolbox.cvtBytesToHexString(b));
+			s2 = (String) text.toObject(b);
+			System.out.println(s2);
+
+			text.toBytes(convBefore, b, 0, BidiStringType.ST4);
+			System.out.println("ST04: " + Toolbox.cvtBytesToHexString(b));
+			s2 = (String) text.toObject(b);
+			System.out.println(s2);
+
+			text.toBytes(convBefore, b, 0, BidiStringType.ST5);
+			System.out.println("ST05: " + Toolbox.cvtBytesToHexString(b));
+			s2 = (String) text.toObject(b);
+			System.out.println(s2);
+
+			text.toBytes(convBefore, b, 0, BidiStringType.ST6);
+			System.out.println("ST06: " + Toolbox.cvtBytesToHexString(b));
+			s2 = (String) text.toObject(b);
+			System.out.println(s2);
+
+			text.toBytes(convBefore, b, 0, BidiStringType.ST7);
+			System.out.println("ST07: " + Toolbox.cvtBytesToHexString(b));
+			s2 = (String) text.toObject(b);
+			System.out.println(s2);
+
+			text.toBytes(convBefore, b, 0, BidiStringType.ST8);
+			System.out.println("ST08: " + Toolbox.cvtBytesToHexString(b));
+			s2 = (String) text.toObject(b);
+			System.out.println(s2);
+
+			text.toBytes(convBefore, b, 0, BidiStringType.ST9);
+			System.out.println("ST09: " + Toolbox.cvtBytesToHexString(b));
+			s2 = (String) text.toObject(b);
+			System.out.println(s2);
+
+			text.toBytes(convBefore, b, 0, BidiStringType.ST10);
+			System.out.println("ST10: " + Toolbox.cvtBytesToHexString(b));
+			s2 = (String) text.toObject(b);
+			System.out.println(s2);
+
+			text.toBytes(convBefore, b, 0, BidiStringType.ST11);
+			System.out.println("ST11: " + Toolbox.cvtBytesToHexString(b));
+			s2 = (String) text.toObject(b);
+			System.out.println(s2);
+
+			System.out.println("done");
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+}

@@ -1,0 +1,101 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseFully;
+
+/**
+ * Equation test cases for Add/Maint EPD Customer Instruction
+ */
+public class AEC extends EquationTestCaseFully
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: AEC.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	String programName = "V22FRR";
+	String optionId = "AEC";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		retrieveBeforeCancel = false;
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZAB", "0543"); // Account branch
+		transaction.setFieldValue("GZAN", "123777"); // Basic part of account number
+		transaction.setFieldValue("GZAS", "100"); // Account suffix
+		transaction.setFieldValue("GZLKID", "AAAAAAE"); // Link id
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	@Override
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZLKNM", "Link name"); // Link name (20A)
+		transaction.setFieldValue("GZUIDX", "01"); // Record user index (2P,0)
+		transaction.setFieldValue("GZCPTY", "EQ4TEST"); // Customer payment type
+		transaction.setFieldValue("GZTIDC", "EQ4-TEST"); // Template id
+		transaction.setFieldValue("GZOWN", "N"); // Ownership? (1A)
+		transaction.setFieldValue("GZACT", "N"); // Active? (1A)
+		transaction.setFieldValue("GZINF1", "Static 1 "); // Static information 1 (35A)
+		transaction.setFieldValue("GZINF2", "Static 2"); // Static information 2 (35A)
+		transaction.setFieldValue("GZINF3", "Static 3"); // Static information 3 (35A)
+		transaction.setFieldValue("GZINF4", "Static 4"); // Static information 4 (35A)
+		transaction.setFieldValue("GZINF5", "Static 5"); // Static information 5 (35A)
+	}
+
+	/**
+	 * Setup the mandatory fields (maintain mode)
+	 */
+	@Override
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZOWN", "Y"); // Ownership?
+		transaction.setFieldValue("GZACT", "Y"); // Active? (1A)
+		transaction.setFieldValue("GZINF6", "AAA"); // Static information 6 (35A)
+		transaction.setFieldValue("GZINF7", "BBB"); // Static information 7 (35A)
+		transaction.setFieldValue("GZINF8", "CCC"); // Static information 8 (35A)
+		transaction.setFieldValue("GZINF9", "DDD"); // Static information 9 (35A)
+		transaction.setFieldValue("GZIF10", "EEE"); // Static information 10 (35A)
+	}
+
+}

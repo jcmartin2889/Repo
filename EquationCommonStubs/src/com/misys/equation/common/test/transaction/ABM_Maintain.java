@@ -1,0 +1,95 @@
+/**
+ * Copyright and all other intellectual property rights in this software, in any form, is vested in Misys International Banking
+ * Systems Ltd ("Misys") or a related company.
+ * 
+ * This software may not be copied, amended, compiled, translated, or developed; or sold, leased, hired, rented, or disclosed to any
+ * third party without the prior written consent of Misys.
+ * 
+ * Copyright Misys International Banking Systems Ltd, 1975 and later
+ */
+
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseMaintain;
+
+/**
+ * Equation test cases for Maintain Bank Card function. NOTE : Change the value of GZCANO to match the card to be maintained
+ */
+public class ABM_Maintain extends EquationTestCaseMaintain
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: ABM_Maintain.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	String programName = "C30FRR";
+	String optionId = "ABM";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZAB", "0132"); // Account branch (4A)
+		transaction.setFieldValue("GZAN", "012008"); // Account basic number (6A)
+		transaction.setFieldValue("GZAS", "020"); // Account suffix (3A)
+		transaction.setFieldValue("GZCATP", "CC1"); // Card type (4A)
+		transaction.setFieldValue("GZCANO", "999999999"); // Card number (20A)
+	}
+
+	/**
+	 * Setup an existing key fields Note: Update GZCANO number to match existing data
+	 */
+	@Override
+	public void setupExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZAB", "0132"); // Account branch (4A)
+		transaction.setFieldValue("GZAN", "012008"); // Account basic number (6A)
+		transaction.setFieldValue("GZAS", "020"); // Account suffix (3A)
+		transaction.setFieldValue("GZCATP", "CC1"); // Card type (4A)
+		transaction.setFieldValue("GZCANO", "0001000100010006"); // Card number (20A)
+
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	@Override
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZCMOD", "M"); // Mode (1A)
+		transaction.setFieldValue("GZCNM2", "MRS S SMITH"); // Card name 2 (23A)
+		transaction.setFieldValue("GZF17", "N"); // External A/C? (1A)
+		transaction.setFieldValue("GZBCGC", "Y"); // Generate card numbers (1A)
+		transaction.setFieldValue("GZCEXD", "Y"); // Calculate expiry date (1A)
+
+	}
+
+}

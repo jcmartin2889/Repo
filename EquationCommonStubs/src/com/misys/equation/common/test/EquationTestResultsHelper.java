@@ -1,0 +1,103 @@
+package com.misys.equation.common.test;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Hashtable;
+
+import com.misys.equation.common.access.EquationData;
+import com.misys.equation.common.utilities.Toolbox;
+
+/**
+ * @author esther.williams
+ * 
+ */
+public class EquationTestResultsHelper
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EquationTestResultsHelper.java 4646 2009-09-07 16:28:30Z weddelc1 $";
+	private static EquationTestResultsHelper singletonHelper;
+	public Hashtable<String, EquationData> results;
+
+	/*
+	 * Get the singleton
+	 */
+	public static synchronized EquationTestResultsHelper getTestResultsHelper()
+	{
+		if (singletonHelper == null)
+		{
+			singletonHelper = new EquationTestResultsHelper();
+		}
+		return singletonHelper;
+	}
+
+	private EquationTestResultsHelper()
+	{
+		results = new Hashtable<String, EquationData>();
+	}
+	/**
+	 * Save all results
+	 * 
+	 */
+	public static void saveResults()
+	{
+		EquationTestResultsHelper helper = EquationTestResultsHelper.getTestResultsHelper();
+		try
+		{
+
+			Enumeration<String> resultsEnumeration = helper.results.keys();
+			while (resultsEnumeration.hasMoreElements())
+			{
+				String pvName = resultsEnumeration.nextElement();
+				EquationData pvResult = helper.results.get(pvName);
+				BufferedWriter out = new BufferedWriter(new FileWriter(pvName + ".txt"));
+				out.write(pvName + "," + pvResult.getData().trim() + "," + pvResult.getErrorMessage().trim());
+				out.close();
+			}
+
+		}
+
+		catch (IOException exception)
+		{
+
+			exception.printStackTrace();
+		}
+	}
+	/**
+	 * Save result
+	 * 
+	 * @param pvName
+	 * @param results
+	 * 
+	 */
+	public static void saveResults(String pvName, EquationData pvResult)
+	{
+
+		try
+		{
+			BufferedWriter out = new BufferedWriter(new FileWriter("pvResults/" + pvName + ".txt"));
+			out.write(pvName + "," + Toolbox.trimr(pvResult.getData()) + "," + Toolbox.trimr(pvResult.getErrorMessage()));
+			out.close();
+
+		}
+
+		catch (IOException exception)
+		{
+
+			exception.printStackTrace();
+		}
+	}
+	/**
+	 * Add result to collection of results
+	 * 
+	 * @param pvName
+	 * @param results
+	 * @throws Exception
+	 */
+	public static void add(String pvName, EquationData results) throws Exception
+	{
+		EquationTestResultsHelper helper = EquationTestResultsHelper.getTestResultsHelper();
+		helper.results.put(pvName, results);
+	}
+}

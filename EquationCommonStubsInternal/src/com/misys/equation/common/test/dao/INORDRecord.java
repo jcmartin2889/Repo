@@ -1,0 +1,156 @@
+package com.misys.equation.common.test.dao;
+
+import com.misys.equation.common.dao.IINORDRecordDao;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.dao.beans.INORDRecordDataModel;
+import com.misys.equation.common.test.EquationTestCaseDao;
+
+/**
+ * This is a unit-test which will test INORDRecord services.
+ * 
+ * @author deroset
+ * 
+ */
+public class INORDRecord extends EquationTestCaseDao
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: INORDRecord.java 11310 2011-06-27 12:20:21Z ESTHER.WILLIAMS $";
+	public INORDRecord()
+	{
+
+	}
+
+	/**
+	 * This method is going to check the getRecord dao's service.<br>
+	 * The obtained result should be the same than the preset in the dao data-model.
+	 * 
+	 */
+	@Override
+	public INORDRecordDataModel getRecord()
+	{
+
+		INORDRecordDataModel INORDRecordDataModel = null;
+		INORDRecordDataModel = ((IINORDRecordDao) dao).getINORDRecord();
+		assertDataModel(INORDRecordDataModel);
+
+		return INORDRecordDataModel;
+	}
+	/**
+	 * This method will test the update dao's service.
+	 */
+	@Override
+	public void updateRecord()
+	{
+
+		INORDRecordDataModel INORDRecordDataModel = null;
+
+		getMyModel().setOrderNumber("1");
+		getMyModel().setMachine("4");
+		getMyModel().setInstallSequence(5);
+		getMyModel().setProductCode("2");
+		getMyModel().setComponent("7");
+		dao.updateRecord();
+		INORDRecordDataModel = getRecord();
+		assertEquals(getMyModel().getOrderNumber(), INORDRecordDataModel.getOrderNumber());
+		assertEquals(getMyModel().getMachine(), INORDRecordDataModel.getMachine());
+		assertEquals(getMyModel().getInstallSequence(), INORDRecordDataModel.getInstallSequence());
+		assertEquals(getMyModel().getProductCode(), INORDRecordDataModel.getProductCode());
+		assertEquals(getMyModel().getComponent(), INORDRecordDataModel.getComponent());
+	}
+
+	/**
+	 * This method will test the add dao's service.
+	 */
+	@Override
+	public void insertRecord()
+	{
+
+		dao.insertRecord();
+	}
+
+	/**
+	 * This method will test the delete dao's service.
+	 */
+	@Override
+	public void deleteRecord()
+	{
+
+		dao.deleteRecord();
+	}
+
+	@Override
+	protected void assertDataModel(AbsRecord dataModel)
+	{
+		INORDRecordDataModel record = (INORDRecordDataModel) dataModel;
+		INORDRecordDataModel myDataModel = getMyModel();
+
+		assertEquals(getMyModel().getOrderNumber(), record.getOrderNumber());
+		assertEquals(getMyModel().getProductCode(), record.getProductCode());
+		assertEquals(getMyModel().getComponentType1(), record.getComponentType1());
+		assertEquals(getMyModel().getMachine(), record.getMachine());
+		assertEquals(getMyModel().getInstallSequence(), record.getInstallSequence());
+		assertEquals(getMyModel().getParentReleaseFlag(), record.getParentReleaseFlag());
+		assertEquals(getMyModel().getComponent(), record.getComponent());
+		assertEquals(getMyModel().getComponentDescription(), record.getComponentDescription());
+		assertEquals(getMyModel().getComponentMachine(), record.getComponentMachine());
+		assertEquals(getMyModel().getComponentType2(), record.getComponentType2());
+		assertEquals(getMyModel().getNumberOfObjects(), record.getNumberOfObjects());
+		assertEquals(getMyModel().getCurrentNumberOfObjects(), record.getCurrentNumberOfObjects());
+		assertEquals(getMyModel().getSizeMB(), record.getSizeMB());
+		assertEquals(getMyModel().getSelectionField(), record.getSelectionField());
+		assertEquals(getMyModel().getLibLibraryName(), record.getLibLibraryName());
+		assertEquals(getMyModel().getFilLibraryName(), record.getFilLibraryName());
+		assertEquals(getMyModel().getWrkLibraryName(), record.getWrkLibraryName());
+		assertEquals(getMyModel().getInpLibraryName(), record.getInpLibraryName());
+	}
+
+	@Override
+	protected boolean checkIfThisRecordIsInTheDB()
+	{
+		boolean result;
+		result = ((IINORDRecordDao) dao).checkIfThisINORDRecordIsInTheDB();
+
+		return result;
+	}
+
+	/**
+	 * 
+	 * This method is going to retrieve the Dao from the bean repository and set it as local attribute.
+	 */
+	@Override
+	protected void setDao()
+	{
+		dao = daoFactory.getINORDDao(session, dataModel);
+	}
+
+	@Override
+	protected void setDataModel()
+	{
+		dataModel = new INORDRecordDataModel("1", "2", "3", "4", 5, "6", "7", "8", "9", "1", 11, 12, 13, "1", "15", "16", "17",
+						"18");
+	}
+
+	/**
+	 * This method is going to return a casted data model.
+	 * 
+	 * @return a casted data model
+	 */
+	public INORDRecordDataModel getMyModel()
+	{
+
+		INORDRecordDataModel INORDRecordDataModel = null;
+
+		if (dataModel instanceof INORDRecordDataModel)
+		{
+			INORDRecordDataModel = (INORDRecordDataModel) dataModel;
+
+		}
+		else
+		{
+			throw new IllegalArgumentException("The set data-model does not correspond to the expected one.");
+		}
+
+		return INORDRecordDataModel;
+	}
+}

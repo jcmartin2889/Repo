@@ -1,0 +1,86 @@
+package com.misys.equation.common.test;
+
+/**
+ * This class is the representation of the current Test-configuration. <br>
+ * currentConnectionPropertiesName is used hold the name of the ConnectionProperties definition. The attributes values are defined
+ * in the local configuration file as bean definition. <br>
+ * 
+ * @see commonStubsContext.xml
+ * @author deroset
+ * 
+ */
+public class TestEnvironmentApplicationProperties
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: TestEnvironmentApplicationProperties.java 9442 2010-10-12 09:42:28Z MACDONP1 $";
+	// This is the name of the ConnectionProperties bean definition.
+	private String currentConnectionPropertiesName;
+	private TestEnvironmentConnectionProperties connectionProperties;
+	private String isGPset;
+
+	// Default constructor.
+	public TestEnvironmentApplicationProperties()
+	{
+
+	}
+
+	public String getCurrentConnectionPropertiesName()
+	{
+		return currentConnectionPropertiesName;
+	}
+
+	public void setCurrentConnectionPropertiesName(String currentConnectionPropertiesName)
+	{
+		this.currentConnectionPropertiesName = currentConnectionPropertiesName;
+	}
+
+	public TestEnvironmentConnectionProperties getConnectionProperties()
+	{
+		return connectionProperties;
+	}
+
+	public void setConnectionProperties(TestEnvironmentConnectionProperties connectionProperties)
+	{
+		this.connectionProperties = connectionProperties;
+	}
+
+	public String getSystem()
+	{
+		return connectionProperties.getSystem();
+	}
+
+	public String getInputBranch()
+	{
+		return connectionProperties.getInputBranch();
+	}
+
+	public String getUnit()
+	{
+		return connectionProperties.getUnit();
+	}
+
+	public String getUser()
+	{
+		return connectionProperties.getUser();
+	}
+
+	public String getPassword()
+	{
+		return connectionProperties.getPassword();
+	}
+
+	public String getIsGPset()
+	{
+		return isGPset;
+	}
+
+	public void setIsGPset(String isGPset)
+	{
+		this.isGPset = isGPset;
+	}
+
+	public boolean isGPset()
+	{
+		return Boolean.parseBoolean(isGPset);
+	}
+}

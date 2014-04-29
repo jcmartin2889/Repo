@@ -1,0 +1,153 @@
+package com.misys.equation.common.globalprocessing.audit;
+
+import java.io.Serializable;
+import java.util.Set;
+
+import com.misys.equation.common.dao.beans.GAURecordDataModel;
+
+/**
+ * This class encapsulates information for an audit header record. Its primary purpose is to store information required to generate
+ * an audit header record ({@link GAURecordDataModel}) and related fields.
+ * <p>
+ * When the actual {@link GAURecordDataModel} header record is created, it would normally get stored into the 'record' attribute for
+ * reference purposes.
+ * 
+ * @author berzosa
+ */
+public class PropData implements Serializable
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6834711913089892290L;
+
+	private String ruleId;
+	private String targetUnit;
+	private String targetSystem;
+	private String applyFlag;
+
+	// the excluded / included fields
+	private Set<String> excludeFields;
+	private Set<String> includeFields;
+
+	private String customerNumber;
+	private String globalCustomerNumber;
+	private String condition;
+	private String includeAllFields;
+
+	/** The actual GAU record associated / created for this header, if any (for reference purposes only!) */
+	private GAURecordDataModel record;
+
+	public String getRuleId()
+	{
+		return ruleId;
+	}
+
+	public void setRuleId(String ruleId)
+	{
+		this.ruleId = ruleId;
+	}
+
+	public String getTargetUnit()
+	{
+		return targetUnit;
+	}
+
+	public void setTargetUnit(String targetUnit)
+	{
+		this.targetUnit = targetUnit;
+	}
+
+	public String getTargetSystem()
+	{
+		return targetSystem;
+	}
+
+	public void setTargetSystem(String targetSystem)
+	{
+		this.targetSystem = targetSystem;
+	}
+
+	public String getApplyFlag()
+	{
+		return applyFlag;
+	}
+
+	public void setApplyFlag(String applyFlag)
+	{
+		this.applyFlag = applyFlag;
+	}
+
+	public Set<String> getExcludeFields()
+	{
+		return excludeFields;
+	}
+
+	public void setExcludeFields(Set<String> excludeFields)
+	{
+		this.excludeFields = excludeFields;
+	}
+
+	public Set<String> getIncludeFields()
+	{
+		return includeFields;
+	}
+
+	public void setIncludeFields(Set<String> includeFields)
+	{
+		this.includeFields = includeFields;
+	}
+
+	public String getCustomerNumber()
+	{
+		return customerNumber;
+	}
+
+	public void setCustomerNumber(String customerNumber)
+	{
+		this.customerNumber = customerNumber;
+	}
+
+	public String getGlobalCustomerNumber()
+	{
+		return globalCustomerNumber;
+	}
+
+	public void setGlobalCustomerNumber(String globalCustomerNumber)
+	{
+		this.globalCustomerNumber = globalCustomerNumber;
+	}
+
+	public String getCondition()
+	{
+		return condition;
+	}
+
+	public void setCondition(String condition)
+	{
+		this.condition = condition;
+	}
+
+	public GAURecordDataModel getRecord()
+	{
+		return record;
+	}
+
+	public void setRecord(GAURecordDataModel record)
+	{
+		this.record = record;
+	}
+
+	public String getIncludeAllFields()
+	{
+		return includeAllFields;
+	}
+
+	public void setIncludeAllFields(String includeAllFields)
+	{
+		this.includeAllFields = includeAllFields;
+	}
+
+}

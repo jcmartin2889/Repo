@@ -1,0 +1,261 @@
+package com.misys.equation.function.beans;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import com.misys.equation.common.utilities.EquationLogger;
+
+/**
+ * Contains all the related fields.
+ */
+public class RelatedFields
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(RelatedFields.class);
+
+	private String firstField;
+	private String relatedFields;
+	private String[] arrRelatedFields;
+	public static final String SEPARATOR = ":";
+	private boolean isFieldNotFound;
+	private boolean isDuplicateFound;
+	private String fieldNotFound;
+	private String fieldDuplicate;
+
+	/**
+	 * Takes a delimited String.
+	 * 
+	 * @param relatedFields
+	 */
+	public RelatedFields(String relatedFields)
+	{
+		if (relatedFields != null)
+		{
+			if (relatedFields.contains(SEPARATOR))
+			{
+				this.arrRelatedFields = relatedFields.split(SEPARATOR);
+				this.firstField = this.arrRelatedFields[0];
+				this.relatedFields = relatedFields;
+			}
+			else
+			{
+				this.relatedFields = relatedFields;
+				this.firstField = relatedFields;
+				this.arrRelatedFields = new String[] { this.firstField };
+			}
+		}
+		else
+		{
+			this.relatedFields = "";
+			this.firstField = "";
+		}
+	}
+
+	/**
+	 * Constructor with two parameter fields.
+	 * 
+	 * @param firstField
+	 * @param secondField
+	 */
+	public RelatedFields(String firstField, String secondField)
+	{
+		this.firstField = firstField;
+		if (secondField != null && !secondField.equals(""))
+		{
+			this.relatedFields = firstField + SEPARATOR + secondField;
+		}
+		else
+		{
+			this.relatedFields = firstField;
+		}
+		this.arrRelatedFields = relatedFields.split(SEPARATOR);
+	}
+
+	/**
+	 * Getter method of firstField.
+	 * 
+	 * @return String
+	 */
+	public String getFirstField()
+	{
+		return firstField;
+	}
+
+	/**
+	 * Getter method of relatedFields. It returns a string with separator.
+	 * 
+	 * @return String
+	 */
+	public String getRelatedFields()
+	{
+		return relatedFields;
+	}
+
+	/**
+	 * Array version of relatedFields.
+	 * 
+	 * @return String[]
+	 */
+	public String[] getArrRelatedFields()
+	{
+		// To prevent null pointer exception
+		if (arrRelatedFields == null)
+		{
+			return new String[0];
+		}
+		return arrRelatedFields;
+	}
+
+	/**
+	 * Set version of relatedFields.
+	 * 
+	 * @return Set<String>
+	 */
+	public Set<String> getRelatedFieldsAsSet()
+	{
+		Set<String> rel = new TreeSet<String>();
+		for (String s : arrRelatedFields)
+		{
+			rel.add(s);
+		}
+		return rel;
+	}
+
+	/**
+	 * Validates the related fields entered by the user.
+	 * 
+	 * @param serviceFields
+	 */
+	public void validateRelatedFields(Map<String, String> serviceFields)
+	{
+		Map<String, String> tempMap = new HashMap<String, String>();
+		StringBuilder fieldError = new StringBuilder();
+		StringBuilder fieldDup = new StringBuilder();
+		for (String s : getArrRelatedFields())
+		{
+			s = s.trim();
+			if (serviceFields.get(s) == null)
+			{
+				fieldError.append(s);
+				fieldError.append(" ");
+			}
+			else
+			{
+				if (tempMap.get(s) == null)
+				{
+					tempMap.put(s, s);
+				}
+				else
+				{
+					fieldDup.append(s);
+					fieldDup.append(" ");
+				}
+			}
+		}
+		if (!fieldError.toString().equals(""))
+		{
+			isFieldNotFound = true;
+			fieldNotFound = fieldError.toString();
+		}
+		if (!fieldDup.toString().equals(""))
+		{
+			isDuplicateFound = true;
+			fieldDuplicate = fieldDup.toString();
+		}
+	}
+
+	/**
+	 * Returns the valid relatedFields. If the field name is a list, returns only the valid names on the list
+	 * 
+	 * @param functionData
+	 * @return String
+	 */
+	public String getValidRelatedFieldNames(FunctionData functionData)
+	{
+		FieldData fd = functionData.rtvFieldData(this.firstField);
+
+		// weed out fields that are not of the same instance as of the main field (a.k.a first field)
+		if (this.arrRelatedFields.length > 1)
+		{
+			StringBuilder sbFieldName = new StringBuilder();
+			for (String relatedField : arrRelatedFields)
+			{
+				FieldData currentFieldData = functionData.rtvFieldData(relatedField);
+
+				if (fd != null && currentFieldData != null && ((fd.getClass() == currentFieldData.getClass())))
+				{
+					if (!(fd instanceof RepeatingFieldData)
+									|| ((fd instanceof RepeatingFieldData) && ((RepeatingFieldData) fd).rtvRepeatingDataManager()
+													.getId().equals(
+																	((RepeatingFieldData) currentFieldData)
+																					.rtvRepeatingDataManager().getId())))
+					{
+						sbFieldName.append(relatedField);
+						sbFieldName.append(SEPARATOR);
+
+					}
+					else
+					{
+						if (LOG.isDebugEnabled())
+						{
+							LOG.debug(functionData.getOptionId() + ":" + relatedField + " is discarded from " + this.relatedFields);
+						}
+					}
+
+				}
+			}
+			sbFieldName.deleteCharAt(sbFieldName.length() - 1);
+			return sbFieldName.toString();
+		}
+		else
+		{
+			return this.firstField;
+		}
+	}
+
+	/**
+	 * Getter method of isFieldNotFound.
+	 * 
+	 * @return boolean
+	 */
+	public boolean isFieldNotFound()
+	{
+		return isFieldNotFound;
+	}
+
+	/**
+	 * Getter method of isDuplicateFound.
+	 * 
+	 * @return boolean
+	 */
+	public boolean isDuplicateFound()
+	{
+		return isDuplicateFound;
+	}
+
+	/**
+	 * Getter method of fieldNotFound.
+	 * 
+	 * @return String
+	 */
+	public String getFieldNotFound()
+	{
+		return fieldNotFound;
+	}
+
+	/**
+	 * Getter method of fieldDuplicate.
+	 * 
+	 * @return String
+	 */
+	public String getFieldDuplicate()
+	{
+		return fieldDuplicate;
+	}
+
+}

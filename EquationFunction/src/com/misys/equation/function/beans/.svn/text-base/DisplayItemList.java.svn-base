@@ -1,0 +1,113 @@
+package com.misys.equation.function.beans;
+
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.KeyedArrayList;
+import com.misys.equation.function.tools.FunctionToolbox;
+
+/**
+ * Collection class that contains IDisplayItem instances
+ * <p>
+ * This is used by both the DisplayAttributesSet and DisplayGroup bean classes
+ */
+public class DisplayItemList extends KeyedArrayList<IDisplayItem>
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	/** Serialization version Id */
+	private static final long serialVersionUID = 1L;
+
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(DisplayItemList.class);
+
+	/**
+	 * No-arg constructor used by bean serialization
+	 */
+	public DisplayItemList()
+	{
+	}
+
+	@Override
+	public boolean add(IDisplayItem item)
+	{
+		if (item instanceof Element)
+		{
+			Element element = (Element) item;
+			super.add(item, element.getId());
+			return true;
+		}
+		else
+		{
+			throw new RuntimeException("Item is not an instance of Element");
+		}
+	}
+
+	/**
+	 * Apply a change of Id of a child item
+	 * <p>
+	 * This will apply the change by both updating the id of the actual item, <strong>and</strong> updating the key of the item in
+	 * the KeyedArrayList collection.
+	 * 
+	 * @param oldId
+	 *            a String containing the old Id
+	 * @param newId
+	 *            a String containing the new Id
+	 */
+	public void modifyItemId(String oldId, String newId)
+	{
+		int index = indexOf(oldId);
+		if (index > -1)
+		{
+			IDisplayItem item = get(index);
+
+			// Change the Id:
+			((Element) item).setId(newId);
+
+			// Remove and re-add to the map in the same position:
+			remove(oldId);
+			add(index, item, newId);
+		}
+		else
+		{
+			LOG.error("Failed to find existing field with id " + oldId);
+		}
+	}
+
+	/**
+	 * Update the default Description and/or Label for a field that is about to be renamed
+	 * 
+	 * @param oldId
+	 *            a String containing the old field Id
+	 * @param newId
+	 *            a String containing the new field Id
+	 */
+	public void updateDescriptionLabel(String oldId, String newId)
+	{
+		IDisplayItem item = get(oldId);
+
+		// Only relevant to DisplayAttributes
+		if (item != null && item instanceof DisplayAttributes)
+		{
+			int index = oldId.indexOf(FunctionToolbox.UNDERSCORE);
+			if (index >= 0 && index + 1 < oldId.length())
+			{
+				oldId = oldId.substring(index + 1);
+			}
+			index = newId.indexOf(FunctionToolbox.UNDERSCORE);
+			if (index >= 0 && index + 1 < newId.length())
+			{
+				newId = newId.substring(index + 1);
+			}
+
+			DisplayAttributes attributes = (DisplayAttributes) item;
+
+			if (attributes.getDescription().equals(oldId))
+			{
+				attributes.setDescription(newId);
+			}
+			if (attributes.getLabel().equals(oldId))
+			{
+				attributes.setLabel(newId);
+			}
+		}
+	}
+}

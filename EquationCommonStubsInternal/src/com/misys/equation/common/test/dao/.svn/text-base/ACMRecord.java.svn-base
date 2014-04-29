@@ -1,0 +1,162 @@
+package com.misys.equation.common.test.dao;
+
+import java.math.BigDecimal;
+
+import com.misys.equation.common.dao.IACMRecordDao;
+import com.misys.equation.common.dao.beans.ACMRecordDataModel;
+import com.misys.equation.common.dao.beans.AbsRecord;
+import com.misys.equation.common.test.EquationTestCaseDao;
+
+/**
+ * This is a unit-test which will test ACMIRecord services.
+ * 
+ * @author deroset
+ * 
+ */
+public class ACMRecord extends EquationTestCaseDao
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	public ACMRecord()
+	{
+
+	}
+
+	/**
+	 * 
+	 * This method is going to retrieve the Dao from the bean repository and set it as local attribute.
+	 */
+	@Override
+	protected void setDao()
+	{
+		dao = daoFactory.getACMDao(session, dataModel);
+	}
+
+	/**
+	 * This method will test if the record has been already inserted in the dataBase.
+	 */
+	@Override
+	public void isRecord(boolean assertValue)
+	{
+		boolean result;
+
+		result = checkIfThisRecordIsInTheDB();
+		if (assertValue)
+		{
+			assertTrue(result);
+		}
+		else
+		{
+			assertFalse(result);
+		}
+
+	}
+
+	/**
+	 * This method is going to check the getRecord dao's service.<br>
+	 * The obtained result should be the same than the preset in the dao data-model.
+	 * 
+	 */
+	@Override
+	public ACMRecordDataModel getRecord()
+	{
+
+		ACMRecordDataModel ACMRecord = null;
+		ACMRecord = ((IACMRecordDao) dao).getACMRecord();
+		assertDataModel(ACMRecord);
+		return ACMRecord;
+	}
+
+	/**
+	 * This method will test the update dao's service.
+	 */
+	@Override
+	public void updateRecord()
+	{
+
+		ACMRecordDataModel ACMRecord = null;
+
+		this.getMyModel().setValidationProgram("updated");
+		dao.updateRecord();
+		ACMRecord = getRecord();
+		assertEquals(this.getMyModel().getValidationProgram(), ACMRecord.getValidationProgram());
+	}
+
+	@Override
+	protected void assertDataModel(AbsRecord dataModel)
+	{
+
+		ACMRecordDataModel record = (ACMRecordDataModel) dataModel;
+
+		assertEquals(getMyModel().getTypeName(), record.getTypeName());
+		assertEquals(getMyModel().getDescription(), record.getDescription());
+		assertEquals(getMyModel().isUpperCase(), record.isUpperCase());
+		assertEquals(getMyModel().getLength(), record.getLength());
+		assertEquals(getMyModel().getDecimals(), record.getDecimals());
+		assertEquals(getMyModel().getInitialValue(), record.getInitialValue());
+		assertEquals(getMyModel().getMinLength(), record.getMinLength());
+		assertEquals(getMyModel().getMaxLength(), record.getMaxLength());
+		assertEquals(getMyModel().getValidValues(), record.getValidValues());
+		assertEquals(getMyModel().getRegEx(), record.getRegEx());
+		assertEquals(getMyModel().getPromptProgram(), record.getPromptProgram());
+		assertEquals(getMyModel().getValidationProgram(), record.getValidationProgram());
+
+	}
+
+	@Override
+	protected boolean checkIfThisRecordIsInTheDB()
+	{
+		boolean result;
+		result = ((IACMRecordDao) dao).checkIfThisACMRecordIsInTheDB();
+		return result;
+	}
+
+	@Override
+	protected void setDataModel()
+	{
+		ACMRecordDataModel record = new ACMRecordDataModel();
+
+		record.setTypeName("BB");
+		record.setDescription("account");
+		record.setDataType("t");
+		record.setUpperCase(true);
+		record.setLength(2);
+		record.setDecimals(2);
+		record.setInitialValue("t");
+		record.setMinLength(new BigDecimal(1));
+		record.setMaxLength(new BigDecimal(1));
+		record.setValidValues("1");
+		record.setRegEx("2");
+		record.setPromptProgram("CCC7DD");
+		record.setValidationProgram("CCC7DD");
+
+		record.setLibrary(kFilLibName);
+		this.dataModel = record;
+
+	}
+
+	/**
+	 * This method is going to return a casted data model.
+	 * 
+	 * @return a casted data model
+	 */
+	public ACMRecordDataModel getMyModel()
+	{
+
+		ACMRecordDataModel ACMRecordDataModel = null;
+
+		if (dataModel instanceof ACMRecordDataModel)
+		{
+
+			ACMRecordDataModel = (ACMRecordDataModel) dataModel;
+
+		}
+		else
+		{
+			throw new IllegalArgumentException("The set data-model does not correspond to the expected one.");
+		}
+
+		return ACMRecordDataModel;
+	}
+}

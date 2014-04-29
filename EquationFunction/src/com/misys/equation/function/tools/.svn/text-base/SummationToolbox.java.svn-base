@@ -1,0 +1,72 @@
+package com.misys.equation.function.tools;
+
+import java.math.BigDecimal;
+import java.util.Hashtable;
+
+/**
+ * This keeps the accumulated totals for one particular grouping
+ * 
+ * @author Lima12
+ */
+public class SummationToolbox
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private final Hashtable<String, BigDecimal> totals = new Hashtable<String, BigDecimal>();
+
+	/**
+	 * Add a number to the existing value
+	 * 
+	 * @param fieldName
+	 *            - the field name
+	 * @param values
+	 *            - the number to be added
+	 * 
+	 * @return the new total for the field name
+	 */
+	public BigDecimal add(String fieldName, BigDecimal values)
+	{
+		BigDecimal currentValue = totals.get(fieldName);
+
+		// field name does not yet exist, then add it
+		if (currentValue == null)
+		{
+			currentValue = values;
+			totals.put(fieldName, currentValue);
+		}
+		else
+		{
+			currentValue = currentValue.add(values);
+		}
+
+		// put it back
+		totals.put(fieldName, currentValue);
+
+		// return the current total
+		return currentValue;
+	}
+
+	/**
+	 * Return the list of totals
+	 * 
+	 * @return the list of totals
+	 */
+	@Override
+	public String toString()
+	{
+		return totals.toString();
+	}
+
+	/**
+	 * Return the value for the field name
+	 * 
+	 * @param fieldName
+	 *            - the field name
+	 * 
+	 * @return the value for the field name
+	 */
+	public BigDecimal getValue(String fieldName)
+	{
+		return totals.get(fieldName);
+	}
+}

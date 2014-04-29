@@ -1,0 +1,273 @@
+package com.misys.equation.function.runtime;
+
+import java.util.Map;
+
+import bf.com.misys.eqf.types.header.ServiceRqHeader;
+
+import com.misys.equation.common.access.IEquationStandardObject;
+import com.misys.equation.function.beans.FunctionData;
+import com.misys.equation.function.beans.RepeatingDataManager;
+import com.misys.equation.function.useraccess.UserAccessFields;
+import com.misys.equation.function.useraccess.UserAccessHandler;
+
+/**
+ * Provide a read-only wrapper for the Function Data
+ */
+public class UserData
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	protected FunctionHandlerData fhd;
+	protected FunctionData functionData;
+	protected UserAccessHandler userAcessHandler;
+
+	// this is only populated during post load and post update, and it will contain the list of Load APIs or Update APIs
+	protected Map<String, IEquationStandardObject> transactions;
+
+	/**
+	 * Construct a new user data
+	 * 
+	 * @param functionData
+	 *            - the function data
+	 */
+	public UserData(FunctionHandlerData fhd, FunctionData functionData)
+	{
+		this.fhd = fhd;
+		this.functionData = functionData;
+		this.userAcessHandler = new UserAccessHandler(fhd);
+		this.transactions = null;
+	}
+
+	/**
+	 * @deprecated - use getUserAccessHandler() Return the Equation Client Service Handler
+	 * 
+	 * @return the Equation User Access Handler
+	 */
+	public UserAccessHandler getEquationClientServiceHandler()
+	{
+		return userAcessHandler;
+	}
+
+	/**
+	 * Return the Equation Client Service Handler
+	 * 
+	 * @return the Equation Client Service Handler
+	 * 
+	 * @equation.external
+	 */
+	public UserAccessHandler getUserAccessHandler()
+	{
+		return userAcessHandler;
+	}
+
+	/**
+	 * Return the input value of a field name
+	 * 
+	 * @param fieldName
+	 *            - field name
+	 * 
+	 * @return the input value
+	 * 
+	 * @equation.external
+	 */
+	public String rtvFieldInputValue(String fieldName)
+	{
+		return functionData.rtvFieldInputValue(fieldName);
+	}
+
+	/**
+	 * Return the database value of a field name
+	 * 
+	 * @param fieldName
+	 *            - field name
+	 * 
+	 * @return the database value
+	 * 
+	 * @equation.external
+	 */
+	public String rtvFieldDbValue(String fieldName)
+	{
+		return functionData.rtvFieldDbValue(fieldName);
+	}
+
+	/**
+	 * Return the output value of a field name
+	 * 
+	 * @param fieldName
+	 *            - field name
+	 * 
+	 * @return the output value
+	 * 
+	 * @equation.external
+	 */
+	public String rtvFieldOutputValue(String fieldName)
+	{
+		return functionData.rtvFieldOutputValue(fieldName);
+	}
+
+	/**
+	 * Return the last prompt data for a given prompt field
+	 * 
+	 * @param fieldName
+	 *            - field name
+	 * 
+	 * @return the prompt field value
+	 */
+	public String rtvPromptFieldValue(String fieldName)
+	{
+		return functionData.rtvPromptFieldValue(fieldName);
+	}
+
+	/**
+	 * Determine if the field name exists or not
+	 * 
+	 * @param fieldName
+	 *            - the field name to check
+	 * 
+	 * @return true if field exists
+	 */
+	public boolean isFieldExists(String fieldName)
+	{
+		return (functionData.rtvFieldData(fieldName) != null);
+	}
+
+	/**
+	 * Return the repeating data manager
+	 * 
+	 * @param repeatingGroupId
+	 *            - the repeating data manager id
+	 * 
+	 * @return the repeating data manager
+	 * 
+	 * @equation.external
+	 */
+	public UserRepeatingDataManager getRepeatingDataManager(String repeatingGroupId)
+	{
+		RepeatingDataManager dataManager = fhd.getScreenSetHandler().rtvScrnSetCurrent().getFunctionData().getRepeatingDataManager(
+						repeatingGroupId);
+		if (dataManager == null)
+		{
+			return null;
+		}
+		else
+		{
+			return new UserRepeatingDataManager(dataManager);
+		}
+	}
+
+	/**
+	 * Determine if the key screen is displayed or key has not been loaded
+	 * 
+	 * @return true if the key screen is displayed or key has not been loaded
+	 * 
+	 * @equation.external
+	 */
+	public boolean chkKeyDisplayed()
+	{
+		return functionData.chkKeyDisplayed();
+	}
+
+	/**
+	 * Return the transaction details of either the Load API or Update API. This must only be used during postLoad() or postUpdate()
+	 * user exit
+	 * 
+	 * @param id
+	 *            - the Load API or Update API id
+	 * 
+	 * @return the transaction details
+	 */
+	public IEquationStandardObject getTransaction(String id)
+	{
+		// not defined, then return null
+		if (transactions == null)
+		{
+			return null;
+		}
+
+		return transactions.get(id);
+	}
+
+	/**
+	 * Set the list of transactions
+	 * 
+	 * @param transactions
+	 *            - the list of transactions
+	 */
+	public void setTransactions(Map<String, IEquationStandardObject> transactions)
+	{
+		this.transactions = transactions;
+	}
+
+	/**
+	 * Returns the user access fields object
+	 * 
+	 * @return UserAccessFields
+	 */
+	public UserAccessFields rtvUserAccessFields()
+	{
+		return functionData.rtvUserAccessFields();
+	}
+
+	/**
+	 * Returns the user extension data
+	 * 
+	 * @return the user extension data
+	 */
+	public Object getInputUserExtensionData()
+	{
+		return functionData.getInputExtensionData().getUserExtensionData();
+	}
+
+	/**
+	 * Returns the Misys extension data
+	 * 
+	 * @return the Misys extension data
+	 */
+	public Object getInputMisysExtensionData()
+	{
+		return functionData.getInputExtensionData().getMisysExtensionData();
+	}
+
+	/**
+	 * Returns the user extension data
+	 * 
+	 * @return the user extension data
+	 */
+	public void setOutputUserExtensionData(Object userExtensionData)
+	{
+		functionData.getOutputExtensionData().setUserExtensionData(userExtensionData);
+	}
+
+	/**
+	 * Returns the Misys extension data
+	 * 
+	 * @return the Misys extension data
+	 */
+	public void setOutputMisysExtensionData(Object misysExtensionData)
+	{
+		functionData.getOutputExtensionData().setMisysExtensionData(misysExtensionData);
+	}
+
+	/**
+	 * Returns the service request header
+	 * 
+	 * @return the service request header
+	 */
+	public ServiceRqHeader getServiceRqHeader()
+	{
+		return fhd.getServiceRqHeader();
+	}
+
+	/**
+	 * Add a response filter
+	 * 
+	 * @param xpath
+	 *            - the xpath
+	 */
+	public void addResponseFilter(String xpath)
+	{
+		userAcessHandler.addResponseFilter(xpath);
+	}
+
+}

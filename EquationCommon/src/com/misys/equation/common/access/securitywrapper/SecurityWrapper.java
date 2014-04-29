@@ -1,0 +1,85 @@
+package com.misys.equation.common.access.securitywrapper;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
+import com.misys.equation.common.access.EquationData;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.utilities.EqDataToolbox;
+
+public abstract class SecurityWrapper
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: SecurityWrapper.java 8910 2010-08-26 15:25:20Z MACDONP1 $";
+	protected final ResultSet rs;
+	protected final String pvId;
+	protected final String userIdPrefix;
+	protected final List<String> securityFields;
+	protected final EquationStandardSession session;
+
+	public SecurityWrapper(final EquationStandardSession session, final ResultSet rs, final String pvId,
+					final List<String> securityFields)
+	{
+		this.rs = rs;
+		this.pvId = pvId;
+		this.session = session;
+		this.securityFields = securityFields;
+		this.userIdPrefix = session.getUserId().substring(0, 3); // We only need the first 4 characters for security ...
+	}
+
+	public ResultSet getFilteredResultSet() throws SQLException
+	{
+		int i = 0;
+		while (rs.next() || i < 20) // TODO CAMILLN this should depend on the number of records returned in the PV ..
+		{
+			StringBuffer sb = new StringBuffer();
+			for (String secField : securityFields)
+			{
+				sb.append(rs.getString(secField)); // BRANCH !! If we had the preloaded branch set 0123 {1234,1223,233,)
+			}
+			if (filterRecord(sb.toString()))
+			{
+				rs.deleteRow();
+			}
+			else
+			{
+				i++;
+			}
+		}
+
+		rs.first(); // Set back to the first position ...
+		return rs;
+	}
+
+	/**
+	 * Given the sessionId, pvId and dsccn this method will determine if the record should be returned or not.
+	 * 
+	 * @param session
+	 *            EquationStandardSession
+	 * @param pvId
+	 *            String
+	 * @param dsccn
+	 *            String
+	 * @return Boolean - Indicates if the record should be returned or not
+	 */
+	protected boolean filterRecord(final String dsccn)
+	{
+		long startTime = System.currentTimeMillis();
+		final EquationData eqData = EqDataToolbox.callEqData(session, pvId, "", dsccn, " ", "N");
+		long endTime = System.currentTimeMillis();
+		long timeTake = endTime - startTime;
+		SecurityWrapperFactory.incTotalTime(timeTake);
+
+		if (eqData.getErrorMessage().equals(""))
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+
+	}
+
+}

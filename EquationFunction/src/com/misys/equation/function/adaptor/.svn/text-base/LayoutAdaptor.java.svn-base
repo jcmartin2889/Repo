@@ -1,0 +1,488 @@
+package com.misys.equation.function.adaptor;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.dao.beans.GAZRecordDataModel;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EquationLogger;
+import com.misys.equation.common.utilities.FunctionClassLoader;
+
+/**
+ * This class manages the runtime interaction with the user exit code for a Layout
+ * <p>
+ * The class calls the appropriate user exit class method implementation for determining the next screen if appropriate.
+ * <p>
+ * TODO: Review the user exit points in this class; should be DisplayAttributeSet methods, not Layout level
+ */
+public class LayoutAdaptor extends Adaptor
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(LayoutAdaptor.class);
+
+	private FunctionClassLoader classLoader;
+	private Class<ILayoutAdaptor> layoutAdaptorClass;
+	private ILayoutAdaptor layoutAdaptorImpl;
+	private String optionId;
+
+	protected UserExitLayoutAdaptor userExitLayoutAdaptor;
+	protected UserExitLayoutAdaptor misysExitLayoutAdaptor;
+	protected List<LayoutAdaptor> secondaryLayoutAdaptors;
+	protected UserExitLayoutAdaptor linkedUserExitLayoutAdaptor;
+
+	/**
+	 * Construct a Layout Adaptor
+	 * 
+	 * @param session
+	 *            - the Equation standard session
+	 * @param optionId
+	 *            - the option Id
+	 */
+	@SuppressWarnings("unchecked")
+	public LayoutAdaptor(EquationStandardSession session, String optionId) throws EQException
+	{
+		this.optionId = optionId;
+		this.classLoader = session.getUnit().getFunctionUserExitClassLoader();
+		this.layoutAdaptorClass = getClass(session, classLoader, optionId, "", "", GAZRecordDataModel.TYP_LAYOUT);
+
+		if (layoutAdaptorClass != null)
+		{
+			layoutAdaptorImpl = getInstance(layoutAdaptorClass);
+		}
+		else
+		{
+			// TODO: If the Main class is not loaded, this will
+			// subsequently cause a NullPointerException. If the requirement
+			// to have a Java class is removed, then this exception should also
+			// be removed.
+
+			// Paul M: I've commented this out for the time being because it's breaking the PV test frame
+			// throw new RuntimeException("Failed to load main Java user exit class from the GAZPF");
+		}
+		misysExitLayoutAdaptor = new UserExitLayoutAdaptor(session, classLoader, optionId, true);
+		userExitLayoutAdaptor = new UserExitLayoutAdaptor(session, classLoader, optionId, false);
+	}
+
+	/**
+	 * Return the function adaptor class
+	 * 
+	 * @return the function adaptor class
+	 */
+	public Class<ILayoutAdaptor> getFunctionAdaptorClass()
+	{
+		return layoutAdaptorClass;
+	}
+
+	/**
+	 * Return the layout adaptor implementation for unit testing
+	 * 
+	 * @return the layout adaptor implementation
+	 */
+	public ILayoutAdaptor getLayoutAdaptorImpl()
+	{
+		return layoutAdaptorImpl;
+	}
+
+	/**
+	 * Returns a class definition
+	 * 
+	 * @param session
+	 *            - the Equation standard session
+	 * @param classLoader
+	 *            - the class loader
+	 * @param optionId
+	 *            - the option Id
+	 * @param pvId
+	 *            - the PV field name
+	 * @param type
+	 *            - the specific GAZTYP type for this class
+	 * 
+	 * @return the class definition for the option
+	 */
+	@SuppressWarnings("unchecked")
+	protected Class getClass(EquationStandardSession session, FunctionClassLoader classLoader, String optionId, String fieldId,
+					String pvId, String type) throws EQException
+	{
+		if (LOG.isDebugEnabled())
+		{
+			LOG.debug("getInstance - loading definition of class for option [" + optionId + "]");
+		}
+
+		Class c = classLoader.loadClass(session, optionId, fieldId, pvId, type);
+		return c;
+	}
+
+	/**
+	 * Return an instance of the specified function adaptor class
+	 * 
+	 * @param clazz
+	 *            - the class definition
+	 * 
+	 * @return an instance of the class
+	 */
+	private ILayoutAdaptor getInstance(Class<ILayoutAdaptor> clazz)
+	{
+		ILayoutAdaptor result = null;
+		try
+		{
+			if (LOG.isDebugEnabled())
+			{
+				LOG.debug("getInstance - creating a new instance of class [" + clazz.getName() + "]");
+			}
+
+			Object o = clazz.newInstance();
+			// Now try to cast to a ILayoutAdaptor
+			result = (ILayoutAdaptor) o;
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
+		return result;
+	}
+
+	/**
+	 * Return the DisplayAttributes adaptor implementation of the specified field
+	 * 
+	 * @param session
+	 *            - the EquationStandardSession instance
+	 * @param fieldId
+	 *            - the field Id
+	 * 
+	 * @return the field adaptor implementation
+	 */
+	public AttributesAdaptor getAttributesAdaptor(EquationStandardSession session, String fieldId) throws EQException
+	{
+		AttributesAdaptor attributesAdaptor = new AttributesAdaptor(session, classLoader, layoutAdaptorImpl, optionId, fieldId,
+						this);
+		attributesAdaptor.setFunctionData(fhd, functionData);
+
+		// adaptor not loaded, then try loading from the secondary services
+		if (secondaryLayoutAdaptors != null && attributesAdaptor.getFieldAdaptorClass() == null)
+		{
+			for (LayoutAdaptor secondaryLayoutAdaptor : secondaryLayoutAdaptors)
+			{
+				attributesAdaptor = secondaryLayoutAdaptor.getAttributesAdaptor(session, fieldId);
+				if (attributesAdaptor.getFieldAdaptorClass() != null)
+				{
+					break;
+				}
+			}
+		}
+
+		return attributesAdaptor;
+	}
+
+	/**
+	 * Return the DisplayAttributes adaptor implementation of the specified field
+	 * 
+	 * @param session
+	 *            - the EquationStandardSession instance
+	 * @param groupId
+	 *            - the group id
+	 * @param subGroupId
+	 *            - the subgroup id
+	 * 
+	 * @return the field adaptor implementation
+	 */
+	public DisplayGroupAdaptor getDisplayGroupAdaptor(EquationStandardSession session, String groupId, String subGroupId)
+					throws EQException
+	{
+		DisplayGroupAdaptor attributesAdaptor = new DisplayGroupAdaptor(session, classLoader, layoutAdaptorImpl, optionId, groupId,
+						subGroupId, this);
+		attributesAdaptor.setFunctionData(fhd, functionData);
+
+		// adaptor not loaded, then try loading from the secondary services
+		if (secondaryLayoutAdaptors != null && attributesAdaptor.getDisplayGroupAdaptorClass() == null)
+		{
+			for (LayoutAdaptor secondaryLayoutAdaptor : secondaryLayoutAdaptors)
+			{
+				attributesAdaptor = secondaryLayoutAdaptor.getDisplayGroupAdaptor(session, groupId, subGroupId);
+				if (attributesAdaptor.getDisplayGroupAdaptorClass() != null)
+				{
+					break;
+				}
+			}
+		}
+
+		return attributesAdaptor;
+	}
+
+	/**
+	 * Return the DisplayLabel adaptor implementation of the specified field
+	 * 
+	 * @param session
+	 *            - the EquationStandardSession instance
+	 * @param groupId
+	 *            - the group id
+	 * @param subGroupId
+	 *            - the subgroup id
+	 * 
+	 * @return the field adaptor implementation
+	 */
+	public DisplayLabelAdaptor getDisplayLabelAdaptor(EquationStandardSession session, String fieldId) throws EQException
+	{
+		DisplayLabelAdaptor labelAdaptor = new DisplayLabelAdaptor(session, classLoader, layoutAdaptorImpl, optionId, fieldId, this);
+		labelAdaptor.setFunctionData(fhd, functionData);
+
+		// adaptor not loaded, then try loading from the secondary services
+		if (secondaryLayoutAdaptors != null && labelAdaptor.getDisplayLabelAdaptorClass() == null)
+		{
+			for (LayoutAdaptor secondaryLayoutAdaptor : secondaryLayoutAdaptors)
+			{
+				labelAdaptor = secondaryLayoutAdaptor.getDisplayLabelAdaptor(session, fieldId);
+				if (labelAdaptor.getDisplayLabelAdaptorClass() != null)
+				{
+					break;
+				}
+			}
+		}
+
+		return labelAdaptor;
+	}
+
+	/**
+	 * Return the DisplayAttributesSet adaptor implementation of the specified field
+	 * 
+	 * @param session
+	 *            - the EquationStandardSession instance
+	 * @param groupId
+	 *            - the group id
+	 * @param subGroupId
+	 *            - the subgroup id
+	 * 
+	 * @return the field adaptor implementation
+	 */
+	public AttributesSetAdaptor getAttributesSetAdaptor(EquationStandardSession session, String fieldId) throws EQException
+	{
+		AttributesSetAdaptor attributesSetAdaptor = new AttributesSetAdaptor(session, classLoader, layoutAdaptorImpl, optionId,
+						fieldId, this);
+		attributesSetAdaptor.setFunctionData(fhd, functionData);
+
+		// secondary adaptors?
+		if (secondaryLayoutAdaptors != null)
+		{
+			attributesSetAdaptor.setSecondaryFunctionIds(session, secondaryLayoutAdaptors, fieldId);
+		}
+
+		return attributesSetAdaptor;
+	}
+
+	/**
+	 * Return the DisplayButtonLink adaptor implementation of the specified field
+	 * 
+	 * @param session
+	 *            - the EquationStandardSession instance
+	 * @param fieldId
+	 *            - the field id
+	 * 
+	 * @return the button link adaptor implementation
+	 * 
+	 * @throws EQException
+	 */
+	public DisplayButtonLinkAdaptor getDisplayButtonLinkAdaptor(EquationStandardSession session, String fieldId) throws EQException
+	{
+		DisplayButtonLinkAdaptor buttonLinkAdaptor = new DisplayButtonLinkAdaptor(session, classLoader, layoutAdaptorImpl,
+						optionId, fieldId, this);
+		buttonLinkAdaptor.setFunctionData(fhd, functionData);
+
+		// adaptor not loaded, then try loading from the secondary services
+		if (secondaryLayoutAdaptors != null && buttonLinkAdaptor.getDisplayButtonLinkAdaptorClass() == null)
+		{
+			for (LayoutAdaptor secondaryLayoutAdaptor : secondaryLayoutAdaptors)
+			{
+				buttonLinkAdaptor = secondaryLayoutAdaptor.getDisplayButtonLinkAdaptor(session, fieldId);
+				if (buttonLinkAdaptor.getDisplayButtonLinkAdaptorClass() != null)
+				{
+					break;
+				}
+			}
+		}
+
+		return buttonLinkAdaptor;
+	}
+
+	/**
+	 * Call the user exit procedure to determine the previous screen. The returned screen must be less than the current screen
+	 * otherwise, the returned screen will be ignored
+	 * 
+	 * @param curScreen
+	 *            - the current screen
+	 * 
+	 * @return the next screen (or -1 to ignore the user exit)
+	 */
+	public int prevScreen(int curScreen)
+	{
+		int prev = -1;
+		boolean userExitUsed = false;
+		// Sequence is linked user exit or main user exit or service
+		if (layoutAdaptorImpl != null)
+		{
+			// Link predefined user exit
+			if (secondaryLayoutAdaptors != null)
+			{
+				if (linkedUserExitLayoutAdaptor.userExitExists())
+				{
+					userExitUsed = true;
+
+					int prev1 = linkedUserExitLayoutAdaptor.prevScreen(curScreen + 1, userData);
+					if (prev1 >= 1 && prev1 < curScreen + 1)
+					{
+						prev = prev1;
+					}
+				}
+			}
+
+			else
+			{
+				// Main service predefined user exit
+				if (userExitLayoutAdaptor.userExitExists())
+				{
+					userExitUsed = true;
+
+					// call a bank-defined default user exit
+					int prev2 = userExitLayoutAdaptor.prevScreen(curScreen + 1, userData);
+					if (prev2 >= 1 && prev2 < curScreen + 1)
+					{
+						prev = prev2;
+					}
+				}
+				else
+
+				{
+					// Misys service predefined user exit
+					if (misysExitLayoutAdaptor.userExitExists())
+					{
+						userExitUsed = true;
+
+						// call a bank-defined default user exit
+						int prev2 = misysExitLayoutAdaptor.prevScreen(curScreen + 1, userData);
+						if (prev2 >= 1 && prev2 < curScreen + 1)
+						{
+							prev = prev2;
+						}
+					}
+
+				}
+			}
+			// Only call the service logic if no user exit has been used
+			if (userExitUsed == false)
+			{
+				prev = layoutAdaptorImpl.prevScreen(curScreen + 1, userData);
+			}
+			prev--;
+			if (prev >= curScreen)
+			{
+				prev = -1;
+			}
+
+		}
+		return prev;
+	}
+
+	/**
+	 * Call the user exit procedure to determine the next screen. The returned screen must be greater than the current screen
+	 * otherwise, the returned screen will be ignored
+	 * 
+	 * @param curScreen
+	 *            - the current screen
+	 * 
+	 * @return the next screen (or 0 to ignore the user exit)
+	 */
+	public int nextScreen(int curScreen)
+	{
+		int next = 0;
+		boolean userExitUsed = false;
+		// Sequence is linked user exit or main user exit or service
+		if (layoutAdaptorImpl != null)
+		{
+			// Link predefined user exit
+			if (secondaryLayoutAdaptors != null)
+			{
+				if (linkedUserExitLayoutAdaptor.userExitExists())
+				{
+					userExitUsed = true;
+
+					int next1 = linkedUserExitLayoutAdaptor.nextScreen(curScreen + 1, userData);
+					if (next1 > curScreen + 1)
+					{
+						next = next1;
+					}
+				}
+			}
+
+			else
+			{
+				// Main service predefined user exit
+				if (userExitLayoutAdaptor.userExitExists())
+				{
+					userExitUsed = true;
+
+					// call a bank-defined default user exit
+					int next2 = userExitLayoutAdaptor.nextScreen(curScreen + 1, userData);
+					if (next2 > curScreen + 1)
+					{
+						next = next2;
+					}
+				}
+				else
+
+				{
+					// Misys service predefined user exit
+					if (misysExitLayoutAdaptor.userExitExists())
+					{
+						userExitUsed = true;
+
+						// call a Misys-defined default user exit
+						int next2 = misysExitLayoutAdaptor.nextScreen(curScreen + 1, userData);
+						if (next2 > curScreen + 1)
+						{
+							next = next2;
+						}
+					}
+
+				}
+
+			}
+
+			// Only call the service logic if no user exit has been used
+			if (userExitUsed == false)
+			{
+				next = layoutAdaptorImpl.nextScreen(curScreen + 1, userData);
+			}
+			next--;
+			if (next <= curScreen)
+			{
+				next = 0;
+			}
+
+		}
+		return next;
+	}
+
+	/**
+	 * Set the secondary id
+	 * 
+	 * @param session
+	 *            - the Equation session
+	 * @param secondaryIds
+	 *            - the secondary ids
+	 */
+	public void setSecondaryFunctionIds(EquationStandardSession session, String[] secondaryFunctionIds) throws EQException
+	{
+		secondaryLayoutAdaptors = new ArrayList<LayoutAdaptor>();
+		for (String secondaryFunctionId : secondaryFunctionIds)
+		{
+			// load the function adaptor
+			LayoutAdaptor layoutAdaptor = new LayoutAdaptor(session, secondaryFunctionId);
+			layoutAdaptor.setFunctionData(fhd, functionData);
+			secondaryLayoutAdaptors.add(layoutAdaptor);
+		}
+		linkedUserExitLayoutAdaptor = new UserExitLayoutAdaptor(session, classLoader, fhd.getOptionId(), false);
+	}
+
+}

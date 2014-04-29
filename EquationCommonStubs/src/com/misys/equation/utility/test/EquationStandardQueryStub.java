@@ -1,0 +1,49 @@
+package com.misys.equation.utility.test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.misys.equation.common.access.EquationStandardQuery;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.test.TestEnvironment;
+
+public class EquationStandardQueryStub
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EquationStandardQueryStub.java 11985 2011-09-30 16:25:56Z lima12 $";
+	EquationStandardQueryStub(String sql)
+	{
+		try
+		{
+			TestEnvironment env = TestEnvironment.getTestEnvironment();
+			EquationStandardSession session = env.getStandardSession();
+			EquationStandardQuery query = new EquationStandardQuery(sql, session);
+
+			List<String> keysList = new ArrayList<String>();
+			keysList.add("C8CCY");
+			query.setKeys(keysList);
+
+			session.retrieveEquationQuery(query);
+
+			if (query.getValid())
+			{
+				System.out.println(query.getFieldValue("C8CUR") + query.getFieldValue("C8CCY"));
+			}
+			else
+			{
+				System.out.println("record not found for " + query.getSql());
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	public static void main(String[] args)
+	{
+		new EquationStandardQueryStub("select * from c810lf WHERE c8ccy='USD'");
+		// new EquationStandardQueryStub("select * from c8pf WHERE c8ccy='XXX'");
+	}
+
+}

@@ -1,0 +1,174 @@
+/***********************************************************************************************************************************
+ * 
+ * **********************************************************************************
+ * 
+ * $Id$
+ * 
+ * 
+ */
+
+package com.misys.equation.bankfusion.test;
+
+import java.util.Iterator;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import bf.com.misys.eq4.service.zt1.ZT1;
+import bf.com.misys.eqf.types.header.RqHeader;
+import bf.com.misys.eqf.types.header.ServiceRqHeader;
+
+import com.trapedza.bankfusion.client.BankFusionClientFactory;
+import com.trapedza.bankfusion.client.IBankFusionClient;
+import com.trapedza.bankfusion.client.requests.ExecuteMicroflowRequest;
+import com.trapedza.bankfusion.client.requests.IExecuteMicroflowRequest;
+import com.trapedza.bankfusion.client.requests.IExecuteMicroflowResponse;
+
+/**
+ * DemoLogin
+ */
+public class TestMicroflowZT1
+{
+	/**
+	 * <code>CVS_REVISION</code> = $Revision$
+	 */
+	public static final String CVS_REVISION = "$Revision$"; // NON-NLS-$1
+	static
+	{
+		com.trapedza.bankfusion.utils.Tracer.register(CVS_REVISION);
+	}
+
+	private static final transient Log logger = LogFactory.getLog(TestMicroflowZT1.class.getName());
+
+	public static void main(String arguments[])
+	{
+		DemoLogin demoLogin = new DemoLogin();
+		// valid login
+		demoLogin.demoLogin("publish", "publish");
+
+		try
+		{
+			IBankFusionClient bankFusionClient = BankFusionClientFactory.getInstance().getBankFusionClient();
+			IExecuteMicroflowRequest executeMicroflowRequst = new ExecuteMicroflowRequest("publish",
+							"ZT1_newCustomerAccountDeposit");
+			try
+			{
+				ZT1 bf_functionData = new ZT1();
+
+				String customerNumber = "100602";
+				String customerLocation = "";
+
+				bf_functionData.setANC_CUS_customerMnemonic(customerNumber);
+				bf_functionData.setANC_CLC_customerLocation(customerLocation);
+
+				bf_functionData.setANC_CUN_customerFullName("Michael Andrew Smith");
+				bf_functionData.setANC_CPNC_customersBasicNumber(customerNumber);
+				bf_functionData.setANC_DAS_defaultAccountShortName("Michael Smith");
+				bf_functionData.setANC_CTP_customerType("EA");
+				bf_functionData.setANC_BRNM_branchMnemonic("LOND");
+				bf_functionData.setANC_CRB1_taxCode1("00");
+				bf_functionData.setANC_CRB2_taxCode2("00");
+				bf_functionData.setANX_EAD1_eMailAddress1("Michael.Smith@test.com");
+				bf_functionData.setCAA_NA1_addressLine1("The White House");
+				bf_functionData.setCAA_NA2_addressLine2("1 High Street");
+				bf_functionData.setCAA_NA3_addressLine3("Madeup Town");
+				bf_functionData.setCAA_NA4_addressLine4("Falseshire");
+				bf_functionData.setCAA_NA5_addressLine5("UK");
+				bf_functionData.setMCO_C1R_customersC1Rating("BB");
+
+				bf_functionData.setOCA_ACT_accountType("CA");
+
+				bf_functionData.setRDS_DLP_dealType("RTD");
+				bf_functionData.setRDS_DLR_dealReference(customerNumber + "001");
+				bf_functionData.setRDS_DLA_dealAmount("300000");
+				bf_functionData.setRDS_SDT_startDate("1000104");
+				bf_functionData.setRDS_MDT_maturityDate("1010104");
+				// bf_functionData.setRDS_PRC_periodCode("Y1");
+
+				bf_functionData.setASC_VFR_valueFromDate("1000104");
+				bf_functionData.setASC_AMA_amount("20000");
+				// bf_functionData.setASC_DRF_usersOwnReferenceForDealsReconciliationEtc(customerNumber + "T001");
+				bf_functionData.setASC_TCD_transactionCode("510");
+				bf_functionData.setASD_TCD_transactionCode("010");
+
+				ServiceRqHeader header = new ServiceRqHeader();
+				RqHeader rqHeader = header.getRqHeader();
+				rqHeader.setSystemId("slough1");
+				rqHeader.setUnitId("EQ4");
+				rqHeader.setUserId("EQUIADMIN");
+				rqHeader.setSessionId("Bankfusion");
+				header.setOptionId("ZT1");
+				executeMicroflowRequst.addInputTag("ServiceHeader", header);
+				executeMicroflowRequst.addInputTag("ServiceData", bf_functionData);
+			}
+			catch (Exception ex)
+			{
+				ex.printStackTrace();
+			}
+			executeMicroflowRequst.setPassword("publish");
+			IExecuteMicroflowResponse executeMicroflowResponse = bankFusionClient.executeMicroflow(executeMicroflowRequst);
+			print(executeMicroflowRequst, executeMicroflowResponse);
+		}
+		catch (Exception exception)
+		{
+			System.out.println(exception.getMessage());
+			exception.printStackTrace();
+		}
+
+		// valid logouts
+		demoLogin.demoLogout("publish");
+	}
+
+	public void demoTaggedMicroflow(String username, String microflowName, String value)
+	{
+	}
+
+	private IExecuteMicroflowRequest createExecuteMicroflowRequest(String username, String microflowName, String value)
+	{
+		IExecuteMicroflowRequest executeMicroflowRequst = new ExecuteMicroflowRequest(username, microflowName);
+
+		try
+		{
+			executeMicroflowRequst.addInputTag("Value", new Integer(value));
+			executeMicroflowRequst.addInputTag("Value", 5);
+		}
+		catch (Exception ex)
+		{
+			executeMicroflowRequst.addInputTag("Value", value);
+		}
+
+		executeMicroflowRequst.setPassword(username);
+
+		return executeMicroflowRequst;
+	}
+
+	private static void print(IExecuteMicroflowResponse executeMicroflowResponse)
+	{
+		System.out.println("Results: ");
+		printTags(executeMicroflowResponse.getOutputTags());
+	}
+
+	private static void print(IExecuteMicroflowRequest executeMicroflowRequest, IExecuteMicroflowResponse executeMicroflowResponse)
+	{
+		System.out.println(executeMicroflowRequest.getUsername() + " running " + executeMicroflowRequest.getMicroflowName()
+						+ " with inputs ");
+		printTags(executeMicroflowRequest.getInputTags());
+		print(executeMicroflowResponse);
+	}
+
+	private static void printTags(Map<String, Object> tags)
+	{
+		Iterator<String> iterator = tags.keySet().iterator();
+		String key = null;
+		Object value = null;
+
+		while (iterator.hasNext())
+		{
+			key = iterator.next();
+			value = tags.get(key);
+
+			System.out.println(" - Key = " + key + "; Value = " + value);
+		}
+	}
+}

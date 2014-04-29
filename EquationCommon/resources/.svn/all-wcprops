@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/repos/bfeq_src/!svn/ver/17823/branches/BFEQ_Branch_3-1/EquationCommon/resources
+END
+equationCommonMessages.properties
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/repos/bfeq_src/!svn/ver/17189/branches/BFEQ_Branch_3-1/EquationCommon/resources/equationCommonMessages.properties
+END
+injectionContext.xml
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/repos/bfeq_src/!svn/ver/17531/branches/BFEQ_Branch_3-1/EquationCommon/resources/injectionContext.xml
+END
+applicationContext.xml
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/resources/applicationContext.xml
+END
+equationConfiguration.properties
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/repos/bfeq_src/!svn/ver/17823/branches/BFEQ_Branch_3-1/EquationCommon/resources/equationConfiguration.properties
+END
+EQ.config
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/resources/EQ.config
+END
+daosContext.xml
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svn/repos/bfeq_src/!svn/ver/17760/branches/BFEQ_Branch_3-1/EquationCommon/resources/daosContext.xml
+END
+commonContext.xml
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/resources/commonContext.xml
+END
+minimumFields.properties
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/resources/minimumFields.properties
+END
+log4j.xml
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/repos/bfeq_src/!svn/ver/16615/branches/BFEQ_Branch_3-1/EquationCommon/resources/log4j.xml
+END

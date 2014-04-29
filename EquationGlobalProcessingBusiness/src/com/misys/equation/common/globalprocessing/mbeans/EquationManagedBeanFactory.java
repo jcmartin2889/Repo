@@ -1,0 +1,530 @@
+package com.misys.equation.common.globalprocessing.mbeans;
+
+import java.io.IOException;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.EventObject;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.management.Attribute;
+import javax.management.AttributeNotFoundException;
+import javax.management.InstanceNotFoundException;
+import javax.management.InvalidAttributeValueException;
+import javax.management.JMException;
+import javax.management.MBeanException;
+import javax.management.MBeanServerConnection;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import javax.management.ReflectionException;
+import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
+
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EquationLogger;
+
+/**
+ * An Equation Managed Bean Factory that creates instances of {@link EquationManagedBeanWrapper}</code> objects which are connected
+ * to a JMX server specified by the server host and port factory constructor arguments.
+ * <p>
+ * Methods invoked on the interface (getters, setters, operations) will be dispatched to the MBean server using the dynamic
+ * invocations that match the server attributes / operations.
+ * 
+ * @author berzosa
+ */
+public class EquationManagedBeanFactory
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: EquationManagedBeanFactory.java 10493 2011-02-18 14:43:35Z MACDONP1 $";
+	/** */
+	private static final EquationLogger LOG = new EquationLogger(EquationManagedBeanFactory.class);
+
+	/** Server connection to invoke mbeans from */
+	private MBeanServerConnection server;
+
+	/** JMX host */
+	private final String host;
+
+	/** JMX port */
+	private final int port;
+
+	/** Represents a no-args parameter signature */
+	final static String[] EMPTY_SIGNATURE = new String[0];
+
+	/** error message if there is currently no connection available to the mbean server */
+	public static final String JMX_SERVER_NOT_CONNECTED = "jmx.server.not.connected";
+
+	/**
+	 * Error handlers that will be called in succession to handle errors.
+	 */
+	private final List<RemoteExceptionHandler> errorHandlers = new ArrayList<RemoteExceptionHandler>();
+
+	/** a {@link Pattern} for acquiring ObjectName of the MBean (ie. looks for 'Equation:Name=<Mbean name>' */
+	private static final Pattern EquationNamePattern = Pattern.compile("(Equation:Name=(.*)),Type\\=(.*)");
+
+	/**
+	 * Constructs an EquationMBeanFactory connecting to the JMX server on the given host and port.
+	 * 
+	 * @param host
+	 *            Host name or IP address of the JMX MBean Server.
+	 * @param port
+	 *            Port number on which the JMX server is listening on
+	 * @throws IOException
+	 *             If any error occurs connecting to the server.
+	 */
+	public EquationManagedBeanFactory(String host, int port, RemoteExceptionHandler... errorHandlers) throws IOException
+	{
+		// store JMX settings
+		this.host = host;
+		this.port = port;
+
+		// and store for future reference
+		if (errorHandlers != null)
+		{
+			for (RemoteExceptionHandler handler : errorHandlers)
+			{
+				this.errorHandlers.add(handler);
+			}
+		}
+
+		// connect to server
+		connect();
+	}
+
+	/**
+	 * Adds the given error handler to the list of error handlers to be invoked upon RemoteException events.
+	 * 
+	 * @param handler
+	 *            The error handler to add to the chain of error handlers.
+	 */
+	protected void addErrorHandler(RemoteExceptionHandler handler)
+	{
+		this.errorHandlers.add(handler);
+	}
+
+	/**
+	 * Establishes a connection to the JMX server.
+	 * 
+	 * @throws IOException
+	 *             If an error occurs attempting to establish a connection.
+	 */
+	public void connect() throws IOException
+	{
+		// connect to the server
+		final JMXServiceURL url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + (host != null ? host : "") + ":" + port
+						+ "/EquationGlobalWebJMXConnectorServer");
+		final JMXConnector jmxc = JMXConnectorFactory.connect(url, null);
+		if (LOG.isDebugEnabled())
+		{
+			LOG.debug("connected to: " + url.toString());
+		}
+
+		// establish a new connection
+		this.server = jmxc.getMBeanServerConnection();
+	}
+
+	/**
+	 * Construct a ObjectName string pattern for querying the MBean in the server
+	 * 
+	 * @param objectName
+	 * @return
+	 */
+	private String getMBeanNamePattern(String objectName)
+	{
+		Matcher m = EquationNamePattern.matcher(objectName);
+		if (m.find())
+		{
+			return m.group(1) + ",*";
+		}
+		return null;
+	}
+
+	/**
+	 * Finds the registered MBean name in the server. If no registered mbean found, it will return the given objectName
+	 * 
+	 * @param objectName
+	 * @return the registered MBean name in the server.
+	 * @throws MalformedObjectNameException
+	 * @throws NullPointerException
+	 * @throws IOException
+	 */
+	public String findRegisteredMBeanName(String objectName)
+	{
+		// find objectName...
+		String name;
+		String namePattern = getMBeanNamePattern(objectName);
+		try
+		{
+			Set<ObjectName> names = server.queryNames(new ObjectName(namePattern), null);
+			if (!names.isEmpty())
+			{
+				name = names.iterator().next().toString(); // get first matched element
+				if (LOG.isDebugEnabled())
+				{
+					LOG.debug("Found mbean: " + name);
+				}
+				return name;
+			}
+		}
+		catch (Exception e)
+		{
+			LOG.warn("can't find a registered name for: " + namePattern, e);
+		}
+		return objectName;
+	}
+
+	/**
+	 * Returns a new object instance that implements the specialised <code>{@link MBeanHandler}</code> class. The instance is
+	 * wrapped around a proxy object which dispatches the method invocations to the corresponding MX bean on the MBean server.
+	 * 
+	 * @param mbeanClass
+	 *            The type of the MBean wrapper to instantiate.
+	 * @param objectName
+	 *            the object name exposed by JMX
+	 * @return An instance of the mbean that delegates method calls to the MX bean on the mbean server.
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> T getMBean(Class<T> mbeanClass, String objectName)
+	{
+		try
+		{
+			objectName = findRegisteredMBeanName(objectName);
+
+			// wrap in a proxy instance
+			return (T) Proxy.newProxyInstance(this.getClass().getClassLoader(), new Class<?>[] { mbeanClass }, new MBeanHandler(
+							objectName));
+		}
+		catch (Exception ex)
+		{
+			// any error creating the mbean instance is a design error!
+			throw new IllegalArgumentException("Unable to create MXBean of type: " + mbeanClass, ex);
+		}
+	}
+
+	/**
+	 * Returns the value of the attribute.
+	 * 
+	 * @param objectName
+	 *            The ObjectName of the mbean to get the attribute value of
+	 * @param attributeName
+	 *            The name of the attribute to get the value of
+	 * @return The value of the attribute with the given name
+	 * @throws EQException
+	 *             If any error occurs setting the attribute
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> T getAttribute(String objectName, String attributeName) throws EQException
+	{
+		try
+		{
+			objectName = findRegisteredMBeanName(objectName);
+
+			return (T) server.getAttribute(new ObjectName(objectName), attributeName);
+		}
+		catch (ReflectionException re)
+		{
+			throw new EQException(re);
+		}
+		catch (IOException ioe)
+		{
+			// ##TODO: invoke error handlers when connection errors occur
+			throw new EQException(ioe);
+		}
+		catch (InstanceNotFoundException infe)
+		{
+			throw new EQException(infe);
+		}
+		catch (AttributeNotFoundException anfe)
+		{
+			throw new EQException(anfe);
+		}
+		catch (MBeanException mbe)
+		{
+			throw new EQException(mbe);
+		}
+		catch (MalformedObjectNameException mone)
+		{
+			throw new EQException(mone);
+		}
+	}
+
+	/**
+	 * Sets the value of an attribute.
+	 * 
+	 * @param objectName
+	 *            The ObjectName of the mbean to set the attribute value of
+	 * @param attributeName
+	 *            The name of the attribute to set the value of
+	 * @param value
+	 *            The value to set the attribute to
+	 * @throws EQException
+	 *             If any error occurs setting the attribute
+	 */
+	public void setAttribute(String objectName, String attributeName, Object value) throws EQException
+	{
+		try
+		{
+			final Attribute attrib = new Attribute(attributeName, value);
+			server.setAttribute(new ObjectName(objectName), attrib);
+		}
+		catch (InvalidAttributeValueException iave)
+		{
+			throw new EQException(iave);
+		}
+		catch (ReflectionException re)
+		{
+			throw new EQException(re);
+		}
+		catch (IOException ioe)
+		{
+			// ##TODO: invoke error handlers when connection errors occur
+			throw new EQException(ioe);
+		}
+		catch (InstanceNotFoundException infe)
+		{
+			throw new EQException(infe);
+		}
+		catch (AttributeNotFoundException anfe)
+		{
+			throw new EQException(anfe);
+		}
+		catch (MBeanException mbe)
+		{
+			throw new EQException(mbe);
+		}
+		catch (MalformedObjectNameException mone)
+		{
+			throw new EQException(mone);
+		}
+	}
+
+	/**
+	 * Invocation handler that intercepts interface method calls and dispatches them to the similarly named managed bean operation.
+	 * 
+	 * @author berzosa
+	 */
+	class MBeanHandler<T> implements InvocationHandler
+	{
+		/**
+		 * The object name that this invocation handler operates on.
+		 */
+		private final ObjectName name;
+
+		/**
+		 * Cache of method signatures.
+		 */
+		private final Map<Method, String[]> methodSigsCache = new ConcurrentHashMap<Method, String[]>();
+
+		/**
+		 * Prepares an equation managed bean invocation handler.
+		 * 
+		 * @param server
+		 *            The server instance to dispatch calls onto
+		 * @param name
+		 *            The object name (used in the ObjectName constructor)
+		 * @throws MalformedObjectNameException
+		 *             If an error occurs creating the ObjectName.
+		 */
+		public MBeanHandler(String name) throws MalformedObjectNameException
+		{
+			this.name = new ObjectName(name);
+		}
+
+		/**
+		 * When a method is invoked on the proxy object, it dispatches the call to the similarly named mbean operation on the
+		 * managed bean depending on the name of the method and parameter types.
+		 */
+		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
+		{
+			// invoke on the server
+			if (method.getAnnotation(MBeanOperation.class) != null)
+			{
+				OPERATION: while (true)
+				{
+					try
+					{
+						// this is an operation; execute it and return immediately if it succeeds
+						return invokeOperation(method, args);
+					}
+					catch (RemoteException re)
+					{
+						// if a RemoteException error occurs (i.e., a communication failure and not an application exception), then
+						// consult the error handlers (if any)
+						if (errorHandlers != null)
+						{
+							// encapsulate the error event to consult the error handlers
+							final RemoteExceptionEvent event = new RemoteExceptionEvent(method.getName(), re, args);
+
+							// consult all error handlers: if any of them wish to, then we can retry the method
+							for (RemoteExceptionHandler errorHandler : errorHandlers)
+							{
+								// invoke all error handlers; if any handler handles the error (by returning 'true'), then we will
+								// retry the operation
+								if (errorHandler.onError(event))
+								{
+									// handler wants to retry, skip all other error handlers
+									continue OPERATION;
+								}
+							}
+						}
+
+						// if no error handler handled the RemoteException, wrap the error in a RuntimeException indicating that
+						// there is currently no connection to the JMX server
+						throw new IllegalStateException(JMX_SERVER_NOT_CONNECTED, re);
+					}
+				}
+			}
+			else
+			{
+				// no component implements this method!
+				throw new NoSuchMethodError("Method is not an @MBeanOperation: " + method);
+			}
+		}
+
+		/**
+		 * Invokes the operation on the managed bean that matches the method signature.
+		 * 
+		 * @param method
+		 *            The method invoked on the wrapper interface
+		 * @param args
+		 *            The method arguments passed by the caller
+		 * @throws IOException
+		 *             If a communication error occurs
+		 * @throws JMException
+		 *             If a JMX server error occurs
+		 */
+		private Object invokeOperation(Method method, Object[] args) throws Throwable
+		{
+			final String signature[] = getSignature(method);
+			final String operationName = method.getName();
+
+			try
+			{
+				return server.invoke(name, operationName, args, signature);
+			}
+			catch (InstanceNotFoundException infe)
+			{
+				// operation not found??
+				throw new IllegalArgumentException("Operation not found: " + operationName);
+			}
+			catch (MBeanException userException)
+			{
+				// unwrap user exceptions that are embedded inside MBeanExceptions
+				throw userException.getCause();
+			}
+		}
+
+		/**
+		 * Gets the JMX String[] array signature corresponding to the given method.
+		 * <p>
+		 * This method caches the results for future quick-access reference.
+		 * 
+		 * @param method
+		 *            The method invoked on the wrapper interface to get the JMX signature of.
+		 */
+		private String[] getSignature(Method method)
+		{
+			String[] sigs = methodSigsCache.get(method);
+			if (sigs == null)
+			{
+				sigs = toSignature(method.getParameterTypes());
+				methodSigsCache.put(method, sigs);
+			}
+
+			return sigs;
+		}
+
+		/**
+		 * Creates a JMX String[] array signature for a set of parameters that correpond to the given class array parameter types.
+		 * 
+		 * @param paramTypes
+		 *            The types of the parameters to create a JMX signature for.
+		 * @return A String[] array containing the fully qualified class names of the parameter types.
+		 */
+		private String[] toSignature(Class<?>[] paramTypes)
+		{
+			if (paramTypes == null || paramTypes.length == 0)
+			{
+				// empty signature if no args specified
+				return EMPTY_SIGNATURE;
+			}
+
+			// convert class array of parameter types to string array
+			final String[] sigs = new String[paramTypes.length];
+			for (int i = 0; i < paramTypes.length; i++)
+			{
+				sigs[i] = paramTypes[i].getName();
+			}
+
+			return sigs;
+		}
+	}
+
+	/**
+	 * The JMX Service delegate dispatches RMI-specific error events to the configured error handler, if any.
+	 * 
+	 * @author berzosa
+	 */
+	public static interface RemoteExceptionHandler
+	{
+		/**
+		 * Called when an error has occurred invoking a method on the service delegate. The client may choose to handle the error or
+		 * simply re-throw it to pass it up the stack.
+		 * <p>
+		 * If this method returns 'true', then the delegate will attempt to re-invoke the remote method that failed, hence, the
+		 * handler must either re-throw the exception or return 'false' if it does not wish for the call to be retried.
+		 * <p>
+		 * NOTE: If this method returns 'true' or throws an exception, then the other handlers that have not yet been executed will
+		 * be skipped.
+		 * 
+		 * @param event
+		 *            A RemoteExceptionEvent that encapsulates the information about the event that occurred.
+		 * @return true if the call should immediately be retried, false if other error handlers should be consulted.
+		 */
+		public boolean onError(RemoteExceptionEvent event) throws RemoteException;
+	}
+
+	/**
+	 * Encapsulates information about a RemoteException error that occurs while a call to a JMX server was being performed.
+	 * 
+	 * @author berzosa
+	 */
+	@SuppressWarnings("serial")
+	public static class RemoteExceptionEvent extends EventObject
+	{
+		private final String methodName;
+		private final RemoteException exception;
+		private final Object[] params;
+
+		public RemoteExceptionEvent(String methodName, RemoteException exception, Object[] params)
+		{
+			super(methodName);
+			this.methodName = methodName;
+			this.exception = exception;
+			this.params = params;
+		}
+
+		public String getMethodName()
+		{
+			return methodName;
+		}
+
+		public RemoteException getException()
+		{
+			return exception;
+		}
+
+		public Object[] getParams()
+		{
+			return params;
+		}
+	}
+}

@@ -1,0 +1,78 @@
+package com.misys.equation.common.test.transaction;
+
+import com.misys.equation.common.access.EquationStandardTransaction;
+import com.misys.equation.common.test.EquationTestCaseFully;
+
+/**
+ * Equation test cases for Cheque Book Type Maintenance
+ */
+public class CBT extends EquationTestCaseFully
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: CBT.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	String programName = "J69FRR";
+	String optionId = "CBT";
+
+	// ------------------------------------------------------------------------ JUNIT's overloaded methods
+	/**
+	 * Setup
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+		retrieveBeforeCancel = false;
+	}
+
+	// ------------------------------------------------------------------------ Helper methods
+	/**
+	 * Return a transaction
+	 * 
+	 * @return a transaction
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public EquationStandardTransaction getTransaction() throws Exception
+	{
+		EquationStandardTransaction transaction = getEquationStandardTransaction(programName + optionId);
+		transaction.setWorkStationId(WORKSTATIONID);
+		return transaction;
+	}
+
+	// ------------------------------------------------------------------------ Field setups
+
+	/**
+	 * Setup a non-existing key fields only
+	 */
+	@Override
+	public void setupNonExistKeyFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZCBTC", "BIA"); // Cheque book type code
+	}
+
+	/**
+	 * Setup the mandatory fields (add mode)
+	 */
+	@Override
+	public void setupAddFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZCBDE", "Carl's Check Book Type"); // Cheque book type description
+		transaction.setFieldValue("GZCHIB", "001"); // Number of cheques
+		transaction.setFieldValue("GZBLIM", "001"); // Limit on number of books
+		transaction.setFieldValue("GZSLEN", "10"); // Serial number length
+	}
+
+	/**
+	 * Setup the mandatory fields (maintain mode)
+	 */
+	@Override
+	public void setupMaintFields(EquationStandardTransaction transaction)
+	{
+		transaction.setFieldValue("GZCBDE", "Carl's Check Book Type"); // Cheque book type description
+		transaction.setFieldValue("GZCHIB", "001"); // Number of cheques
+		transaction.setFieldValue("GZBLIM", "001"); // Limit on number of books
+		transaction.setFieldValue("GZSLEN", "09"); // Serial number length
+	}
+
+}

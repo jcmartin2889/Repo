@@ -1,0 +1,294 @@
+package com.misys.equation.function.beans;
+
+import com.misys.equation.common.utilities.EqDataType;
+
+/**
+ * This class represents the run time data of a repeating field
+ * <p>
+ * Whilst the non-repeating base class FieldData stores values internally, this class uses a data manager class, shared with the
+ * FunctionData instance, to manage scrolling through rows
+ */
+public class RepeatingFieldData extends FieldData
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: RepeatingFieldData.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+
+	/** The RepeatingDataManager managing the data for this field */
+	private RepeatingDataManager repeatingDataManager;
+
+	/**
+	 * Construct a default unnamed field data
+	 * 
+	 */
+	public RepeatingFieldData()
+	{
+		super();
+	}
+
+	/**
+	 * Construct a default named type field data
+	 * 
+	 * @param fieldName
+	 *            - field name
+	 * @param fieldType
+	 *            - field type
+	 * @param fieldLength
+	 *            - field length
+	 * @param fieldDecimal
+	 *            - field decimal
+	 */
+	public RepeatingFieldData(String fieldName, String fieldType, int fieldLength, int fieldDecimal,
+					RepeatingDataManager repeatingDataManager)
+	{
+		super(fieldName, fieldType, fieldLength, fieldDecimal);
+		this.repeatingDataManager = repeatingDataManager;
+	}
+
+	/**
+	 * Construct a field data based on an existing data
+	 * 
+	 * @param fieldName
+	 *            - field name
+	 * @param fieldData
+	 *            - the source field data
+	 */
+	public RepeatingFieldData(String fieldName, RepeatingFieldData fieldData)
+	{
+		super(fieldName, fieldData);
+		this.repeatingDataManager = fieldData.repeatingDataManager;
+	}
+
+	/**
+	 * Constructor
+	 * <p>
+	 * Note that further configuration is required after construction based on the User's authority.
+	 * <p>
+	 * Note that the RepeatingDataManager is not initialised when this constructor is called.
+	 * 
+	 * @param field
+	 *            InputField to initialise from
+	 * @param repeatingDataManager
+	 */
+	public RepeatingFieldData(InputField field, RepeatingDataManager repeatingDataManager)
+	{
+		super(field);
+		this.repeatingDataManager = repeatingDataManager;
+	}
+
+	/**
+	 * Copy the content of a Field Values
+	 * 
+	 * @param fieldValues
+	 *            - the field values to copy from
+	 */
+	public void copy(FieldValues fieldValues)
+	{
+		// make sure it is unlocked, so it can update the details
+		setLocked(false);
+
+		// copy the details
+		setInputValue(fieldValues.getInputValue());
+		setOutputValue(fieldValues.getOutputValue());
+		setDbValue(fieldValues.getDbValue());
+		setFunctionMessages(fieldValues.getFunctionMessages());
+		setOrientation(fieldValues.getOrientation());
+		setShowDescAsValue(fieldValues.isShowDescAsValue());
+
+		// determine whether it should be locked or not
+		setLocked(fieldValues.isLocked() || isDefaultLocked());
+	}
+
+	/**
+	 * Set the field input value
+	 * 
+	 * @param inputValue
+	 *            - field input value
+	 */
+	@Override
+	public void setInputValue(String inputValue)
+	{
+		// cannot be changed?
+		if (isLocked())
+		{
+			return;
+		}
+		repeatingDataManager.setInputValue(getFieldName(), convertIn(inputValue));
+	}
+
+	/**
+	 * Return the field input value
+	 * 
+	 * @return the field input value
+	 */
+	@Override
+	public String getInputValue()
+	{
+		return repeatingDataManager.getInputValue(getFieldName());
+	}
+
+	/**
+	 * Set the field output value
+	 * 
+	 * @param outputValue
+	 *            - field output value
+	 */
+	@Override
+	public void setOutputValue(String outputValue)
+	{
+		repeatingDataManager.setOutputValue(getFieldName(), outputValue);
+
+	}
+	/**
+	 * Return the field output value
+	 * 
+	 * @return the field output value
+	 */
+	@Override
+	public String getOutputValue()
+	{
+		return repeatingDataManager.getOutputValue(getFieldName());
+	}
+
+	/**
+	 * Set the field DB value
+	 * 
+	 * @param dbValue
+	 *            - field DB value
+	 */
+	@Override
+	public void setDbValue(String dbValue)
+	{
+		// cannot be changed?
+		if (isLocked())
+		{
+			return;
+		}
+
+		// set value
+		repeatingDataManager.setDbValue(getFieldName(), convertIn(dbValue));
+	}
+
+	/**
+	 * Return the field DB value
+	 * 
+	 * @return the field DB value
+	 */
+	@Override
+	public String getDbValue()
+	{
+		return repeatingDataManager.getDbValue(getFieldName());
+	}
+
+	/**
+	 * Determine if value has been set to the description
+	 * 
+	 * @return true if value has been set to the description
+	 */
+	@Override
+	public boolean isShowDescAsValue()
+	{
+		return repeatingDataManager.isShowDescAsValue(getFieldName());
+	}
+
+	/**
+	 * Set if value has been set to the description
+	 * 
+	 * @param showDescAsValue
+	 *            - true if value has been set to the description
+	 */
+	@Override
+	public void setShowDescAsValue(boolean showDescAsValue)
+	{
+		repeatingDataManager.setShowDescAsValue(getFieldName(), showDescAsValue);
+	}
+
+	/**
+	 * Determine if the field cannot be changed
+	 * 
+	 * @return true if the field cannot be changed
+	 */
+	@Override
+	public boolean isLocked()
+	{
+		return repeatingDataManager.isLocked(getFieldName());
+	}
+
+	/**
+	 * Set if the field cannot be changed
+	 * 
+	 * @param locked
+	 *            - true if the field cannot be changed
+	 */
+	@Override
+	public void setLocked(boolean locked)
+	{
+		repeatingDataManager.setLocked(getFieldName(), locked);
+	}
+
+	/**
+	 * Return the text orientation
+	 * 
+	 * @return the text orientation
+	 */
+	@Override
+	public int getOrientation()
+	{
+		return repeatingDataManager.getOrientation(getFieldName());
+	}
+
+	/**
+	 * Set the text orientation
+	 * 
+	 * @param orientation
+	 *            - the text orientation
+	 */
+	@Override
+	public void setOrientation(int orientation)
+	{
+		repeatingDataManager.setOrientation(getFieldName(), orientation);
+	}
+
+	/**
+	 * Return the String representation
+	 * 
+	 * @return the String representation
+	 */
+	@Override
+	public String toString()
+	{
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(getFieldName() + " :");
+		buffer.append(" Inp=" + getInputValue());
+		buffer.append(" Db=" + getDbValue());
+		buffer.append(" Out=" + getOutputValue());
+		buffer.append(" Typ=" + getFieldLength() + getFieldType());
+		if (!EqDataType.isAlpha(getFieldType()))
+		{
+			buffer.append("," + getFieldDecimal());
+		}
+		return buffer.toString();
+	}
+
+	/**
+	 * Return the repeating data manager - do not define getRepeatingDataManager to avoid serialisation as this would mean all rows
+	 * will be duplicated in all repeating fields
+	 * 
+	 * @return the repeatingDataManager
+	 */
+	public RepeatingDataManager rtvRepeatingDataManager()
+	{
+		return repeatingDataManager;
+	}
+
+	/**
+	 * Set the repeating data manager
+	 * 
+	 * @param repeatingDataManager
+	 *            - the repeating data manager
+	 */
+	public void chgRepeatingDataManager(RepeatingDataManager repeatingDataManager)
+	{
+		this.repeatingDataManager = repeatingDataManager;
+	}
+
+}

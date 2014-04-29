@@ -1,0 +1,157 @@
+package com.misys.equation.function.runtime;
+
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import com.misys.equation.function.tools.HTMLToolbox;
+
+public class ShutterGroupHandler
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	private Map<String, ShutterGroup> shutters;
+
+	/**
+	 * Construct an empty shutter group
+	 */
+	public ShutterGroupHandler()
+	{
+		shutters = new Hashtable<String, ShutterGroup>();
+	}
+
+	/**
+	 * Return the shutter details
+	 * 
+	 * @return the shutter details
+	 */
+	public Map<String, ShutterGroup> getShutters()
+	{
+		return shutters;
+	}
+
+	/**
+	 * Set the shutter details
+	 * 
+	 * @param shutters
+	 *            - the shutter details
+	 */
+	public void setShutters(Hashtable<String, ShutterGroup> shutters)
+	{
+		this.shutters = shutters;
+	}
+
+	/**
+	 * Return the shutter group
+	 * 
+	 * @param id
+	 *            - the id of the shutter group
+	 * 
+	 * @return the shutter group
+	 */
+	public ShutterGroup getShutterGroup(String id)
+	{
+		return shutters.get(id);
+	}
+
+	/**
+	 * Add/maintain the shutter group
+	 * 
+	 * @param id
+	 *            - the id of the shutter group
+	 * @param open
+	 *            - open (true) or close (false)?
+	 */
+	public void chgShutterGroup(String id, boolean open)
+	{
+		ShutterGroup group = getShutterGroup(id);
+
+		if (group == null)
+		{
+			shutters.put(id, new ShutterGroup(open));
+		}
+		else
+		{
+			group.setOpen(open);
+		}
+	}
+
+	/**
+	 * Loads the field value from a Map. The map value is an array
+	 * 
+	 * @param map
+	 *            - table of field names and field values
+	 * 
+	 */
+	public void loadShutterFromMap2(Map<String, String[]> map)
+	{
+		String fieldValue;
+		String[] fieldValuex;
+
+		Iterator<String> shutterIter = shutters.keySet().iterator();
+
+		while (shutterIter.hasNext())
+		{
+			// get the shutter id
+			String shutterId = shutterIter.next();
+
+			// get the status of this shutter
+			fieldValuex = map.get(shutterId + HTMLToolbox.GROUP_SHTR_OPEN);
+			if (fieldValuex != null)
+			{
+				fieldValue = fieldValuex[0];
+				if (fieldValue != null)
+				{
+					boolean open = fieldValue.equals("true");
+					chgShutterGroup(shutterId, open);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Return the String representation
+	 * 
+	 * @param the
+	 *            String representation
+	 */
+	@Override
+	public String toString()
+	{
+		StringBuffer buffer = new StringBuffer();
+		Iterator<String> shutterIter = shutters.keySet().iterator();
+
+		while (shutterIter.hasNext())
+		{
+			String shutterId = shutterIter.next();
+			ShutterGroup shutterGroup = shutters.get(shutterId);
+			buffer.append(shutterId + " = " + shutterGroup + "\n");
+		}
+
+		return buffer.toString();
+	}
+
+	/**
+	 * Remove all shutter status
+	 */
+	public void clear()
+	{
+		shutters.clear();
+	}
+
+	/**
+	 * Resync the shutter statuses with the given statuses
+	 * 
+	 * @param initShutterStatuses
+	 *            - shutter statuses
+	 */
+	public void reSyncLoadShutterStatus(Map<String, ShutterGroup> initShutterStatuses)
+	{
+		for (Entry<String, ShutterGroup> entry : initShutterStatuses.entrySet())
+		{
+			shutters.put(entry.getKey(), entry.getValue());
+		}
+	}
+}

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema elementFormDefault="qualified" targetNamespace="urn:misys:xsd:equation.FF1" xmlns="urn:misys:xsd:equation.FF1" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="FF1" type="FF1Type"/>
+    <xs:complexType name="FF1Type">
+        <xs:sequence>
+            <xs:element name="AA" type="AAType"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="AAType">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="ACPNC" type="ACPNCType"/>
+            <xs:element minOccurs="0" name="ACUN" type="ACUNType"/>
+            <xs:element minOccurs="0" name="ADAS" type="ADASType"/>
+            <xs:element minOccurs="0" name="ACTP" type="ACTPType"/>
+            <xs:element minOccurs="0" name="ABRNM" type="ABRNMType"/>
+            <xs:element minOccurs="0" name="ACRB1" type="ACRB1Type"/>
+            <xs:element minOccurs="0" name="ACRB2" type="ACRB2Type"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="ACPNCType">
+        <xs:restriction base="xs:string"></xs:restriction></xs:simpleType>
+    <xs:simpleType name="ACUNType">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="35"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="ADASType">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="15"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="ACTPType">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="2"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="ABRNMType">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="4"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="ACRB1Type">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="2"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="ACRB2Type">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="2"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>

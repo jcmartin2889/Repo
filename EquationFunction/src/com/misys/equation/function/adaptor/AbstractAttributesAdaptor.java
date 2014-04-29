@@ -1,0 +1,72 @@
+package com.misys.equation.function.adaptor;
+
+import com.misys.equation.function.runtime.UserData;
+
+/**
+ * Default implementation of Display Attributes exit points for a field
+ * <p>
+ * This class must be used as the super class for the inner class corresponding to Display Attributes for a field. The user
+ * implementation can override these default implementations of the methods in the IAttributesAdaptor interface.
+ * <p>
+ * TODO: These exit points require review.
+ * 
+ * @see IAttributesAdaptor
+ * @see LayoutAdaptor
+ */
+public abstract class AbstractAttributesAdaptor implements IAttributesAdaptor
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: AbstractAttributesAdaptor.java 6793 2010-03-31 12:10:20Z deroset $";
+	/**
+	 * Determine if the field is protected or not. This user exit is invoked whenever the field is to be displayed
+	 * 
+	 * @param userData
+	 *            - the user data
+	 * 
+	 * @return true if the field is protected
+	 */
+	public boolean isProtected(UserData userData)
+	{
+		return false;
+	}
+
+	/**
+	 * Determine if the field is visible or not. This user exit is invoked whenever the field is to be displayed
+	 * 
+	 * @param userData
+	 *            - the user data
+	 * 
+	 * @return true if the field is visible
+	 */
+	public boolean isVisible(UserData userData)
+	{
+		return true;
+	}
+
+	/**
+	 * Return the parameter to use to edit this field
+	 * 
+	 * @param userData
+	 *            - the User Data
+	 * 
+	 * @return the parameter to use to edit this field
+	 */
+	public String getEditingParameter(UserData userData)
+	{
+		return "";
+	}
+
+	/**
+	 * Determine whether the field is visible or not in the list
+	 * 
+	 * @param userData
+	 *            - the User Data
+	 * 
+	 * @return true if visible
+	 */
+	public boolean isInGridVisible(UserData userData)
+	{
+		return true;
+	}
+
+}

@@ -1,0 +1,303 @@
+package com.misys.equation.common.internal.eapi.dataaccesslibrary;
+
+import java.sql.SQLException;
+
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EQCommonConstants;
+
+/**
+ * Performs logon to Equation
+ */
+public class LogonDataAccess
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: LogonDataAccess.java 9725 2010-11-08 12:34:45Z MACDONP1 $";
+	/*******************************************************************************************************************************
+	 * Copyright <a href="http://www.misys.com"> Misys International Banking Systems Ltd, 2006 </a>
+	 */
+	public static final String copyright = "Copyright Misys International Banking Systems Ltd, 2006";
+	protected static final int PARAM_EQLOGON_DSLOGON = 1;
+	protected static final int PARAM_EQLOGON_PASSWORD = 2;
+	protected static final int PARAM_EQLOGON_DSSYSE = 3;
+	protected static final int PARAM_EQLOGON_DSSYS2 = 4;
+	protected static final int PARAM_EQLOGON_CALLSTATUS = 5;
+	protected static final int PARAM_EQLOGON_MESSAGE_ID = 6;
+	protected static final int PARAM_EQLOGON_MESSAGE_TEXT = 7;
+	public static final String storedProcedureCallEQLOGON = "CALL EQLOGON(?,?,?,?,?,?,?)";
+	final static char spaceChar = ' ';
+	static final int EQLOGON_CONTROLS_SIZE = 128;
+	static final String EQLOGON_BLANK_CONTROLS = EQCommonConstants.initBlankStringBuffer(EQLOGON_CONTROLS_SIZE).toString();
+	private String strJobNumber = "";
+	private String strCcsidAlpha = "";
+	private String strUserLanguage = "";
+	private String strDSSYSE = "";
+	private String strCallStatus = "";
+	private String strMessageId = "";
+	private String strMessageText = "";
+
+	/**
+	 * Equation sign-in process
+	 * 
+	 * @param conn
+	 *            - the connection
+	 * @param strApplication
+	 *            - the application
+	 * @param strUser
+	 *            - the user Id
+	 * @param strPassword
+	 *            - the user's password
+	 * @param strUnit
+	 *            - the unit Id
+	 * @param strIseriesWorkstation
+	 *            - the workstation Id
+	 * @param strWorkstationIPAddr
+	 *            - the workstation IP address
+	 * @param iCCMode
+	 *            - commitment mode
+	 * @param bAddToActiveUsersList
+	 *            - add to active user list flag?
+	 * @param connectionSupplied
+	 *            - connection supplied?
+	 * 
+	 * @return the return status
+	 * 
+	 * @throws EQException
+	 */
+	public int equationSignOn(java.sql.Connection conn, String strApplication, String strUser, byte[] strPassword, String strUnit,
+					String strIseriesWorkstation, String strWorkstationIPAddr, int iCCMode, boolean bAddToActiveUsersList,
+					boolean connectionSupplied) throws EQException
+	{
+		if (strApplication == null || strApplication.length() == 0)
+		{
+			throw new EQException("equationSignOn: invalid application id");
+		}
+		if (strUser == null || strUser.length() == 0)
+		{
+			throw new EQException("equationSignOn: invalid user id");
+		}
+		if (strUnit == null || strUnit.length() == 0)
+		{
+			throw new EQException("equationSignOn: invalid unit");
+		}
+		if (strWorkstationIPAddr == null || strWorkstationIPAddr.length() == 0)
+		{
+			throw new EQException("equationSignOn: invalid ip address");
+		}
+		// check ip address more thoroghly
+		int dotPos1, dotPos2, dotPos3 = 0;
+		dotPos1 = strWorkstationIPAddr.indexOf('.', 0);
+		dotPos2 = strWorkstationIPAddr.indexOf('.', dotPos1 + 1);
+		dotPos3 = strWorkstationIPAddr.indexOf('.', dotPos2 + 1);
+		if (dotPos1 < 1 || dotPos1 > 3 || dotPos2 < 3 || dotPos2 > 7 || dotPos3 < 5 || dotPos3 > 11)
+		{
+			throw new EQException("equationSignOn: invalid ip address");
+		}
+		java.sql.CallableStatement cs = null;
+		try
+		{
+			cs = conn.prepareCall(storedProcedureCallEQLOGON);
+			cs.setString(PARAM_EQLOGON_DSLOGON,
+							getControls(strApplication, strUser, strPassword, strUnit, strIseriesWorkstation, strWorkstationIPAddr,
+											iCCMode, bAddToActiveUsersList, connectionSupplied));
+			cs.setBytes(PARAM_EQLOGON_PASSWORD, strPassword);
+			cs.registerOutParameter(PARAM_EQLOGON_DSLOGON, java.sql.Types.CHAR);
+			cs.registerOutParameter(PARAM_EQLOGON_DSSYSE, java.sql.Types.CHAR);
+			cs.registerOutParameter(PARAM_EQLOGON_DSSYS2, java.sql.Types.CHAR);
+			cs.registerOutParameter(PARAM_EQLOGON_CALLSTATUS, java.sql.Types.CHAR);
+			cs.registerOutParameter(PARAM_EQLOGON_MESSAGE_ID, java.sql.Types.CHAR);
+			cs.registerOutParameter(PARAM_EQLOGON_MESSAGE_TEXT, java.sql.Types.CHAR);
+			// Execute the call statement
+			cs.execute();
+			setControls(cs.getString(PARAM_EQLOGON_DSLOGON));
+			strDSSYSE = cs.getString(PARAM_EQLOGON_DSSYSE);
+			strCallStatus = cs.getString(PARAM_EQLOGON_CALLSTATUS).trim();
+			strMessageId = cs.getString(PARAM_EQLOGON_MESSAGE_ID);
+			strMessageText = cs.getString(PARAM_EQLOGON_MESSAGE_TEXT);
+			return Integer.parseInt(strCallStatus);
+		}
+		catch (SQLException ex)
+		{
+			throw new EQException(ex);
+		}
+	}
+
+	/**
+	 * Return the job number
+	 * 
+	 * @return the job number
+	 */
+	public String getJobNumber()
+	{
+		return strJobNumber;
+	}
+
+	/**
+	 * Return the user's language
+	 * 
+	 * @return the user's language
+	 */
+	public String getUserLanguage()
+	{
+		return strUserLanguage;
+	}
+
+	/**
+	 * Return the job's CCSID
+	 * 
+	 * @return the job's CCSID
+	 */
+	public String getCCSID()
+	{
+		return strCcsidAlpha;
+	}
+
+	/**
+	 * Return the single character substitution prompt
+	 * 
+	 * @return the single character substitution prompt
+	 */
+	public char getPromptSingleSubstitutionCharacter()
+	{
+		return strDSSYSE.charAt(299);
+	}
+
+	/**
+	 * Return the multiple character substitution prompt
+	 * 
+	 * @return the multiple character substitution prompt
+	 */
+	public char getPromptMultipleSubstitutionCharacter()
+	{
+		return strDSSYSE.charAt(300);
+	}
+
+	/**
+	 * Return the processing date
+	 * 
+	 * @return the processing date
+	 */
+	public String getProcessingDate()
+	{
+		return strDSSYSE.substring(134, 141);
+	}
+
+	/**
+	 * Return the message Id
+	 * 
+	 * @return the message Id
+	 */
+	public String getMessageId()
+	{
+		return strMessageId;
+	}
+
+	/**
+	 * Return the message text
+	 * 
+	 * @return the message text
+	 */
+	public String getMessageText()
+	{
+		return strMessageText;
+	}
+
+	/**
+	 * Return a string containing the control values
+	 * 
+	 * @param strApplication
+	 *            - the application
+	 * @param strUser
+	 *            - the user Id
+	 * @param strPassword
+	 *            - the user's password
+	 * @param strUnit
+	 *            - the unit Id
+	 * @param strIseriesWorkstation
+	 *            - the workstation Id
+	 * @param strWorkstationIPAddr
+	 *            - the workstation IP address
+	 * @param iCCMode
+	 *            - commitment mode
+	 * @param bAddToActiveUsersList
+	 *            - add to active user list flag?
+	 * @param connectionSupplied
+	 *            - connection supplied?
+	 * @return a string containing the control values
+	 */
+	private String getControls(String strApplication, String strUser, byte[] strPassword, String strUnit,
+					String strIseriesWorkstation, String strWorkstationIPAddr, int iCCMode, boolean bAddToActiveUsersList,
+					boolean connectionSupplied)
+	{
+		char controls[] = new char[EQLOGON_CONTROLS_SIZE];
+		// initialse with blanks
+		EQLOGON_BLANK_CONTROLS.getChars(0, EQLOGON_CONTROLS_SIZE, controls, 0);
+		// copy over any control information
+		strApplication.getChars(0, strApplication.length(), controls, 0);
+		strUser.getChars(0, strUser.length(), controls, 10);
+		// encryption
+		controls[20] = 'Y';
+		strIseriesWorkstation.getChars(0, strIseriesWorkstation.length(), controls, 21);
+		strWorkstationIPAddr.getChars(0, strWorkstationIPAddr.length(), controls, 31);
+		strUnit.getChars(0, strUnit.length(), controls, 46);
+		if (bAddToActiveUsersList)
+		{
+			// sleep at EOD - set this to false so jobs are shown in the active user enquiry
+			controls[49] = '0';
+		}
+		else
+		{
+			controls[49] = '1';
+		}
+		// start CC
+		controls[50] = '1';
+		// job commitment control definition
+		controls[51] = '0';
+		// default activation group commit link
+		if (iCCMode == 1)
+		{
+			controls[52] = '1';
+		}
+		else
+		{
+			controls[52] = '0';
+		}
+		// connection commit
+		// connection supplied and not an XA connection
+		if ((iCCMode == 1 || iCCMode == 2) && connectionSupplied)
+		{
+			controls[53] = '1';
+		}
+		else
+		{
+			controls[53] = '0';
+		}
+		// XA connection
+		if (iCCMode == 3)
+		{
+			controls[54] = '1';
+		}
+		else
+		{
+			controls[54] = '0';
+		}
+		return new String(controls);
+	}
+
+	/**
+	 * Set the controls
+	 * 
+	 * @param s
+	 *            - the control string
+	 */
+	private void setControls(String s)
+	{
+		strJobNumber = s.substring(55, 61);
+		strCcsidAlpha = s.substring(61, 66);
+		strUserLanguage = s.substring(66, 68);
+		if (strUserLanguage.trim().length() == 0)
+		{
+			strUserLanguage = "GB";
+		}
+	}
+
+}

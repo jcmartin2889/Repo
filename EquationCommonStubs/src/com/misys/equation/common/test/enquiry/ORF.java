@@ -1,0 +1,39 @@
+package com.misys.equation.common.test.enquiry;
+
+import com.misys.equation.common.access.EquationStandardListEnquiry;
+import com.misys.equation.common.test.EquationTestCase;
+
+/**
+ * 
+ */
+public class ORF extends EquationTestCase // Customer Loan Summary Enquiry
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: ORF.java 7610 2010-06-01 17:10:41Z MACDONP1 $";
+	private EquationStandardListEnquiry listEnquiry;
+
+	@Override
+	public void setUp() throws Exception
+	{
+		super.setUp();
+
+		/*
+		 * Get the enquiry class - you'll need to enter the name of the enquiry program e.g. H68EER
+		 */
+		listEnquiry = getEquationStandardListEnquiry("A11DER");
+	}
+
+	public void testRetrieve() throws Exception
+	{
+		/*
+		 * Set up the key fields required for the enquiry
+		 */
+		listEnquiry.setFieldValue("HZAUID", "BIAN"); // User identifier (4A)
+		listEnquiry.setFieldValue("HZANAM", "BIANZOC1"); // Branch name (35A)
+
+		/*
+		 * See if it works
+		 */
+		assertTestStandardListEnquiry(listEnquiry, true);
+	}
+}

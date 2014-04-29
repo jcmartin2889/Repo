@@ -1,0 +1,1532 @@
+package com.misys.equation.common.files;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EqDataType;
+import com.misys.equation.common.utilities.SQLToolbox;
+import com.misys.equation.common.utilities.Toolbox;
+
+public class JournalHeader extends DatabaseFile
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	// Default workstation Id
+	public final static String WORKSTATIONID = "EQ40";
+
+	// Standard journal key of Equation
+	private String workstationID; // GYWSID
+	private int jrnDay; // GYDIM
+	private int jrnTime; // GYTIM
+	private int jrnSequence; // GYSEQ
+	private String programRoot; // GYFRO
+	private String functionMode; // GYJTT
+
+	// Other fields
+	private String user; // GYUSID
+	private String branch; // GYBRNM
+	private String printed; // GYPRN
+	private String recovStat; // GYREC
+	private String option; // GYOID
+	private String application; // GYAPP
+	private String identity; // GYWHO
+	private String identityShortName; // GYSHN
+	private String journalRef; // GYJREF
+	private int dateMaintained; // GYDLM
+	private List<String> warningMessages; // GYMES1-GYMES6
+	private String errorRecov; // GYMES7
+	private String errorBackground; // GYMES8
+	private String coreSystemStat; // GYKSC
+	private String supervisorID; // GYECBU
+	private String securiyMnem; // GYSMN
+	private String portfolioRef; // GYREF
+	private String depotRef; // GYDPI
+	private String transactionStat; // GYETS
+	private String enigmaKey; // GYETK
+	private int enigmaNumber; // GYETN
+	private int linkNumber; // GYLJOB
+	private int linkTime; // GYLTIM
+	private String linkSet; // GYLSET
+	private String transferStat; // GYTFRS
+	private String maintLater; // GYMCL
+	private String aext; // GYAEXT
+	private String arec; // GYAREC
+	private int createDate; // GYCDT
+	private int ccLinkTime; // GYCLTM
+	private String commitIssued; // GYCOMT
+	private int jobNumber; // GYJOB
+	private int ccLinkSeq; // GYCSEQ
+	private String appId; // GYAPID
+	private String tcpIp; // GYTCP
+	private String inputRef; // GYIREF
+	private String inputUserId; // GYAUID
+	private String authorisingId; // GYSUID
+
+	// These are from the GYEPF
+	private List<String> authorisors; // GYESP1 - GYESP6
+
+	/**
+	 * Constructor to create an empty journal header
+	 * 
+	 */
+	public JournalHeader()
+	{
+		super();
+		setEqFileName("GYPF");
+
+		this.workstationID = "";
+		this.jrnDay = 0;
+		this.jrnTime = 0;
+		this.jrnSequence = 0;
+		this.programRoot = "";
+		this.functionMode = "";
+
+		this.warningMessages = new ArrayList<String>();
+		this.user = "";
+		this.branch = "";
+		this.printed = "N";
+		this.recovStat = "";
+		this.option = "";
+		this.application = "";
+		this.identity = "";
+		this.identityShortName = "";
+		this.journalRef = "";
+		this.dateMaintained = 0;
+		this.errorRecov = "";
+		this.errorBackground = "";
+		this.coreSystemStat = "";
+		this.supervisorID = "";
+		this.securiyMnem = "";
+		this.portfolioRef = "";
+		this.depotRef = "";
+		this.transactionStat = "";
+		this.enigmaKey = "";
+		this.enigmaNumber = 0;
+		this.linkNumber = 0;
+		this.linkTime = 0;
+		this.linkSet = "";
+		this.transferStat = "";
+		this.maintLater = "";
+		this.aext = "";
+		this.arec = "";
+		this.createDate = 0;
+		this.ccLinkTime = 0;
+		this.commitIssued = "";
+		this.jobNumber = 0;
+		this.ccLinkSeq = 0;
+		this.appId = "";
+		this.tcpIp = "";
+		this.inputRef = "";
+		this.inputUserId = "";
+		this.authorisingId = "";
+
+		this.authorisors = new ArrayList<String>();
+	}
+
+	/**
+	 * Set the journal key with default details
+	 * 
+	 */
+	public void chgJournalKey()
+	{
+		chgJournalKey(JournalHeader.WORKSTATIONID);
+	}
+
+	/**
+	 * Set the journal key with the specified workstation id and current time
+	 * 
+	 */
+	public void chgJournalKey(String workstationId)
+	{
+		Calendar cal = Calendar.getInstance();
+
+		setWorkstationID(workstationId);
+		this.jrnDay = cal.get(Calendar.DAY_OF_MONTH);
+		this.jrnTime = Toolbox.getTimeDBFormat(cal);
+		this.jrnSequence = 1;
+	}
+
+	/**
+	 * Set the journal key
+	 * 
+	 * @param workstationId
+	 *            workstation id
+	 * @param jrnDay
+	 *            journal day
+	 * @param jrnTime
+	 *            journal time
+	 * @param jrnSequence
+	 *            journal sequence
+	 * @param programRoot
+	 *            program root
+	 * @param functionMode
+	 *            function mode
+	 */
+	public void chgJournalKey(String workstationId, int jrnDay, int jrnTime, int jrnSequence, String programRoot,
+					String functionMode)
+	{
+		setWorkstationID(workstationId);
+		this.jrnDay = jrnDay;
+		this.jrnTime = jrnTime;
+		this.jrnSequence = jrnSequence;
+		setProgramRoot(programRoot);
+		setFunctionMode(functionMode);
+	}
+
+	/**
+	 * Return the string equivalent of the journal header
+	 * 
+	 * @return the string equivalent of the journal header
+	 * 
+	 */
+	@Override
+	public String toString()
+	{
+		return workstationID + "-" + jrnDay + "-" + jrnTime + "-" + jrnSequence + "-" + programRoot + "-" + functionMode;
+	}
+
+	/**
+	 * Return the workstation id
+	 * 
+	 * @return the workstation id
+	 */
+	public String getWorkstationID()
+	{
+		return workstationID;
+	}
+
+	/**
+	 * Set the workstation id
+	 * 
+	 * @param workstationID
+	 *            - the workstation id
+	 */
+	public void setWorkstationID(String workstationID)
+	{
+		this.workstationID = Toolbox.trim(workstationID, 4);
+	}
+
+	/**
+	 * Return the journal day
+	 * 
+	 * @return the journal day
+	 */
+	public int getJrnDay()
+	{
+		return jrnDay;
+	}
+
+	/**
+	 * Set the journal day
+	 * 
+	 * @param jrnDay
+	 *            - the journal day
+	 */
+	public void setJrnDay(int jrnDay)
+	{
+		this.jrnDay = jrnDay;
+	}
+
+	/**
+	 * Return the journal time
+	 * 
+	 * @return the journal time
+	 */
+	public int getJrnTime()
+	{
+		return jrnTime;
+	}
+
+	/**
+	 * Set the journal time
+	 * 
+	 * @param jrnTime
+	 *            - the journal time
+	 */
+	public void setJrnTime(int jrnTime)
+	{
+		this.jrnTime = jrnTime;
+	}
+
+	/**
+	 * Return the journal sequence number
+	 * 
+	 * @return the journal sequence number
+	 */
+	public int getJrnSequence()
+	{
+		return jrnSequence;
+	}
+
+	/**
+	 * Set the journal sequence number
+	 * 
+	 * @param jrnSequence
+	 *            - the journal sequence number
+	 */
+	public void setJrnSequence(int jrnSequence)
+	{
+		this.jrnSequence = jrnSequence;
+	}
+
+	/**
+	 * Return the program root
+	 * 
+	 * @return the program root
+	 */
+	public String getProgramRoot()
+	{
+		return programRoot;
+	}
+
+	/**
+	 * Set the program root
+	 * 
+	 * @param programRoot
+	 *            - the program root
+	 */
+	public void setProgramRoot(String programRoot)
+	{
+		this.programRoot = Toolbox.trim(programRoot, 4);
+	}
+	/**
+	 * Return the function mode
+	 * 
+	 * @return the function mode
+	 */
+	public String getFunctionMode()
+	{
+		return functionMode;
+	}
+
+	/**
+	 * Set the function mode
+	 * 
+	 * @param functionMode
+	 *            - the function mode
+	 */
+	public void setFunctionMode(String functionMode)
+	{
+		this.functionMode = Toolbox.trim(functionMode, 1);
+	}
+
+	/**
+	 * Return the function option
+	 * 
+	 * @return the function option
+	 */
+	public String getOption()
+	{
+		return option;
+	}
+
+	/**
+	 * Set the function option
+	 * 
+	 * @param option
+	 *            - the function option
+	 */
+	public void setOption(String option)
+	{
+		this.option = Toolbox.trim(option, 3);
+	}
+
+	/**
+	 * Return the branch of the user
+	 * 
+	 * @return the branch of the user
+	 */
+	public String getBranch()
+	{
+		return branch;
+	}
+
+	/**
+	 * Set the branch of the user
+	 * 
+	 * @param branch
+	 *            - the branch of the user
+	 */
+	public void setBranch(String branch)
+	{
+		this.branch = Toolbox.trim(branch, 4);
+	}
+
+	/**
+	 * Return the function application
+	 * 
+	 * @return the function application
+	 */
+	public String getApplication()
+	{
+		return application;
+	}
+
+	/**
+	 * Set the function application
+	 * 
+	 * @param application
+	 *            - the function application
+	 */
+	public void setApplication(String application)
+	{
+		this.application = Toolbox.trim(application, 2);
+	}
+
+	/**
+	 * Return the account/customer/nostro identity
+	 * 
+	 * @return the account/customer/nostro identity
+	 */
+	public String getIdentity()
+	{
+		return identity;
+	}
+
+	/**
+	 * Set the account/customer/nostro identity
+	 * 
+	 * @param identity
+	 *            - the account/customer/nostro identity
+	 */
+	public void setIdentity(String identity)
+	{
+		this.identity = Toolbox.trim(identity, 15);
+	}
+
+	/**
+	 * Return the identity short name
+	 * 
+	 * @return the identity short name
+	 */
+	public String getIdentityShortName()
+	{
+		return identityShortName;
+	}
+
+	/**
+	 * Set the identity short name
+	 * 
+	 * @param identityShortName
+	 *            - the identity short name
+	 */
+	public void setIdentityShortName(String identityShortName)
+	{
+		this.identityShortName = Toolbox.trim(identityShortName, 15);
+	}
+
+	/**
+	 * Return the journal reference
+	 * 
+	 * @return the journal reference
+	 */
+	public String getJournalRef()
+	{
+		return journalRef;
+	}
+
+	/**
+	 * Set the journal reference
+	 * 
+	 * @param journalRef
+	 *            - the journal reference
+	 */
+	public void setJournalRef(String journalRef)
+	{
+		this.journalRef = Toolbox.trim(journalRef, 17);
+	}
+
+	/**
+	 * Return the warning messages
+	 * 
+	 * @return the warning messages
+	 */
+	public List<String> getWarningMessages()
+	{
+		return warningMessages;
+	}
+
+	/**
+	 * Set the warning messages
+	 * 
+	 * @param warningMessages
+	 *            - the warning messages
+	 */
+	public void setWarningMessages(List<String> warningMessages)
+	{
+		this.warningMessages = warningMessages;
+	}
+
+	/**
+	 * Return the list of authorisor
+	 * 
+	 * @return the list of authorisor
+	 */
+	public List<String> getAuthorisors()
+	{
+		return authorisors;
+	}
+
+	/**
+	 * Set the list of authorisor
+	 * 
+	 * @param authorisors
+	 *            - the list of authorisor
+	 */
+	public void setAuthorisors(List<String> authorisors)
+	{
+		this.authorisors = authorisors;
+	}
+
+	/**
+	 * Return the user
+	 * 
+	 * @return the user
+	 */
+	public String getUser()
+	{
+		return user;
+	}
+
+	/**
+	 * Set the user
+	 * 
+	 * @param user
+	 *            - the user
+	 */
+	public void setUser(String user)
+	{
+		this.user = Toolbox.trim(user, 4);
+	}
+
+	/**
+	 * Return whether this journal should be applied during externally input
+	 * 
+	 * @return "N" - this journal will not be applied during externally input
+	 */
+	public String getAext()
+	{
+		return aext;
+	}
+
+	/**
+	 * Set whether this journal should be applied during externally input
+	 * 
+	 * @param aext
+	 *            - "N" - this journal will not be applied during external input
+	 */
+	public void setAext(String aext)
+	{
+		this.aext = Toolbox.trim(aext, 1);
+	}
+
+	/**
+	 * Determine whether this journal should be recovered during recovery processing
+	 * 
+	 * @return "N" - this journal will not be recovered during recovery processing
+	 */
+	public String getArec()
+	{
+		return arec;
+	}
+
+	/**
+	 * Set whether this journal should be recovered during recovery processing
+	 * 
+	 * @param arec
+	 *            - "N" - this journal will not be recovered during recovery processing
+	 */
+	public void setArec(String arec)
+	{
+		this.arec = Toolbox.trim(arec, 1);
+	}
+
+	/**
+	 * Return the printed flag
+	 * 
+	 * @return the printed flag
+	 */
+	public String getPrinted()
+	{
+		return printed;
+	}
+
+	/**
+	 * Set the printed flag
+	 * 
+	 * @param printed
+	 *            - the printed flag
+	 */
+	public void setPrinted(String printed)
+	{
+		this.printed = Toolbox.trim(printed, 1);
+	}
+
+	/**
+	 * Return the recovery status
+	 * 
+	 * @return the recovery status
+	 */
+	public String getRecovStat()
+	{
+		return recovStat;
+	}
+
+	/**
+	 * Set the recovery status
+	 * 
+	 * @param recovStat
+	 *            - the recovery status
+	 */
+	public void setRecovStat(String recovStat)
+	{
+		this.recovStat = Toolbox.trim(recovStat, 1);
+	}
+
+	/**
+	 * Return the date last maintained
+	 * 
+	 * @return the date last maintained
+	 */
+	public int getDateMaintained()
+	{
+		return dateMaintained;
+	}
+
+	/**
+	 * Set the date last maintained
+	 * 
+	 * @param dateMaintained
+	 *            - the date last maintained
+	 */
+	public void setDateMaintained(int dateMaintained)
+	{
+		this.dateMaintained = dateMaintained;
+	}
+
+	/**
+	 * Return the error message from recovery
+	 * 
+	 * @return the error message from recovery
+	 */
+	public String getErrorRecov()
+	{
+		return errorRecov;
+	}
+
+	/**
+	 * Set the error message from recovery
+	 * 
+	 * @param errorRecov
+	 *            - the error message from recovery
+	 */
+	public void setErrorRecov(String errorRecov)
+	{
+		this.errorRecov = Toolbox.trim(errorRecov, 37);
+	}
+
+	/**
+	 * Return the error message from background job
+	 * 
+	 * @return the error message from background job
+	 */
+	public String getErrorBackground()
+	{
+		return errorBackground;
+	}
+
+	/**
+	 * Set the error message from background job
+	 * 
+	 * @param errorBackground
+	 *            - the error message from background job
+	 */
+	public void setErrorBackground(String errorBackground)
+	{
+		this.errorBackground = Toolbox.trim(errorBackground, 37);
+	}
+
+	/**
+	 * Return the core system status code
+	 * 
+	 * @return the core system status code
+	 */
+	public String getCoreSystemStat()
+	{
+		return coreSystemStat;
+	}
+
+	/**
+	 * Set the core system status code
+	 * 
+	 * @param coreSystemStat
+	 *            - the core system status code
+	 */
+	public void setCoreSystemStat(String coreSystemStat)
+	{
+		this.coreSystemStat = Toolbox.trim(coreSystemStat, 1);
+	}
+
+	/**
+	 * Return the supervisor Id
+	 * 
+	 * @return the supervisor Id
+	 */
+	public String getSupervisorID()
+	{
+		return supervisorID;
+	}
+
+	/**
+	 * Set the supervisor Id
+	 * 
+	 * @param supervisorID
+	 *            - the supervisor Id
+	 */
+	public void setSupervisorID(String supervisorID)
+	{
+		this.supervisorID = Toolbox.trim(supervisorID, 4);
+	}
+
+	/**
+	 * Return the security mnemonic
+	 * 
+	 * @return the security mnemonic
+	 */
+	public String getSecuriyMnem()
+	{
+		return securiyMnem;
+	}
+
+	/**
+	 * Set the security mnemonic
+	 * 
+	 * @param securiyMnem
+	 *            - the security mnemonic
+	 */
+	public void setSecuriyMnem(String securiyMnem)
+	{
+		this.securiyMnem = Toolbox.trim(securiyMnem, 16);
+	}
+
+	/**
+	 * Return the portfolio reference
+	 * 
+	 * @return the portfolio reference
+	 */
+	public String getPortfolioRef()
+	{
+		return portfolioRef;
+	}
+
+	/**
+	 * Set the portfolio reference
+	 * 
+	 * @param portfolioRef
+	 *            - the portfolio reference
+	 */
+	public void setPortfolioRef(String portfolioRef)
+	{
+		this.portfolioRef = Toolbox.trim(portfolioRef, 16);
+	}
+
+	/**
+	 * Return the depot reference
+	 * 
+	 * @return the depot reference
+	 */
+	public String getDepotRef()
+	{
+		return depotRef;
+	}
+
+	/**
+	 * Set the depot reference
+	 * 
+	 * @param depotRef
+	 *            - the depot reference
+	 */
+	public void setDepotRef(String depotRef)
+	{
+		this.depotRef = Toolbox.trim(depotRef, 3);
+	}
+
+	/**
+	 * Return the transaction status
+	 * 
+	 * @return the transaction status
+	 */
+	public String getTransactionStat()
+	{
+		return transactionStat;
+	}
+
+	/**
+	 * Set the transaction status
+	 * 
+	 * @param transactionStat
+	 *            - the transaction status
+	 */
+	public void setTransactionStat(String transactionStat)
+	{
+		this.transactionStat = Toolbox.trim(transactionStat, 1);
+	}
+
+	/**
+	 * Return the ENIGMA transaction key
+	 * 
+	 * @return the ENIGMA transaction key
+	 */
+	public String getEnigmaKey()
+	{
+		return enigmaKey;
+	}
+
+	/**
+	 * Set the ENIGMA transaction key
+	 * 
+	 * @param enigmaKey
+	 *            - the ENIGMA transaction key
+	 */
+	public void setEnigmaKey(String enigmaKey)
+	{
+		this.enigmaKey = Toolbox.trim(enigmaKey, 4);
+	}
+
+	/**
+	 * Return the ENIGMA transaction number
+	 * 
+	 * @return the ENIGMA transaction number
+	 */
+	public int getEnigmaNumber()
+	{
+		return enigmaNumber;
+	}
+
+	/**
+	 * Set the ENIGMA transaction number
+	 * 
+	 * @param enigmaNumber
+	 *            - the ENIGMA transaction number
+	 */
+	public void setEnigmaNumber(int enigmaNumber)
+	{
+		this.enigmaNumber = enigmaNumber;
+	}
+
+	/**
+	 * Return the link job number
+	 * 
+	 * @return the link job number
+	 */
+	public int getLinkNumber()
+	{
+		return linkNumber;
+	}
+
+	/**
+	 * Set the link job number
+	 * 
+	 * @param linkNumber
+	 *            - the link job number
+	 */
+	public void setLinkNumber(int linkNumber)
+	{
+		this.linkNumber = linkNumber;
+	}
+
+	/**
+	 * Return the link job time
+	 * 
+	 * @return the link job time
+	 */
+	public int getLinkTime()
+	{
+		return linkTime;
+	}
+
+	/**
+	 * Set the link job time
+	 * 
+	 * @param linkTime
+	 *            - the link job time
+	 */
+	public void setLinkTime(int linkTime)
+	{
+		this.linkTime = linkTime;
+	}
+
+	/**
+	 * Return the link set
+	 * 
+	 * @return the link set
+	 */
+	public String getLinkSet()
+	{
+		return linkSet;
+	}
+
+	/**
+	 * Set the link set
+	 * 
+	 * @param linkSet
+	 *            - the link set
+	 */
+	public void setLinkSet(String linkSet)
+	{
+		this.linkSet = Toolbox.trim(linkSet, 1);
+	}
+
+	/**
+	 * Return the transfer status
+	 * 
+	 * @return the transfer status
+	 */
+	public String getTransferStat()
+	{
+		return transferStat;
+	}
+
+	/**
+	 * Set the transfer status
+	 * 
+	 * @param transferStat
+	 *            - the transfer status
+	 */
+	public void setTransferStat(String transferStat)
+	{
+		this.transferStat = Toolbox.trim(transferStat, 1);
+	}
+
+	/**
+	 * Return the maintain/cancel later flag
+	 * 
+	 * @return the maintain/cancel later flag
+	 */
+	public String getMaintLater()
+	{
+		return maintLater;
+	}
+
+	/**
+	 * Set the maintain/cancel later flag
+	 * 
+	 * @param maintLater
+	 *            - the maintain/cancel later flag
+	 */
+	public void setMaintLater(String maintLater)
+	{
+		this.maintLater = Toolbox.trim(maintLater, 1);
+	}
+
+	/**
+	 * Return the create date
+	 * 
+	 * @return the create date
+	 */
+	public int getCreateDate()
+	{
+		return createDate;
+	}
+
+	/**
+	 * Set the create date
+	 * 
+	 * @param createDate
+	 *            - the create date
+	 */
+	public void setCreateDate(int createDate)
+	{
+		this.createDate = createDate;
+	}
+
+	/**
+	 * Return the CC link time
+	 * 
+	 * @return the CC link time
+	 */
+	public int getCcLinkTime()
+	{
+		return ccLinkTime;
+	}
+
+	/**
+	 * Set the CC link time
+	 * 
+	 * @param ccLinkTime
+	 *            - the CC link time
+	 */
+	public void setCcLinkTime(int ccLinkTime)
+	{
+		this.ccLinkTime = ccLinkTime;
+	}
+
+	/**
+	 * Return the commit issued/EOT flag
+	 * 
+	 * @return the commit issued/EOT flag
+	 */
+	public String getCommitIssued()
+	{
+		return commitIssued;
+	}
+
+	/**
+	 * Set the commit issued/EOT flag
+	 * 
+	 * @param commitIssued
+	 *            - the commit issued/EOT flag
+	 */
+	public void setCommitIssued(String commitIssued)
+	{
+		this.commitIssued = Toolbox.trim(commitIssued, 1);
+	}
+
+	/**
+	 * Return the job number
+	 * 
+	 * @return the job number
+	 */
+	public int getJobNumber()
+	{
+		return jobNumber;
+	}
+
+	/**
+	 * Set the job number
+	 * 
+	 * @param jobNumber
+	 *            - the job number
+	 */
+	public void setJobNumber(int jobNumber)
+	{
+		this.jobNumber = jobNumber;
+	}
+
+	/**
+	 * Return the CC link sequence number
+	 * 
+	 * @return the CC link sequence number
+	 */
+	public int getCcLinkSeq()
+	{
+		return ccLinkSeq;
+	}
+
+	/**
+	 * Set the CC link sequence number
+	 * 
+	 * @param ccLinkSeq
+	 *            - the CC link sequence number
+	 */
+	public void setCcLinkSeq(int ccLinkSeq)
+	{
+		this.ccLinkSeq = ccLinkSeq;
+	}
+
+	/**
+	 * Return the application Id
+	 * 
+	 * @return the application Id
+	 */
+	public String getAppId()
+	{
+		return appId;
+	}
+
+	/**
+	 * Set the application Id
+	 * 
+	 * @param appId
+	 *            - the application Id
+	 */
+	public void setAppId(String appId)
+	{
+		this.appId = Toolbox.trim(appId, 10);
+	}
+
+	/**
+	 * Return the TCP/IP Address
+	 * 
+	 * @return the TCP/IP Address
+	 */
+	public String getTcpIp()
+	{
+		return tcpIp;
+	}
+
+	/**
+	 * Set the TCP/IP Address
+	 * 
+	 * @param tcpIp
+	 *            - the TCP/IP Address
+	 */
+	public void setTcpIp(String tcpIp)
+	{
+		this.tcpIp = Toolbox.trim(tcpIp, 15);
+	}
+
+	/**
+	 * Return the input reference
+	 * 
+	 * @return the input reference
+	 */
+	public String getInputRef()
+	{
+		return inputRef;
+	}
+
+	/**
+	 * Set the input reference
+	 * 
+	 * @param inputRef
+	 *            - the input reference
+	 */
+	public void setInputRef(String inputRef)
+	{
+		this.inputRef = Toolbox.trim(inputRef, 16);
+	}
+
+	/**
+	 * Return the inputting user id
+	 * 
+	 * @return the inputting user id
+	 */
+	public String getInputUserId()
+	{
+		return inputUserId;
+	}
+
+	/**
+	 * Set the inputting user id
+	 * 
+	 * @param inputUserId
+	 *            - the inputting user id
+	 */
+	public void setInputUserId(String inputUserId)
+	{
+		this.inputUserId = Toolbox.trim(inputUserId, 10);
+	}
+
+	/**
+	 * Return the authorising user id
+	 * 
+	 * @return the authorising user id
+	 */
+	public String getAuthorisingId()
+	{
+		return authorisingId;
+	}
+
+	/**
+	 * Set the authorising user id
+	 * 
+	 * @param authorisingId
+	 *            - the authorising user id
+	 */
+	public void setAuthorisingId(String authorisingId)
+	{
+		this.authorisingId = Toolbox.trim(authorisingId, 10);
+	}
+
+	/**
+	 * Return the list of field names in the format of:
+	 * <p>
+	 * field1, field2, field3, ...
+	 * <p>
+	 * The ordering must be the same as the rtvFieldValues();
+	 * 
+	 * @return the list of field names
+	 */
+	@Override
+	public String rtvFieldNames()
+	{
+		StringBuffer fieldNames = new StringBuffer();
+
+		// workstation id
+		fieldNames.append("GYWSID ");
+
+		// user id
+		fieldNames.append(", ");
+		fieldNames.append("GYUSID ");
+
+		// day
+		fieldNames.append(", ");
+		fieldNames.append("GYDIM ");
+
+		// time
+		fieldNames.append(", ");
+		fieldNames.append("GYTIM ");
+
+		// sequence
+		fieldNames.append(", ");
+		fieldNames.append("GYSEQ ");
+
+		// program root
+		fieldNames.append(", ");
+		fieldNames.append("GYFRO ");
+
+		// function mode
+		fieldNames.append(", ");
+		fieldNames.append("GYJTT ");
+
+		// branch
+		fieldNames.append(", ");
+		fieldNames.append("GYBRNM ");
+
+		// printed
+		fieldNames.append(", ");
+		fieldNames.append("GYPRN ");
+
+		// option id
+		fieldNames.append(", ");
+		fieldNames.append("GYOID ");
+
+		// application
+		fieldNames.append(", ");
+		fieldNames.append("GYAPP ");
+
+		// account
+		fieldNames.append(", ");
+		fieldNames.append("GYWHO ");
+
+		// short name
+		fieldNames.append(", ");
+		fieldNames.append("GYSHN ");
+
+		// journal reference
+		fieldNames.append(", ");
+		fieldNames.append("GYJREF ");
+
+		// apply during external input?
+		fieldNames.append(", ");
+		fieldNames.append("GYAEXT ");
+
+		// apply during external input?
+		fieldNames.append(", ");
+		fieldNames.append("GYAREC ");
+
+		// message 1
+		fieldNames.append(", ");
+		fieldNames.append("GYMES1 ");
+
+		// message 2
+		fieldNames.append(", ");
+		fieldNames.append("GYMES2 ");
+
+		// message 3
+		fieldNames.append(", ");
+		fieldNames.append("GYMES3 ");
+
+		// message 4
+		fieldNames.append(", ");
+		fieldNames.append("GYMES4 ");
+
+		// message 5
+		fieldNames.append(", ");
+		fieldNames.append("GYMES5 ");
+
+		// message 6
+		fieldNames.append(", ");
+		fieldNames.append("GYMES6 ");
+
+		// return
+		return fieldNames.toString();
+	}
+
+	/**
+	 * Return the list of field values in the format of:
+	 * <p>
+	 * value1, value2, value3, ...
+	 * <p>
+	 * The ordering must be the same as the rtvFieldNames();
+	 * 
+	 * @return the list of field values
+	 */
+	@Override
+	public String rtvFieldValues()
+	{
+		StringBuffer fieldValues = new StringBuffer();
+
+		// workstation id
+		fieldValues.append(SQLToolbox.cvtToSQLValue(workstationID, EqDataType.TYPE_CHAR, "4"));
+
+		// user id
+		fieldValues.append(", ");
+		fieldValues.append(SQLToolbox.cvtToSQLValue(user, EqDataType.TYPE_CHAR, "4"));
+
+		// day
+		fieldValues.append(", ");
+		fieldValues.append(SQLToolbox.cvtToSQLValue(String.valueOf(jrnDay), EqDataType.TYPE_ZONED, "2"));
+
+		// time
+		fieldValues.append(", ");
+		fieldValues.append(SQLToolbox.cvtToSQLValue(String.valueOf(jrnTime), EqDataType.TYPE_ZONED, "6"));
+
+		// sequence
+		fieldValues.append(", ");
+		fieldValues.append(SQLToolbox.cvtToSQLValue(String.valueOf(jrnSequence), EqDataType.TYPE_PACKED, "4"));
+
+		// program root
+		fieldValues.append(", ");
+		fieldValues.append(SQLToolbox.cvtToSQLValue(programRoot, EqDataType.TYPE_CHAR, "4"));
+
+		// function mode
+		fieldValues.append(", ");
+		fieldValues.append(SQLToolbox.cvtToSQLValue(functionMode, EqDataType.TYPE_CHAR, "1"));
+
+		// branch
+		fieldValues.append(", ");
+		fieldValues.append(SQLToolbox.cvtToSQLValue(branch, EqDataType.TYPE_CHAR, "4"));
+
+		// printed
+		fieldValues.append(", ");
+		fieldValues.append("'N'");
+
+		// option id
+		fieldValues.append(", ");
+		fieldValues.append(SQLToolbox.cvtToSQLValue(option, EqDataType.TYPE_CHAR, "3"));
+
+		// application
+		fieldValues.append(", ");
+		fieldValues.append(SQLToolbox.cvtToSQLValue(application, EqDataType.TYPE_CHAR, "2"));
+
+		// account
+		fieldValues.append(", ");
+		fieldValues.append(SQLToolbox.cvtToSQLValue(identity, EqDataType.TYPE_CHAR, "15"));
+
+		// short name
+		fieldValues.append(", ");
+		fieldValues.append(SQLToolbox.cvtToSQLValue(identityShortName, EqDataType.TYPE_CHAR, "15"));
+
+		// journal reference
+		fieldValues.append(", ");
+		fieldValues.append(SQLToolbox.cvtToSQLValue(journalRef, EqDataType.TYPE_CHAR, "17"));
+
+		// apply during external input?
+		fieldValues.append(", ");
+		fieldValues.append(SQLToolbox.cvtToSQLValue(aext, EqDataType.TYPE_CHAR, "1"));
+
+		// apply during external input?
+		fieldValues.append(", ");
+		fieldValues.append(SQLToolbox.cvtToSQLValue(arec, EqDataType.TYPE_CHAR, "1"));
+
+		// messages
+		List<String> eqMessages = warningMessages;
+		int size = eqMessages.size();
+
+		// message 1
+		fieldValues.append(", ");
+		if (size > 0)
+		{
+			fieldValues.append(SQLToolbox.cvtToSQLValue(eqMessages.get(0), EqDataType.TYPE_CHAR, "37"));
+		}
+		else
+		{
+			fieldValues.append(SQLToolbox.cvtToSQLValue("", EqDataType.TYPE_CHAR, "1"));
+		}
+
+		// message 2
+		fieldValues.append(", ");
+		if (size > 1)
+		{
+			fieldValues.append(SQLToolbox.cvtToSQLValue(eqMessages.get(1), EqDataType.TYPE_CHAR, "37"));
+		}
+		else
+		{
+			fieldValues.append(SQLToolbox.cvtToSQLValue("", EqDataType.TYPE_CHAR, "1"));
+		}
+
+		// message 3
+		fieldValues.append(", ");
+		if (size > 2)
+		{
+			fieldValues.append(SQLToolbox.cvtToSQLValue(eqMessages.get(2), EqDataType.TYPE_CHAR, "37"));
+		}
+		else
+		{
+			fieldValues.append(SQLToolbox.cvtToSQLValue("", EqDataType.TYPE_CHAR, "1"));
+		}
+
+		// message 4
+		fieldValues.append(", ");
+		if (size > 3)
+		{
+			fieldValues.append(SQLToolbox.cvtToSQLValue(eqMessages.get(3), EqDataType.TYPE_CHAR, "37"));
+		}
+		else
+		{
+			fieldValues.append(SQLToolbox.cvtToSQLValue("", EqDataType.TYPE_CHAR, "1"));
+		}
+
+		// message 5
+		fieldValues.append(", ");
+		if (size > 4)
+		{
+			fieldValues.append(SQLToolbox.cvtToSQLValue(eqMessages.get(4), EqDataType.TYPE_CHAR, "37"));
+		}
+		else
+		{
+			fieldValues.append(SQLToolbox.cvtToSQLValue("", EqDataType.TYPE_CHAR, "1"));
+		}
+
+		// message 6
+		fieldValues.append(", ");
+		if (size > 5)
+		{
+			fieldValues.append(SQLToolbox.cvtToSQLValue(eqMessages.get(5), EqDataType.TYPE_CHAR, "37"));
+		}
+		else
+		{
+			fieldValues.append(SQLToolbox.cvtToSQLValue("", EqDataType.TYPE_CHAR, "1"));
+		}
+
+		// return
+		return fieldValues.toString();
+	}
+
+	/**
+	 * Return the list of name and value pairs in the format of:
+	 * <p>
+	 * field1=value1, field2=value2, field3=value3, ...
+	 * 
+	 * @return the list of name and value pairs
+	 */
+	@Override
+	public String rtvFieldNamesValues()
+	{
+		// the system does not update GY, hence, this is not implemented
+		return "";
+	}
+
+	/**
+	 * Return the list of field names in the format of ?, ?, ?, ...
+	 * 
+	 * @return the list of "?" which corresponds to the field names
+	 */
+	@Override
+	public String rtvFieldNames2()
+	{
+		return ""; // not used
+	}
+
+	/**
+	 * Return the list of name and value pairs in the format of:
+	 * <p>
+	 * field1=?, field2=?, field3=?, ...
+	 * 
+	 * @return the list of name and value pairs
+	 */
+	@Override
+	public String rtvFieldNamesValues2()
+	{
+		return ""; // not used
+	}
+
+	/**
+	 * Set the parameter for the prepared statement. This must corresponds to the number of ? from the methods rtvFieldNames2() and
+	 * rtvFieldNamesValues2
+	 * 
+	 * @param statement
+	 *            - the SQL statement
+	 */
+	@Override
+	protected void chgPreparedStatement(EquationStandardSession session, PreparedStatement statement)
+	{
+		// not used
+	}
+
+	/**
+	 * Return the list of name and values pairs to select this record from the file in the format of:
+	 * <p>
+	 * field1=value1 and field2=value2 and field3=value3 and ...
+	 * 
+	 * @return the list of name and values pairs to select this record from the file
+	 */
+	@Override
+	public String rtvSQLRecord()
+	{
+		return "GYWSID='" + workstationID + "' and " + "GYDIM=" + jrnDay + " and " + "GYTIM=" + jrnTime + " and " + "GYSEQ="
+						+ jrnSequence + " and " + "GYFRO='" + programRoot + "' and " + "GYJTT='" + functionMode + "' ";
+	}
+
+	/**
+	 * Return the key field for this record
+	 */
+	@Override
+	public String rtvKey()
+	{
+		return workstationID + jrnDay + jrnTime + jrnSequence + programRoot + functionMode;
+	}
+
+	/**
+	 * Set up the field values after retrieving the record
+	 * 
+	 * @param session
+	 *            - the Equation session
+	 * @param resultset
+	 *            - the resultset
+	 * 
+	 */
+	@Override
+	protected void rtvData(EquationStandardSession session, ResultSet resultset)
+	{
+		try
+		{
+			workstationID = resultset.getString(1);
+			user = resultset.getString(2);
+			jrnDay = resultset.getInt(3);
+			jrnTime = resultset.getInt(4);
+			jrnSequence = resultset.getInt(5);
+			programRoot = resultset.getString(6);
+			functionMode = resultset.getString(7);
+			branch = resultset.getString(8);
+			printed = resultset.getString(9);
+			option = resultset.getString(10);
+			application = resultset.getString(11);
+			identity = resultset.getString(12);
+			identityShortName = resultset.getString(13);
+			journalRef = resultset.getString(14);
+			aext = resultset.getString(15);
+			arec = resultset.getString(16);
+			warningMessages = new ArrayList<String>();
+			warningMessages.add(resultset.getString(17));
+			warningMessages.add(resultset.getString(18));
+			warningMessages.add(resultset.getString(19));
+			warningMessages.add(resultset.getString(20));
+			warningMessages.add(resultset.getString(21));
+			warningMessages.add(resultset.getString(22));
+		}
+		catch (SQLException e)
+		{
+			throw new RuntimeException("JournalHeader: rtvData() Failed: ", e);
+		}
+	}
+	/**
+	 * Add or update the record to the file
+	 * 
+	 * @param session
+	 *            - An EquationStandardSession
+	 * 
+	 * @return true - if the record has been added
+	 *         <p>
+	 *         false - if the record has been updated
+	 * 
+	 * @throws EQException
+	 */
+	@Override
+	public boolean update(EquationStandardSession session) throws EQException
+	{
+		String sqlStatement = "INSERT INTO " + rtvFullPath() + " (" + rtvFieldNames() + ") VALUES ( " + rtvFieldValues() + ")";
+		executeStatement(session, sqlStatement);
+		return true;
+	}
+
+}

@@ -1,0 +1,244 @@
+package com.misys.equation.builder.javadoc;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.misys.equation.builder.javadoc.taglet.EquationExternalTaglet;
+import com.sun.javadoc.ClassDoc;
+import com.sun.javadoc.ConstructorDoc;
+import com.sun.javadoc.Doc;
+import com.sun.javadoc.MethodDoc;
+import com.sun.javadoc.PackageDoc;
+import com.sun.javadoc.Tag;
+
+public class JavaDocToolbox
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/**
+	 * This converts a list of ClassDoc into a list of Equation Class Doc
+	 * 
+	 * @param classes
+	 *            - the list of Class Doc
+	 * 
+	 * @return the list of Equation Class Doc
+	 */
+	private static ClassDoc[] convertToEquationClassDoc(ClassDoc[] classes)
+	{
+		ClassDoc[] equationClassDoc = new ClassDoc[classes.length];
+		for (int i = 0; i < classes.length; i++)
+		{
+			equationClassDoc[i] = convertToEquationClassDoc(classes[i]);
+		}
+
+		return equationClassDoc;
+	}
+
+	/**
+	 * This converts a ClassDoc into an Equation Class Doc
+	 * 
+	 * @param classDoc
+	 *            - the Class Doc
+	 * 
+	 * @return the Equation Class Doc
+	 */
+	public static ClassDoc convertToEquationClassDoc(ClassDoc classDoc)
+	{
+		if (classDoc == null)
+		{
+			return null;
+		}
+		else
+		{
+			return new EquationClassDoc(classDoc);
+		}
+	}
+
+	/**
+	 * This converts a list of ClassDoc into a list of Equation Class Doc
+	 * 
+	 * @param classes
+	 *            - the list of Class Doc
+	 * 
+	 * @return the list of Equation Class Doc
+	 */
+	private static PackageDoc[] convertToEquationPackageDoc(PackageDoc[] packageDocs)
+	{
+		PackageDoc[] equationPackageDocs = new PackageDoc[packageDocs.length];
+		for (int i = 0; i < packageDocs.length; i++)
+		{
+			equationPackageDocs[i] = convertToEquationPackageDoc(packageDocs[i]);
+		}
+
+		return equationPackageDocs;
+	}
+
+	/**
+	 * This converts a PackageDoc into an Equation Package Doc
+	 * 
+	 * @param packageDoc
+	 *            - the Package Doc
+	 * 
+	 * @return the Equation Package Doc
+	 */
+	public static PackageDoc convertToEquationPackageDoc(PackageDoc packageDoc)
+	{
+		if (packageDoc == null)
+		{
+			return null;
+		}
+		else
+		{
+			return new EquationPackageDoc(packageDoc);
+		}
+	}
+
+	/**
+	 * Filter a list of PackageDoc. This returns only PackageDoc who has classes
+	 * 
+	 * @param packageDocs
+	 *            - the list of Package Doc
+	 * 
+	 * @return the list of Package Doc
+	 */
+	public static PackageDoc[] filterPackageDoc(PackageDoc[] packageDocs)
+	{
+		List<PackageDoc> filteredListPackage = new ArrayList<PackageDoc>();
+		for (PackageDoc packageDoc : packageDocs)
+		{
+			// if tag exists then include it
+			if (isExternalTagExist(packageDoc) || packageDoc.allClasses().length > 0)
+			{
+				filteredListPackage.add(packageDoc);
+			}
+		}
+
+		PackageDoc[] filteredPackageDoc = new PackageDoc[filteredListPackage.size()];
+		filteredListPackage.toArray(filteredPackageDoc);
+
+		return filteredPackageDoc;
+	}
+
+	/**
+	 * Filter a list of Class. This returns only Class who has methods
+	 * 
+	 * @param classes
+	 *            - the list of Class Doc
+	 * 
+	 * @return the list of Class Doc
+	 */
+	public static ClassDoc[] filterClassDoc(ClassDoc[] classes)
+	{
+		List<ClassDoc> filteredListClass = new ArrayList<ClassDoc>();
+		for (ClassDoc classDoc : classes)
+		{
+			// if tag exists then include it
+			if (isExternalTagExist(classDoc) || classDoc.constructors().length > 0 || classDoc.methods().length > 0)
+			{
+				filteredListClass.add(classDoc);
+			}
+		}
+
+		ClassDoc[] filteredClassDoc = new ClassDoc[filteredListClass.size()];
+		filteredListClass.toArray(filteredClassDoc);
+
+		return filteredClassDoc;
+	}
+
+	/**
+	 * Filter a list of method. This will return only those methods satisfying the Equation Java document
+	 * 
+	 * @param methodDocs
+	 *            - the list of method documents
+	 * 
+	 * @return the filtered list of method
+	 */
+	public static MethodDoc[] filterMethodDoc(MethodDoc[] methodDocs)
+	{
+		List<MethodDoc> filteredListMethodDoc = new ArrayList<MethodDoc>();
+		for (MethodDoc methodDoc : methodDocs)
+		{
+			if (isExternalTagExist(methodDoc))
+			{
+				filteredListMethodDoc.add(methodDoc);
+			}
+		}
+
+		MethodDoc[] filteredMethodDoc = new MethodDoc[filteredListMethodDoc.size()];
+		filteredListMethodDoc.toArray(filteredMethodDoc);
+
+		return filteredMethodDoc;
+	}
+
+	/**
+	 * Filter a list of method. This will return only those methods satisfying the Equation Java document
+	 * 
+	 * @param constructorDocs
+	 *            - the list of method documents
+	 * 
+	 * @return the filtered list of method
+	 */
+	public static ConstructorDoc[] filterConstructorDoc(ConstructorDoc[] constructorDocs)
+	{
+		List<ConstructorDoc> filteredListDoc = new ArrayList<ConstructorDoc>();
+		for (ConstructorDoc constructorDoc : constructorDocs)
+		{
+			if (isExternalTagExist(constructorDoc))
+			{
+				filteredListDoc.add(constructorDoc);
+			}
+		}
+
+		ConstructorDoc[] filteredMethodDoc = new ConstructorDoc[filteredListDoc.size()];
+		filteredListDoc.toArray(filteredMethodDoc);
+
+		return filteredMethodDoc;
+	}
+
+	/**
+	 * Determine if the external tag exists or not
+	 * 
+	 * @param doc
+	 *            - the document to be validated
+	 * 
+	 * @return true if the external tag exist
+	 */
+	public static boolean isExternalTagExist(Doc doc)
+	{
+		Tag[] tag = doc.tags(EquationExternalTaglet.NAME);
+		return tag.length > 0;
+	}
+
+	/**
+	 * Filter and Convert Class doc into Equation Doc<br>
+	 * 
+	 * This will only select classes who have external methods
+	 * 
+	 * @param classes
+	 *            - the list of classes
+	 * 
+	 * @return the list of filtered Equation class doc
+	 */
+	public static ClassDoc[] filterAndConvertToEquationClassDoc(ClassDoc[] classes)
+	{
+		// return convertToEquationClassDoc(classes);
+		return filterClassDoc(convertToEquationClassDoc(classes));
+	}
+
+	/**
+	 * Filter and Convert Package doc into Equation Doc<br>
+	 * 
+	 * This will only select classes who have external classes
+	 * 
+	 * @param packageDocs
+	 *            - the list of packages
+	 * 
+	 * @return the list of filtered Equation package doc
+	 */
+	public static PackageDoc[] filterAndConvertToEquationPackageDoc(PackageDoc[] packageDocs)
+	{
+		return filterPackageDoc(convertToEquationPackageDoc(packageDocs));
+	}
+
+}

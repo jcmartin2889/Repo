@@ -1,0 +1,172 @@
+package com.misys.equation.utility.test;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import com.misys.equation.common.access.EquationCommonContext;
+import com.misys.equation.common.access.EquationStandardSQLPagingList;
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationUser;
+import com.misys.equation.common.access.IEquationSQLPagingListCallback;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.utilities.EqBeanFactory;
+
+// Via API
+public class EquationStandardSQLPagingListTestStub
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	private static String systemId = "SLOUGH1";
+	private static String unitId = "EW9";
+	private static String adminUserId = "WILLIAE1";
+	private static String adminPassword = "WILLIAE1";
+
+	private String sessionId = "1";
+	private EquationUser user;
+	private EquationStandardSession session;
+	public EquationStandardSQLPagingListTestStub()
+	{
+
+	}
+
+	public static void main(String[] inputParameters)
+	{
+		EquationStandardSQLPagingListTestStub test = new EquationStandardSQLPagingListTestStub();
+		test.test();
+	}
+
+	public boolean test()
+	{
+		// Have a bash...
+		try
+		{
+			// Setup environment
+			EquationCommonContext.getContext().initialiseUnitEnvironment(systemId, unitId, adminUserId, adminPassword,
+							EquationCommonContext.PASSWORD_TYPE_TEXT_PLAIN);
+
+			sessionId = EquationCommonContext.getContext().getEqSession("SLOUGH1", "EW9", "WILLIAE1", "WILLIAE1", "", "localhost",
+							EquationCommonContext.PASSWORD_TYPE_TEXT_PLAIN, EquationCommonContext.SESSION_OTHER_MODE, false, null);
+			user = EquationCommonContext.getContext().getEquationUser(sessionId);
+			session = user.getSession();
+
+			// Setup EquationStandardSQLPagingList
+			// Test with decode of V and security G for enquiry
+			String sqlSelectStart = " SELECT SCAB, SCAN, SCAS, SCAB || SCAN || SCAS AS DTAKEY, UTW06RFNC('V','GWR76R', SCAB || SCAN || SCAS,'N','N','G','') AS DTA FROM SC10LF";
+			String sqlSelectFilter = "SCAB like '30%'";
+
+			int numberOfRows = 16;
+
+			EquationStandardSQLPagingList sqlPagingList = new EquationStandardSQLPagingList(null, sqlSelectStart, sqlSelectFilter,
+							numberOfRows, new Callback());
+
+			// Set key fields and start position in the file
+			sqlPagingList.addPrimaryKeyFieldValues("SCAB", "", 4, true);
+			sqlPagingList.addPrimaryKeyFieldValues("SCAN", "", 6, true);
+			sqlPagingList.addPrimaryKeyFieldValues("SCAS", "", 3, true);
+
+			// Execute the queries
+			ArrayList<HashMap<String, String>> results = null;
+			int requestedPage = 0;
+
+			// Check max pages - make this a sensible number that an end user could process
+			requestedPage = 50;
+			results = sqlPagingList.executeQuery(session, requestedPage);
+
+			// skip pages forward
+			int maxPages = sqlPagingList.getTotalPages();
+			printPage(requestedPage, sqlPagingList, results);
+
+			requestedPage = 5;
+			results = sqlPagingList.executeQuery(session, requestedPage);
+			printPage(requestedPage, sqlPagingList, results);
+
+			// Serialise/Deserialise
+			String xml = sqlPagingList.serialiseAsXML();
+			System.out.println(xml);
+			sqlPagingList = EquationStandardSQLPagingList.deserialiseFromXML(xml);
+			sqlPagingList.setCallback(new Callback());
+
+			for (requestedPage = 1; requestedPage < maxPages + 1; requestedPage++)
+			{
+				results = sqlPagingList.executeQuery(session, requestedPage);
+				printPage(requestedPage, sqlPagingList, results);
+
+				// Serialise/Deserialise
+				xml = sqlPagingList.serialiseAsXML();
+				sqlPagingList = EquationStandardSQLPagingList.deserialiseFromXML(xml);
+				sqlPagingList.setCallback(new Callback());
+			}
+
+			// same last page
+			requestedPage = maxPages;
+			results = sqlPagingList.executeQuery(session, requestedPage);
+			printPage(requestedPage, sqlPagingList, results);
+
+			// beyond EOF
+			requestedPage = maxPages + 1;
+			results = sqlPagingList.executeQuery(session, requestedPage);
+			printPage(requestedPage, sqlPagingList, results);
+
+			// page backward after EOF
+			requestedPage = maxPages;
+			results = sqlPagingList.executeQuery(session, requestedPage);
+			printPage(requestedPage, sqlPagingList, results);
+
+			// page backward
+			requestedPage = maxPages - 1;
+			results = sqlPagingList.executeQuery(session, requestedPage);
+			printPage(requestedPage, sqlPagingList, results);
+
+			// skip pages backward
+			requestedPage = maxPages - 3;
+			results = sqlPagingList.executeQuery(session, requestedPage);
+			printPage(requestedPage, sqlPagingList, results);
+
+			return true;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return false;
+		}
+
+	}
+
+	public void printPage(int requestedPage, EquationStandardSQLPagingList pagingList, ArrayList<HashMap<String, String>> resultData)
+					throws EQException
+	{
+		System.out.println("Request page " + requestedPage);
+		System.out.println("More rows " + pagingList.isMoreRows());
+		System.out.println("Total pages " + pagingList.getTotalPages());
+
+		for (HashMap<String, String> row : resultData)
+		{
+
+			System.out.println(requestedPage + " " + row.get("SCAB") + "-" + row.get("SCAN") + "-" + row.get("SCAS") + "-"
+							+ row.get("DTA"));
+
+		}
+
+		// printXML(pagingList);
+	}
+
+	public void printXML(EquationStandardSQLPagingList pagingList) throws EQException
+	{
+		// Serialise paging list
+		EqBeanFactory eqBeanFactory = EqBeanFactory.getEqBeanFactory();
+		String xml = eqBeanFactory.serialiseBeanAsXML(pagingList);
+		System.out.println(xml);
+	}
+
+	// Callback logic to validate the row
+	public class Callback implements IEquationSQLPagingListCallback
+	{
+		@Override
+		public boolean validateRow(HashMap<String, String> rowData)
+		{
+			return true;
+		}
+	}
+
+}

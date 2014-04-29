@@ -1,0 +1,45 @@
+package com.misys.equation.common.consolidation;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.dao.DaoFactory;
+import com.misys.equation.common.dao.IDao;
+import com.misys.equation.common.dao.IGMERecordDao;
+import com.misys.equation.common.dao.beans.GMEDataModel;
+import com.misys.equation.common.internal.eapi.core.EQException;
+
+public class GMEDaoConsolidator extends DaoConsolidator
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	/**
+	 * Constructor
+	 * 
+	 * @param session
+	 *            EquationStandardSession
+	 * @throws EQException
+	 */
+	public GMEDaoConsolidator(EquationStandardSession session) throws EQException
+	{
+		super(session, DaoFactory.GME_RECORD_DAO_NAME);
+	}
+
+	public Collection<GMEDataModel> getPositions(final String enqCurrency, final String enqDate)
+	{
+		List<GMEDataModel> coll = new ArrayList<GMEDataModel>();
+
+		int i = 0;
+		for (IDao iDao : daos)
+		{
+			IGMERecordDao dao = (IGMERecordDao) iDao;
+			coll.addAll(dao.getPositions(sessions.get(i).getSystemId(), sessions.get(i).getUnitId(), enqCurrency, enqDate));
+			i++;
+		}
+
+		return coll;
+	}
+}

@@ -1,0 +1,47 @@
+package com.misys.equation.problems;
+
+/**
+ * Represents the location of a problem.
+ * 
+ * This will be used by the Service Composer to generate Problem Markers which will be shown in the Eclipse Problems view
+ * 
+ * @author perkinj1
+ */
+public class ProblemLocation
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id: ProblemLocation.java 6788 2010-03-30 16:39:35Z hempensp $";
+	/** The simple name of the bean model class that reported the problem */
+	private String validatorClassName;
+	/** An identification of the item in error */
+	private String item;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param validatorClassName
+	 *            Name of the class in which the error was found
+	 * @param item
+	 *            The item (typically an id)
+	 */
+	public ProblemLocation(String validatorClassName, String item)
+	{
+		this.validatorClassName = validatorClassName;
+		this.item = item;
+	}
+
+	/**
+	 * @return the simple name of the bean model class that reported the problem
+	 */
+	public String getValidatorClassName()
+	{
+		return validatorClassName;
+	}
+	/**
+	 * @return An identification of the item in error
+	 */
+	public String getItem()
+	{
+		return item;
+	}
+}

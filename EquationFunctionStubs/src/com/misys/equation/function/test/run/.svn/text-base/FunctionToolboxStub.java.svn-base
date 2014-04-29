@@ -1,0 +1,92 @@
+package com.misys.equation.function.test.run;
+
+import java.io.File;
+import java.util.Calendar;
+import java.util.List;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.access.EquationUnit;
+import com.misys.equation.common.access.EquationUser;
+import com.misys.equation.common.dao.beans.GAXRecordDataModel;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.common.test.TestEnvironment;
+import com.misys.equation.common.utilities.Toolbox;
+import com.misys.equation.function.beans.Function;
+import com.misys.equation.function.beans.Layout;
+import com.misys.equation.function.runtime.FunctionHandler;
+import com.misys.equation.function.runtime.FunctionInfo;
+import com.misys.equation.function.runtime.FunctionMessage;
+import com.misys.equation.function.test.helper.FunctionGenerator;
+import com.misys.equation.function.tools.DeploymentToolbox;
+import com.misys.equation.function.tools.XMLToolbox;
+
+public class FunctionToolboxStub
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+
+	// print error messages
+	public static void printMessages(List<FunctionMessage> messages)
+	{
+		for (FunctionMessage message : messages)
+		{
+			System.out.println("Message id     : " + "[" + message.getEqMessage().getMessageID() + "]" + message.rtvFormattedText()
+							+ "[set=" + message.getScreenSetId() + "]" + "[scrn=" + message.getScrnNo() + "]" + "[fld="
+							+ message.getFieldName() + "]" + "[2nd=" + message.getSecondLevelText() + "]");
+		}
+	}
+
+	// create the function handler
+	public static FunctionHandler getFunctionHandler(EquationUser user, String sessionId, String name)
+	{
+		FunctionInfo functionInfo = new FunctionInfo(sessionId, name);
+		FunctionHandler functionHandler = new FunctionHandler(user, functionInfo);
+		return functionHandler;
+	}
+
+	// write xml to DB
+	public static void writeToDB(EquationUnit unit, FunctionGenerator fg, boolean print) throws EQException
+	{
+		// Print the XML
+		String serviceXML = fg.getService();
+		String layoutXML = fg.getLayout();
+
+		try
+		{
+			// Write to GAXPF
+			XMLToolbox.getXMLToolbox().writeDefinitionXMLtoDB(TestEnvironment.getTestEnvironment().getStandardSession(),
+							unit.getKFILLibrary(), GAXRecordDataModel.SERVICE_CODE, fg.getId(),
+							Toolbox.formatDate(Calendar.getInstance(), Toolbox.TIMESTAMP_FORMAT), serviceXML);
+
+			// Write to GBXPF
+			XMLToolbox.getXMLToolbox().writeDefinitionXMLtoDB(TestEnvironment.getTestEnvironment().getStandardSession(),
+							unit.getKFILLibrary(), GAXRecordDataModel.LAYOUT_CODE, fg.getId(),
+							Toolbox.formatDate(Calendar.getInstance(), Toolbox.TIMESTAMP_FORMAT), layoutXML);
+
+			TestEnvironment.getTestEnvironment().getStandardSession().commitTransaction();
+		}
+		catch (Exception e)
+		{
+			throw new EQException(e);
+		}
+
+		if (print)
+		{
+			System.out.println(serviceXML);
+			System.out.println(layoutXML);
+		}
+	}
+
+	// deploy
+	public static void writeToDB(EquationUnit unit, Function function, Layout layout, File serviceClass, File layoutClass)
+					throws Exception
+	{
+
+		EquationStandardSession session = unit.getEquationSessionPool().getEquationStandardSession();
+		DeploymentToolbox dtb = new DeploymentToolbox(session);
+		dtb.deployFunction(function, serviceClass, serviceClass);
+		dtb.deployLayout(layout, layout.getLabel(), layoutClass, layoutClass);
+		session.commitTransaction();
+	}
+
+}

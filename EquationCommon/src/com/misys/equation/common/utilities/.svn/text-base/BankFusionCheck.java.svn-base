@@ -1,0 +1,52 @@
+package com.misys.equation.common.utilities;
+
+public class BankFusionCheck
+{
+
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private static final String DISABLE_BANKFUSION_FEATURES = "disable.bankfusion.features";
+	/** Logger instance */
+	private static final EquationLogger LOG = new EquationLogger(BankFusionCheck.class);
+
+	/**
+	 * Indicates whether BankFusion is installed. Do not use this method directly! Use EquationCommonContext isBankFusionInstalled()
+	 * method instead as indirection is needed. Catch here may not occur as load of BankFusionCheck class itself will fail if
+	 * BankFusionClientFactory is not installed.
+	 * 
+	 * @return boolean
+	 */
+	public static boolean isBankFusionInstalled()
+	{
+		Boolean disableBankFusionFeatures = "true".equalsIgnoreCase(System.getProperty(DISABLE_BANKFUSION_FEATURES));
+		if (disableBankFusionFeatures)
+		{
+			return false;
+		}
+		boolean result = false;
+		try
+		{
+			Class bfClass = Class.forName("com.trapedza.bankfusion.servercommon.commands.BankFusionEnvironment");
+			if (bfClass != null)
+			{
+				result = true;
+			}
+		}
+		catch (ClassNotFoundException e)
+		{
+			// This situation is expected when BankFusion application is not installed,
+			// so no error handling is required.
+		}
+		catch (Throwable t)
+		{
+			// This situation is expected when BankFusion application is not installed,
+			// so no error handling is required.
+		}
+
+		if (LOG.isInfoEnabled())
+		{
+			LOG.info("isBankFusionInstalled - returning " + result);
+		}
+		return result;
+	}
+}

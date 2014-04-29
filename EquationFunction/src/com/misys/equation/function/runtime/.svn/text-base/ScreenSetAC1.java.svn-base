@@ -1,0 +1,153 @@
+package com.misys.equation.function.runtime;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.misys.equation.common.access.EquationStandardSession;
+import com.misys.equation.common.files.JournalHeader;
+import com.misys.equation.common.internal.eapi.core.EQException;
+import com.misys.equation.function.beans.FunctionData;
+
+public class ScreenSetAC1 extends ScreenSet
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	public final static String OPTION = "AC1";
+
+	private FunctionData sourceData;
+
+	/**
+	 * Construct a Function Screen AC1
+	 * 
+	 * @param id
+	 *            - screen set id
+	 * @param functionHandlerData
+	 *            the Function Handler Data
+	 * 
+	 * @throws EQException
+	 */
+	public ScreenSetAC1(int id, FunctionHandlerData fhd) throws EQException
+	{
+		super(id, fhd, OPTION);
+	}
+
+	/**
+	 * On exit, remove this from the list
+	 * 
+	 * @param sourceScreenSetId
+	 *            - screen set Id of the current screen set
+	 * 
+	 * @return SCRN_PREV to display the previous function<br>
+	 * 
+	 */
+	@Override
+	public int onExitScreenSetToPrev(int sourceScreenSetId) throws EQException
+	{
+		// remove this from the list of functions
+		screenSetHandler.getScreenSets().remove(id);
+
+		return SCRN_PREV;
+	}
+
+	/**
+	 * On exit, move all the value back to the ACG function
+	 * 
+	 * @param sourceScreenSetId
+	 *            - screen set Id of the current screen set
+	 * 
+	 * @return SCRN_PREV to display the previous function
+	 * 
+	 */
+	@Override
+	public int onExitScreenSetToNext(int sourceScreenSetId) throws EQException
+	{
+		// move the function details
+		outData();
+		screenSetHandler.getScreenSets().remove(id);
+
+		return SCRN_PREV;
+	}
+
+	/**
+	 * Transfer the data from the source (identified by the index) into this function
+	 * 
+	 * @param sourceData
+	 *            - the source Function data
+	 * @param index
+	 *            - the source index
+	 * 
+	 * @return true
+	 */
+	public boolean inData(FunctionData sourceData)
+	{
+		this.sourceData = sourceData;
+		functionData.chgFieldValues("EVNM", sourceData.rtvFieldData("HZEVNT"));
+		return true;
+	}
+
+	/**
+	 * Transfer the data from this function back to the source
+	 * 
+	 * @param targetData
+	 *            - the target Function data
+	 * 
+	 * @return true
+	 */
+	public boolean outData()
+	{
+		sourceData.chgFieldValues("TECNM", functionData.rtvFieldData("ECNM"));
+		return true;
+	}
+
+	/**
+	 * Performs update on the specified screen
+	 * 
+	 * @param journalHeader
+	 *            - the Journal Header
+	 * @param functionTransactions
+	 *            - the list of transactions already executed prior to this update
+	 * @param session
+	 *            - the Equation standard session
+	 * 
+	 * @return true - this screen has already handled the updated processing<br>
+	 *         false - let the standard process perform update
+	 * 
+	 */
+	@Override
+	public boolean update(JournalHeader journalHeader, FunctionTransactions functionTransactions, EquationStandardSession session)
+					throws EQException
+	{
+		return true;
+	}
+
+	/**
+	 * Generate the function key for the screen
+	 * 
+	 * @return the function keys
+	 */
+	@Override
+	protected FunctionKeys generateFkeys() throws EQException
+	{
+		super.generateFkeys();
+		functionKeys.deleteKey(FunctionKeys.KEY_SAVE);
+		functionKeys.deleteKey(FunctionKeys.KEY_SVTMPL);
+		functionKeys.deleteKey(FunctionKeys.KEY_CHARGE);
+		functionKeys.deleteKey(FunctionKeys.KEY_DEL);
+		functionKeys.deleteKey(FunctionKeys.KEY_PRINT);
+		functionKeys.deleteKey(FunctionKeys.KEY_EXCEL);
+		return functionKeys;
+	}
+
+	/**
+	 * Performs printing on the specified screen
+	 * 
+	 * @returns the list of lines
+	 * 
+	 * @throws EQException
+	 */
+	@Override
+	protected List<String> print() throws EQException
+	{
+		return new ArrayList<String>();
+	}
+}

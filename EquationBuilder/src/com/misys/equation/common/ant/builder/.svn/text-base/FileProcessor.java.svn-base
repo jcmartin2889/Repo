@@ -1,0 +1,223 @@
+package com.misys.equation.common.ant.builder;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
+
+import com.misys.equation.common.ant.builder.core.EquationLogger;
+
+public class FileProcessor
+{
+	// This attribute is used to store cvs version information.
+	public static final String _revision = "$Id$";
+	private final static String LINE_TO_ADD = createLineToAdd();
+
+	private final static String LINE_TO_ADD_CHECK_ATTRIBUTE = "public static final String _revision=";
+	private final static String LINE_TO_ADD_CHECK_COMMENT = " This attribute is used to store cvs version information.";
+
+	private final static String CLASS = "public class";
+	private final static String ABSTRACT_CLASS = "public abstract class";
+
+	private boolean modified = false;
+	private File currentFile = null;
+	private final StringBuilder currentFileBuffer = new StringBuilder();
+	private static final EquationLogger LOG = new EquationLogger(FileProcessor.class);
+
+	public FileProcessor(String fileToProcess)
+	{
+		currentFile = new File(fileToProcess);
+	}
+
+	/**
+	 * This method create the line to add.
+	 * 
+	 * @return this is the string that represent the line to be added.
+	 */
+	private static String createLineToAdd()
+	{
+		StringBuilder lineToAdd = new StringBuilder("\t//This attribute is used to store cvs version information.\r\n");
+		lineToAdd
+						.append("\tpublic static final String _revision = \"$Id$\";");
+		return lineToAdd.toString();
+	}
+
+	private void readFile()
+	{
+
+		boolean isClass = false;
+		String nextLine = null;
+		try
+		{
+
+			BufferedReader inputBufferedReader = new BufferedReader(new FileReader(currentFile));
+			try
+			{
+				String line = null;
+
+				// it loops the current file.
+				while ((line = inputBufferedReader.readLine()) != null)
+				{
+					if (modified == false)
+					{
+						// it checks if the current line is the class declaration.
+						if (line.contains(CLASS) || line.contains(ABSTRACT_CLASS))
+						{
+							isClass = true;
+							addLine(line);
+							continue;
+						}
+						// It checks if the current line is the open brackets after the class declaration.
+						if (isClass == true && line.contains("{"))
+						{
+							addLine(line);
+							// Its copy all lines.
+							while ((nextLine = inputBufferedReader.readLine()) != null)
+							{
+
+								if (nextLine.equals("") || nextLine.equals("\t") || nextLine.equals("\n") || nextLine.equals("\r")
+												|| nextLine.equals(" "))
+								{
+									addLine(nextLine);
+									continue;
+								}
+								else
+								{
+									break;
+								}
+							}
+							// it check if the current line is the attribute to add.
+							if (checkVersionAttribute(nextLine))
+							{
+								// if it is case it means that file was already processed.
+								modified = false;
+								break;
+							}
+							// in other case add the attribute to the java class.
+							addLine(LINE_TO_ADD);
+							addLine(nextLine);
+							modified = true;
+							continue;
+						}
+					}
+
+					addLine(line);
+				}
+			}
+			finally
+			{
+				inputBufferedReader.close();
+			}
+		}
+		catch (IOException iOException)
+		{
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error("There was an error trying to close the file reader .", iOException);
+			}
+		}
+	}
+
+	/**
+	 * This method is going to check if the current line has the version attribute.
+	 * 
+	 * @param currentLine
+	 *            This is the current line to check.
+	 * @return the result will be true if the current line is the version attribute.
+	 */
+	public boolean checkVersionAttribute(String currentLine)
+	{
+		boolean result = false;
+
+		currentLine = currentLine.trim();
+		currentLine = currentLine.replace("\t", "");
+		currentLine = currentLine.replace("// ", "");
+		currentLine = currentLine.replace("//", "");
+		currentLine = currentLine.replace("\n", "");
+		currentLine = currentLine.replace("\r", "");
+
+		if (currentLine.trim().contains(LINE_TO_ADD_CHECK_COMMENT.trim())
+						|| currentLine.trim().contains(LINE_TO_ADD_CHECK_ATTRIBUTE.trim()))
+		{
+			result = true;
+		}
+		return result;
+	}
+	/**
+	 * This method is going to add the attribute version line and the break lines.
+	 * 
+	 * @param lineToAdd
+	 *            this is the line to add.
+	 */
+	private void addLine(String lineToAdd)
+	{
+		currentFileBuffer.append(lineToAdd);
+		currentFileBuffer.append("\r\n");
+	}
+
+	/**
+	 * This is going to write the file using the current buffer.
+	 */
+	private void writeFile()
+	{
+		Writer output = null;
+
+		try
+		{
+			output = new BufferedWriter(new FileWriter(currentFile));
+			output.write(currentFileBuffer.toString());
+		}
+		catch (Exception exception)
+		{
+			if (LOG.isErrorEnabled())
+			{
+				LOG.error("There was an error trying to write the file.", exception);
+			}
+		}
+		finally
+		{
+			try
+			{
+				output.close();
+			}
+			catch (IOException iOException)
+			{
+				if (LOG.isErrorEnabled())
+				{
+					LOG.error("There was an error closing the file writer.", iOException);
+				}
+			}
+		}
+	}
+
+	/**
+	 * This method is going to process the current file. if the current file has not the cvs version attribute it will be added.
+	 */
+	public void processFile()
+	{
+		readFile();
+
+		if (modified)
+		{
+			writeFile();
+		}
+	}
+
+	/** Simple test harness. */
+	public static void main(String... aArguments)
+	{
+		FileProcessor processFile = new FileProcessor(
+
+		"D:\\\\myThings\\workspaces\\workspace_test\\EquationCommon\\test\\com\\misys\\equation\\common\\helper\\blah.java");
+
+		processFile.processFile();
+	}
+
+	public boolean isModified()
+	{
+		return modified;
+	}
+}
